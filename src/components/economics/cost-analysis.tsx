@@ -101,7 +101,7 @@ export function CostAnalysis() {
 
   // Generate chart data
   const chartData = useMemo(() => {
-    const data = []
+    const data: Array<{ quantity: number; atc: number; avc: number; mc: number; afc: number }> = []
     for (let q = 1; q <= maxQ; q++) {
       const fc = fixedCosts
       const vc = varCost * q + quadCoef * q * q

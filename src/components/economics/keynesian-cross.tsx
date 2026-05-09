@@ -52,7 +52,7 @@ export function KeynesianCross() {
 
   const data = useMemo(() => {
     const maxY = Math.max(equilibriumY * 1.5, 1000)
-    const points = []
+    const points: Array<{ income: number; aggregateDemand: number; fortyFive: number }> = []
     for (let y = 0; y <= maxY; y += maxY / 60) {
       const aggregateDemand = autonomousSpending + govSpending + mpc * (1 - taxRate) * y + mpi * y
       points.push({

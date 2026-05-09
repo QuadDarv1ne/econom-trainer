@@ -1,8 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Prisma schema для ЭкономТренажёра
+// Используется для серверной синхронизации прогресса (опционально)
+// Клиентская часть работает на localStorage + Zustand
 
 generator client {
   provider = "prisma-client-js"
@@ -13,20 +11,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model UserProgress {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  totalXP          Int      @default(0)
+  level            Int      @default(1)
+  quizResults      String? // JSON stringified QuizResult[]
+  moduleHistory    String? // JSON stringified ModuleInteraction[]
+  achievements     String? // JSON stringified string[]
+  lastActiveAt     DateTime @updatedAt
+  createdAt        DateTime @default(now())
+
+  @@index([userId])
+  @@index([totalXP])
 }
 
-model Post {
+model QuizQuestion {
   id        String   @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  String
+  topic     String
+  question  String
+  options   String // JSON stringified string[]
+  answer    Int // index of correct option
+  explanation String
+  difficulty String @default("medium") // easy | medium | hard
+  category  String // macro | micro | finance | game_theory
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([difficulty])
 }

@@ -1,6 +1,6 @@
 <div align="center">
 
-# ЭкономТренажёр v5.0
+# ЭкономТренажёрЭкономТренажёр v5.1
 
 ### Интерактивная платформа для тренировки экономического мышления
 
@@ -119,6 +119,8 @@
 | **next-themes** | — | Переключение тёмной/светлой темы |
 | **Lucide React** | — | Набор иконок для интерфейса |
 | **Radix UI** | — | Примитивы доступных UI-компонентов |
+| **Vitest** | 3 | Unit-тестирование логики XP, уровней и store |
+| **Testing Library** | 16 | Тестирование React-компонентов |
 
 ### Установка и запуск
 
@@ -151,6 +153,12 @@ npm run build
 
 # Запуск собранного приложения
 npm start
+
+# Запуск тестов
+npm test
+
+# Запуск тестов в режиме наблюдения
+npm run test:watch
 ```
 
 ### Структура проекта
@@ -212,10 +220,12 @@ econom-trenazher/
 - [ ] Модуль «Валютный калькулятор» — курсы и кросс-курсы валют
 - [ ] Экспорт прогресса в PDF-отчёт
 - [ ] Мультиязычность (полная поддержка EN/РУ)
-- [ ] PWA-поддержка (офлайн-доступ и установка на устройство)
-- [ ] Unit-тесты (Vitest + React Testing Library)
+- [x] PWA-манифест и метаданные (Web App Manifest, viewport, theme-color)
+- [x] Unit-тесты (Vitest + React Testing Library)
+- [x] SEO: динамический sitemap.xml и robots.txt
 - [ ] E2E-тесты (Playwright)
 - [ ] Интеграция с LMS (Moodle, Canvas)
+- [ ] Service Worker для офлайн-работы
 
 ---
 
@@ -358,8 +368,12 @@ npm start
 - [ ] Full multilingual support (EN/RU)
 - [ ] PWA support (offline access and device installation)
 - [ ] Unit tests (Vitest + React Testing Library)
+- [x] PWA manifest and metadata (Web App Manifest, viewport, theme-color)
+- [x] Unit tests (Vitest + React Testing Library)
+- [x] SEO: dynamic sitemap.xml and robots.txt
 - [ ] E2E tests (Playwright)
 - [ ] LMS integration (Moodle, Canvas)
+- [ ] Service Worker for offline mode
 
 ---
 

@@ -43,7 +43,7 @@ export function SupplyDemand() {
   }
 
   const generateData = useMemo(() => {
-    const data = []
+    const data: Array<{ quantity: number; demand: number; supply: number }> = []
     const maxQ = 120
     for (let q = 0; q <= maxQ; q += 2) {
       const demandPrice = (demandIntercept + demandShift) - demandSlope * q

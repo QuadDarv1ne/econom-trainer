@@ -46,7 +46,7 @@ export function PhillipsCurve() {
 
   // Generate chart data dynamically
   const chartData = useMemo(() => {
-    const data = []
+    const data: Array<{ unemployment: number; srpcInflation: number }> = []
     for (let u = 0; u <= 12; u += 0.5) {
       const srpcInflation =
         expectedInflation - alpha * (u - naturalRate) + supplyShock

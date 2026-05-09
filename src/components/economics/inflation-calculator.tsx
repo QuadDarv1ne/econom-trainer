@@ -50,7 +50,7 @@ export function InflationCalculator() {
     const totalInflation = Math.pow(1 + rate, years) - 1
     const purchasingPower = (1 / Math.pow(1 + rate, years)) * 100
 
-    const yearlyData = []
+    const yearlyData: Array<{ year: number; realValue: number; lostValue: number; purchasingPower: number }> = []
     for (let y = 0; y <= years; y++) {
       const currentValue = amount / Math.pow(1 + rate, y)
       const lostValue = amount - currentValue

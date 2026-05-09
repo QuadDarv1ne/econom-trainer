@@ -63,7 +63,7 @@ export function BreakEvenAnalysis() {
   }, [maxUnits, breakEvenUnits])
 
   const chartData = useMemo(() => {
-    const data = []
+    const data: Array<{ quantity: number; revenue: number; totalCost: number; profit: number; fixedCost: number }> = []
     const step = Math.max(1, Math.floor(maxUnits / 50))
     for (let q = 0; q <= maxUnits; q += step) {
       const revenue = pricePerUnit * q
