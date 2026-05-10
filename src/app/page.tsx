@@ -372,7 +372,7 @@ export default function Home() {
                       <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">1</span>
                       Выберите модуль
                     </div>
-                    <p className="text-muted-foreground">20 модулей: от ВВП до теории игр и налогов.</p>
+                    <p className="text-muted-foreground">21 модуль: от ВВП до теории игр и налогов.</p>
                   </div>
                   <div className="space-y-1">
                     <div className="font-semibold flex items-center gap-2">
