@@ -68,10 +68,6 @@
 | 19 | **Глоссарий терминов** | Справочник | 41 ключевой экономический термин с определениями, формулами и функцией быстрого поиска |
 | 20 | **Достижения** | Мотивация | 19 бейджей за различные достижения: от первых шагов до мастерского владения материалом |
 | 21 | **Прогресс** | Аналитика | Статистика тренировок, аналитика активности, визуализация динамики прогресса |
-| 19 | **Достижения** | Мотивация | 19 бейджей за различные достижения: от первых шагов до мастерского владения материалом |
-| 20 | **Прогресс** | Аналитика | Статистика тренировок, аналитика активности, визуализация динамики прогресса |
-| 18 | **Достижения** | Мотивация | 19 бейджей за различные достижения: от первых шагов до мастерского владения материалом |
-| 19 | **Прогресс** | Аналитика | Статистика тренировок, аналитика активности, визуализация динамики прогресса |
 
 ### Система XP и уровней
 
@@ -381,16 +377,14 @@ npm start
 - [x] IS-LM Module — investment-savings and liquidity-money model
 - [x] "Market Structures" Module — from perfect competition to monopoly
 - [x] "Currency Calculator" Module — exchange rates and cross-rates
-- [ ] Progress export to PDF report
+- [x] Progress export to PDF report
 - [ ] Full multilingual support (EN/RU)
-- [ ] PWA support (offline access and device installation)
-- [ ] Unit tests (Vitest + React Testing Library)
 - [x] PWA manifest and metadata (Web App Manifest, viewport, theme-color)
 - [x] Unit tests (Vitest + React Testing Library)
 - [x] SEO: dynamic sitemap.xml and robots.txt
 - [ ] E2E tests (Playwright)
 - [ ] LMS integration (Moodle, Canvas)
-- [ ] Service Worker for offline mode
+- [x] Service Worker for offline mode
 
 ---
 
