@@ -18,6 +18,7 @@ import {
   ReferenceLine,
 } from 'recharts'
 import { ArrowRightLeft, Info } from 'lucide-react'
+import { useI18n } from '@/lib/i18n-provider'
 
 interface Equilibrium {
   price: number
@@ -31,6 +32,7 @@ export function SupplyDemand() {
   const [supplySlope, setSupplySlope] = useState(0.8)
   const [demandShift, setDemandShift] = useState(0)
   const [supplyShift, setSupplyShift] = useState(0)
+  const { t } = useI18n()
 
   // XP tracking — award once per session on first slider change
   const [hasEarnedXP, setHasEarnedXP] = useState(false)
@@ -72,28 +74,28 @@ export function SupplyDemand() {
 
   const getScenarioDescription = () => {
     const scenarios: string[] = []
-    if (demandShift > 0) scenarios.push('Спрос вырос (кривая сместилась вправо)')
-    else if (demandShift < 0) scenarios.push('Спрос упал (кривая сместилась влево)')
-    if (supplyShift > 0) scenarios.push('Предложение выросло (кривая сместилась вправо)')
-    else if (supplyShift < 0) scenarios.push('Предложение упало (кривая сместилась влево)')
-    if (scenarios.length === 0) return 'Исходное равновесие — рынок сбалансирован'
+    if (demandShift > 0) scenarios.push(t('supply-demand.scenario.demand.increase'))
+    else if (demandShift < 0) scenarios.push(t('supply-demand.scenario.demand.decrease'))
+    if (supplyShift > 0) scenarios.push(t('supply-demand.scenario.supply.increase'))
+    else if (supplyShift < 0) scenarios.push(t('supply-demand.scenario.supply.decrease'))
+    if (scenarios.length === 0) return t('supply-demand.scenario.equilibrium')
     return scenarios.join('; ')
   }
 
   const getEffectOnPrice = () => {
-    if (demandShift > 0 && supplyShift < 0) return { text: 'Цена растёт', variant: 'destructive' as const }
-    if (demandShift < 0 && supplyShift > 0) return { text: 'Цена падает', variant: 'secondary' as const }
-    if (demandShift > 0 || supplyShift < 0) return { text: 'Давление вверх', variant: 'default' as const }
-    if (demandShift < 0 || supplyShift > 0) return { text: 'Давление вниз', variant: 'secondary' as const }
-    return { text: 'Стабильно', variant: 'outline' as const }
+    if (demandShift > 0 && supplyShift < 0) return { text: t('supply-demand.effect.price.up'), variant: 'destructive' as const }
+    if (demandShift < 0 && supplyShift > 0) return { text: t('supply-demand.effect.price.down'), variant: 'secondary' as const }
+    if (demandShift > 0 || supplyShift < 0) return { text: t('supply-demand.effect.price.up.pressure'), variant: 'default' as const }
+    if (demandShift < 0 || supplyShift > 0) return { text: t('supply-demand.effect.price.down.pressure'), variant: 'secondary' as const }
+    return { text: t('supply-demand.effect.price.stable'), variant: 'outline' as const }
   }
 
   const getEffectOnQuantity = () => {
-    if (demandShift > 0 && supplyShift > 0) return { text: 'Объём растёт', variant: 'default' as const }
-    if (demandShift < 0 && supplyShift < 0) return { text: 'Объём падает', variant: 'destructive' as const }
-    if (demandShift !== 0 && supplyShift === 0) return { text: 'Объём меняется', variant: 'secondary' as const }
-    if (supplyShift !== 0 && demandShift === 0) return { text: 'Объём меняется', variant: 'secondary' as const }
-    return { text: 'Стабильно', variant: 'outline' as const }
+    if (demandShift > 0 && supplyShift > 0) return { text: t('supply-demand.effect.quantity.up'), variant: 'default' as const }
+    if (demandShift < 0 && supplyShift < 0) return { text: t('supply-demand.effect.quantity.down'), variant: 'destructive' as const }
+    if (demandShift !== 0 && supplyShift === 0) return { text: t('supply-demand.effect.quantity.change'), variant: 'secondary' as const }
+    if (supplyShift !== 0 && demandShift === 0) return { text: t('supply-demand.effect.quantity.change'), variant: 'secondary' as const }
+    return { text: t('supply-demand.effect.quantity.stable'), variant: 'outline' as const }
   }
 
   return (
@@ -102,10 +104,10 @@ export function SupplyDemand() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ArrowRightLeft className="h-5 w-5" />
-            Спрос и предложение
+            {t('supply-demand.title')}
           </CardTitle>
           <CardDescription>
-            Используйте ползунки для сдвига кривых спроса и предложения. Наблюдайте, как меняется равновесная цена и объём.
+            {t('supply-demand.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -131,12 +133,12 @@ export function SupplyDemand() {
                   }}
                   formatter={(value: number, name: string) => [
                     value.toFixed(1),
-                    name === 'demand' ? 'Спрос' : 'Предложение',
+                    name === 'demand' ? t('supply-demand.tooltip.demand') : t('supply-demand.tooltip.supply'),
                   ]}
-                  labelFormatter={(label) => `Объём: ${label}`}
+                  labelFormatter={(label) => `${t('supply-demand.tooltip.quantity')}: ${label}`}
                 />
                 <Legend
-                  formatter={(value) => (value === 'demand' ? 'Спрос (D)' : 'Предложение (S)')}
+                  formatter={(value) => (value === 'demand' ? t('supply-demand.legend.demand') : t('supply-demand.legend.supply'))}
                 />
                 <ReferenceLine
                   x={equilibrium.quantity}
@@ -173,12 +175,12 @@ export function SupplyDemand() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Параметры кривых</CardTitle>
+            <CardTitle className="text-lg">{t('supply-demand.parameters')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Наклон спроса (крутизна)</Label>
+                <Label>{t('supply-demand.demandSlope')}</Label>
                 <span className="font-mono text-muted-foreground">{demandSlope.toFixed(1)}</span>
               </div>
               <Slider
@@ -192,7 +194,7 @@ export function SupplyDemand() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Наклон предложения (крутизна)</Label>
+                <Label>{t('supply-demand.supplySlope')}</Label>
                 <span className="font-mono text-muted-foreground">{supplySlope.toFixed(1)}</span>
               </div>
               <Slider
@@ -208,12 +210,12 @@ export function SupplyDemand() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Сдвиги кривых</CardTitle>
+            <CardTitle className="text-lg">{t('supply-demand.shifts')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Сдвиг спроса</Label>
+                <Label>{t('supply-demand.demandShift')}</Label>
                 <span className="font-mono text-muted-foreground">
                   {demandShift > 0 ? '+' : ''}
                   {demandShift}
@@ -230,7 +232,7 @@ export function SupplyDemand() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Сдвиг предложения</Label>
+                <Label>{t('supply-demand.supplyShift')}</Label>
                 <span className="font-mono text-muted-foreground">
                   {supplyShift > 0 ? '+' : ''}
                   {supplyShift}

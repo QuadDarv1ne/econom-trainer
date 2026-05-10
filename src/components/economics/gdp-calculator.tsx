@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator'
 import { useEconomicsStore } from '@/store/economics-store'
 import { Calculator, RotateCcw, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { useI18n } from '@/lib/i18n-provider'
 
 interface GDPComponent {
   name: string
@@ -18,11 +19,11 @@ interface GDPComponent {
 }
 
 const defaultComponents: GDPComponent[] = [
-  { name: 'Потребительские расходы (C)', currentValue: 0, baseValue: 0 },
-  { name: 'Инвестиции (I)', currentValue: 0, baseValue: 0 },
-  { name: 'Гос. расходы (G)', currentValue: 0, baseValue: 0 },
-  { name: 'Экспорт (X)', currentValue: 0, baseValue: 0 },
-  { name: 'Импорт (M)', currentValue: 0, baseValue: 0 },
+  { name: 'gdp.component.consumption', currentValue: 0, baseValue: 0 },
+  { name: 'gdp.component.investment', currentValue: 0, baseValue: 0 },
+  { name: 'gdp.component.government', currentValue: 0, baseValue: 0 },
+  { name: 'gdp.component.export', currentValue: 0, baseValue: 0 },
+  { name: 'gdp.component.import', currentValue: 0, baseValue: 0 },
 ]
 
 export function GDPCalculator() {
@@ -34,6 +35,7 @@ export function GDPCalculator() {
   const [inflationRate, setInflationRate] = useState(0)
   const addGDPResult = useEconomicsStore((s) => s.addGDPResult)
   const { toast } = useToast()
+  const { t } = useI18n()
 
   const updateComponent = useCallback(
     (index: number, field: 'currentValue' | 'baseValue', value: string) => {
@@ -96,11 +98,11 @@ export function GDPCalculator() {
   }
 
   const getInflationLabel = () => {
-    if (inflationRate > 5) return { text: 'Высокая инфляция', variant: 'destructive' as const }
-    if (inflationRate > 2) return { text: 'Умеренная инфляция', variant: 'default' as const }
-    if (inflationRate > 0) return { text: 'Низкая инфляция', variant: 'secondary' as const }
-    if (inflationRate === 0) return { text: 'Стабильность', variant: 'outline' as const }
-    return { text: 'Дефляция', variant: 'secondary' as const }
+    if (inflationRate > 5) return { key: 'gdp.inflation.high', variant: 'destructive' as const }
+    if (inflationRate > 2) return { key: 'gdp.inflation.moderate', variant: 'default' as const }
+    if (inflationRate > 0) return { key: 'gdp.inflation.low', variant: 'secondary' as const }
+    if (inflationRate === 0) return { key: 'gdp.inflation.stable', variant: 'outline' as const }
+    return { key: 'gdp.inflation.deflation', variant: 'secondary' as const }
   }
 
   return (
@@ -109,18 +111,17 @@ export function GDPCalculator() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calculator className="h-5 w-5" />
-            Калькулятор ВВП
+            {t('gdp.title')}
           </CardTitle>
           <CardDescription>
-            Введите текущие и базовые значения компонентов ВВП для расчёта номинального и реального ВВП, дефлятора и уровня инфляции.
-            Формула: ВВП = C + I + G + X - M
+            {t('gdp.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-semibold text-sm text-muted-foreground px-1">
-            <div>Компонент</div>
-            <div>Текущие цены</div>
-            <div>Базовые цены</div>
+            <div>{t('gdp.component')}</div>
+            <div>{t('gdp.currentPrices')}</div>
+            <div>{t('gdp.basePrices')}</div>
           </div>
 
           {components.map((comp, idx) => (
@@ -128,7 +129,7 @@ export function GDPCalculator() {
               key={idx}
               className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center p-3 rounded-lg bg-muted/50"
             >
-              <Label className="font-medium text-sm">{comp.name}</Label>
+              <Label className="font-medium text-sm">{t(comp.name)}</Label>
               <Input
                 type="number"
                 placeholder="0"
@@ -149,11 +150,11 @@ export function GDPCalculator() {
           <div className="flex gap-3 pt-2">
             <Button onClick={calculate} className="flex-1" size="lg">
               <Calculator className="h-4 w-4 mr-2" />
-              Рассчитать ВВП
+              {t('gdp.calculate')}
             </Button>
             <Button onClick={reset} variant="outline" size="lg">
               <RotateCcw className="h-4 w-4 mr-2" />
-              Сброс
+              {t('gdp.reset')}
             </Button>
           </div>
         </CardContent>
@@ -163,42 +164,42 @@ export function GDPCalculator() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card className="border-2 border-primary/20">
             <CardHeader className="pb-2">
-              <CardDescription>Номинальный ВВП</CardDescription>
+              <CardDescription>{t('gdp.nominal')}</CardDescription>
               <CardTitle className="text-2xl font-mono">
                 {nominalGDP.toLocaleString('ru-RU', { maximumFractionDigits: 1 })}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                ВВП в текущих ценах. Отражает объём производства без корректировки на инфляцию.
+                {t('gdp.tooltip.nominal')}
               </p>
             </CardContent>
           </Card>
 
           <Card className="border-2 border-primary/20">
             <CardHeader className="pb-2">
-              <CardDescription>Реальный ВВП</CardDescription>
+              <CardDescription>{t('gdp.real')}</CardDescription>
               <CardTitle className="text-2xl font-mono">
                 {realGDP.toLocaleString('ru-RU', { maximumFractionDigits: 1 })}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                ВВП в базовых ценах. Корректируется на изменение уровня цен, показывая реальный рост.
+                {t('gdp.tooltip.real')}
               </p>
             </CardContent>
           </Card>
 
           <Card className="border-2 border-primary/20">
             <CardHeader className="pb-2">
-              <CardDescription>Дефлятор ВВП</CardDescription>
+              <CardDescription>{t('gdp.deflator')}</CardDescription>
               <CardTitle className="text-2xl font-mono">
                 {deflator.toFixed(1)}%
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Отношение номинального ВВП к реальному. Показывает изменение уровня цен.
+                {t('gdp.tooltip.deflator')}
               </p>
             </CardContent>
           </Card>
@@ -206,7 +207,7 @@ export function GDPCalculator() {
           <Card className="border-2 border-primary/20">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <CardDescription>Уровень инфляции</CardDescription>
+                <CardDescription>{t('gdp.inflation')}</CardDescription>
                 {getInflationIcon()}
               </div>
               <div className="flex items-center gap-2">
@@ -214,13 +215,13 @@ export function GDPCalculator() {
                   {inflationRate.toFixed(1)}%
                 </CardTitle>
                 <Badge variant={getInflationLabel().variant}>
-                  {getInflationLabel().text}
+                  {t(getInflationLabel().key)}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Темп прироста уровня цен. Положительное значение — инфляция, отрицательное — дефляция.
+                {t('gdp.tooltip.inflation')}
               </p>
             </CardContent>
           </Card>
@@ -229,19 +230,21 @@ export function GDPCalculator() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Формулы</CardTitle>
+          <CardTitle className="text-lg">
+            {t('gdp.formulas')}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>ВВП по расходам:</strong> Y = C + I + G + NX, где NX = X - M
+            {t('gdp.formula.expenses')}
           </div>
           <Separator />
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Дефлятор ВВП:</strong> D = (Номинальный ВВП / Реальный ВВП) × 100%
+            {t('gdp.formula.deflator')}
           </div>
           <Separator />
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Уровень инфляции:</strong> π = ((Номинальный - Реальный) / Реальный) × 100%
+            {t('gdp.formula.inflation')}
           </div>
         </CardContent>
       </Card>

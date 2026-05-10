@@ -10,18 +10,7 @@ export default defineConfig({
     setupFiles: ["./vitest.setup.ts"],
     include: ["src/**/*.{test,spec}.{js,ts,jsx,tsx}"],
     exclude: ["node_modules/**", "e2e/**"],
-    coverage: {
-      provider: "v8",
-      reporter: ["text", "json", "html"],
-      exclude: [
-        "node_modules/",
-        "vitest.setup.ts",
-        "**/*.d.ts",
-        "**/*.config.*",
-        "src/components/ui/**",
-        "e2e/**",
-      ],
-    },
+    coverage: false,
   },
   resolve: {
     alias: {

@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useEconomicsStore } from '@/store/economics-store'
 import { Gauge, RotateCcw, AlertTriangle, CheckCircle2, Info } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { useI18n } from '@/lib/i18n-provider'
 
 type ElasticityType = 'price' | 'income' | 'cross'
 
@@ -45,6 +46,7 @@ export function ElasticityCalculator() {
   const [result, setResult] = useState<ElasticityResult | null>(null)
   const addElasticityResult = useEconomicsStore((s) => s.addElasticityResult)
   const { toast } = useToast()
+  const { t } = useI18n()
 
   const calculatePriceElasticity = useCallback(() => {
     const Q1 = parseFloat(q1), Q2 = parseFloat(q2)
@@ -134,11 +136,10 @@ export function ElasticityCalculator() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Gauge className="h-5 w-5" />
-            Калькулятор эластичности
+            {t('module.elasticity.title')}
           </CardTitle>
           <CardDescription>
-            Рассчитайте эластичность спроса по цене, доходу и перекрёстную эластичность. 
-            Используется формула дуговой эластичности (метод средней точки).
+            {t('module.elasticity.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
