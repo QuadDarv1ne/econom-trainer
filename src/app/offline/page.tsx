@@ -4,11 +4,13 @@ import Link from "next/link";
 import { WifiOff, RefreshCw, Home, Cloud, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function OfflinePage() {
   const [isOnline, setIsOnline] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     setIsOnline(navigator.onLine);
@@ -34,10 +36,9 @@ export default function OfflinePage() {
 
   const handleSync = async () => {
     setSyncing(true);
-    // Simulate sync delay
     await new Promise((resolve) => setTimeout(resolve, 1500));
     setSyncing(false);
-    toast.success("Прогресс синхронизирован!");
+    toast({ title: "Синхронизация завершена", description: "Прогресс синхронизирован!" });
   };
 
   return (
@@ -109,6 +110,7 @@ export default function OfflinePage() {
             : "Как только соединение восстановится, ваш прогресс автоматически синхронизируется."}
         </p>
       </div>
+      <Toaster />
     </div>
   );
 }
