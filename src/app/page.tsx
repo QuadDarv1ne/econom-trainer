@@ -35,6 +35,7 @@ import {
   Download,
   CheckCircle2,
   LayoutGrid,
+  Building2,
 } from 'lucide-react'
 
 // Lazy-load all module components for performance
@@ -57,6 +58,7 @@ const Glossary = dynamic(() => import('@/components/economics/glossary').then(m 
 const Achievements = dynamic(() => import('@/components/economics/achievements').then(m => ({ default: m.Achievements })), { ssr: false })
 const ProgressTracker = dynamic(() => import('@/components/economics/progress-tracker').then(m => ({ default: m.ProgressTracker })), { ssr: false })
 const ISLMModel = dynamic(() => import('@/components/economics/is-lm').then(m => ({ default: m.ISLMModel })), { ssr: false })
+const MarketStructures = dynamic(() => import('@/components/economics/market-structures').then(m => ({ default: m.MarketStructures })), { ssr: false })
 const ThemeToggle = dynamic(() => import('@/components/economics/theme-toggle').then(m => ({ default: m.ThemeToggle })), { ssr: false })
 
 // Module definitions with categories for grouped navigation
@@ -82,6 +84,7 @@ const modules = [
   { id: 'breakeven', title: 'Точка безубыточности', description: 'CVP-анализ: расчёт BEP, маржинальность, запас прочности', icon: Target, color: 'text-pink-600', bg: 'bg-pink-50 dark:bg-pink-950/30', category: 'Фин.анализ', catId: 'finance', xpReward: 15 },
   { id: 'tax', title: 'Калькулятор налогов', description: 'НДФЛ с прогрессивной шкалой, НДС, налог на прибыль', icon: Receipt, color: 'text-lime-600', bg: 'bg-lime-50 dark:bg-lime-950/30', category: 'Финансы', catId: 'finance', xpReward: 20 },
   { id: 'game-theory', title: 'Теория игр', description: 'Дилемма заключённого, ястребы и голуби, равновесие Нэша', icon: Swords, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/30', category: 'Микро', catId: 'micro', xpReward: 20 },
+  { id: 'market-structures', title: 'Рыночные структуры', description: 'Совершенная конкуренция, монополия, олигополия, моноп. конкуренция', icon: Building2, color: 'text-teal-600', bg: 'bg-teal-50 dark:bg-teal-950/30', category: 'Микро', catId: 'micro', xpReward: 25 },
   { id: 'quiz', title: 'Квиз по экономике', description: '45 вопросов по микро- и макроэкономике с таймером', icon: Brain, color: 'text-violet-600', bg: 'bg-violet-50 dark:bg-violet-950/30', category: 'Тесты', catId: 'tools', xpReward: 10 },
   { id: 'finance', title: 'Финансовая математика', description: 'Сложные проценты, NPV, аннуитетные расчёты', icon: DollarSign, color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/30', category: 'Финансы', catId: 'finance', xpReward: 20 },
   { id: 'glossary', title: 'Глоссарий терминов', description: '40+ ключевых терминов с формулами и поиском', icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/30', category: 'Справка', catId: 'tools', xpReward: 5 },
@@ -105,6 +108,7 @@ const tabItems = [
   { value: 'costs', icon: BarChart3, label: 'Издержки', catId: 'micro' },
   { value: 'comparative', icon: Globe, label: 'МЭ', catId: 'micro' },
   { value: 'game-theory', icon: Swords, label: 'Игры', catId: 'micro' },
+  { value: 'market-structures', icon: Building2, label: 'Структуры', catId: 'micro' },
   // Финансы
   { value: 'breakeven', icon: Target, label: 'BEP', catId: 'finance' },
   { value: 'tax', icon: Receipt, label: 'Налоги', catId: 'finance' },
@@ -141,6 +145,7 @@ const moduleComponents: Record<string, React.ComponentType> = {
   'breakeven': BreakEvenAnalysis,
   'tax': TaxCalculator,
   'game-theory': GameTheory,
+  'market-structures': MarketStructures,
   'quiz': EconomicsQuiz,
   'finance': FinancialMath,
   'glossary': Glossary,
@@ -257,7 +262,7 @@ export default function Home() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-2">
                 <Sparkles className="h-4 w-4" />
-                19 модулей • 45 вопросов • 40+ терминов • 19 достижений • Система XP
+                20 модулей • 45 вопросов • 40+ терминов • 19 достижений • Система XP
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
                 Тренируй экономическое мышление
@@ -275,7 +280,7 @@ export default function Home() {
                   </div>
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/5 border border-primary/20">
                     <LayoutGrid className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">{exploredCount}/19 модулей открыто</span>
+                    <span className="text-sm font-medium">{exploredCount}/20 модулей открыто</span>
                   </div>
                 </div>
               )}
@@ -362,7 +367,7 @@ export default function Home() {
                       <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">1</span>
                       Выберите модуль
                     </div>
-                    <p className="text-muted-foreground">18 модулей: от ВВП до теории игр и налогов.</p>
+                    <p className="text-muted-foreground">20 модулей: от ВВП до теории игр и налогов.</p>
                   </div>
                   <div className="space-y-1">
                     <div className="font-semibold flex items-center gap-2">
@@ -407,7 +412,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
           Экономический тренажёр v7.0 — интерактивная платформа для изучения экономики
           {totalXP > 0 && (
-            <span className="hidden sm:inline"> • {totalXP.toLocaleString('ru-RU')} XP • {exploredCount}/19 модулей</span>
+            <span className="hidden sm:inline"> • {totalXP.toLocaleString('ru-RU')} XP • {exploredCount}/20 модулей</span>
           )}
           <span className="hidden sm:inline"> • Автор: Дуплей М.И.</span>
         </div>
