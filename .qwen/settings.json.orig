@@ -3,6 +3,5 @@
     "allow": [
       "Bash(timeout *)"
     ]
-  },
-  "$version": 4
+  }
 }

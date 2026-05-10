@@ -4,6 +4,7 @@ import { useState } from 'react'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
 import { useEconomicsStore, getLevelTitle, getLevelColor } from '@/store/economics-store'
+import { downloadProgressCSV, downloadProgressJSON } from '@/lib/export-progress'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Download, Trophy, Calendar, Target, Zap, Copy, Check, Share2 } from 'lucide-react'
@@ -250,10 +251,18 @@ export function ExportProgressButton() {
   }
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 flex-wrap">
       <Button onClick={exportProgressToPDF} variant="outline" size="sm">
         <Download className="h-4 w-4 mr-2" />
         PDF
+      </Button>
+      <Button onClick={() => downloadProgressCSV()} variant="outline" size="sm">
+        <Download className="h-4 w-4 mr-2" />
+        CSV
+      </Button>
+      <Button onClick={() => downloadProgressJSON()} variant="outline" size="sm">
+        <Download className="h-4 w-4 mr-2" />
+        JSON
       </Button>
       <Button onClick={handleCopy} variant="outline" size="sm">
         {copied ? <Check className="h-4 w-4 mr-2 text-green-500" /> : <Copy className="h-4 w-4 mr-2" />}

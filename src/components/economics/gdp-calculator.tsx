@@ -77,8 +77,8 @@ export function GDPCalculator() {
     })
 
     toast({
-      title: 'Расчёт выполнен',
-      description: `ВВП рассчитан успешно. Дефлятор: ${def.toFixed(1)}`,
+      title: t('gdp.toast.title'),
+      description: `${t('gdp.toast.description')} ${def.toFixed(1)}`,
     })
   }, [components, addGDPResult, toast])
 

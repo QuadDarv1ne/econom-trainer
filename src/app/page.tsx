@@ -63,6 +63,7 @@ const ProgressTracker = dynamic(() => import('@/components/economics/progress-tr
 const ISLMModel = dynamic(() => import('@/components/economics/is-lm').then(m => ({ default: m.ISLMModel })), { ssr: false })
 const MarketStructures = dynamic(() => import('@/components/economics/market-structures').then(m => ({ default: m.MarketStructures })), { ssr: false })
 const CurrencyCalculator = dynamic(() => import('@/components/economics/currency-calculator').then(m => ({ default: m.CurrencyCalculator })), { ssr: false })
+const PriceIndices = dynamic(() => import('@/components/economics/price-indices').then(m => ({ default: m.PriceIndices })), { ssr: false })
 const ThemeToggle = dynamic(() => import('@/components/economics/theme-toggle').then(m => ({ default: m.ThemeToggle })), { ssr: false })
 
 // Module definitions with categories for grouped navigation
@@ -89,6 +90,7 @@ const modules = [
   { id: 'tax', title: 'Калькулятор налогов', description: 'НДФЛ с прогрессивной шкалой, НДС, налог на прибыль', icon: Receipt, color: 'text-lime-600', bg: 'bg-lime-50 dark:bg-lime-950/30', category: 'Финансы', catId: 'finance', xpReward: 20 },
   { id: 'game-theory', title: 'Теория игр', description: 'Дилемма заключённого, ястребы и голуби, равновесие Нэша', icon: Swords, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/30', category: 'Микро', catId: 'micro', xpReward: 20 },
   { id: 'market-structures', title: 'Рыночные структуры', description: 'Совершенная конкуренция, монополия, олигополия, моноп. конкуренция', icon: Building2, color: 'text-teal-600', bg: 'bg-teal-50 dark:bg-teal-950/30', category: 'Микро', catId: 'micro', xpReward: 25 },
+  { id: 'price-indices', title: 'Индексы цен', description: 'ИПЦ, дефлятор ВВП, расчёт инфляции и покупательной способности', icon: TrendingUp, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-950/30', category: 'Макро', catId: 'macro', xpReward: 15 },
   { id: 'quiz', title: 'Квиз по экономике', description: '45 вопросов по микро- и макроэкономике с таймером', icon: Brain, color: 'text-violet-600', bg: 'bg-violet-50 dark:bg-violet-950/30', category: 'Тесты', catId: 'tools', xpReward: 10 },
   { id: 'currency', title: 'Валютный калькулятор', description: 'Конвертация, кросс-курсы и динамика валют', icon: Coins, color: 'text-cyan-600', bg: 'bg-cyan-50 dark:bg-cyan-950/30', category: 'Финансы', catId: 'finance', xpReward: 15 },
   { id: 'finance', title: 'Финансовая математика', description: 'Сложные проценты, NPV, аннуитетные расчёты', icon: DollarSign, color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/30', category: 'Финансы', catId: 'finance', xpReward: 20 },
@@ -114,6 +116,7 @@ const tabItems = [
   { value: 'comparative', icon: Globe, label: 'МЭ', catId: 'micro' },
   { value: 'game-theory', icon: Swords, label: 'Игры', catId: 'micro' },
   { value: 'market-structures', icon: Building2, label: 'Структуры', catId: 'micro' },
+  { value: 'price-indices', icon: TrendingUp, label: 'Индексы', catId: 'macro' },
   // Финансы
   { value: 'breakeven', icon: Target, label: 'BEP', catId: 'finance' },
   { value: 'tax', icon: Receipt, label: 'Налоги', catId: 'finance' },
@@ -153,6 +156,7 @@ const moduleComponents: Record<string, React.ComponentType> = {
   'game-theory': GameTheory,
   'market-structures': MarketStructures,
   'currency': CurrencyCalculator,
+  'price-indices': PriceIndices,
   'quiz': EconomicsQuiz,
   'finance': FinancialMath,
   'glossary': Glossary,
@@ -264,7 +268,7 @@ export default function Home() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-2">
                 <Sparkles className="h-4 w-4" />
-                21 модуль • 45 вопросов • 40+ терминов • 19 достижений • Система XP
+                22 модуля • 45 вопросов • 40+ терминов • 19 достижений • Система XP
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
                 Тренируй экономическое мышление
@@ -282,7 +286,7 @@ export default function Home() {
                   </div>
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/5 border border-primary/20">
                     <LayoutGrid className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">{exploredCount}/21 модуль открыт</span>
+                    <span className="text-sm font-medium">{exploredCount}/22 модуля открыто</span>
                   </div>
                 </div>
               )}
@@ -369,7 +373,7 @@ export default function Home() {
                       <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">1</span>
                       Выберите модуль
                     </div>
-                    <p className="text-muted-foreground">21 модуль: от ВВП до теории игр и налогов.</p>
+                    <p className="text-muted-foreground">22 модуля: от ВВП до теории игр, налогов и индексов цен.</p>
                   </div>
                   <div className="space-y-1">
                     <div className="font-semibold flex items-center gap-2">
@@ -412,9 +416,9 @@ export default function Home() {
       {/* Footer with dynamic stats */}
       <footer className="border-t mt-auto">
         <div className="container mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
-          Экономический тренажёр v7.0 — интерактивная платформа для изучения экономики
+          Экономический тренажёр v7.1 — интерактивная платформа для изучения экономики
           {totalXP > 0 && (
-            <span className="hidden sm:inline"> • {totalXP.toLocaleString('ru-RU')} XP • {exploredCount}/21 модуль</span>
+            <span className="hidden sm:inline"> • {totalXP.toLocaleString('ru-RU')} XP • {exploredCount}/22 модуля</span>
           )}
           <span className="hidden sm:inline"> • Автор: Дуплей М.И.</span>
         </div>

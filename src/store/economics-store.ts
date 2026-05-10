@@ -99,7 +99,7 @@ export function getLevelColor(level: number): string {
 export const MODULE_IDS = [
   'gdp', 'supply-demand', 'elasticity', 'keynesian', 'inflation',
   'phillips', 'lorenz', 'is-lm', 'ppf', 'costs', 'comparative',
-  'breakeven', 'tax', 'game-theory', 'market-structures', 'currency', 'quiz', 'finance',
+  'breakeven', 'tax', 'game-theory', 'market-structures', 'currency', 'price-indices', 'quiz', 'finance',
   'glossary', 'achievements', 'progress',
 ] as const
 
@@ -123,6 +123,7 @@ export const MODULE_XP: Record<string, number> = {
   'game-theory': 20,
   'market-structures': 25,
   'currency': 15,
+  'price-indices': 15,
   'quiz': 0, // Quiz uses its own scoring: score * 10
   'finance': 0, // Finance uses its own scoring
   'glossary': 5,

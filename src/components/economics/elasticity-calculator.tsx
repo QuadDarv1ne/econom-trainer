@@ -145,34 +145,34 @@ export function ElasticityCalculator() {
         <CardContent>
           <Tabs value={elasticityType} onValueChange={(v) => { setElasticityType(v as ElasticityType); setResult(null) }}>
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="price">По цене</TabsTrigger>
-              <TabsTrigger value="income">По доходу</TabsTrigger>
-              <TabsTrigger value="cross">Перекрёстная</TabsTrigger>
+              <TabsTrigger value="price">{t('elasticity.price')}</TabsTrigger>
+              <TabsTrigger value="income">{t('elasticity.income')}</TabsTrigger>
+              <TabsTrigger value="cross">{t('elasticity.cross')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="price" className="space-y-4 mt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Q1 — начальный объём спроса</Label>
+                  <Label>{t('elasticity.input.q1')}</Label>
                   <Input type="number" placeholder="100" value={q1} onChange={(e) => setQ1(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Q2 — конечный объём спроса</Label>
+                  <Label>{t('elasticity.input.q2')}</Label>
                   <Input type="number" placeholder="80" value={q2} onChange={(e) => setQ2(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>P1 — начальная цена</Label>
+                  <Label>{t('elasticity.input.p1')}</Label>
                   <Input type="number" placeholder="50" value={p1} onChange={(e) => setP1(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>P2 — конечная цена</Label>
+                  <Label>{t('elasticity.input.p2')}</Label>
                   <Input type="number" placeholder="60" value={p2} onChange={(e) => setP2(e.target.value)} className="font-mono" />
                 </div>
               </div>
               <div className="flex gap-3">
                 <Button onClick={calculatePriceElasticity} className="flex-1">
                   <Gauge className="h-4 w-4 mr-2" />
-                  Рассчитать
+                  {t('elasticity.button.calculate')}
                 </Button>
                 <Button onClick={reset} variant="outline">
                   <RotateCcw className="h-4 w-4" />
@@ -183,26 +183,26 @@ export function ElasticityCalculator() {
             <TabsContent value="income" className="space-y-4 mt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Q1 — начальный объём спроса</Label>
+                  <Label>{t('elasticity.input.q1')}</Label>
                   <Input type="number" placeholder="50" value={q1Inc} onChange={(e) => setQ1Inc(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Q2 — конечный объём спроса</Label>
+                  <Label>{t('elasticity.input.q2')}</Label>
                   <Input type="number" placeholder="70" value={q2Inc} onChange={(e) => setQ2Inc(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Y1 — начальный доход</Label>
+                  <Label>{t('elasticity.input.y1')}</Label>
                   <Input type="number" placeholder="30000" value={y1} onChange={(e) => setY1(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Y2 — конечный доход</Label>
+                  <Label>{t('elasticity.input.y2')}</Label>
                   <Input type="number" placeholder="50000" value={y2} onChange={(e) => setY2(e.target.value)} className="font-mono" />
                 </div>
               </div>
               <div className="flex gap-3">
                 <Button onClick={calculateIncomeElasticity} className="flex-1">
                   <Gauge className="h-4 w-4 mr-2" />
-                  Рассчитать
+                  {t('elasticity.button.calculate')}
                 </Button>
                 <Button onClick={reset} variant="outline">
                   <RotateCcw className="h-4 w-4" />
@@ -213,26 +213,26 @@ export function ElasticityCalculator() {
             <TabsContent value="cross" className="space-y-4 mt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Q1 — начальный спрос на товар X</Label>
+                  <Label>{t('elasticity.input.q1')}</Label>
                   <Input type="number" placeholder="100" value={q1Cross} onChange={(e) => setQ1Cross(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Q2 — конечный спрос на товар X</Label>
+                  <Label>{t('elasticity.input.q2')}</Label>
                   <Input type="number" placeholder="120" value={q2Cross} onChange={(e) => setQ2Cross(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Px1 — начальная цена товара Y</Label>
+                  <Label>{t('elasticity.input.px1')}</Label>
                   <Input type="number" placeholder="40" value={px1} onChange={(e) => setPx1(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Px2 — конечная цена товара Y</Label>
+                  <Label>{t('elasticity.input.px2')}</Label>
                   <Input type="number" placeholder="50" value={px2} onChange={(e) => setPx2(e.target.value)} className="font-mono" />
                 </div>
               </div>
               <div className="flex gap-3">
                 <Button onClick={calculateCrossElasticity} className="flex-1">
                   <Gauge className="h-4 w-4 mr-2" />
-                  Рассчитать
+                  {t('elasticity.button.calculate')}
                 </Button>
                 <Button onClick={reset} variant="outline">
                   <RotateCcw className="h-4 w-4" />
@@ -247,7 +247,7 @@ export function ElasticityCalculator() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card className="border-2 border-primary/20">
             <CardHeader className="pb-2">
-              <CardDescription>Коэффициент эластичности</CardDescription>
+              <CardDescription>{t('elasticity.result.coefficient')}</CardDescription>
               <CardTitle className="text-2xl font-mono">
                 {result.value.toFixed(3)}
               </CardTitle>
@@ -261,10 +261,10 @@ export function ElasticityCalculator() {
 
           <Card className="border-2 border-primary/20">
             <CardHeader className="pb-2">
-              <CardDescription className="flex items-center gap-1">
+              <div className="flex items-center gap-1">
                 <Info className="h-3 w-3" />
-                Интерпретация
-              </CardDescription>
+                <CardDescription>{t('elasticity.result.interpretation')}</CardDescription>
+              </div>
             </CardHeader>
             <CardContent>
               <p className="text-sm leading-relaxed">{result.interpretation}</p>
@@ -277,20 +277,20 @@ export function ElasticityCalculator() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Info className="h-4 w-4" />
-            Справочник эластичностей
+            {t('elasticity.reference.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Эластичность по цене (Ed):</strong> Ed = (ΔQ / Qср) / (ΔP / Pср) — дуговая формула. Если |Ed|&gt;1 — эластичный, |Ed|&lt;1 — неэластичный
+            {t('elasticity.reference.price')}
           </div>
           <Separator />
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Эластичность по доходу (Ey):</strong> Ey &gt; 1 — роскошь, 0 &lt; Ey &lt; 1 — нормальный, Ey &lt; 0 — низший товар
+            {t('elasticity.reference.income')}
           </div>
           <Separator />
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Перекрёстная эластичность (Exy):</strong> Exy &gt; 0 — субституты, Exy &lt; 0 — комплементы, Exy = 0 — независимые
+            {t('elasticity.reference.cross')}
           </div>
         </CardContent>
       </Card>

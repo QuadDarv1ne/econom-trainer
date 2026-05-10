@@ -23,6 +23,7 @@ import {
 import { PieChart, Pie, Cell } from 'recharts'
 import { Target, RotateCcw, Info, TrendingUp, TrendingDown } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { useI18n } from '@/lib/i18n-provider'
 
 export function BreakEvenAnalysis() {
   const [fixedCosts, setFixedCosts] = useState(100000)
@@ -41,6 +42,7 @@ export function BreakEvenAnalysis() {
   }
 
   const { toast } = useToast()
+  const { t } = useI18n()
 
   const breakEvenUnits = useMemo(() => {
     const contribution = pricePerUnit - variableCostPerUnit
@@ -98,7 +100,7 @@ export function BreakEvenAnalysis() {
     setVariableCostPerUnit(300)
     setPricePerUnit(500)
     setMaxUnits(1000)
-    toast({ title: 'Сброс', description: 'Параметры возвращены к значениям по умолчанию' })
+    toast({ title: t('common.reset'), description: t('breakeven.resetToastDescription') })
   }
 
   const isViable = pricePerUnit > variableCostPerUnit
@@ -110,18 +112,17 @@ export function BreakEvenAnalysis() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
-            Точка безубыточности
+            {t('module.breakeven.title')}
           </CardTitle>
           <CardDescription>
-            Рассчитайте объём продаж, при котором выручка покрывает все затраты. 
-            Формула: BEP = FC / (P - VC), где FC — постоянные затраты, P — цена, VC — переменные затраты на единицу.
+            {t('module.breakeven.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Постоянные затраты (FC)</Label>
+                <Label>{t('breakeven.fixedCosts')}</Label>
                 <span className="font-mono text-muted-foreground">{fixedCosts.toLocaleString('ru-RU')} руб.</span>
               </div>
               <Slider
@@ -135,7 +136,7 @@ export function BreakEvenAnalysis() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Переменные затраты/ед. (VC)</Label>
+                <Label>{t('breakeven.variableCosts')}</Label>
                 <span className="font-mono text-muted-foreground">{variableCostPerUnit.toLocaleString('ru-RU')} руб.</span>
               </div>
               <Slider
@@ -149,7 +150,7 @@ export function BreakEvenAnalysis() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Цена за единицу (P)</Label>
+                <Label>{t('breakeven.pricePerUnit')}</Label>
                 <span className="font-mono text-muted-foreground">{pricePerUnit.toLocaleString('ru-RU')} руб.</span>
               </div>
               <Slider
@@ -178,7 +179,7 @@ export function BreakEvenAnalysis() {
 
           <Button onClick={reset} variant="outline" className="w-full">
             <RotateCcw className="h-4 w-4 mr-2" />
-            Сбросить параметры
+            {t('breakeven.resetButton')}
           </Button>
         </CardContent>
       </Card>
@@ -188,10 +189,11 @@ export function BreakEvenAnalysis() {
           <CardContent className="p-4 flex items-center gap-3">
             <TrendingDown className="h-5 w-5 text-red-600 shrink-0" />
             <div>
-              <div className="font-semibold text-red-600">Бизнес-модель нерентабельна</div>
+              <div className="font-semibold text-red-600">{t('breakeven.notViable.title')}</div>
               <div className="text-sm text-muted-foreground">
-                Цена ({pricePerUnit} руб.) ниже переменных затрат ({variableCostPerUnit} руб.). 
-                Каждая проданная единица приносит убыток. Точка безубыточности не существует.
+                {t('breakeven.notViable.description')
+                  .replace('{price}', pricePerUnit.toLocaleString('ru-RU'))
+                  .replace('{variableCost}', variableCostPerUnit.toLocaleString('ru-RU'))}
               </div>
             </div>
           </CardContent>
