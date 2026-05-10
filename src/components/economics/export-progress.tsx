@@ -1,11 +1,12 @@
 'use client'
 
+import { useState } from 'react'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
 import { useEconomicsStore, getLevelTitle, getLevelColor } from '@/store/economics-store'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Download, Trophy, Calendar, Target, Zap } from 'lucide-react'
+import { Download, Trophy, Calendar, Target, Zap, Copy, Check } from 'lucide-react'
 
 export function exportProgressToPDF() {
   const doc = new jsPDF()
@@ -77,10 +78,10 @@ export function exportProgressToPDF() {
     'keynesian': 'Кейнсианский крест',
     'inflation': 'Калькулятор инфляции',
     'phillips': 'Кривая Филлипса',
-    'lorenz': 'Кривая Лоренца',
+    'lorenz': 'Кривая Лоренца и Джини',
     'is-lm': 'Модель IS-LM',
-    'ppf': 'Кривая КПВ',
-    'costs': 'Анализ издержек',
+    'ppf': 'Кривая производственных возможностей',
+    'costs': 'Анализ издержек фирмы',
     'comparative': 'Сравнительное преимущество',
     'breakeven': 'Точка безубыточности',
     'tax': 'Калькулятор налогов',
@@ -89,7 +90,9 @@ export function exportProgressToPDF() {
     'currency': 'Валютный калькулятор',
     'quiz': 'Квиз по экономике',
     'finance': 'Финансовая математика',
-    'glossary': 'Глоссарий',
+    'glossary': 'Глоссарий терминов',
+    'achievements': 'Достижения',
+    'progress': 'Прогресс',
   }
 
   const moduleData = Object.entries(progress.moduleCounts)
@@ -150,17 +153,88 @@ export function exportProgressToPDF() {
   doc.save(`economics-trainer-progress-${Date.now()}.pdf`)
 }
 
+export function exportProgressToText(): string {
+  const progress = useEconomicsStore.getState().getFullProgress()
+  const now = new Date().toLocaleString('ru-RU')
+  const levelTitle = getLevelTitle(progress.level)
+
+  const moduleNames: Record<string, string> = {
+    'gdp': 'ВВП и макропоказатели',
+    'supply-demand': 'Спрос и предложение',
+    'elasticity': 'Калькулятор эластичности',
+    'keynesian': 'Кейнсианский крест',
+    'inflation': 'Калькулятор инфляции',
+    'phillips': 'Кривая Филлипса',
+    'lorenz': 'Кривая Лоренца и Джини',
+    'is-lm': 'Модель IS-LM',
+    'ppf': 'Кривая производственных возможностей',
+    'costs': 'Анализ издержек фирмы',
+    'comparative': 'Сравнительное преимущество',
+    'breakeven': 'Точка безубыточности',
+    'tax': 'Калькулятор налогов',
+    'game-theory': 'Теория игр',
+    'market-structures': 'Рыночные структуры',
+    'currency': 'Валютный калькулятор',
+    'quiz': 'Квиз по экономике',
+    'finance': 'Финансовая математика',
+    'glossary': 'Глоссарий терминов',
+    'achievements': 'Достижения',
+    'progress': 'Прогресс',
+  }
+
+  const activeModules = Object.entries(progress.moduleCounts)
+    .filter(([_, count]) => count > 0)
+    .sort((a, b) => b[1] - a[1])
+
+  const lines = [
+    '📊 Экономический тренажёр — Отчёт о прогрессе',
+    `📅 ${now}`,
+    '',
+    `🏆 Уровень ${progress.level}: ${levelTitle}`,
+    `⭐ Опыт: ${progress.totalXP.toLocaleString('ru-RU')} XP`,
+    `📈 Сессий: ${progress.totalSessions}`,
+    '',
+    '📋 Статистика:',
+    `• Квизы: ${progress.quizStats.accuracy}% (${progress.quizStats.correct}/${progress.quizStats.total})`,
+    `• Фин. математика: ${progress.financeStats.accuracy}% (${progress.financeStats.correct}/${progress.financeStats.total})`,
+    `• Расчёты ВВП: ${progress.gdpCount}`,
+    `• Эластичность: ${progress.elasticityCount}`,
+    '',
+    '🎯 Активность по модулям:',
+    ...activeModules.map(([id, count]) => `• ${moduleNames[id] || id}: ${count}`),
+    '',
+    'Продолжайте тренироваться! 💪',
+    'https://github.com/QuadDarv1ne/econom-trainer',
+  ]
+
+  return lines.join('\n')
+}
+
 export function ExportProgressButton() {
   const totalXP = useEconomicsStore((s) => s.totalXP)
+  const [copied, setCopied] = useState(false)
 
   if (totalXP === 0) {
     return null
   }
 
+  const handleCopy = async () => {
+    const text = exportProgressToText()
+    await navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   return (
-    <Button onClick={exportProgressToPDF} variant="outline" size="sm">
-      <Download className="h-4 w-4 mr-2" />
-      Экспорт в PDF
-    </Button>
+    <div className="flex gap-2">
+      <Button onClick={exportProgressToPDF} variant="outline" size="sm">
+        <Download className="h-4 w-4 mr-2" />
+        PDF
+      </Button>
+      <Button onClick={handleCopy} variant="outline" size="sm">
+        {copied ? <Check className="h-4 w-4 mr-2 text-green-500" /> : <Copy className="h-4 w-4 mr-2" />}
+        {copied ? 'Скопировано!' : 'Копировать'}
+      </Button>
+    </div>
   )
 }
