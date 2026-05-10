@@ -99,7 +99,7 @@ export function getLevelColor(level: number): string {
 export const MODULE_IDS = [
   'gdp', 'supply-demand', 'elasticity', 'keynesian', 'inflation',
   'phillips', 'lorenz', 'is-lm', 'ppf', 'costs', 'comparative',
-  'breakeven', 'tax', 'game-theory', 'market-structures', 'quiz', 'finance',
+  'breakeven', 'tax', 'game-theory', 'market-structures', 'currency', 'quiz', 'finance',
   'glossary', 'achievements', 'progress',
 ] as const
 
@@ -122,6 +122,7 @@ export const MODULE_XP: Record<string, number> = {
   'tax': 20,
   'game-theory': 20,
   'market-structures': 25,
+  'currency': 15,
   'quiz': 0, // Quiz uses its own scoring: score * 10
   'finance': 0, // Finance uses its own scoring
   'glossary': 5,
@@ -156,6 +157,17 @@ export interface EconomicsState {
   getStreak: () => number
   getXPState: () => XPState
   resetProgress: () => void
+  getFullProgress: () => {
+    totalXP: number
+    level: number
+    levelTitle: string
+    totalSessions: number
+    moduleCounts: Record<string, number>
+    quizStats: { correct: number; total: number; accuracy: number }
+    financeStats: { correct: number; total: number; accuracy: number }
+    gdpCount: number
+    elasticityCount: number
+  }
 }
 
 const STORAGE_KEY = 'economics-trainer-data'
@@ -319,6 +331,44 @@ export const useEconomicsStore = create<EconomicsState>((set, get) => ({
     }
     saveToStorage(newState)
     set(newState)
+  },
+
+  getFullProgress: () => {
+    const state = get()
+    const { level } = getLevelFromXP(state.totalXP)
+    const levelTitle = getLevelTitle(level)
+    
+    const quizCorrect = state.quizResults.reduce((sum, r) => sum + r.score, 0)
+    const quizTotal = state.quizResults.reduce((sum, r) => sum + r.total, 0)
+    const financeCorrect = state.financeResults.filter((r) => r.correct).length
+    const financeTotal = state.financeResults.length
+    
+    const moduleCounts: Record<string, number> = {}
+    MODULE_IDS.forEach((id) => {
+      moduleCounts[id] = getModuleInteractionCount(state.moduleInteractions, id)
+    })
+    
+    const totalSessions = state.quizResults.length + state.gdpResults.length + state.financeResults.length + state.elasticityResults.length
+    
+    return {
+      totalXP: state.totalXP,
+      level,
+      levelTitle,
+      totalSessions,
+      moduleCounts,
+      quizStats: {
+        correct: quizCorrect,
+        total: quizTotal,
+        accuracy: quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 0,
+      },
+      financeStats: {
+        correct: financeCorrect,
+        total: financeTotal,
+        accuracy: financeTotal > 0 ? Math.round((financeCorrect / financeTotal) * 100) : 0,
+      },
+      gdpCount: state.gdpResults.length,
+      elasticityCount: state.elasticityResults.length,
+    }
   },
 }))
 

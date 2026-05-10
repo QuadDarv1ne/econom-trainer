@@ -4,7 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { Button } from '@/components/ui/button'
 import { useEconomicsStore } from '@/store/economics-store'
+import { ExportProgressButton } from '@/components/economics/export-progress'
 import {
   BarChart,
   Bar,
@@ -19,7 +21,7 @@ import {
   LineChart,
   Line,
 } from 'recharts'
-import { Trophy, Target, Flame, BarChart3, Gauge } from 'lucide-react'
+import { Trophy, Target, Flame, BarChart3, Gauge, Download } from 'lucide-react'
 
 const COLORS = ['#22c55e', '#ef4444']
 
@@ -69,6 +71,15 @@ export function ProgressTracker() {
 
   return (
     <div className="space-y-6">
+      {/* Header with export button */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Прогресс тренировок</h2>
+          <p className="text-sm text-muted-foreground">Статистика и аналитика ваших достижений</p>
+        </div>
+        <ExportProgressButton />
+      </div>
+
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <Card className="border-2 border-primary/20">
           <CardContent className="p-4 text-center">

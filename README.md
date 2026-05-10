@@ -4,7 +4,7 @@
 
 ### Интерактивная платформа для тренировки экономического мышления
 
-**EconTrainer — Interactive Platform for Economic Thinking Practice**
+**EconoTrainer — Interactive Platform for Economic Thinking Practice**
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
@@ -27,13 +27,13 @@
 
 ### О проекте
 
-**Экономический тренажёр** — это комплексная веб-платформа для интерактивного изучения микроэкономики, макроэкономики, финансовой математики и теории игр. Проект разработан как полноценное образовательное приложение, объединяющее 20 тематических модулей, систему тестирования, справочный глоссарий, геймификацию с XP-прогрессией и систему достижений. Платформа предназначена для студентов экономических специальностей, преподавателей и всех, кто хочет углубить свои знания в области экономики через практические упражнения и визуализацию экономических моделей.
+**Экономический тренажёр** — это комплексная веб-платформа для интерактивного изучения микроэкономики, макроэкономики, финансовой математики и теории игр. Проект разработан как полноценное образовательное приложение, объединяющее 21 тематический модуль, систему тестирования, справочный глоссарий, геймификацию с XP-прогрессией и систему достижений. Платформа предназначена для студентов экономических специальностей, преподавателей и всех, кто хочет углубить свои знания в области экономики через практические упражнения и визуализацию экономических моделей.
 
 Проект полностью работает на стороне клиента — все вычисления, расчёты и визуализации выполняются в браузере пользователя без необходимости серверной инфраструктуры. Это обеспечивает высокую скорость работы, приватность данных и возможность автономного использования.
 
 ### Ключевые возможности
 
-- **20 интерактивных модулей** — от расчёта ВВП до теории игр, каждый модуль включает визуализации, формулы и практические задания
+- **21 интерактивный модуль** — от расчёта ВВП до теории игр, каждый модуль включает визуализации, формулы и практические задания
 - **45 вопросов квиза** с таймером, подробными пояснениями и системой оценки
 - **41 экономический термин** в глоссарии с формулами, определениями и функцией поиска
 - **19 достижений** — от первых шагов до мастерства, мотивирующие бейджи за прогресс
@@ -62,9 +62,12 @@
 | 13 | **Калькулятор налогов** | Финансы | Расчёт НДФЛ, НДС, налога на прибыль организаций с учётом ставок и вычетов |
 | 14 | **Теория игр** | Микроэкономика | Дилемма заключённого, модель «ястребы и голуби», равновесие Нэша с интерактивными матрицами выигрышей |
 | 15 | **Рыночные структуры** | Микроэкономика | Совершенная конкуренция, монополия, олигополия, монополистическая конкуренция: графики, прибыль, излишки |
-| 16 | **Квиз по экономике** | Тестирование | 45 вопросов по микро- и макроэкономике с таймером, пояснениями и расчётом результата |
-| 17 | **Финансовая математика** | Финансы | Расчёт сложных процентов, чистой приведённой стоимости (NPV), аннуитетных платежей |
-| 18 | **Глоссарий терминов** | Справочник | 41 ключевой экономический термин с определениями, формулами и функцией быстрого поиска |
+| 16 | **Валютный калькулятор** | Финансы | Конвертация валют, кросс-курсы, матрица курсов, динамика с волатильностью |
+| 17 | **Квиз по экономике** | Тестирование | 45 вопросов по микро- и макроэкономике с таймером, пояснениями и расчётом результата |
+| 18 | **Финансовая математика** | Финансы | Расчёт сложных процентов, чистой приведённой стоимости (NPV), аннуитетных платежей |
+| 19 | **Глоссарий терминов** | Справочник | 41 ключевой экономический термин с определениями, формулами и функцией быстрого поиска |
+| 20 | **Достижения** | Мотивация | 19 бейджей за различные достижения: от первых шагов до мастерского владения материалом |
+| 21 | **Прогресс** | Аналитика | Статистика тренировок, аналитика активности, визуализация динамики прогресса |
 | 19 | **Достижения** | Мотивация | 19 бейджей за различные достижения: от первых шагов до мастерского владения материалом |
 | 20 | **Прогресс** | Аналитика | Статистика тренировок, аналитика активности, визуализация динамики прогресса |
 | 18 | **Достижения** | Мотивация | 19 бейджей за различные достижения: от первых шагов до мастерского владения материалом |
@@ -92,6 +95,7 @@
 | Расчёт налогов | +20 XP |
 | Теория игр | +20 XP |
 | Рыночные структуры | +25 XP |
+| Валютный калькулятор | +15 XP |
 | Правильный ответ квиза | +10 XP за вопрос |
 | Задача по фин. математике (правильно) | +20 XP |
 | Задача по фин. математике (неправильно) | +5 XP |
@@ -196,6 +200,7 @@ econom-trenazher/
 │   │   │   ├── tax-calculator.tsx          # Калькулятор налогов
 │   │   │   ├── game-theory.tsx             # Теория игр
 │   │   │   ├── market-structures.tsx       # Рыночные структуры
+│   │   │   ├── currency-calculator.tsx     # Валютный калькулятор
 │   │   │   ├── quiz.tsx                    # Квиз по экономике
 │   │   │   ├── financial-math.tsx          # Финансовая математика
 │   │   │   ├── glossary.tsx                # Глоссарий терминов
@@ -224,7 +229,7 @@ econom-trenazher/
 
 - [x] Модуль IS-LM — модель инвестиций-сбережений и ликвидности-денег
 - [x] Модуль «Рыночные структуры» — от совершенной конкуренции до монополии
-- [ ] Модуль «Валютный калькулятор» — курсы и кросс-курсы валют
+- [x] Модуль «Валютный калькулятор» — курсы и кросс-курсы валют
 - [ ] Экспорт прогресса в PDF-отчёт
 - [ ] Мультиязычность (полная поддержка EN/РУ)
 - [x] PWA-манифест и метаданные (Web App Manifest, viewport, theme-color)
@@ -240,13 +245,13 @@ econom-trenazher/
 
 ### About the Project
 
-**EconTrainer** is a comprehensive web platform for interactive study of microeconomics, macroeconomics, financial mathematics, and game theory. The project is designed as a full-featured educational application that combines 20 thematic modules, a testing system, a reference glossary, gamification with XP progression, and an achievement system. The platform is intended for economics students, educators, and anyone who wants to deepen their knowledge of economics through practical exercises and visualization of economic models.
+**EconTrainer** is a comprehensive web platform for interactive study of microeconomics, macroeconomics, financial mathematics, and game theory. The project is designed as a full-featured educational application that combines 21 thematic modules, a testing system, a reference glossary, gamification with XP progression, and an achievement system. The platform is intended for economics students, educators, and anyone who wants to deepen their knowledge of economics through practical exercises and visualization of economic models.
 
 The project runs entirely on the client side — all calculations, computations, and visualizations are performed in the user's browser without the need for server infrastructure. This ensures high performance, data privacy, and the possibility of autonomous use.
 
 ### Key Features
 
-- **20 interactive modules** — from GDP calculation to game theory, each module includes visualizations, formulas, and practical exercises
+- **21 interactive modules** — from GDP calculation to game theory, each module includes visualizations, formulas, and practical exercises
 - **45 quiz questions** with a timer, detailed explanations, and a scoring system
 - **41 economic terms** in the glossary with formulas, definitions, and search functionality
 - **19 achievements** — from first steps to mastery, motivational badges for progress
@@ -275,11 +280,12 @@ The project runs entirely on the client side — all calculations, computations,
 | 13 | **Tax Calculator** | Finance | Calculation of personal income tax (NDFL), value-added tax (VAT), corporate profit tax with rates and deductions |
 | 14 | **Game Theory** | Microeconomics | Prisoner's dilemma, hawk-dove model, Nash equilibrium with interactive payoff matrices |
 | 15 | **Market Structures** | Microeconomics | Perfect competition, monopoly, oligopoly, monopolistic competition: charts, profit, surpluses |
-| 16 | **Economics Quiz** | Testing | 45 questions on micro- and macroeconomics with timer, explanations, and result calculation |
-| 17 | **Financial Mathematics** | Finance | Calculation of compound interest, net present value (NPV), annuity payments |
-| 18 | **Glossary of Terms** | Reference | 41 key economic terms with definitions, formulas, and quick search functionality |
-| 19 | **Achievements** | Motivation | 19 badges for various accomplishments: from first steps to master-level proficiency |
-| 20 | **Progress** | Analytics | Training statistics, activity analytics, progress dynamics visualization |
+| 16 | **Currency Calculator** | Finance | Currency conversion, cross-rates, rate matrix, volatility simulation |
+| 17 | **Economics Quiz** | Testing | 45 questions on micro- and macroeconomics with timer, explanations, and result calculation |
+| 18 | **Financial Mathematics** | Finance | Calculation of compound interest, net present value (NPV), annuity payments |
+| 19 | **Glossary of Terms** | Reference | 41 key economic terms with definitions, formulas, and quick search functionality |
+| 20 | **Achievements** | Motivation | 19 badges for various accomplishments: from first steps to master-level proficiency |
+| 21 | **Progress** | Analytics | Training statistics, activity analytics, progress dynamics visualization |
 
 ### XP System and Levels
 
@@ -303,6 +309,7 @@ The platform uses a gamified progression system. Experience points (XP) are awar
 | Tax calculation | +20 XP |
 | Game theory interaction | +20 XP |
 | Market structures analysis | +25 XP |
+| Currency conversion | +15 XP |
 | Correct quiz answer | +10 XP per question |
 | Financial math problem (correct) | +20 XP |
 | Financial math problem (incorrect) | +5 XP |
@@ -373,7 +380,7 @@ npm start
 
 - [x] IS-LM Module — investment-savings and liquidity-money model
 - [x] "Market Structures" Module — from perfect competition to monopoly
-- [ ] "Currency Calculator" Module — exchange rates and cross-rates
+- [x] "Currency Calculator" Module — exchange rates and cross-rates
 - [ ] Progress export to PDF report
 - [ ] Full multilingual support (EN/RU)
 - [ ] PWA support (offline access and device installation)

@@ -36,6 +36,7 @@ import {
   CheckCircle2,
   LayoutGrid,
   Building2,
+  Coins,
 } from 'lucide-react'
 
 // Lazy-load all module components for performance
@@ -59,6 +60,7 @@ const Achievements = dynamic(() => import('@/components/economics/achievements')
 const ProgressTracker = dynamic(() => import('@/components/economics/progress-tracker').then(m => ({ default: m.ProgressTracker })), { ssr: false })
 const ISLMModel = dynamic(() => import('@/components/economics/is-lm').then(m => ({ default: m.ISLMModel })), { ssr: false })
 const MarketStructures = dynamic(() => import('@/components/economics/market-structures').then(m => ({ default: m.MarketStructures })), { ssr: false })
+const CurrencyCalculator = dynamic(() => import('@/components/economics/currency-calculator').then(m => ({ default: m.CurrencyCalculator })), { ssr: false })
 const ThemeToggle = dynamic(() => import('@/components/economics/theme-toggle').then(m => ({ default: m.ThemeToggle })), { ssr: false })
 
 // Module definitions with categories for grouped navigation
@@ -86,6 +88,7 @@ const modules = [
   { id: 'game-theory', title: 'Теория игр', description: 'Дилемма заключённого, ястребы и голуби, равновесие Нэша', icon: Swords, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/30', category: 'Микро', catId: 'micro', xpReward: 20 },
   { id: 'market-structures', title: 'Рыночные структуры', description: 'Совершенная конкуренция, монополия, олигополия, моноп. конкуренция', icon: Building2, color: 'text-teal-600', bg: 'bg-teal-50 dark:bg-teal-950/30', category: 'Микро', catId: 'micro', xpReward: 25 },
   { id: 'quiz', title: 'Квиз по экономике', description: '45 вопросов по микро- и макроэкономике с таймером', icon: Brain, color: 'text-violet-600', bg: 'bg-violet-50 dark:bg-violet-950/30', category: 'Тесты', catId: 'tools', xpReward: 10 },
+  { id: 'currency', title: 'Валютный калькулятор', description: 'Конвертация, кросс-курсы и динамика валют', icon: Coins, color: 'text-cyan-600', bg: 'bg-cyan-50 dark:bg-cyan-950/30', category: 'Финансы', catId: 'finance', xpReward: 15 },
   { id: 'finance', title: 'Финансовая математика', description: 'Сложные проценты, NPV, аннуитетные расчёты', icon: DollarSign, color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/30', category: 'Финансы', catId: 'finance', xpReward: 20 },
   { id: 'glossary', title: 'Глоссарий терминов', description: '40+ ключевых терминов с формулами и поиском', icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/30', category: 'Справка', catId: 'tools', xpReward: 5 },
   { id: 'achievements', title: 'Достижения', description: '19 бейджей, XP и уровни за тренировки', icon: Trophy, color: 'text-yellow-600', bg: 'bg-yellow-50 dark:bg-yellow-950/30', category: 'Мотивация', catId: 'tools', xpReward: 0 },
@@ -112,6 +115,7 @@ const tabItems = [
   // Финансы
   { value: 'breakeven', icon: Target, label: 'BEP', catId: 'finance' },
   { value: 'tax', icon: Receipt, label: 'Налоги', catId: 'finance' },
+  { value: 'currency', icon: Coins, label: 'Валюта', catId: 'finance' },
   { value: 'finance', icon: DollarSign, label: 'Фин.мат', catId: 'finance' },
   // Инструменты
   { value: 'quiz', icon: Brain, label: 'Квиз', catId: 'tools' },
@@ -146,6 +150,7 @@ const moduleComponents: Record<string, React.ComponentType> = {
   'tax': TaxCalculator,
   'game-theory': GameTheory,
   'market-structures': MarketStructures,
+  'currency': CurrencyCalculator,
   'quiz': EconomicsQuiz,
   'finance': FinancialMath,
   'glossary': Glossary,
@@ -262,7 +267,7 @@ export default function Home() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-2">
                 <Sparkles className="h-4 w-4" />
-                20 модулей • 45 вопросов • 40+ терминов • 19 достижений • Система XP
+                21 модуль • 45 вопросов • 40+ терминов • 19 достижений • Система XP
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
                 Тренируй экономическое мышление
@@ -280,7 +285,7 @@ export default function Home() {
                   </div>
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/5 border border-primary/20">
                     <LayoutGrid className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">{exploredCount}/20 модулей открыто</span>
+                    <span className="text-sm font-medium">{exploredCount}/21 модуль открыт</span>
                   </div>
                 </div>
               )}
@@ -412,7 +417,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
           Экономический тренажёр v7.0 — интерактивная платформа для изучения экономики
           {totalXP > 0 && (
-            <span className="hidden sm:inline"> • {totalXP.toLocaleString('ru-RU')} XP • {exploredCount}/20 модулей</span>
+            <span className="hidden sm:inline"> • {totalXP.toLocaleString('ru-RU')} XP • {exploredCount}/21 модуль</span>
           )}
           <span className="hidden sm:inline"> • Автор: Дуплей М.И.</span>
         </div>
