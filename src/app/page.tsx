@@ -56,6 +56,7 @@ const FinancialMath = dynamic(() => import('@/components/economics/financial-mat
 const Glossary = dynamic(() => import('@/components/economics/glossary').then(m => ({ default: m.Glossary })), { ssr: false })
 const Achievements = dynamic(() => import('@/components/economics/achievements').then(m => ({ default: m.Achievements })), { ssr: false })
 const ProgressTracker = dynamic(() => import('@/components/economics/progress-tracker').then(m => ({ default: m.ProgressTracker })), { ssr: false })
+const ISLMModel = dynamic(() => import('@/components/economics/is-lm').then(m => ({ default: m.ISLMModel })), { ssr: false })
 const ThemeToggle = dynamic(() => import('@/components/economics/theme-toggle').then(m => ({ default: m.ThemeToggle })), { ssr: false })
 
 // Module definitions with categories for grouped navigation
@@ -74,6 +75,7 @@ const modules = [
   { id: 'inflation', title: 'Калькулятор инфляции', description: 'Обесценение денег и покупательная способность', icon: Landmark, color: 'text-rose-600', bg: 'bg-rose-50 dark:bg-rose-950/30', category: 'Макро', catId: 'macro', xpReward: 15 },
   { id: 'phillips', title: 'Кривая Филлипса', description: 'Инфляция и безработица: краткосрочный и долгосрочный разрез', icon: TrendingDown, color: 'text-cyan-600', bg: 'bg-cyan-50 dark:bg-cyan-950/30', category: 'Макро', catId: 'macro', xpReward: 20 },
   { id: 'lorenz', title: 'Кривая Лоренца и Джини', description: 'Визуализация неравенства доходов и коэффициент Джини', icon: Scale, color: 'text-amber-700', bg: 'bg-amber-50 dark:bg-amber-950/30', category: 'Макро', catId: 'macro', xpReward: 20 },
+  { id: 'is-lm', title: 'Модель IS-LM', description: 'Равновесие товарного и денежного рынков, фискальная и денежная политика', icon: Landmark, color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-950/30', category: 'Макро', catId: 'macro', xpReward: 25 },
   { id: 'ppf', title: 'Кривая производственных возможностей', description: 'КПВ: альтернативные издержки, MRT, экономический рост', icon: ArrowLeftRight, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-950/30', category: 'Микро', catId: 'micro', xpReward: 15 },
   { id: 'costs', title: 'Анализ издержек фирмы', description: 'ATC, AVC, MC, AFC: графики и ключевые точки', icon: BarChart3, color: 'text-blue-700', bg: 'bg-blue-50 dark:bg-blue-950/30', category: 'Микро', catId: 'micro', xpReward: 20 },
   { id: 'comparative', title: 'Сравнительное преимущество', description: 'Модель Рикардо: выгоды международной торговли', icon: Globe, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-950/30', category: 'Микро', catId: 'micro', xpReward: 15 },
@@ -95,6 +97,7 @@ const tabItems = [
   { value: 'inflation', icon: Landmark, label: 'Инфл.', catId: 'macro' },
   { value: 'phillips', icon: TrendingDown, label: 'Филлипс', catId: 'macro' },
   { value: 'lorenz', icon: Scale, label: 'Лоренц', catId: 'macro' },
+  { value: 'is-lm', icon: Landmark, label: 'IS-LM', catId: 'macro' },
   // Микро
   { value: 'supply-demand', icon: ArrowRightLeft, label: 'D/S', catId: 'micro' },
   { value: 'elasticity', icon: Gauge, label: 'Эласт.', catId: 'micro' },
@@ -131,6 +134,7 @@ const moduleComponents: Record<string, React.ComponentType> = {
   'inflation': InflationCalculator,
   'phillips': PhillipsCurve,
   'lorenz': LorenzCurve,
+  'is-lm': ISLMModel,
   'ppf': PPFCurve,
   'costs': CostAnalysis,
   'comparative': ComparativeAdvantage,
@@ -187,7 +191,7 @@ export default function Home() {
               <GraduationCap className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-lg font-bold leading-tight">ЭкономТренажёр</h1>
+              <h1 className="text-lg font-bold leading-tight">Экономический тренажёр</h1>
               <p className="text-xs text-muted-foreground hidden sm:block">
                 Интерактивный тренажёр для экономистов
               </p>
@@ -211,7 +215,7 @@ export default function Home() {
             <ThemeToggle />
             <Badge variant="outline" className="hidden sm:flex">
               <Sparkles className="h-3 w-3 mr-1" />
-              v5.1
+              v7.0
             </Badge>
           </div>
         </div>
@@ -253,7 +257,7 @@ export default function Home() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-2">
                 <Sparkles className="h-4 w-4" />
-                18 модулей • 45 вопросов • 40+ терминов • 19 достижений • Система XP
+                19 модулей • 45 вопросов • 40+ терминов • 19 достижений • Система XP
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
                 Тренируй экономическое мышление
@@ -271,7 +275,7 @@ export default function Home() {
                   </div>
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/5 border border-primary/20">
                     <LayoutGrid className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">{exploredCount}/18 модулей открыто</span>
+                    <span className="text-sm font-medium">{exploredCount}/19 модулей открыто</span>
                   </div>
                 </div>
               )}
@@ -401,9 +405,9 @@ export default function Home() {
       {/* Footer with dynamic stats */}
       <footer className="border-t mt-auto">
         <div className="container mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
-          ЭкономТренажёр v5.1 — интерактивная платформа для изучения экономики
+          Экономический тренажёр v7.0 — интерактивная платформа для изучения экономики
           {totalXP > 0 && (
-            <span className="hidden sm:inline"> • {totalXP.toLocaleString('ru-RU')} XP • {exploredCount}/18 модулей</span>
+            <span className="hidden sm:inline"> • {totalXP.toLocaleString('ru-RU')} XP • {exploredCount}/19 модулей</span>
           )}
           <span className="hidden sm:inline"> • Автор: Дуплей М.И.</span>
         </div>

@@ -98,7 +98,7 @@ export function getLevelColor(level: number): string {
 // All module IDs for tracking
 export const MODULE_IDS = [
   'gdp', 'supply-demand', 'elasticity', 'keynesian', 'inflation',
-  'phillips', 'lorenz', 'ppf', 'costs', 'comparative',
+  'phillips', 'lorenz', 'is-lm', 'ppf', 'costs', 'comparative',
   'breakeven', 'tax', 'game-theory', 'quiz', 'finance',
   'glossary', 'achievements', 'progress',
 ] as const
@@ -114,6 +114,7 @@ export const MODULE_XP: Record<string, number> = {
   'inflation': 15,
   'phillips': 20,
   'lorenz': 20,
+  'is-lm': 25,
   'ppf': 15,
   'costs': 20,
   'comparative': 15,

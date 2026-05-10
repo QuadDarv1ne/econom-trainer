@@ -4,8 +4,8 @@ export const dynamic = "force-static";
 
 export async function GET() {
   return NextResponse.json({
-    name: "ЭкономТренажёр API",
-    version: "5.1.0",
+    name: "Экономический тренажёр API",
+    version: "7.0.0",
     status: "ok",
     modules: 18,
     quizQuestions: 45,

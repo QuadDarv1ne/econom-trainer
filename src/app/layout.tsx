@@ -26,8 +26,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "ЭкономТренажёр — Интерактивный тренажёр для экономистов",
-    template: "%s | ЭкономТренажёр",
+    default: "Экономический тренажёр — Интерактивный тренажёр для экономистов",
+    template: "%s | Экономический тренажёр",
   },
   description:
     "Интерактивная платформа для тренировки экономического мышления: 18 модулей, расчёт ВВП, спрос и предложение, квизы, финансовая математика, система XP и достижений.",
@@ -55,15 +55,15 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
   },
   openGraph: {
-    title: "ЭкономТренажёр",
+    title: "Экономический тренажёр",
     description: "Интерактивный тренажёр для экономистов — 18 модулей, квизы, XP-система",
     type: "website",
     locale: "ru_RU",
-    siteName: "ЭкономТренажёр",
+    siteName: "Экономический тренажёр",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ЭкономТренажёр",
+    title: "Экономический тренажёр",
     description: "Интерактивный тренажёр для экономистов",
     creator: "@QuadDarv1ne",
   },
@@ -103,6 +103,24 @@ export default function RootLayout({
           {children}
           <Toaster />
         </ThemeProvider>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js').then(
+                    function(registration) {
+                      console.log('[SW] Registered:', registration.scope);
+                    },
+                    function(err) {
+                      console.log('[SW] Registration failed:', err);
+                    }
+                  );
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 <div align="center">
 
-# ЭкономТренажёрЭкономТренажёр v5.1
+# Экономический тренажёр v7.0
 
 ### Интерактивная платформа для тренировки экономического мышления
 
@@ -27,7 +27,7 @@
 
 ### О проекте
 
-**ЭкономТренажёр** — это комплексная веб-платформа для интерактивного изучения микроэкономики, макроэкономики, финансовой математики и теории игр. Проект разработан как полноценное образовательное приложение, объединяющее 18 тематических модулей, систему тестирования, справочный глоссарий, геймификацию с XP-прогрессией и систему достижений. Платформа предназначена для студентов экономических специальностей, преподавателей и всех, кто хочет углубить свои знания в области экономики через практические упражнения и визуализацию экономических моделей.
+**Экономический тренажёр** — это комплексная веб-платформа для интерактивного изучения микроэкономики, макроэкономики, финансовой математики и теории игр. Проект разработан как полноценное образовательное приложение, объединяющее 18 тематических модулей, систему тестирования, справочный глоссарий, геймификацию с XP-прогрессией и систему достижений. Платформа предназначена для студентов экономических специальностей, преподавателей и всех, кто хочет углубить свои знания в области экономики через практические упражнения и визуализацию экономических моделей.
 
 Проект полностью работает на стороне клиента — все вычисления, расчёты и визуализации выполняются в браузере пользователя без необходимости серверной инфраструктуры. Это обеспечивает высокую скорость работы, приватность данных и возможность автономного использования.
 
@@ -54,17 +54,18 @@
 | 5 | **Калькулятор инфляции** | Макроэкономика | Расчёт обесценения денег, изменения покупательной способности и реальной стоимости с учётом темпов инфляции |
 | 6 | **Кривая Филлипса** | Макроэкономика | Визуализация краткосрочной и долгосрочной кривых Филлипса, анализ связи инфляции и безработицы |
 | 7 | **Кривая Лоренца и коэффициент Джини** | Макроэкономика | Построение кривой Лоренца, расчёт коэффициента Джини для анализа неравенства распределения доходов |
-| 8 | **Кривая производственных возможностей (КПВ)** | Микроэкономика | Визуализация КПВ, расчёт предельной нормы трансформации (MRT), анализ альтернативных издержек |
-| 9 | **Анализ издержек фирмы** | Микроэкономика | Графики ATC, AVC, MC, AFC с определением ключевых точек: минимум средних издержек, точка закрытия фирмы |
-| 10 | **Сравнительное преимущество** | Международная экономика | Модель Рикардо: расчёт абсолютных и сравнительных преимуществ, определение выгод торговли |
-| 11 | **Точка безубыточности** | Финансовый анализ | CVP-анализ: расчёт точки безубыточности, маржинальности, запаса финансовой прочности |
-| 12 | **Калькулятор налогов** | Финансы | Расчёт НДФЛ, НДС, налога на прибыль организаций с учётом ставок и вычетов |
-| 13 | **Теория игр** | Микроэкономика | Дилемма заключённого, модель «ястребы и голуби», равновесие Нэша с интерактивными матрицами выигрышей |
-| 14 | **Квиз по экономике** | Тестирование | 45 вопросов по микро- и макроэкономике с таймером, пояснениями и расчётом результата |
-| 15 | **Финансовая математика** | Финансы | Расчёт сложных процентов, чистой приведённой стоимости (NPV), аннуитетных платежей |
-| 16 | **Глоссарий терминов** | Справочник | 41 ключевой экономический термин с определениями, формулами и функцией быстрого поиска |
-| 17 | **Достижения** | Мотивация | 19 бейджей за различные достижения: от первых шагов до мастерского владения материалом |
-| 18 | **Прогресс** | Аналитика | Статистика тренировок, аналитика активности, визуализация динамики прогресса |
+| 8 | **Модель IS-LM** | Макроэкономика | Равновесие товарного и денежного рынков, фискальные и денежные мультипликаторы, эффект вытеснения |
+| 9 | **Кривая производственных возможностей (КПВ)** | Микроэкономика | Визуализация КПВ, расчёт предельной нормы трансформации (MRT), анализ альтернативных издержек |
+| 10 | **Анализ издержек фирмы** | Микроэкономика | Графики ATC, AVC, MC, AFC с определением ключевых точек: минимум средних издержек, точка закрытия фирмы |
+| 11 | **Сравнительное преимущество** | Международная экономика | Модель Рикардо: расчёт абсолютных и сравнительных преимуществ, определение выгод торговли |
+| 12 | **Точка безубыточности** | Финансовый анализ | CVP-анализ: расчёт точки безубыточности, маржинальности, запаса финансовой прочности |
+| 13 | **Калькулятор налогов** | Финансы | Расчёт НДФЛ, НДС, налога на прибыль организаций с учётом ставок и вычетов |
+| 14 | **Теория игр** | Микроэкономика | Дилемма заключённого, модель «ястребы и голуби», равновесие Нэша с интерактивными матрицами выигрышей |
+| 15 | **Квиз по экономике** | Тестирование | 45 вопросов по микро- и макроэкономике с таймером, пояснениями и расчётом результата |
+| 16 | **Финансовая математика** | Финансы | Расчёт сложных процентов, чистой приведённой стоимости (NPV), аннуитетных платежей |
+| 17 | **Глоссарий терминов** | Справочник | 41 ключевой экономический термин с определениями, формулами и функцией быстрого поиска |
+| 18 | **Достижения** | Мотивация | 19 бейджей за различные достижения: от первых шагов до мастерского владения материалом |
+| 19 | **Прогресс** | Аналитика | Статистика тренировок, аналитика активности, визуализация динамики прогресса |
 
 ### Система XP и уровней
 
@@ -215,7 +216,7 @@ econom-trenazher/
 
 ### Дорожная карта
 
-- [ ] Модуль IS-LM — модель инвестиций-сбережений и ликвидности-денег
+- [x] Модуль IS-LM — модель инвестиций-сбережений и ликвидности-денег
 - [ ] Модуль «Рыночные структуры» — от совершенной конкуренции до монополии
 - [ ] Модуль «Валютный калькулятор» — курсы и кросс-курсы валют
 - [ ] Экспорт прогресса в PDF-отчёт
@@ -260,17 +261,18 @@ The project runs entirely on the client side — all calculations, computations,
 | 5 | **Inflation Calculator** | Macroeconomics | Calculation of money depreciation, changes in purchasing power, and real value adjusted for inflation rates |
 | 6 | **Phillips Curve** | Macroeconomics | Visualization of short-run and long-run Phillips curves, analysis of the inflation-unemployment tradeoff |
 | 7 | **Lorenz Curve & Gini Coefficient** | Macroeconomics | Construction of the Lorenz curve, calculation of the Gini coefficient for income inequality analysis |
-| 8 | **Production Possibilities Frontier (PPF)** | Microeconomics | PPF visualization, marginal rate of transformation (MRT) calculation, opportunity cost analysis |
-| 9 | **Firm Cost Analysis** | Microeconomics | ATC, AVC, MC, AFC charts with identification of key points: minimum average cost, firm shutdown point |
-| 10 | **Comparative Advantage** | International Economics | Ricardian model: calculation of absolute and comparative advantages, determination of trade gains |
-| 11 | **Break-Even Point** | Financial Analysis | CVP analysis: break-even point calculation, margin analysis, financial safety margin |
-| 12 | **Tax Calculator** | Finance | Calculation of personal income tax (NDFL), value-added tax (VAT), corporate profit tax with rates and deductions |
-| 13 | **Game Theory** | Microeconomics | Prisoner's dilemma, hawk-dove model, Nash equilibrium with interactive payoff matrices |
-| 14 | **Economics Quiz** | Testing | 45 questions on micro- and macroeconomics with timer, explanations, and result calculation |
-| 15 | **Financial Mathematics** | Finance | Calculation of compound interest, net present value (NPV), annuity payments |
-| 16 | **Glossary of Terms** | Reference | 41 key economic terms with definitions, formulas, and quick search functionality |
-| 17 | **Achievements** | Motivation | 19 badges for various accomplishments: from first steps to master-level proficiency |
-| 18 | **Progress** | Analytics | Training statistics, activity analytics, progress dynamics visualization |
+| 8 | **IS-LM Model** | Macroeconomics | Goods and money market equilibrium, fiscal and monetary multipliers, crowding out effect |
+| 9 | **Production Possibilities Frontier (PPF)** | Microeconomics | PPF visualization, marginal rate of transformation (MRT) calculation, opportunity cost analysis |
+| 10 | **Firm Cost Analysis** | Microeconomics | ATC, AVC, MC, AFC charts with identification of key points: minimum average cost, firm shutdown point |
+| 11 | **Comparative Advantage** | International Economics | Ricardian model: calculation of absolute and comparative advantages, determination of trade gains |
+| 12 | **Break-Even Point** | Financial Analysis | CVP analysis: break-even point calculation, margin analysis, financial safety margin |
+| 13 | **Tax Calculator** | Finance | Calculation of personal income tax (NDFL), value-added tax (VAT), corporate profit tax with rates and deductions |
+| 14 | **Game Theory** | Microeconomics | Prisoner's dilemma, hawk-dove model, Nash equilibrium with interactive payoff matrices |
+| 15 | **Economics Quiz** | Testing | 45 questions on micro- and macroeconomics with timer, explanations, and result calculation |
+| 16 | **Financial Mathematics** | Finance | Calculation of compound interest, net present value (NPV), annuity payments |
+| 17 | **Glossary of Terms** | Reference | 41 key economic terms with definitions, formulas, and quick search functionality |
+| 18 | **Achievements** | Motivation | 19 badges for various accomplishments: from first steps to master-level proficiency |
+| 19 | **Progress** | Analytics | Training statistics, activity analytics, progress dynamics visualization |
 
 ### XP System and Levels
 
@@ -361,7 +363,7 @@ npm start
 
 ### Roadmap
 
-- [ ] IS-LM Module — investment-savings and liquidity-money model
+- [x] IS-LM Module — investment-savings and liquidity-money model
 - [ ] "Market Structures" Module — from perfect competition to monopoly
 - [ ] "Currency Calculator" Module — exchange rates and cross-rates
 - [ ] Progress export to PDF report
@@ -397,6 +399,6 @@ This project is the intellectual property of Dupley Maxim Igorevich. Terms of us
 
 <div align="center">
 
-**ЭкономТренажёр v5.0** — © 2025 Дуплей Максим Игоревич / Dupley Maxim Igorevich
+**Экономический тренажёр v7.0** — © 2025 Дуплей Максим Игоревич / Dupley Maxim Igorevich
 
 </div>

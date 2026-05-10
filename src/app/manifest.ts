@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "ЭкономТренажёр — Интерактивный тренажёр для экономистов",
-    short_name: "ЭкономТренажёр",
+    name: "Экономический тренажёр — Интерактивный тренажёр для экономистов",
+    short_name: "Экономический тренажёр",
     description:
       "Интерактивная платформа для тренировки экономического мышления: 18 модулей, квизы, финансовая математика, система XP и достижений.",
     start_url: "/",
