@@ -8,12 +8,14 @@ import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 
 export default function OfflinePage() {
-  const [isOnline, setIsOnline] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    setIsOnline(navigator.onLine);
+    const updateStatus = () => setIsOnline(navigator.onLine);
+    
+    updateStatus();
 
     const handleOnline = () => {
       setIsOnline(true);
@@ -28,7 +30,7 @@ export default function OfflinePage() {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
-  }, []);
+  }, [toast]);
 
   const handleReload = () => {
     window.location.reload();

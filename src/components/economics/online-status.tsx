@@ -8,17 +8,16 @@ export function OnlineStatusIndicator() {
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
-    setIsOnline(navigator.onLine);
+    const updateStatus = () => setIsOnline(navigator.onLine);
+    
+    updateStatus();
 
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", updateStatus);
+    window.addEventListener("offline", updateStatus);
 
     return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", updateStatus);
+      window.removeEventListener("offline", updateStatus);
     };
   }, []);
 
@@ -41,17 +40,16 @@ export function NetworkStatus() {
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
-    setIsOnline(navigator.onLine);
+    const updateStatus = () => setIsOnline(navigator.onLine);
+    
+    updateStatus();
 
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", updateStatus);
+    window.addEventListener("offline", updateStatus);
 
     return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", updateStatus);
+      window.removeEventListener("offline", updateStatus);
     };
   }, []);
 
