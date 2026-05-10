@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
@@ -27,7 +27,17 @@ import {
   BarChart3,
   ArrowLeftRight,
   RotateCcw,
+  AlertTriangle,
 } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
 interface Achievement {
   id: string
@@ -394,18 +404,57 @@ export function Achievements() {
       </div>
 
       {/* Reset */}
-      <Card className="border-dashed">
-        <CardContent className="p-4 flex items-center justify-between">
-          <div>
-            <div className="text-sm font-medium">Сбросить прогресс</div>
-            <div className="text-xs text-muted-foreground">Удалить все результаты, XP и достижения</div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Card className="border-dashed cursor-pointer hover:bg-accent/50 transition-colors">
+            <CardContent className="p-4 flex items-center justify-between">
+              <div>
+                <div className="text-sm font-medium">Сбросить прогресс</div>
+                <div className="text-xs text-muted-foreground">Удалить все результаты, XP и достижения</div>
+              </div>
+              <Button variant="outline" size="sm">
+                <RotateCcw className="h-4 w-4 mr-1" />
+                Сбросить
+              </Button>
+            </CardContent>
+          </Card>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <AlertTriangle className="h-5 w-5" />
+              Подтверждение сброса
+            </DialogTitle>
+            <DialogDescription>
+              Вы уверены, что хотите сбросить весь прогресс? Это действие нельзя отменить.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="p-4 bg-destructive/10 rounded-lg">
+            <p className="text-sm text-destructive font-medium">
+              Будет удалено:
+            </p>
+            <ul className="text-sm text-muted-foreground mt-2 space-y-1">
+              <li>• Весь накопленный опыт (XP)</li>
+              <li>• Все достижения и бейджи</li>
+              <li>• Статистика по модулям</li>
+              <li>• Результаты квизов и задач</li>
+            </ul>
           </div>
-          <Button variant="outline" size="sm" onClick={() => { if (confirm('Вы уверены? Все данные будут удалены.')) resetProgress() }}>
-            <RotateCcw className="h-4 w-4 mr-1" />
-            Сбросить
-          </Button>
-        </CardContent>
-      </Card>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {}}>
+              Отмена
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                resetProgress()
+              }}
+            >
+              Да, сбросить прогресс
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -1,9 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
-import { ThemeProvider } from "next-themes";
-import { OnlineStatusIndicator } from "@/components/economics/online-status";
+import { Providers } from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +29,7 @@ export const metadata: Metadata = {
     template: "%s | Экономический тренажёр",
   },
   description:
-    "Интерактивная платформа для тренировки экономического мышления: 18 модулей, расчёт ВВП, спрос и предложение, квизы, финансовая математика, система XP и достижений.",
+    "Интерактивная платформа для тренировки экономического мышления: 21 модуль, расчёт ВВП, спрос и предложение, квизы, финансовая математика, система XP и достижений.",
   keywords: [
     "экономика",
     "тренажёр",
@@ -52,12 +50,12 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: "ЭкономТренажёр",
+    title: "Экономический тренажёр",
     statusBarStyle: "black-translucent",
   },
   openGraph: {
     title: "Экономический тренажёр",
-    description: "Интерактивный тренажёр для экономистов — 18 модулей, квизы, XP-система",
+    description: "Интерактивный тренажёр для экономистов — 21 модуль, квизы, XP-система",
     type: "website",
     locale: "ru_RU",
     siteName: "Экономический тренажёр",
@@ -95,16 +93,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-          <OnlineStatusIndicator />
-          <Toaster />
-        </ThemeProvider>
+        <Providers>{children}</Providers>
         <script
           dangerouslySetInnerHTML={{
             __html: `

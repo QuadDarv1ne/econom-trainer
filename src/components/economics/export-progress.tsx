@@ -6,7 +6,8 @@ import 'jspdf-autotable'
 import { useEconomicsStore, getLevelTitle, getLevelColor } from '@/store/economics-store'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Download, Trophy, Calendar, Target, Zap, Copy, Check } from 'lucide-react'
+import { Download, Trophy, Calendar, Target, Zap, Copy, Check, Share2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 export function exportProgressToPDF() {
   const doc = new jsPDF()
@@ -223,6 +224,29 @@ export function ExportProgressButton() {
     await navigator.clipboard.writeText(text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+    toast.success('Прогресс скопирован в буфер обмена!')
+  }
+
+  const handleShare = async () => {
+    const text = exportProgressToText()
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Мой прогресс — Экономический тренажёр',
+          text: text,
+        })
+        toast.success('Поделиться успешно!')
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          toast.error('Не удалось поделиться')
+        }
+      }
+    } else {
+      // Fallback to copy
+      await handleCopy()
+      toast.success('Поделиться не доступно, прогресс скопирован')
+    }
   }
 
   return (
@@ -234,6 +258,10 @@ export function ExportProgressButton() {
       <Button onClick={handleCopy} variant="outline" size="sm">
         {copied ? <Check className="h-4 w-4 mr-2 text-green-500" /> : <Copy className="h-4 w-4 mr-2" />}
         {copied ? 'Скопировано!' : 'Копировать'}
+      </Button>
+      <Button onClick={handleShare} variant="outline" size="sm">
+        <Share2 className="h-4 w-4 mr-2" />
+        Поделиться
       </Button>
     </div>
   )
