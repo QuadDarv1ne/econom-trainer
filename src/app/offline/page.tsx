@@ -17,7 +17,7 @@ export default function OfflinePage() {
 
     const handleOnline = () => {
       setIsOnline(true);
-      toast.success("Соединение восстановлено!");
+      toast({ title: "Соединение восстановлено" });
     };
     const handleOffline = () => setIsOnline(false);
 
