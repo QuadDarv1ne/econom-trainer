@@ -28,6 +28,7 @@ import {
 } from 'recharts'
 import { Coins, ArrowRightLeft, TrendingUp, TrendingDown, RotateCcw, Globe, Info } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { useI18n } from '@/lib/i18n-provider'
 
 interface Currency {
   code: string
@@ -53,6 +54,7 @@ const CURRENCIES: Currency[] = [
 ]
 
 export function CurrencyCalculator() {
+  const { t } = useI18n()
   const [amount, setAmount] = useState(100)
   const [fromCurrency, setFromCurrency] = useState('USD')
   const [toCurrency, setToCurrency] = useState('RUB')
@@ -125,7 +127,7 @@ export function CurrencyCalculator() {
     setToCurrency('RUB')
     setCustomRates({})
     setVolatility(5)
-    toast({ title: 'Сброс', description: 'Параметры возвращены к значениям по умолчанию' })
+    toast({ title: t('currency.resetToast'), description: t('currency.resetToastDesc') })
   }
 
   const swapCurrencies = () => {
@@ -144,11 +146,10 @@ export function CurrencyCalculator() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Coins className="h-5 w-5" />
-            Валютный калькулятор
+            {t('currency.title')}
           </CardTitle>
           <CardDescription>
-            Конвертация валют, кросс-курсы и анализ динамики обменных курсов.
-            Имитируйте волатильность рынка и изучайте взаимосвязи мировых валют.
+            {t('currency.description')}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -159,13 +160,13 @@ export function CurrencyCalculator() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <ArrowRightLeft className="h-4 w-4" />
-              Конвертер
+              {t('currency.converter')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
             {/* Amount */}
             <div className="space-y-2">
-              <Label>Сумма</Label>
+              <Label>{t('currency.amount')}</Label>
               <Input
                 type="number"
                 value={amount}
@@ -177,7 +178,7 @@ export function CurrencyCalculator() {
             {/* From / To */}
             <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-end">
               <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">Из</Label>
+                <Label className="text-xs text-muted-foreground">{t('currency.from')}</Label>
                 <Select value={fromCurrency} onValueChange={(v) => { awardXP(); setFromCurrency(v) }}>
                   <SelectTrigger>
                     <SelectValue />
@@ -198,7 +199,7 @@ export function CurrencyCalculator() {
               </Button>
 
               <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">В</Label>
+                <Label className="text-xs text-muted-foreground">{t('currency.to')}</Label>
                 <Select value={toCurrency} onValueChange={(v) => { awardXP(); setToCurrency(v) }}>
                   <SelectTrigger>
                     <SelectValue />
@@ -232,7 +233,7 @@ export function CurrencyCalculator() {
 
             {/* Inverse rate */}
             <div className="text-center text-xs text-muted-foreground">
-              Обратный курс: 1 {toCurr.code} = {(1 / crossRate).toFixed(4)} {fromCurr.code}
+              {t('currency.rate')}: 1 {toCurr.code} = {(1 / crossRate).toFixed(4)} {fromCurr.code}
             </div>
           </CardContent>
         </Card>
@@ -242,9 +243,9 @@ export function CurrencyCalculator() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              Динамика курса (30 дней)
+              {t('currency.history')}
             </CardTitle>
-            <CardDescription>Симуляция с волатильностью {volatility}%</CardDescription>
+            <CardDescription>{t('currency.historyDesc').replace('{volatility}', String(volatility))}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px]">
@@ -266,16 +267,16 @@ export function CurrencyCalculator() {
                       borderRadius: '8px',
                       fontSize: '12px',
                     }}
-                    formatter={(value: number) => [value.toFixed(4), 'Курс']}
+                    formatter={(value: number) => [value.toFixed(4), t('currency.rate')]}
                   />
-                  <ReferenceLine y={crossRate} stroke="#ef4444" strokeDasharray="4 4" label={{ value: 'Текущий', fontSize: 10, fill: '#ef4444' }} />
+                  <ReferenceLine y={crossRate} stroke="#ef4444" strokeDasharray="4 4" label={{ value: t('currency.currentRate'), fontSize: 10, fill: '#ef4444' }} />
                   <Area
                     type="monotone"
                     dataKey="rate"
                     stroke="#3b82f6"
                     strokeWidth={2}
                     fill="url(#rateGradient)"
-                    name="Курс"
+                    name={t('currency.rate')}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -283,7 +284,7 @@ export function CurrencyCalculator() {
 
             <div className="space-y-2 mt-4">
               <div className="flex justify-between text-sm">
-                <Label>Волатильность рынка</Label>
+                <Label>{t('currency.volatility')}</Label>
                 <Badge variant="secondary">{volatility}%</Badge>
               </div>
               <Slider value={[volatility]} min={1} max={20} step={1} onValueChange={(v) => { awardXP(); setVolatility(v[0]) }} />
@@ -297,16 +298,16 @@ export function CurrencyCalculator() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Globe className="h-4 w-4" />
-            Матрица кросс-курсов
+            {t('currency.matrix')}
           </CardTitle>
-          <CardDescription>Сколько единиц валюты столбца даёт одна единица валюты строки</CardDescription>
+          <CardDescription>{t('currency.matrixDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b">
-                  <th className="p-2 text-left">Валюта</th>
+                  <th className="p-2 text-left">{t('currency.currency')}</th>
                   {matrixCurrencies.map((c) => (
                     <th key={c.code} className="p-2 text-center">
                       <span className="text-lg">{c.flag}</span>
@@ -347,9 +348,9 @@ export function CurrencyCalculator() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Info className="h-4 w-4" />
-            Настройка курсов (относительно USD)
+            {t('currency.customRates')}
           </CardTitle>
-          <CardDescription>Измените базовые курсы для анализа сценариев</CardDescription>
+          <CardDescription>{t('currency.customRatesDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -362,7 +363,7 @@ export function CurrencyCalculator() {
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{c.flag}</span>
                     <span className="font-medium text-sm">{c.code}</span>
-                    {isModified && <Badge variant="outline" className="text-[10px]">изменён</Badge>}
+                    {isModified && <Badge variant="outline" className="text-[10px]">{t('currency.modified')}</Badge>}
                   </div>
                   <div className="flex items-center gap-2">
                     <Input
@@ -375,10 +376,10 @@ export function CurrencyCalculator() {
                       }}
                       className="text-sm h-8"
                     />
-                    <span className="text-xs text-muted- whitespace-nowrap">за 1 USD</span>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">{t('currency.perUSD')}</span>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    Базовый: {defaultRate.toFixed(3)}
+                    {t('currency.base')}: {defaultRate.toFixed(3)}
                   </div>
                 </div>
               )
@@ -388,7 +389,7 @@ export function CurrencyCalculator() {
           <div className="flex gap-2 mt-4">
             <Button variant="outline" size="sm" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
-              Сбросить всё
+              {t('currency.reset')}
             </Button>
           </div>
         </CardContent>
@@ -398,51 +399,45 @@ export function CurrencyCalculator() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Кросс-курс</CardTitle>
+            <CardTitle className="text-base">{t('currency.crossRate')}</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-2">
             <p>
-              <strong className="text-foreground">Кросс-курс</strong> — обменный курс между двумя валютами,
-              вычисленный через третью (обычно USD).
+              <strong className="text-foreground">{t('currency.crossRate')}</strong> {t('currency.crossRateText')}
             </p>
             <div className="p-2 bg-muted rounded font-mono text-xs">
-              Курс(A→B) = Курс(USD→B) / Курс(USD→A)
+              {t('currency.crossRateFormula')}
             </div>
             <p>
-              Например: если EUR/USD = 1.08, а USD/RUB = 90.91,
-              то EUR/RUB = 1.08 × 90.91 ≈ 98.18
+              {t('currency.crossRateExample')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Волатильность</CardTitle>
+            <CardTitle className="text-base">{t('currency.volatilityTitle')}</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-2">
             <p>
-              <strong className="text-foreground">Волатильность</strong> — степень изменчивости курса валюты
-              за определённый период. Высокая волатильность означает большие риски и потенциальную прибыль.
+              <strong className="text-foreground">{t('currency.volatilityTitle')}</strong> {t('currency.volatilityText')}
             </p>
             <p>
-              Основные факторы: процентные ставки центробанков, инфляция,
-              политическая стабильность, торговый баланс, спекуляции.
+              {t('currency.volatilityFactors')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Паритет покупательной способности</CardTitle>
+            <CardTitle className="text-base">{t('currency.ppp')}</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-2">
             <p>
-              <strong className="text-foreground">ППС (PPP)</strong> — теория о том, что в долгосрочном периоде
-              обменные курсы должны выравнивать цены на одинаковые товары в разных странах.
+              <strong className="text-foreground">{t('currency.ppp')}</strong> {t('currency.pppText')}
             </p>
             <p>
-              Если «биг-мак» стоит $5 в США и ₽450 в России,
-              то по ППС курс должен быть ≈ 90 ₽/$.
+              {t('currency.pppExample')}
             </p>
           </CardContent>
         </Card>

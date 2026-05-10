@@ -4,9 +4,11 @@ import { useTheme } from 'next-themes'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Moon, Sun, Monitor } from 'lucide-react'
+import { useI18n } from '@/lib/i18n-provider'
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
+  const { t } = useI18n()
   const [mounted, setMounted] = useState(false)
 
   // Using a callback ref pattern to avoid setState in effect
@@ -30,19 +32,20 @@ export function ThemeToggle() {
     else setTheme('light')
   }
 
+  const tooltip =
+    theme === 'light'
+      ? t('theme.lightTooltip')
+      : theme === 'dark'
+        ? t('theme.darkTooltip')
+        : t('theme.systemTooltip')
+
   return (
     <Button
       variant="ghost"
       size="icon"
       className="h-9 w-9"
       onClick={cycleTheme}
-      title={
-        theme === 'light'
-          ? 'Светлая тема (нажмите для тёмной)'
-          : theme === 'dark'
-            ? 'Тёмная тема (нажмите для системной)'
-            : 'Системная тема (нажмите для светлой)'
-      }
+      title={tooltip}
     >
       {theme === 'dark' ? (
         <Moon className="h-4 w-4" />

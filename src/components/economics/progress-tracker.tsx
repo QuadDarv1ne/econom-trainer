@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { useEconomicsStore } from '@/store/economics-store'
 import { ExportProgressButton } from '@/components/economics/export-progress'
+import { useI18n } from '@/lib/i18n-provider'
 import {
   BarChart,
   Bar,
@@ -26,6 +27,7 @@ import { Trophy, Target, Flame, BarChart3, Gauge, Download } from 'lucide-react'
 const COLORS = ['#22c55e', '#ef4444']
 
 export function ProgressTracker() {
+  const { t } = useI18n()
   const quizResults = useEconomicsStore((s) => s.quizResults)
   const gdpResults = useEconomicsStore((s) => s.gdpResults)
   const financeResults = useEconomicsStore((s) => s.financeResults)
@@ -41,13 +43,13 @@ export function ProgressTracker() {
   const financeTotal = financeResults.length
 
   const quizPieData = [
-    { name: 'Правильные', value: quizCorrect },
-    { name: 'Неправильные', value: quizTotal - quizCorrect },
+    { name: t('progress.chart.correct'), value: quizCorrect },
+    { name: t('progress.chart.incorrect'), value: quizTotal - quizCorrect },
   ]
 
   const financePieData = [
-    { name: 'Правильные', value: financeCorrect },
-    { name: 'Неправильные', value: financeTotal - financeCorrect },
+    { name: t('progress.chart.correct'), value: financeCorrect },
+    { name: t('progress.chart.incorrect'), value: financeTotal - financeCorrect },
   ]
 
   const quizBarData = quizResults.slice(0, 8).reverse().map((r, i) => ({
@@ -74,8 +76,8 @@ export function ProgressTracker() {
       {/* Header with export button */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Прогресс тренировок</h2>
-          <p className="text-sm text-muted-foreground">Статистика и аналитика ваших достижений</p>
+          <h2 className="text-2xl font-bold">{t('progress.trackerTitle')}</h2>
+          <p className="text-sm text-muted-foreground">{t('progress.trackerSubtitle')}</p>
         </div>
         <ExportProgressButton />
       </div>
@@ -85,35 +87,35 @@ export function ProgressTracker() {
           <CardContent className="p-4 text-center">
             <Trophy className="h-6 w-6 mx-auto mb-2 text-yellow-500" />
             <div className="text-2xl font-bold">{totalSessions}</div>
-            <div className="text-xs text-muted-foreground">Тренировок</div>
+            <div className="text-xs text-muted-foreground">{t('progress.sessions')}</div>
           </CardContent>
         </Card>
         <Card className="border-2 border-primary/20">
           <CardContent className="p-4 text-center">
             <Target className="h-6 w-6 mx-auto mb-2 text-green-500" />
             <div className="text-2xl font-bold">{scores.quizzes}%</div>
-            <div className="text-xs text-muted-foreground">Квизы</div>
+            <div className="text-xs text-muted-foreground">{t('progress.quizzes')}</div>
           </CardContent>
         </Card>
         <Card className="border-2 border-primary/20">
           <CardContent className="p-4 text-center">
             <BarChart3 className="h-6 w-6 mx-auto mb-2 text-blue-500" />
             <div className="text-2xl font-bold">{scores.gdp}</div>
-            <div className="text-xs text-muted-foreground">Расчётов ВВП</div>
+            <div className="text-xs text-muted-foreground">{t('progress.gdpCalculations')}</div>
           </CardContent>
         </Card>
         <Card className="border-2 border-primary/20">
           <CardContent className="p-4 text-center">
             <Flame className="h-6 w-6 mx-auto mb-2 text-orange-500" />
             <div className="text-2xl font-bold">{scores.finance}%</div>
-            <div className="text-xs text-muted-foreground">Фин. задачи</div>
+            <div className="text-xs text-muted-foreground">{t('progress.financeTasks')}</div>
           </CardContent>
         </Card>
         <Card className="border-2 border-primary/20 col-span-2 sm:col-span-1">
           <CardContent className="p-4 text-center">
             <Gauge className="h-6 w-6 mx-auto mb-2 text-cyan-500" />
             <div className="text-2xl font-bold">{scores.elasticity}</div>
-            <div className="text-xs text-muted-foreground">Эластичностей</div>
+            <div className="text-xs text-muted-foreground">{t('progress.elasticity')}</div>
           </CardContent>
         </Card>
       </div>
@@ -122,9 +124,9 @@ export function ProgressTracker() {
         <Card>
           <CardContent className="p-8 text-center">
             <Trophy className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-semibold mb-2">Пока нет данных</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('progress.noDataTitle')}</h3>
             <p className="text-muted-foreground text-sm">
-              Пройдите тренировки в других модулях, чтобы увидеть здесь статистику прогресса.
+              {t('progress.noDataDesc')}
             </p>
           </CardContent>
         </Card>
@@ -134,9 +136,9 @@ export function ProgressTracker() {
             {quizResults.length > 0 && (
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Результаты квизов</CardTitle>
+                  <CardTitle className="text-lg">{t('progress.quizResultsTitle')}</CardTitle>
                   <CardDescription>
-                    Средний балл: {scores.quizzes}% | Всего вопросов: {quizTotal}
+                    {t('progress.quizAvgScore')}: {scores.quizzes}% | {t('progress.quizTotalQuestions')}: {quizTotal}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -170,7 +172,7 @@ export function ProgressTracker() {
                           <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                           <XAxis dataKey="name" fontSize={10} />
                           <YAxis domain={[0, 100]} fontSize={10} />
-                          <Tooltip formatter={(value: number) => [`${value}%`, 'Результат']} />
+                          <Tooltip formatter={(value: number) => [`${value}%`, t('progress.tooltip.result')]} />
                           <Bar dataKey="score" fill="#22c55e" radius={[4, 4, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
@@ -183,9 +185,9 @@ export function ProgressTracker() {
             {financeResults.length > 0 && (
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Финансовая математика</CardTitle>
+                  <CardTitle className="text-lg">{t('progress.financeTitle')}</CardTitle>
                   <CardDescription>
-                    Точность: {scores.finance}% | Решено: {financeTotal} задач
+                    {t('progress.accuracy')}: {scores.finance}% | {t('progress.solved')}: {financeTotal} {t('progress.tasks')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -225,7 +227,7 @@ export function ProgressTracker() {
                             dataKey="cumulative"
                             stroke="#22c55e"
                             strokeWidth={2}
-                            name="Накопленные правильные"
+                            name={t('progress.chart.cumulative')}
                           />
                         </LineChart>
                       </ResponsiveContainer>
@@ -239,8 +241,8 @@ export function ProgressTracker() {
           {gdpResults.length > 0 && (
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">История расчётов ВВП</CardTitle>
-                <CardDescription>Последние {Math.min(gdpResults.length, 5)} расчётов</CardDescription>
+                <CardTitle className="text-lg">{t('progress.gdpHistoryTitle')}</CardTitle>
+                <CardDescription>{t('progress.lastCalculations')} {Math.min(gdpResults.length, 5)} {t('progress.calculations')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -253,10 +255,10 @@ export function ProgressTracker() {
                         </span>
                       </div>
                       <div className="flex items-center gap-4 font-mono text-xs">
-                        <span>Ном. ВВП: {r.nominalGDP.toLocaleString('ru-RU', { maximumFractionDigits: 0 })}</span>
-                        <span>Реал. ВВП: {r.realGDP.toLocaleString('ru-RU', { maximumFractionDigits: 0 })}</span>
+                        <span>{t('progress.nominalGdp')} {r.nominalGDP.toLocaleString('ru-RU', { maximumFractionDigits: 0 })}</span>
+                        <span>{t('progress.realGdp')} {r.realGDP.toLocaleString('ru-RU', { maximumFractionDigits: 0 })}</span>
                         <Badge variant={r.inflationRate > 5 ? 'destructive' : 'secondary'}>
-                          Дефлятор: {r.deflator.toFixed(1)}%
+                          {t('progress.deflator')}: {r.deflator.toFixed(1)}%
                         </Badge>
                       </div>
                     </div>

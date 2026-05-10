@@ -22,8 +22,10 @@ import {
 } from 'recharts'
 import { Crosshair, RotateCcw, Info } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { useI18n } from '@/lib/i18n-provider'
 
 export function KeynesianCross() {
+  const { t } = useI18n()
   const [autonomousSpending, setAutonomousSpending] = useState(200)
   const [mpc, setMpc] = useState(0.75)
   const [taxRate, setTaxRate] = useState(0.2)
@@ -70,7 +72,7 @@ export function KeynesianCross() {
     setTaxRate(0.2)
     setMpi(0.15)
     setGovSpending(100)
-    toast({ title: 'Сброс', description: 'Параметры возвращены к значениям по умолчанию' })
+    toast({ title: t('keynesian.resetToast'), description: t('keynesian.resetToastDesc') })
   }
 
   const mpcSimple = useMemo(() => mpc * (1 - taxRate), [mpc, taxRate])
@@ -83,11 +85,10 @@ export function KeynesianCross() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Crosshair className="h-5 w-5" />
-            Кейнсианский крест
+            {t('keynesian.title')}
           </CardTitle>
           <CardDescription>
-            Модель доходов-расходов (Keynesian Cross). Показывает, как совокупный спрос определяет равновесный уровень выпуска.
-            Y* = k × (A + G), где k = 1 / (1 - MPC(1-t) + MPI)
+            {t('keynesian.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -97,11 +98,11 @@ export function KeynesianCross() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                 <XAxis
                   dataKey="income"
-                  label={{ value: 'Доход (Y)', position: 'insideBottom', offset: -5 }}
+                  label={{ value: t('keynesian.income'), position: 'insideBottom', offset: -5 }}
                   fontSize={12}
                 />
                 <YAxis
-                  label={{ value: 'Расходы', angle: -90, position: 'insideLeft' }}
+                  label={{ value: t('keynesian.expenses'), angle: -90, position: 'insideLeft' }}
                   fontSize={12}
                 />
                 <Tooltip
@@ -112,16 +113,16 @@ export function KeynesianCross() {
                     fontSize: '12px',
                   }}
                   formatter={(value: number, name: string) => {
-                    if (name === 'aggregateDemand') return [value.toLocaleString('ru-RU'), 'AD (совокупный спрос)']
-                    if (name === 'fortyFive') return [value.toLocaleString('ru-RU'), 'Y = 45°']
+                    if (name === 'aggregateDemand') return [value.toLocaleString('ru-RU'), t('keynesian.aggregateDemand')]
+                    if (name === 'fortyFive') return [value.toLocaleString('ru-RU'), t('keynesian.fortyFiveLine')]
                     return [value, name]
                   }}
-                  labelFormatter={(label) => `Доход: ${label}`}
+                  labelFormatter={(label) => `${t('keynesian.incomeLabel')}: ${label}`}
                 />
                 <Legend
                   formatter={(value) => {
-                    if (value === 'aggregateDemand') return 'AD (совокупный спрос)'
-                    if (value === 'fortyFive') return 'Линия 45° (Y = AE)'
+                    if (value === 'aggregateDemand') return t('keynesian.aggregateDemand')
+                    if (value === 'fortyFive') return t('keynesian.fortyFiveLine')
                     return value
                   }}
                 />
@@ -161,12 +162,12 @@ export function KeynesianCross() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Параметры модели</CardTitle>
+            <CardTitle className="text-lg">{t('keynesian.params')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Автономные расходы (A)</Label>
+                <Label>{t('keynesian.autonomous')}</Label>
                 <span className="font-mono text-muted-foreground">{autonomousSpending}</span>
               </div>
               <Slider
@@ -180,7 +181,7 @@ export function KeynesianCross() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Гос. расходы (G)</Label>
+                <Label>{t('keynesian.govSpending')}</Label>
                 <span className="font-mono text-muted-foreground">{govSpending}</span>
               </div>
               <Slider
@@ -194,7 +195,7 @@ export function KeynesianCross() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>MPC (предельная склонность к потреблению)</Label>
+                <Label>{t('keynesian.mpc')}</Label>
                 <span className="font-mono text-muted-foreground">{mpc.toFixed(2)}</span>
               </div>
               <Slider
@@ -208,7 +209,7 @@ export function KeynesianCross() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Ставка налога (t)</Label>
+                <Label>{t('keynesian.taxRate')}</Label>
                 <span className="font-mono text-muted-foreground">{(taxRate * 100).toFixed(0)}%</span>
               </div>
               <Slider
@@ -222,7 +223,7 @@ export function KeynesianCross() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>MPI (предельная склонность к импорту)</Label>
+                <Label>{t('keynesian.mpi')}</Label>
                 <span className="font-mono text-muted-foreground">{mpi.toFixed(2)}</span>
               </div>
               <Slider
@@ -236,7 +237,7 @@ export function KeynesianCross() {
 
             <Button onClick={reset} variant="outline" className="w-full">
               <RotateCcw className="h-4 w-4 mr-2" />
-              Сбросить параметры
+              {t('keynesian.resetParams')}
             </Button>
           </CardContent>
         </Card>
@@ -245,38 +246,38 @@ export function KeynesianCross() {
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
               <Info className="h-4 w-4" />
-              Равновесие
+              {t('keynesian.equilibrium')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-3">
               <div className="p-3 bg-muted/50 rounded-lg text-center">
-                <div className="text-sm text-muted-foreground">Равновесный выпуск (Y*)</div>
+                <div className="text-sm text-muted-foreground">{t('keynesian.equilibriumY')}</div>
                 <div className="text-xl font-mono font-bold">{Math.round(equilibriumY).toLocaleString('ru-RU')}</div>
               </div>
               <div className="p-3 bg-muted/50 rounded-lg text-center">
-                <div className="text-sm text-muted-foreground">Мультипликатор (k)</div>
+                <div className="text-sm text-muted-foreground">{t('keynesian.multiplier')}</div>
                 <div className="text-xl font-mono font-bold">{multiplier.toFixed(2)}</div>
               </div>
               <div className="p-3 bg-muted/50 rounded-lg text-center">
-                <div className="text-sm text-muted-foreground">MPC с учётом налогов</div>
+                <div className="text-sm text-muted-foreground">{t('keynesian.mpcAfterTax')}</div>
                 <div className="text-xl font-mono font-bold">{mpcSimple.toFixed(3)}</div>
               </div>
               <div className="p-3 bg-muted/50 rounded-lg text-center">
-                <div className="text-sm text-muted-foreground">Налоговые сборы</div>
+                <div className="text-sm text-muted-foreground">{t('keynesian.taxRevenue')}</div>
                 <div className="text-xl font-mono font-bold">{Math.round(taxRevenue).toLocaleString('ru-RU')}</div>
               </div>
             </div>
 
             <div className="mt-4 p-3 bg-primary/5 rounded-lg text-sm space-y-2">
               <div>
-                <strong>Формула:</strong> Y* = k × (A + G)
+                <strong>{t('keynesian.formula')}:</strong> Y* = k × (A + G)
               </div>
               <div>
-                <strong>Мультипликатор:</strong> k = 1 / (1 - MPC(1-t) + MPI) = 1 / (1 - {mpc}×{1 - taxRate} + {mpi}) = {multiplier.toFixed(3)}
+                <strong>{t('keynesian.multiplier')}:</strong> k = 1 / (1 - MPC(1-t) + MPI) = 1 / (1 - {mpc}×{1 - taxRate} + {mpi}) = {multiplier.toFixed(3)}
               </div>
               <div>
-                <strong>Эффект мультипликатора:</strong> рост G на 1 руб. увеличивает Y на {multiplier.toFixed(2)} руб.
+                <strong>{t('keynesian.multiplierEffect')}:</strong> {t('keynesian.multiplierEffectDesc').replace('{multiplier}', multiplier.toFixed(2))}
               </div>
             </div>
           </CardContent>

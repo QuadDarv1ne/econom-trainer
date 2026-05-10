@@ -3,6 +3,7 @@
  */
 
 import { useEconomicsStore, getLevelFromXP, getLevelTitle } from '@/store/economics-store'
+import { getCurrentLocale, t } from '@/lib/i18n'
 
 export interface ExportData {
   totalXP: number
@@ -23,20 +24,21 @@ export function exportToCSV(): string {
   const state = useEconomicsStore.getState()
   const level = getLevelFromXP(state.totalXP)
   const timestamp = new Date().toISOString()
+  const locale = getCurrentLocale()
 
   // Header
-  let csv = 'Метрика,Значение\n'
+  let csv = `${t('export.csv.metric', locale)},${t('export.csv.value', locale)}\n`
 
   // Basic stats
-  csv += `Общий XP,${state.totalXP}\n`
-  csv += `Уровень,${level.level}\n`
-  csv += `Название уровня,${getLevelTitle(level.level)}\n`
-  csv += `Всего взаимодействий,${state.moduleInteractions.length}\n`
-  csv += `Дата создания,${timestamp}\n`
+  csv += `${t('export.csv.totalXP', locale)},${state.totalXP}\n`
+  csv += `${t('export.csv.level', locale)},${level.level}\n`
+  csv += `${t('export.csv.levelName', locale)},${getLevelTitle(level.level)}\n`
+  csv += `${t('export.csv.interactions', locale)},${state.moduleInteractions.length}\n`
+  csv += `Created,${timestamp}\n`
   csv += `\n`
 
   // Module interactions
-  csv += 'Модуль,Взаимодействия\n'
+  csv += `${t('export.csv.module', locale)},${t('export.csv.interactions', locale)}\n`
   Object.entries(state.moduleInteractions).forEach(([module, count]) => {
     csv += `"${module}",${count}\n`
   })
@@ -48,10 +50,10 @@ export function exportToCSV(): string {
   const financeCorrect = state.financeResults.filter((r) => r.correct).length
   const financeTotal = state.financeResults.length
 
-  csv += `Квиз правильных ответов,${quizCorrect}\n`
-  csv += `Квиз всего вопросов,${quizTotal}\n`
-  csv += `Финансы правильных ответов,${financeCorrect}\n`
-  csv += `Финансы всего задач,${financeTotal}\n`
+  csv += `${t('export.csv.quizResults', locale)},${quizCorrect}\n`
+  csv += `Quiz total questions,${quizTotal}\n`
+  csv += `${t('export.csv.financeTasks', locale)} correct,${financeCorrect}\n`
+  csv += `Finance total tasks,${financeTotal}\n`
 
   return csv
 }

@@ -116,9 +116,9 @@ export function PriceIndices() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Индексы цен</h2>
+          <h2 className="text-2xl font-bold">{t('priceIndices.title')}</h2>
           <p className="text-muted-foreground">
-            ИПЦ, дефлятор ВВП и расчёт инфляции
+            {t('priceIndices.description')}
           </p>
         </div>
         <Badge variant="outline" className="gap-1">
@@ -129,17 +129,17 @@ export function PriceIndices() {
 
       <Tabs defaultValue="cpi" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="cpi">ИПЦ и корзина</TabsTrigger>
-          <TabsTrigger value="deflator">Дефлятор ВВП</TabsTrigger>
-          <TabsTrigger value="inflation">Инфляция</TabsTrigger>
+          <TabsTrigger value="cpi">{t('priceIndices.tab.cpi')}</TabsTrigger>
+          <TabsTrigger value="deflator">{t('priceIndices.tab.deflator')}</TabsTrigger>
+          <TabsTrigger value="inflation">{t('priceIndices.tab.inflation')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="cpi" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Корзина товаров</CardTitle>
+              <CardTitle>{t('priceIndices.basketTitle')}</CardTitle>
               <CardDescription>
-                Измените цены и количества для расчёта ИПЦ
+                {t('priceIndices.basketDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -147,7 +147,7 @@ export function PriceIndices() {
                 {goods.map((good) => (
                   <div key={good.id} className="grid grid-cols-1 md:grid-cols-6 gap-4 items-center">
                     <div className="md:col-span-2">
-                      <Label>Товар</Label>
+                      <Label>{t('priceIndices.good')}</Label>
                       <Input
                         value={good.name}
                         onChange={(e) => updateGood(good.id, 'name', e.target.value)}
@@ -155,7 +155,7 @@ export function PriceIndices() {
                       />
                     </div>
                     <div>
-                      <Label>Цена (базовый)</Label>
+                      <Label>{t('priceIndices.price.base')}</Label>
                       <Input
                         type="number"
                         value={good.basePrice}
@@ -164,7 +164,7 @@ export function PriceIndices() {
                       />
                     </div>
                     <div>
-                      <Label>Цена (текущий)</Label>
+                      <Label>{t('priceIndices.price.current')}</Label>
                       <Input
                         type="number"
                         value={good.currentPrice}
@@ -173,7 +173,7 @@ export function PriceIndices() {
                       />
                     </div>
                     <div>
-                      <Label>Количество</Label>
+                      <Label>{t('priceIndices.quantity')}</Label>
                       <Input
                         type="number"
                         value={good.quantity}
@@ -189,7 +189,7 @@ export function PriceIndices() {
                     onClick={handleCalculate}
                     className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
                   >
-                    Рассчитать ИПЦ
+                    {t('priceIndices.calculate')}
                   </button>
                 </div>
               </div>
@@ -199,7 +199,7 @@ export function PriceIndices() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Стоимость корзины (базовый)</CardTitle>
+                <CardTitle className="text-sm">{t('priceIndices.basketCost.base')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-emerald-600">
@@ -209,7 +209,7 @@ export function PriceIndices() {
             </Card>
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Стоимость корзины (текущий)</CardTitle>
+                <CardTitle className="text-sm">{t('priceIndices.basketCost.current')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-red-600">
@@ -219,7 +219,7 @@ export function PriceIndices() {
             </Card>
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm">ИПЦ</CardTitle>
+                <CardTitle className="text-sm">{t('priceIndices.cpi')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className={`text-2xl font-bold ${inflationRate > 0 ? 'text-red-600' : 'text-green-600'}`}>
@@ -231,7 +231,7 @@ export function PriceIndices() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Динамика ИПЦ</CardTitle>
+              <CardTitle>{t('priceIndices.cpiDynamics')}</CardTitle>
             </CardHeader>
             <CardContent>
               <ChartContainer config={chartConfig} className="h-64 w-full">
@@ -255,15 +255,15 @@ export function PriceIndices() {
         <TabsContent value="deflator" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Расчёт дефлятора ВВП</CardTitle>
+              <CardTitle>{t('priceIndices.deflatorTitle')}</CardTitle>
               <CardDescription>
-                Дефлятор ВВП = (Номинальный ВВП / Реальный ВВП) × 100
+                {t('priceIndices.deflatorDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label>Номинальный ВВП (текущие цены)</Label>
+                  <Label>{t('priceIndices.nominalGDP')}</Label>
                   <Input
                     type="number"
                     value={nominalGDP}
@@ -272,7 +272,7 @@ export function PriceIndices() {
                   />
                 </div>
                 <div>
-                  <Label>Реальный ВВП (постоянные цены)</Label>
+                  <Label>{t('priceIndices.realGDP')}</Label>
                   <Input
                     type="number"
                     value={realGDP}
@@ -287,7 +287,7 @@ export function PriceIndices() {
                   onClick={() => addXP(15)}
                   className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
                 >
-                  Рассчитать
+                  {t('priceIndices.calculateBtn')}
                 </button>
               </div>
             </CardContent>
@@ -297,7 +297,7 @@ export function PriceIndices() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
-                Дефлятор ВВП
+                {t('priceIndices.deflatorTitle')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -306,35 +306,35 @@ export function PriceIndices() {
               </div>
               <p className="text-center text-sm text-muted-foreground mt-2">
                 {gdpDeflator > 100
-                  ? `Инфляция: ${(gdpDeflator - 100).toFixed(2)}%`
+                  ? `${t('priceIndices.inflation')}: ${(gdpDeflator - 100).toFixed(2)}%`
                   : gdpDeflator < 100
-                  ? `Дефляция: ${(100 - gdpDeflator).toFixed(2)}%`
-                  : 'Цены стабильны'}
+                  ? `${t('priceIndices.deflation')}: ${(100 - gdpDeflator).toFixed(2)}%`
+                  : t('priceIndices.stable')}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Интерпретация</CardTitle>
+              <CardTitle>{t('priceIndices.interpretation')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div className="flex items-start gap-2">
                 <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
                 <p>
-                  <strong>Дефлятор ВВП &gt; 100:</strong> Цены выросли с базового года. Экономика испытывает инфляционное давление.
+                  <strong>{t('priceIndices.deflatorTitle')} &gt; 100:</strong> {t('priceIndices.interp.high')}
                 </p>
               </div>
               <div className="flex items-start gap-2">
                 <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
                 <p>
-                  <strong>Дефлятор ВВП &lt; 100:</strong> Цены снизились с базового года. Наблюдается дефляция.
+                  <strong>{t('priceIndices.deflatorTitle')} &lt; 100:</strong> {t('priceIndices.interp.low')}
                 </p>
               </div>
               <div className="flex items-start gap-2">
                 <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
                 <p>
-                  <strong>Разница с ИПЦ:</strong> Дефлятор ВВП учитывает все товары в экономике, а ИПЦ — только потребительскую корзину.
+                  {t('priceIndices.interp.diff')}
                 </p>
               </div>
             </CardContent>
@@ -344,16 +344,16 @@ export function PriceIndices() {
         <TabsContent value="inflation" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Расчёт инфляции</CardTitle>
+              <CardTitle>{t('priceIndices.inflationCalc')}</CardTitle>
               <CardDescription>
-                Покупательная способность и обесценение денег
+                {t('priceIndices.devaluationDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">ИПЦ</CardTitle>
+                    <CardTitle className="text-sm">{t('priceIndices.cpi')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">{cpi.toFixed(2)}</div>
@@ -361,7 +361,7 @@ export function PriceIndices() {
                 </Card>
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">Уровень инфляции</CardTitle>
+                    <CardTitle className="text-sm">{t('priceIndices.inflationRate')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className={`text-2xl font-bold ${inflationRate > 0 ? 'text-red-600' : 'text-green-600'}`}>
@@ -371,7 +371,7 @@ export function PriceIndices() {
                 </Card>
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">Реальная стоимость ₽100</CardTitle>
+                    <CardTitle className="text-sm">{t('priceIndices.realValue')} ₽100</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-amber-600">
@@ -385,24 +385,25 @@ export function PriceIndices() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Обесценение денег</CardTitle>
+              <CardTitle>{t('priceIndices.devaluation')}</CardTitle>
               <CardDescription>
-                Сколько нужно денег сейчас, чтобы купить то, что стоило 1000 ₽ в базовом году
+                {t('priceIndices.devaluationDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center space-y-4">
                 <div className="text-lg">
-                  В базовом году:{' '}
+                  {t('priceIndices.baseYear')}:{' '}
                   <strong>1000 ₽</strong>
                 </div>
                 <div className="text-3xl font-bold text-red-600">
-                  {((1000 * cpi) / 100).toFixed(2)} ₽ сейчас
+                  {((1000 * cpi) / 100).toFixed(2)} ₽ {t('priceIndices.now')}
                 </div>
                 <Separator />
                 <p className="text-sm text-muted-foreground">
-                  Из-за инфляции в {inflationRate.toFixed(2)}%, та же корзина товаров теперь стоит на{' '}
-                  <strong>{((1000 * inflationRate) / 100).toFixed(2)} ₽</strong> дороже
+                  {t('priceIndices.devaluationText')
+                    .replace('{rate}', inflationRate.toFixed(2))
+                    .replace('{diff}', ((1000 * inflationRate) / 100).toFixed(2))}
                 </p>
               </div>
             </CardContent>
@@ -410,27 +411,27 @@ export function PriceIndices() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Формулы</CardTitle>
+              <CardTitle>{t('priceIndices.formulas')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <div className="p-3 bg-muted rounded-lg">
                 <p className="font-mono text-center">
-                  <strong>ИПЦ = (Стоимость корзины в текущем году / Стоимость корзины в базовом году) × 100</strong>
+                  <strong>{t('priceIndices.formula.cpi')}</strong>
                 </p>
               </div>
               <div className="p-3 bg-muted rounded-lg">
                 <p className="font-mono text-center">
-                  <strong>Инфляция = ИПЦ − 100</strong>
+                  <strong>{t('priceIndices.formula.inflation')}</strong>
                 </p>
               </div>
               <div className="p-3 bg-muted rounded-lg">
                 <p className="font-mono text-center">
-                  <strong>Реальная стоимость = (Номинальная стоимость / ИПЦ) × 100</strong>
+                  <strong>{t('priceIndices.formula.realValue')}</strong>
                 </p>
               </div>
               <div className="p-3 bg-muted rounded-lg">
                 <p className="font-mono text-center">
-                  <strong>Дефлятор ВВП = (Номинальный ВВП / Реальный ВВП) × 100</strong>
+                  <strong>{t('priceIndices.formula.deflator')}</strong>
                 </p>
               </div>
             </CardContent>

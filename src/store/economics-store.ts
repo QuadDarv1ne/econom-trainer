@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { t, getCurrentLocale } from '@/lib/i18n'
 
 export interface QuizResult {
   id: string
@@ -74,14 +75,15 @@ export function getLevelFromXP(totalXP: number): { level: number; xpInCurrentLev
 }
 
 export function getLevelTitle(level: number): string {
-  if (level >= 20) return 'Академик'
-  if (level >= 15) return 'Профессор'
-  if (level >= 10) return 'Доцент'
-  if (level >= 7) return 'Аспирант'
-  if (level >= 5) return 'Магистр'
-  if (level >= 3) return 'Бакалавр'
-  if (level >= 2) return 'Студент'
-  return 'Новичок'
+  const locale = getCurrentLocale()
+  if (level >= 20) return t('level.academician', locale)
+  if (level >= 15) return t('level.professor', locale)
+  if (level >= 10) return t('level.associate', locale)
+  if (level >= 7) return t('level.phd', locale)
+  if (level >= 5) return t('level.master', locale)
+  if (level >= 3) return t('level.bachelor', locale)
+  if (level >= 2) return t('level.student', locale)
+  return t('level.novice', locale)
 }
 
 export function getLevelColor(level: number): string {

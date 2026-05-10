@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { WifiOff, Wifi } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useI18n } from "@/lib/i18n-provider";
 
 export function OnlineStatusIndicator() {
+  const { t } = useI18n();
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
@@ -30,13 +32,14 @@ export function OnlineStatusIndicator() {
         className="gap-2 px-3 py-2 text-sm font-medium shadow-lg"
       >
         <WifiOff className="w-4 h-4" />
-        Офлайн режим
+        {t('network.offline')}
       </Badge>
     </div>
   );
 }
 
 export function NetworkStatus() {
+  const { t } = useI18n();
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
@@ -61,7 +64,7 @@ export function NetworkStatus() {
         <WifiOff className="w-4 h-4 text-red-500" />
       )}
       <span className={`text-sm ${isOnline ? "text-green-500" : "text-red-500"}`}>
-        {isOnline ? "Онлайн" : "Офлайн"}
+        {isOnline ? t('network.online') : t('network.offlineShort')}
       </span>
     </div>
   );

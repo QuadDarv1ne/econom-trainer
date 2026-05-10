@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
+import { useI18n } from '@/lib/i18n-provider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -20,6 +21,7 @@ import {
 import { Landmark, TrendingDown, TrendingUp, AlertTriangle } from 'lucide-react'
 
 export function InflationCalculator() {
+  const { t } = useI18n()
   const [initialAmount, setInitialAmount] = useState('100000')
   const [initialYear, setInitialYear] = useState('2020')
   const [finalYear, setFinalYear] = useState('2025')
@@ -72,10 +74,10 @@ export function InflationCalculator() {
   }, [initialAmount, initialYear, finalYear, inflationRate])
 
   const getInflationLevel = (rate: number) => {
-    if (rate < 3) return { text: 'Низкая', variant: 'secondary' as const, color: 'text-green-600' }
-    if (rate < 10) return { text: 'Умеренная', variant: 'default' as const, color: 'text-yellow-600' }
-    if (rate < 50) return { text: 'Высокая', variant: 'destructive' as const, color: 'text-orange-600' }
-    return { text: 'Гиперинфляция', variant: 'destructive' as const, color: 'text-red-600' }
+    if (rate < 3) return { text: t('inflation.level.low'), variant: 'secondary' as const, color: 'text-green-600' }
+    if (rate < 10) return { text: t('inflation.level.moderate'), variant: 'default' as const, color: 'text-yellow-600' }
+    if (rate < 50) return { text: t('inflation.level.high'), variant: 'destructive' as const, color: 'text-orange-600' }
+    return { text: t('inflation.level.hyper'), variant: 'destructive' as const, color: 'text-red-600' }
   }
 
   const rate = parseFloat(inflationRate) || 0
@@ -87,17 +89,16 @@ export function InflationCalculator() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Landmark className="h-5 w-5" />
-            Калькулятор инфляции
+            {t('inflation.title')}
           </CardTitle>
           <CardDescription>
-            Рассчитайте, как инфляция обесценивает деньги с течением времени. 
-            Увидите реальную покупательную способность вашей суммы через N лет.
+            {t('inflation.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Начальная сумма (руб.)</Label>
+              <Label>{t('inflation.initialAmount')}</Label>
               <Input
                 type="number"
                 placeholder="100 000"
@@ -107,7 +108,7 @@ export function InflationCalculator() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Годовая инфляция (%)</Label>
+              <Label>{t('inflation.annualRate')}</Label>
               <div className="flex items-center gap-2">
                 <Input
                   type="number"
@@ -122,7 +123,7 @@ export function InflationCalculator() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Начальный год</Label>
+              <Label>{t('inflation.startYear')}</Label>
               <Input
                 type="number"
                 placeholder="2020"
@@ -132,7 +133,7 @@ export function InflationCalculator() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Конечный год</Label>
+              <Label>{t('inflation.endYear')}</Label>
               <Input
                 type="number"
                 placeholder="2025"
@@ -150,21 +151,21 @@ export function InflationCalculator() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Card className="border-2 border-primary/20">
               <CardHeader className="pb-2">
-                <CardDescription>Реальная стоимость</CardDescription>
+                <CardDescription>{t('inflation.realValue')}</CardDescription>
                 <CardTitle className="text-2xl font-mono">
                   {Math.round(result.realValue).toLocaleString('ru-RU')} руб.
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Покупательная способность {parseFloat(initialAmount).toLocaleString('ru-RU')} руб. через {result.years} лет
+                  {t('inflation.purchasingPowerDesc').replace('{amount}', parseFloat(initialAmount).toLocaleString('ru-RU')).replace('{years}', result.years.toString())}
                 </p>
               </CardContent>
             </Card>
 
             <Card className="border-2 border-primary/20">
               <CardHeader className="pb-2">
-                <CardDescription>Кумулятивная инфляция</CardDescription>
+                <CardDescription>{t('inflation.cumulativeInflation')}</CardDescription>
                 <CardTitle className="text-2xl font-mono flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-red-500" />
                   {(result.totalInflation * 100).toFixed(1)}%
@@ -172,14 +173,14 @@ export function InflationCalculator() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Общее обесценение за {result.years} лет
+                  {t('inflation.totalDepreciation').replace('{years}', result.years.toString())}
                 </p>
               </CardContent>
             </Card>
 
             <Card className="border-2 border-primary/20">
               <CardHeader className="pb-2">
-                <CardDescription>Покупательная способность</CardDescription>
+                <CardDescription>{t('inflation.purchasingPower')}</CardDescription>
                 <CardTitle className="text-2xl font-mono flex items-center gap-2">
                   <TrendingDown className="h-5 w-5 text-orange-500" />
                   {result.purchasingPower.toFixed(1)}%
@@ -187,7 +188,7 @@ export function InflationCalculator() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  От начальной суммы останется
+                  {t('inflation.remainingAmount')}
                 </p>
               </CardContent>
             </Card>
@@ -195,8 +196,8 @@ export function InflationCalculator() {
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Обесценение по годам</CardTitle>
-              <CardDescription>Как меняется покупательная способность с течением времени</CardDescription>
+              <CardTitle className="text-lg">{t('inflation.chartTitle')}</CardTitle>
+              <CardDescription>{t('inflation.chartDesc')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-[280px]">
@@ -213,8 +214,8 @@ export function InflationCalculator() {
                         fontSize: '12px',
                       }}
                       formatter={(value: number, name: string) => {
-                        if (name === 'realValue') return [value.toLocaleString('ru-RU') + ' руб.', 'Реальная стоимость']
-                        if (name === 'lostValue') return [value.toLocaleString('ru-RU') + ' руб.', 'Потеряно']
+                        if (name === 'realValue') return [value.toLocaleString('ru-RU') + ' руб.', t('inflation.tooltip.realValue')]
+                        if (name === 'lostValue') return [value.toLocaleString('ru-RU') + ' руб.', t('inflation.tooltip.lost')]
                         return [value, name]
                       }}
                     />
@@ -244,17 +245,17 @@ export function InflationCalculator() {
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Таблица по годам</CardTitle>
+              <CardTitle className="text-lg">{t('inflation.tableTitle')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left p-2">Год</th>
-                      <th className="text-right p-2">Реальная стоимость</th>
-                      <th className="text-right p-2">Потеряно</th>
-                      <th className="text-right p-2">Покуп. способность</th>
+                      <th className="text-left p-2">{t('inflation.table.year')}</th>
+                      <th className="text-right p-2">{t('inflation.table.realValue')}</th>
+                      <th className="text-right p-2">{t('inflation.table.lost')}</th>
+                      <th className="text-right p-2">{t('inflation.table.purchasingPower')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -278,17 +279,16 @@ export function InflationCalculator() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <AlertTriangle className="h-4 w-4" />
-            Правило 70
+            {t('inflation.rule70.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-sm space-y-2">
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Правило 70:</strong> Чтобы узнать, за сколько лет цены удвоятся при данной инфляции, 
-            разделите 70 на годовой процент инфляции.
+            <strong>{t('inflation.rule70.description')}</strong>
           </div>
           {rate > 0 && (
             <div className="p-3 bg-primary/5 rounded-lg">
-              При инфляции {rate}% цены удвоятся примерно за <strong>{Math.round(70 / rate)} лет</strong>
+              {t('inflation.rule70.result').replace('{rate}', rate.toString()).replace('{years}', Math.round(70 / rate).toString())}
             </div>
           )}
         </CardContent>

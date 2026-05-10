@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
+import { useI18n } from '@/lib/i18n-provider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Slider } from '@/components/ui/slider'
 import { Badge } from '@/components/ui/badge'
@@ -29,25 +30,25 @@ interface QuintileConfig {
 }
 
 const QUINTILE_CONFIG: QuintileConfig[] = [
-  { key: 'q1', label: 'Q1', description: 'Беднейшие 20%', min: 0, max: 30, defaultValue: 5 },
-  { key: 'q2', label: 'Q2', description: 'Вторые 20%', min: 0, max: 30, defaultValue: 10 },
-  { key: 'q3', label: 'Q3', description: 'Средние 20%', min: 0, max: 30, defaultValue: 15 },
-  { key: 'q4', label: 'Q4', description: 'Четвёртые 20%', min: 0, max: 30, defaultValue: 25 },
-  { key: 'q5', label: 'Q5', description: 'Богатейшие 20%', min: 0, max: 50, defaultValue: 45 },
+  { key: 'q1', label: 'Q1', description: 'Poorest 20%', min: 0, max: 30, defaultValue: 5 },
+  { key: 'q2', label: 'Q2', description: 'Second 20%', min: 0, max: 30, defaultValue: 10 },
+  { key: 'q3', label: 'Q3', description: 'Middle 20%', min: 0, max: 30, defaultValue: 15 },
+  { key: 'q4', label: 'Q4', description: 'Fourth 20%', min: 0, max: 30, defaultValue: 25 },
+  { key: 'q5', label: 'Q5', description: 'Richest 20%', min: 0, max: 50, defaultValue: 45 },
 ]
 
 const COUNTRY_COMPARISON = [
-  { country: 'Швеция', flag: '🇸🇪', gini: 0.27 },
-  { country: 'США', flag: '🇺🇸', gini: 0.39 },
-  { country: 'Россия', flag: '🇷🇺', gini: 0.41 },
-  { country: 'Бразилия', flag: '🇧🇷', gini: 0.53 },
-  { country: 'ЮАР', flag: '🇿🇦', gini: 0.63 },
+  { country: 'Sweden', flag: '🇸🇪', gini: 0.27 },
+  { country: 'USA', flag: '🇺🇸', gini: 0.39 },
+  { country: 'Russia', flag: '🇷🇺', gini: 0.41 },
+  { country: 'Brazil', flag: '🇧🇷', gini: 0.53 },
+  { country: 'South Africa', flag: '🇿🇦', gini: 0.63 },
 ]
 
 function getGiniLevel(gini: number): { label: string; color: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' } {
-  if (gini < 0.3) return { label: 'Низкое неравенство', color: 'text-emerald-600', variant: 'secondary' }
-  if (gini < 0.5) return { label: 'Умеренное неравенство', color: 'text-amber-600', variant: 'default' }
-  return { label: 'Высокое неравенство', color: 'text-red-600', variant: 'destructive' }
+  if (gini < 0.3) return { label: 'Low inequality', color: 'text-emerald-600', variant: 'secondary' }
+  if (gini < 0.5) return { label: 'Moderate inequality', color: 'text-amber-600', variant: 'default' }
+  return { label: 'High inequality', color: 'text-red-600', variant: 'destructive' }
 }
 
 function getGiniBarColor(gini: number): string {
@@ -57,6 +58,7 @@ function getGiniBarColor(gini: number): string {
 }
 
 export function LorenzCurve() {
+  const { t } = useI18n()
   const [q1, setQ1] = useState(5)
   const [q2, setQ2] = useState(10)
   const [q3, setQ3] = useState(15)
@@ -112,18 +114,18 @@ export function LorenzCurve() {
 
   const formatTooltip = (value: number, name: string) => {
     const labels: Record<string, string> = {
-      lorenz: 'Кривая Лоренца',
-      equality: 'Линия равенства',
-      inequalityGap: 'Область неравенства',
+      lorenz: t('lorenz.graph'),
+      equality: t('lorenz.lineOfEquality'),
+      inequalityGap: t('lorenz.interpretation'),
     }
     return [`${value.toFixed(1)}%`, labels[name] || name]
   }
 
   const formatLegend = (value: string) => {
     const labels: Record<string, string> = {
-      lorenz: 'Кривая Лоренца',
-      equality: 'Линия равенства',
-      inequalityGap: 'Область неравенства (A)',
+      lorenz: t('lorenz.graph'),
+      equality: t('lorenz.lineOfEquality'),
+      inequalityGap: `${t('lorenz.interpretation')} (A)`,
     }
     return labels[value] || value
   }
@@ -135,10 +137,10 @@ export function LorenzCurve() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Scale className="h-5 w-5" />
-            Кривая Лоренца и коэффициент Джини
+            {t('lorenz.title')}
           </CardTitle>
           <CardDescription>
-            Визуализация распределения доходов. Изменяйте доли дохода квинтильных групп и наблюдайте, как меняется кривая Лоренца и коэффициент Джини.
+            {t('lorenz.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -151,14 +153,14 @@ export function LorenzCurve() {
                   type="number"
                   domain={[0, 100]}
                   ticks={[0, 20, 40, 60, 80, 100]}
-                  label={{ value: 'Доля населения (%)', position: 'insideBottom', offset: -10, fontSize: 12 }}
+                  label={{ value: t('lorenz.population'), position: 'insideBottom', offset: -10, fontSize: 12 }}
                   fontSize={11}
                 />
                 <YAxis
                   type="number"
                   domain={[0, 100]}
                   ticks={[0, 20, 40, 60, 80, 100]}
-                  label={{ value: 'Доля дохода (%)', angle: -90, position: 'insideLeft', offset: 5, fontSize: 12 }}
+                  label={{ value: t('lorenz.income'), angle: -90, position: 'insideLeft', offset: 5, fontSize: 12 }}
                   fontSize={11}
                 />
                 <Tooltip
@@ -169,7 +171,7 @@ export function LorenzCurve() {
                     fontSize: '12px',
                   }}
                   formatter={formatTooltip}
-                  labelFormatter={(label) => `Население: ${label}%`}
+                  labelFormatter={(label) => `${t('lorenz.population')}: ${label}%`}
                 />
                 <Legend formatter={formatLegend} />
                 {/* Area B - under Lorenz curve */}
@@ -211,15 +213,15 @@ export function LorenzCurve() {
           <div className="flex flex-wrap items-center justify-center gap-6 mt-4 text-sm">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-sm bg-red-500/30 border border-red-500/50" />
-              <span className="text-muted-foreground">Область A — неравенство</span>
+              <span className="text-muted-foreground">{t('lorenz.interpretation')} A</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-sm bg-amber-500/30 border border-amber-500/50" />
-              <span className="text-muted-foreground">Область B — фактическое распределение</span>
+              <span className="text-muted-foreground">{t('lorenz.graphDesc')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-8 border-t-2 border-dashed" style={{ borderColor: 'hsl(var(--muted-foreground))' }} />
-              <span className="text-muted-foreground">Линия абсолютного равенства</span>
+              <span className="text-muted-foreground">{t('lorenz.lineOfEquality')}</span>
             </div>
           </div>
         </CardContent>
@@ -231,10 +233,10 @@ export function LorenzCurve() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
-              Распределение дохода по квинтилям
+              {t('lorenz.incomeShare').replace('{pct}', '100')}
             </CardTitle>
             <CardDescription>
-              Укажите долю дохода (%) для каждой группы. Значения автоматически нормализуются, если сумма ≠ 100%.
+              {t('lorenz.customData')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
@@ -274,7 +276,7 @@ export function LorenzCurve() {
               <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm text-amber-700 dark:text-amber-400">
                 <AlertTriangle className="h-4 w-4 shrink-0" />
                 <span>
-                  Сумма долей: {totalRaw}% (≠ 100%). Значения нормализованы пропорционально.
+                  {t('lorenz.incomeShare').replace('{pct}', String(totalRaw))} (≠ 100%). {t('lorenz.interpretation')}.
                 </span>
               </div>
             )}
@@ -300,7 +302,7 @@ export function LorenzCurve() {
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Scale className="h-4 w-4" />
-                Коэффициент Джини
+                {t('lorenz.gini')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -319,8 +321,8 @@ export function LorenzCurve() {
                 {/* Visual Gini bar */}
                 <div className="w-full space-y-2">
                   <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Равенство (0)</span>
-                    <span>Неравенство (1)</span>
+                    <span>{t('lorenz.lineOfEquality')} (0)</span>
+                    <span>{t('lorenz.interpretation')} (1)</span>
                   </div>
                   <div className="relative h-3 rounded-full bg-muted overflow-hidden">
                     <div
@@ -339,12 +341,12 @@ export function LorenzCurve() {
 
                 {/* Formula */}
                 <div className="text-center text-sm text-muted-foreground space-y-1">
-                  <div className="font-medium">Формула расчёта</div>
+                  <div className="font-medium">{t('lorenz.theory.title')}</div>
                   <div className="font-mono text-base">
                     G = A / (A + B) = 1 − 2B
                   </div>
                   <div className="text-xs">
-                    где A — площадь между кривыми, B — площадь под кривой Лоренца
+                    {t('lorenz.gini')}: A = {t('lorenz.interpretation')}, B = {t('lorenz.graph')}
                   </div>
                 </div>
               </div>
@@ -354,9 +356,9 @@ export function LorenzCurve() {
           {/* Country Comparison Table */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Сравнение со странами мира</CardTitle>
+              <CardTitle className="text-lg">{t('lorenz.tab.countries')}</CardTitle>
               <CardDescription>
-                Реальные значения коэффициента Джини (оценка)
+                {t('lorenz.gini')} ({t('lorenz.interpretation')})
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -375,7 +377,7 @@ export function LorenzCurve() {
                           <span className="font-mono font-semibold">{countryGini.toFixed(2)}</span>
                           {isClose && (
                             <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                              ≈ ваша
+                              {t('lorenz.interp.perfect').split(':')[0]}
                             </Badge>
                           )}
                         </div>
@@ -389,7 +391,7 @@ export function LorenzCurve() {
                         <div
                           className="absolute top-0 bottom-0 w-0.5 bg-foreground"
                           style={{ left: `${gini * 100}%` }}
-                          title={`Ваш G = ${gini.toFixed(2)}`}
+                          title={`${t('lorenz.gini')} = ${gini.toFixed(2)}`}
                         />
                       </div>
                     </div>
@@ -398,7 +400,7 @@ export function LorenzCurve() {
               </div>
               <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
                 <div className="w-2 h-3 bg-foreground" />
-                <span>— ваше значение (G = {gini.toFixed(2)})</span>
+                <span>— {t('lorenz.gini')} (G = {gini.toFixed(2)})</span>
               </div>
             </CardContent>
           </Card>
@@ -410,53 +412,53 @@ export function LorenzCurve() {
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
             <Info className="h-4 w-4" />
-            Теория: Кривая Лоренца и коэффициент Джини
+            {t('lorenz.theory.title')}: {t('lorenz.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <h3 className="font-semibold text-base">Кривая Лоренца</h3>
+              <h3 className="font-semibold text-base">{t('lorenz.graph')}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Кривая Лоренца — это графическое представление распределения доходов (или богатства) в обществе.
-                На оси X откладывается кумулятивная доля населения (от беднейших к богатейшим),
-                а на оси Y — кумулятивная доля дохода, которую получает это население.
+                The Lorenz curve is a graphical representation of income (or wealth) distribution in a society.
+                The X axis shows the cumulative share of population (from poorest to richest),
+                and the Y axis shows the cumulative share of income received by that population.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                <strong>Линия абсолютного равенства</strong> (диагональ) означает, что каждый процент населения
-                получает такой же процент дохода. Чем больше кривая Лоренца отклоняется от диагонали,
-                тем выше неравенство в обществе.
+                <strong>Line of absolute equality</strong> (diagonal) means that every percent of population
+                receives the same percent of income. The more the Lorenz curve deviates from the diagonal,
+                the higher the inequality in society.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                <strong>Линия абсолютного неравенства</strong> — это ось X и вертикальная линия при 100% населения,
-                означающая, что один человек получает весь доход, а остальные — ничего.
+                <strong>Line of absolute inequality</strong> — the X axis and a vertical line at 100% population,
+                meaning one person receives all income while others receive nothing.
               </p>
             </div>
 
             <div className="space-y-3">
-              <h3 className="font-semibold text-base">Коэффициент Джини</h3>
+              <h3 className="font-semibold text-base">{t('lorenz.gini')}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Коэффициент Джини — это числовая мера неравенства, равная отношению площади между
-                линией равенства и кривой Лоренца (область A) к сумме площадей A и B:
+                The Gini coefficient is a numerical measure of inequality, equal to the ratio of the area between
+                the line of equality and the Lorenz curve (area A) to the total area A + B:
               </p>
               <div className="p-3 rounded-lg bg-muted/50 text-center font-mono text-base">
                 G = A / (A + B)
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Коэффициент принимает значения от 0 до 1:
+                The coefficient ranges from 0 to 1:
               </p>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-start gap-2">
                   <Badge variant="secondary" className="mt-0.5 text-[10px] px-1.5 py-0 bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">0–0.3</Badge>
-                  <span className="text-muted-foreground">Низкое неравенство — доходы распределены относительно равномерно (скандинавские страны)</span>
+                  <span className="text-muted-foreground">Low inequality — incomes are distributed relatively evenly (Scandinavian countries)</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Badge variant="default" className="mt-0.5 text-[10px] px-1.5 py-0">0.3–0.5</Badge>
-                  <span className="text-muted-foreground">Умеренное неравенство — характерно для большинства развитых стран (Россия, США)</span>
+                  <span className="text-muted-foreground">Moderate inequality — typical for most developed countries</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Badge variant="destructive" className="mt-0.5 text-[10px] px-1.5 py-0">{'>'} 0.5</Badge>
-                  <span className="text-muted-foreground">Высокое неравенство — значительный разрыв между богатыми и бедными (ЮАР, Бразилия)</span>
+                  <span className="text-muted-foreground">High inequality — significant gap between rich and poor (South Africa, Brazil)</span>
                 </li>
               </ul>
             </div>
@@ -467,14 +469,14 @@ export function LorenzCurve() {
           <div className="p-4 rounded-lg bg-primary/5 border border-primary/10">
             <h3 className="font-semibold text-sm mb-2 flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-amber-500" />
-              Ограничения коэффициента Джини
+              {t('lorenz.gini')} {t('lorenz.interpretation').toLowerCase()}
             </h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Коэффициент Джини не учитывает структуру неравенства — две страны с одинаковым G
-              могут иметь разное распределение дохода (например, разный размер среднего класса).
-              Также он чувствителен к изменениям в середине распределения и менее чувствителен
-              к изменениям на крайних полюсах. Для более полной картины используют дополнительные
-              показатели: децильный коэффициент, индекс Палма, долю дохода_top-10% и другие.
+              The Gini coefficient does not account for the structure of inequality — two countries with the same G
+              may have different income distributions (e.g., different middle class sizes).
+              It is also sensitive to changes in the middle of the distribution and less sensitive
+              to changes at the extremes. For a more complete picture, additional
+              indicators are used: decile coefficient, Palma index, top-10% income share, and others.
             </p>
           </div>
         </CardContent>

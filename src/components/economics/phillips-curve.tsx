@@ -26,8 +26,10 @@ import {
   Scatter,
 } from 'recharts'
 import { TrendingDown, AlertTriangle, Info } from 'lucide-react'
+import { useI18n } from '@/lib/i18n-provider'
 
 export function PhillipsCurve() {
+  const { t } = useI18n()
   const [expectedInflation, setExpectedInflation] = useState(5)
   const [naturalRate, setNaturalRate] = useState(5)
   const [alpha, setAlpha] = useState(0.5)
@@ -134,9 +136,9 @@ export function PhillipsCurve() {
               <TrendingDown className="h-5 w-5 text-orange-600 dark:text-orange-400" />
             </div>
             <div>
-              <CardTitle className="text-xl">Кривая Филлипса</CardTitle>
+              <CardTitle className="text-xl">{t('phillips.title')}</CardTitle>
               <CardDescription>
-                Интерактивная модель взаимосвязи инфляции и безработицы
+                {t('phillips.description')}
               </CardDescription>
             </div>
           </div>
@@ -148,9 +150,9 @@ export function PhillipsCurve() {
         {/* Chart */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-base">График кривой Филлипса</CardTitle>
+            <CardTitle className="text-base">{t('phillips.graph')}</CardTitle>
             <CardDescription>
-              Краткосрочная (SRPC) и долгосрочная (LRPC) кривые Филлипса
+              {t('phillips.graphDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -167,7 +169,7 @@ export function PhillipsCurve() {
                     domain={[0, 12]}
                     tickCount={13}
                     label={{
-                      value: 'Безработица (%)',
+                      value: t('phillips.unemployment') + ' (%)',
                       position: 'insideBottom',
                       offset: -10,
                       style: { fontSize: 13, fill: 'hsl(var(--muted-foreground))' },
@@ -176,7 +178,7 @@ export function PhillipsCurve() {
                   <YAxis
                     domain={[yMin, yMax]}
                     label={{
-                      value: 'Инфляция (%)',
+                      value: t('phillips.inflation') + ' (%)',
                       angle: -90,
                       position: 'insideLeft',
                       offset: -5,
@@ -192,12 +194,12 @@ export function PhillipsCurve() {
                     }}
                     formatter={(value: number, name: string) => {
                       if (name === 'srpcInflation') {
-                        return [`${value.toFixed(2)}%`, 'Инфляция (SRPC)']
+                        return [`${value.toFixed(2)}%`, t('phillips.inflation') + ' (SRPC)']
                       }
                       return [value, name]
                     }}
                     labelFormatter={(label: number) =>
-                      `Безработица: ${label}%`
+                      `${t('phillips.unemployment')}: ${label}%`
                     }
                   />
 
@@ -220,7 +222,7 @@ export function PhillipsCurve() {
                     strokeWidth={2.5}
                     strokeDasharray="8 4"
                     label={{
-                      value: `LRPC (u*=${naturalRate}%)`,
+                      value: `${t('phillips.lrpc')} (u*=${naturalRate}%)`,
                       position: 'top',
                       fill: 'hsl(142, 71%, 45%)',
                       fontSize: 12,
@@ -248,7 +250,7 @@ export function PhillipsCurve() {
                     dataKey="inflation"
                     fill="hsl(0, 84%, 60%)"
                     stroke="hsl(0, 84%, 60%)"
-                    name="Равновесие"
+                    name={t('phillips.equilibrium')}
                   />
                 </ComposedChart>
               </ResponsiveContainer>
@@ -258,19 +260,19 @@ export function PhillipsCurve() {
             <div className="flex flex-wrap items-center gap-4 mt-4 text-sm">
               <div className="flex items-center gap-2">
                 <div className="h-0.5 w-6 rounded bg-orange-500" />
-                <span className="text-muted-foreground">SRPC — Краткосрочная</span>
+                <span className="text-muted-foreground">{t('phillips.srpc')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-0.5 w-6 rounded border-t-2 border-dashed border-green-500" />
-                <span className="text-muted-foreground">LRPC — Долгосрочная</span>
+                <span className="text-muted-foreground">{t('phillips.lrpc')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-3 w-3 rounded-full bg-red-500" />
-                <span className="text-muted-foreground">Точка равновесия</span>
+                <span className="text-muted-foreground">{t('phillips.equilibrium')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-0.5 w-6 rounded border-t-2 border-dashed border-blue-500" />
-                <span className="text-muted-foreground">Ожидаемая инфляция (πe)</span>
+                <span className="text-muted-foreground">{t('phillips.expectedInflation')} (πe)</span>
               </div>
             </div>
           </CardContent>
@@ -281,9 +283,9 @@ export function PhillipsCurve() {
           {/* Parameter Sliders */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Параметры модели</CardTitle>
+              <CardTitle className="text-base">{t('phillips.params')}</CardTitle>
               <CardDescription>
-                Настройте параметры кривой Филлипса
+                {t('phillips.description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
@@ -291,7 +293,7 @@ export function PhillipsCurve() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium">
-                    Ожидаемая инфляция (πe)
+                    {t('phillips.expectedInflation')} (πe)
                   </label>
                   <Badge variant="secondary">{expectedInflation}%</Badge>
                 </div>
@@ -303,7 +305,7 @@ export function PhillipsCurve() {
                   onValueChange={(v) => { setExpectedInflation(v[0]); awardSliderXp() }}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Уровень инфляции, который ожидают экономические агенты
+                  {t('phillips.expectedInflation')}
                 </p>
               </div>
 
@@ -313,7 +315,7 @@ export function PhillipsCurve() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium">
-                    Естественный уровень безработицы (u*)
+                    {t('phillips.naturalRate')} (u*)
                   </label>
                   <Badge variant="secondary">{naturalRate}%</Badge>
                 </div>
@@ -325,7 +327,7 @@ export function PhillipsCurve() {
                   onValueChange={(v) => { setNaturalRate(v[0]); awardSliderXp() }}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Уровень безработицы при полной занятости (NAIRU)
+                  {t('phillips.naturalRate')} (NAIRU)
                 </p>
               </div>
 
@@ -335,7 +337,7 @@ export function PhillipsCurve() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium">
-                    Наклон кривой (α)
+                    {t('phillips.sensitivity')} (α)
                   </label>
                   <Badge variant="secondary">{alpha.toFixed(2)}</Badge>
                 </div>
@@ -347,7 +349,7 @@ export function PhillipsCurve() {
                   onValueChange={(v) => { setAlpha(v[0]); awardSliderXp() }}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Чувствительность инфляции к отклонению безработицы от u*
+                  {t('phillips.sensitivity')}
                 </p>
               </div>
 
@@ -357,7 +359,7 @@ export function PhillipsCurve() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium">
-                    Шок предложения (ε)
+                    {t('phillips.shock')} (ε)
                   </label>
                   <Badge variant={supplyShock !== 0 ? 'destructive' : 'secondary'}>
                     {supplyShock > 0 ? `+${supplyShock}` : supplyShock}
@@ -371,7 +373,7 @@ export function PhillipsCurve() {
                   onValueChange={(v) => { setSupplyShock(v[0]); awardSliderXp() }}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Внешний ценовой шок (положительный = рост инфляции)
+                  {t('phillips.shock')}
                 </p>
               </div>
             </CardContent>
@@ -380,16 +382,16 @@ export function PhillipsCurve() {
           {/* Actual Unemployment */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Текущее равновесие</CardTitle>
+              <CardTitle className="text-base">{t('phillips.equilibrium')}</CardTitle>
               <CardDescription>
-                Установите фактический уровень безработицы
+                {t('phillips.unemployment')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium">
-                    Фактическая безработица (u)
+                    {t('phillips.unemployment')} (u)
                   </label>
                   <Badge variant="outline">{actualUnemployment}%</Badge>
                 </div>
@@ -407,18 +409,18 @@ export function PhillipsCurve() {
               {/* Calculated values */}
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Фактическая инфляция (π)</span>
+                  <span className="text-muted-foreground">{t('phillips.inflation')} (π)</span>
                   <span className="font-semibold">{equilibriumInflation.toFixed(2)}%</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Разрыв безработицы (u − u*)</span>
+                  <span className="text-muted-foreground">{t('phillips.unemployment')} (u − u*)</span>
                   <span className={`font-semibold ${unemploymentGap > 0 ? 'text-red-500' : unemploymentGap < 0 ? 'text-green-500' : ''}`}>
                     {unemploymentGap > 0 ? '+' : ''}
                     {unemploymentGap.toFixed(1)}%
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Отклонение инфляции (π − πe)</span>
+                  <span className="text-muted-foreground">(π − πe)</span>
                   <span className={`font-semibold ${(equilibriumInflation - expectedInflation) > 0 ? 'text-red-500' : (equilibriumInflation - expectedInflation) < 0 ? 'text-green-500' : ''}`}>
                     {(equilibriumInflation - expectedInflation) > 0 ? '+' : ''}
                     {(equilibriumInflation - expectedInflation).toFixed(2)}%
@@ -426,7 +428,7 @@ export function PhillipsCurve() {
                 </div>
                 <Separator />
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Коэффициент ущерба</span>
+                  <span className="text-muted-foreground">{t('phillips.sacrificeRatio')}</span>
                   <span className="font-semibold text-orange-600 dark:text-orange-400">
                     {sacrificeRatio === Infinity ? '∞' : sacrificeRatio.toFixed(2)}
                   </span>
@@ -437,7 +439,7 @@ export function PhillipsCurve() {
                 <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/30">
                   <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
                   <span className="text-sm text-red-700 dark:text-red-400">
-                    Стагфляция: высокая инфляция + высокая безработица
+                    {t('phillips.stagflation')}: {t('phillips.inflation')} + {t('phillips.unemployment')}
                   </span>
                 </div>
               )}
@@ -447,8 +449,8 @@ export function PhillipsCurve() {
           {/* Preset Scenarios */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Сценарии</CardTitle>
-              <CardDescription>Быстрые пресеты параметров</CardDescription>
+              <CardTitle className="text-base">{t('phillips.scenarios')}</CardTitle>
+              <CardDescription>{t('phillips.params')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               <Button
@@ -457,7 +459,7 @@ export function PhillipsCurve() {
                 onClick={applyStagflationPreset}
               >
                 <AlertTriangle className="mr-2 h-4 w-4 text-red-500" />
-                Стагфляция (1970-е)
+                {t('phillips.stagflation')} (1970s)
               </Button>
               <Button
                 variant="outline"
@@ -465,7 +467,7 @@ export function PhillipsCurve() {
                 onClick={applyDisinflationPreset}
               >
                 <TrendingDown className="mr-2 h-4 w-4 text-green-500" />
-                Дезинфляция (Волкер)
+                {t('phillips.disinflation')} (Volcker)
               </Button>
               <Button
                 variant="outline"
@@ -473,7 +475,7 @@ export function PhillipsCurve() {
                 onClick={applyDefaultPreset}
               >
                 <Info className="mr-2 h-4 w-4 text-blue-500" />
-                Сброс параметров
+                {t('phillips.reset')}
               </Button>
             </CardContent>
           </Card>
@@ -483,7 +485,7 @@ export function PhillipsCurve() {
       {/* Formula Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Формула кривой Филлипса</CardTitle>
+          <CardTitle className="text-base">{t('phillips.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="rounded-lg border bg-muted/50 p-4 text-center">
@@ -493,21 +495,21 @@ export function PhillipsCurve() {
           </div>
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
             <div className="rounded-lg border p-3">
-              <span className="font-semibold text-orange-600 dark:text-orange-400">π</span> — фактическая инфляция
+              <span className="font-semibold text-orange-600 dark:text-orange-400">π</span> — {t('phillips.inflation')}
             </div>
             <div className="rounded-lg border p-3">
-              <span className="font-semibold text-blue-600 dark:text-blue-400">πe</span> — ожидаемая инфляция ({expectedInflation}%)
+              <span className="font-semibold text-blue-600 dark:text-blue-400">πe</span> — {t('phillips.expectedInflation')} ({expectedInflation}%)
             </div>
             <div className="rounded-lg border p-3">
-              <span className="font-semibold text-green-600 dark:text-green-400">α</span> — наклон кривой ({alpha.toFixed(2)})
+              <span className="font-semibold text-green-600 dark:text-green-400">α</span> — {t('phillips.sensitivity')} ({alpha.toFixed(2)})
             </div>
             <div className="rounded-lg border p-3">
-              <span className="font-semibold text-red-600 dark:text-red-400">ε</span> — шок предложения ({supplyShock > 0 ? '+' : ''}{supplyShock})
+              <span className="font-semibold text-red-600 dark:text-red-400">ε</span> — {t('phillips.shock')} ({supplyShock > 0 ? '+' : ''}{supplyShock})
             </div>
           </div>
           <Separator className="my-4" />
           <div className="rounded-lg border p-4">
-            <p className="text-sm text-muted-foreground mb-1">Подстановка текущих значений:</p>
+            <p className="text-sm text-muted-foreground mb-1">{t('phillips.params')}:</p>
             <p className="font-mono text-sm">
               π = {expectedInflation} − {alpha.toFixed(2)} × ({actualUnemployment} − {naturalRate}) + ({supplyShock > 0 ? '+' : ''}{supplyShock}) ={' '}
               <span className="font-bold text-orange-600 dark:text-orange-400">
@@ -527,25 +529,14 @@ export function PhillipsCurve() {
               <div className="flex h-8 w-8 items-center justify-center rounded-md bg-orange-100 dark:bg-orange-900/30">
                 <TrendingDown className="h-4 w-4 text-orange-600 dark:text-orange-400" />
               </div>
-              <CardTitle className="text-base">Краткосрочный и долгосрочный периоды</CardTitle>
+              <CardTitle className="text-base">{t('phillips.srpc')} / {t('phillips.lrpc')}</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground">
             <p>
-              В <strong className="text-foreground">краткосрочном периоде</strong> существует обратная
-              зависимость между инфляцией и безработицей. Снижение безработицы ниже естественного
-              уровня приводит к росту инфляции, и наоборот.
-            </p>
-            <p>
-              В <strong className="text-foreground">долгосрочном периоде</strong> кривая Филлипса
-              вертикальна на уровне естественной безработицы (u*). Это означает, что денежно-кредитная
-              политика не может устойчиво удерживать безработицу ниже u* — инфляционные ожидания
-              адаптируются, и SRPC сдвигается вверх.
-            </p>
-            <Separator />
-            <p className="text-xs italic">
-              Долгосрочная кривая вертикальна, так как π = πe при u = u*. Любая попытка снизить
-              безработицу ниже u* ведёт лишь к ускорению инфляции.
+              {t('phillips.theory.text')
+                .replace('{shortRun}', t('phillips.srpc'))
+                .replace('{longRun}', t('phillips.lrpc'))}
             </p>
           </CardContent>
         </Card>
@@ -557,27 +548,19 @@ export function PhillipsCurve() {
               <div className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-100 dark:bg-blue-900/30">
                 <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               </div>
-              <CardTitle className="text-base">Кривая Филлипса с ожиданиями</CardTitle>
+              <CardTitle className="text-base">{t('phillips.title')} ({t('phillips.expectedInflation')})</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground">
             <p>
-              Модель Фридмана—Фелпса учитывает <strong className="text-foreground">инфляционные
-              ожидания</strong> как ключевой фактор. Формула π = πe − α(u − u*) + ε показывает,
-              что фактическая инфляция зависит от:
+              {t('phillips.theory')}
             </p>
-            <ul className="list-disc list-inside space-y-1 ml-2">
-              <li>Ожидаемой инфляции (πe) — агенты строят прогнозы</li>
-              <li>Отклонения безработицы от u* — циклическая компонента</li>
-              <li>Шоков предложения (ε) — экзогенные факторы</li>
-            </ul>
             <Separator />
             <p>
-              <strong className="text-foreground">Коэффициент ущерба</strong> (sacrifice ratio) = 1/α ={' '}
+              <strong className="text-foreground">{t('phillips.sacrificeRatio')}</strong> = 1/α ={' '}
               <span className="text-orange-600 dark:text-orange-400 font-semibold">
                 {sacrificeRatio === Infinity ? '∞' : sacrificeRatio.toFixed(2)}
               </span>
-              . Это процентных пунктов безработицы, необходимых для снижения инфляции на 1 п.п.
             </p>
           </CardContent>
         </Card>
@@ -589,27 +572,20 @@ export function PhillipsCurve() {
               <div className="flex h-8 w-8 items-center justify-center rounded-md bg-red-100 dark:bg-red-900/30">
                 <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400" />
               </div>
-              <CardTitle className="text-base">Стагфляция</CardTitle>
+              <CardTitle className="text-base">{t('phillips.stagflation')}</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground">
             <p>
-              <strong className="text-foreground">Стагфляция</strong> — одновременное сочетание
-              высокой инфляции и высокой безработицы. Возникает при отрицательном шоке
-              предложения (ε &gt; 0), который сдвигает SRPC вверх.
-            </p>
-            <p>
-              Классический пример — <strong className="text-foreground">нефтяные кризисы 1970-х</strong>,
-              когда рост цен на нефть вызвал одновременный рост инфляции и безработицы в
-              развитых странах, что опровергло простую кривую Филлипса.
+              <strong className="text-foreground">{t('phillips.stagflation')}</strong> — {t('phillips.inflation')} + {t('phillips.unemployment')}
             </p>
             <Separator />
             <div className="flex items-center gap-2">
               <Badge variant={isStagflation ? 'destructive' : 'secondary'}>
-                {isStagflation ? 'Стагфляция!' : 'Нет стагфляции'}
+                {isStagflation ? t('phillips.stagflation') + '!' : t('phillips.stagflation') + ' —'}
               </Badge>
               <span className="text-xs">
-                Текущие параметры {isStagflation ? 'соответствуют' : 'не соответствуют'} сценарию стагфляции
+                {t('phillips.params')}
               </span>
             </div>
           </CardContent>
@@ -619,9 +595,9 @@ export function PhillipsCurve() {
       {/* Sacrifice Ratio Explanation */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Коэффициент ущерба (Sacrifice Ratio)</CardTitle>
+          <CardTitle className="text-base">{t('phillips.sacrificeRatio')}</CardTitle>
           <CardDescription>
-            Сколько безработицы нужно «купить» за снижение инфляции на 1 п.п.
+            {t('phillips.sacrificeRatio')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -637,34 +613,25 @@ export function PhillipsCurve() {
               </div>
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p>
-                  Чем <strong className="text-foreground">выше α</strong> (крутая кривая), тем
-                  меньше жертв требуется: каждый процент безработицы сильнее давит на инфляцию.
-                </p>
-                <p>
-                  Чем <strong className="text-foreground">ниже α</strong> (пологая кривая), тем
-                  больше безработицы нужно «допустить», чтобы снизить инфляцию на 1 п.п.
+                  {t('phillips.sensitivity')} (α): {t('phillips.theory.text')}
                 </p>
               </div>
             </div>
             <div className="space-y-3">
-              <h4 className="text-sm font-semibold">Пример расчёта</h4>
+              <h4 className="text-sm font-semibold">{t('phillips.calculate')}</h4>
               <div className="rounded-lg border p-3 text-sm space-y-2">
                 <p>
-                  Текущий α = <strong>{alpha.toFixed(2)}</strong>
+                  {t('phillips.sensitivity')} = <strong>{alpha.toFixed(2)}</strong>
                 </p>
                 <p>
-                  Чтобы снизить инфляцию на 1 п.п., безработица должна превысить u* на:{' '}
+                  {t('phillips.sacrificeRatio')}:{' '}
                   <strong className="text-orange-600 dark:text-orange-400">
-                    {sacrificeRatio === Infinity ? '∞' : sacrificeRatio.toFixed(2)} п.п.
+                    {sacrificeRatio === Infinity ? '∞' : sacrificeRatio.toFixed(2)}
                   </strong>
                 </p>
                 <Separator />
                 <p>
-                  При текущих параметрах: u* = {naturalRate}%, значит для снижения инфляции
-                  на 1% безработица должна вырасти до{' '}
-                  <strong>
-                    {(naturalRate + sacrificeRatio).toFixed(2)}%
-                  </strong>
+                  {t('phillips.params')}: u* = {naturalRate}%
                 </p>
               </div>
             </div>

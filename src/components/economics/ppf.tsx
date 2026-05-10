@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useMemo } from 'react'
+import { useI18n } from '@/lib/i18n-provider'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Slider } from '@/components/ui/slider'
@@ -29,6 +30,7 @@ interface PPFPoint {
 }
 
 export function PPFCurve() {
+  const { t } = useI18n()
   const [goodAName, setGoodAName] = useState('Масло')
   const [goodBName, setGoodBName] = useState('Пушки')
   const [maxA, setMaxA] = useState(100)
@@ -153,28 +155,24 @@ export function PPFCurve() {
   // Theory cards data
   const theoryCards = [
     {
-      title: 'Что показывает КПВ',
+      title: t('ppf.theory.whatIs'),
       icon: <Info className="h-4 w-4" />,
-      content:
-        'Кривая производственных возможностей (КПВ) показывает все комбинации максимального выпуска двух благ при полном использовании имеющихся ресурсов и данном уровне технологии. Каждая точка на кривой — эффективный выбор общества.',
+      content: t('ppf.theory.whatIsContent'),
     },
     {
-      title: 'Возрастающая альтернативная стоимость',
+      title: t('ppf.theory.increasingCost'),
       icon: <ArrowLeftRight className="h-4 w-4" />,
-      content:
-        'КПВ выпукла к началу координат, потому что ресурсы не взаимозаменяемы. При увеличении выпуска одного блага приходится жертвовать всё большим количеством другого — это закон возрастающей альтернативной стоимости (закон замещения).',
+      content: t('ppf.theory.increasingCostContent'),
     },
     {
-      title: 'Экономический рост',
+      title: t('ppf.theory.growth'),
       icon: <TrendingUp className="h-4 w-4" />,
-      content:
-        'Экономический рост сдвигает КПВ вправо-вверх: при увеличении ресурсов или совершенствовании технологий общество может производить больше обоих благ. Сдвиг может быть несимметричным, если технологический прогресс затронул только одну отрасль.',
+      content: t('ppf.theory.growthContent'),
     },
     {
-      title: 'Эффективность и неэффективность',
+      title: t('ppf.theory.efficiency'),
       icon: <Zap className="h-4 w-4" />,
-      content:
-        'Точки на КПВ — эффективное производство (все ресурсы задействованы). Точки внутри — неэффективное (есть безработица, недозагрузка мощностей). Точки снаружи — недостижимы при данных ресурсах и технологиях, но могут стать доступными при экономическом росте.',
+      content: t('ppf.theory.efficiencyContent'),
     },
   ]
 
@@ -185,10 +183,10 @@ export function PPFCurve() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ArrowLeftRight className="h-5 w-5" />
-            Кривая производственных возможностей
+            {t('ppf.title')}
           </CardTitle>
           <CardDescription>
-            Исследуйте КПВ: меняйте параметры, перемещайте точку выбора, наблюдайте альтернативные издержки
+            {t('ppf.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -218,8 +216,8 @@ export function PPFCurve() {
                     fontSize: '12px',
                   }}
                   formatter={(value: number, name: string) => {
-                    if (name === 'b') return [value.toFixed(1), isLinear ? 'КПВ (линейная)' : 'КПВ (выпуклая)']
-                    if (name === 'linearB') return [value.toFixed(1), 'Линейная КПВ']
+                    if (name === 'b') return [value.toFixed(1), isLinear ? t('ppf.tooltipLinear') : t('ppf.tooltipPPF')]
+                    if (name === 'linearB') return [value.toFixed(1), t('ppf.tooltipLinearPPF')]
                     return [value.toFixed(1), name]
                   }}
                   labelFormatter={(label: number) => `${goodAName}: ${label.toFixed(1)}`}
@@ -272,25 +270,25 @@ export function PPFCurve() {
           <div className="flex flex-wrap items-center gap-3 mt-3 text-xs sm:text-sm">
             <div className="flex items-center gap-1.5">
               <span className="h-3 w-3 rounded-sm bg-muted/50 border border-muted-foreground/30" />
-              <span className="text-muted-foreground">Внутри КПВ — неэффективно</span>
+              <span className="text-muted-foreground">{t('ppf.zoneInside')}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="h-3 w-4 rounded-sm bg-primary border border-primary/50" />
-              <span className="text-muted-foreground">На КПВ — эффективно</span>
+              <span className="text-muted-foreground">{t('ppf.zoneOn')}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-red-500 font-bold text-sm">●</span>
-              <span className="text-muted-foreground">Текущая точка выбора</span>
+              <span className="text-muted-foreground">{t('ppf.zoneCurrent')}</span>
             </div>
             {!isLinear && (
               <div className="flex items-center gap-1.5">
                 <span className="h-0.5 w-4 border-t-2 border-dashed border-slate-400" />
-                <span className="text-muted-foreground">Линейная КПВ (для сравнения)</span>
+                <span className="text-muted-foreground">{t('ppf.zoneLinear')}</span>
               </div>
             )}
             <div className="flex items-center gap-1.5">
               <span className="text-sm">↗</span>
-              <span className="text-muted-foreground">За КПВ — недостижимо</span>
+              <span className="text-muted-foreground">{t('ppf.zoneOutside')}</span>
             </div>
           </div>
         </CardContent>
@@ -301,7 +299,7 @@ export function PPFCurve() {
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
             <Zap className="h-4 w-4" />
-            Текущая точка на КПВ
+            {t('ppf.currentPoint')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -315,11 +313,11 @@ export function PPFCurve() {
               <div className="text-xl font-mono font-bold">{currentPoint.b.toFixed(1)}</div>
             </div>
             <div className="p-3 bg-muted/50 rounded-lg text-center">
-              <div className="text-sm text-muted-foreground">ПРЕ (MRT)</div>
+              <div className="text-sm text-muted-foreground">{t('ppf.mrt')}</div>
               <div className="text-xl font-mono font-bold">{mrt.toFixed(3)}</div>
             </div>
             <div className="p-3 bg-muted/50 rounded-lg text-center">
-              <div className="text-sm text-muted-foreground">Альт. издержки +1{goodAName.slice(0, 3)}</div>
+              <div className="text-sm text-muted-foreground">{t('ppf.opportunityCostLabel')} {goodAName.slice(0, 3)}</div>
               <div className="text-xl font-mono font-bold">{opportunityCost.toFixed(3)} {goodBName.slice(0, 5)}</div>
             </div>
           </div>
@@ -327,7 +325,7 @@ export function PPFCurve() {
           {/* Position Slider */}
           <div className="mt-4 space-y-2">
             <div className="flex justify-between text-sm">
-              <Label>Позиция на кривой (0% = только {goodBName}, 100% = только {goodAName})</Label>
+              <Label>{t('ppf.positionLabel').replace('{goodB}', goodBName).replace('{goodA}', goodAName)}</Label>
               <span className="font-mono text-muted-foreground">{position}%</span>
             </div>
             <Slider
@@ -338,28 +336,28 @@ export function PPFCurve() {
               step={1}
             />
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>0% — max {goodBName}</span>
-              <span>50% — середина</span>
-              <span>100% — max {goodAName}</span>
+              <span>0% — {t('ppf.max')} {goodBName}</span>
+              <span>50% — {t('ppf.middle')}</span>
+              <span>100% — {t('ppf.max')} {goodAName}</span>
             </div>
           </div>
 
           {/* Interpretation */}
           <div className="mt-3 p-3 bg-primary/5 rounded-lg text-sm space-y-1">
             <p>
-              <span className="font-semibold">Текущий выпуск:</span> {currentPoint.a.toFixed(1)} {goodAName.toLowerCase()} и {currentPoint.b.toFixed(1)} {goodBName.toLowerCase()}.
+              <span className="font-semibold">{t('ppf.currentOutput')}</span> {currentPoint.a.toFixed(1)} {goodAName.toLowerCase()} {t('ppf.and')} {currentPoint.b.toFixed(1)} {goodBName.toLowerCase()}.
             </p>
             <p>
-              <span className="font-semibold">Предельная норма трансформации (ПРЕ):</span> для производства дополнительной единицы {goodAName.toLowerCase()} нужно пожертвовать ≈{mrt.toFixed(3)} ед. {goodBName.toLowerCase()}.
+              <span className="font-semibold">{t('ppf.mrt')}:</span> {t('ppf.mrtInterpretation')} {goodAName.toLowerCase()} {t('ppf.needToSacrifice')}{mrt.toFixed(3)} {t('ppf.units')} {goodBName.toLowerCase()}.
             </p>
             {!isLinear && mrt > 0 && (
               <p className="text-muted-foreground">
-                💡 При движении от {goodBName.toLowerCase()} к {goodAName.toLowerCase()} альтернативные издержки возрастают — это отражает выпуклость КПВ.
+                💡 {t('ppf.concaveHint').replace('{goodB}', goodBName.toLowerCase()).replace('{goodA}', goodAName.toLowerCase())}
               </p>
             )}
             {isLinear && (
               <p className="text-muted-foreground">
-                💡 При линейной КПВ альтернативные издержки постоянны: каждая дополнительная единица {goodAName.toLowerCase()} стоит ровно {mrt.toFixed(3)} ед. {goodBName.toLowerCase()}.
+                💡 {t('ppf.linearHint').replace('{goodA}', goodAName.toLowerCase()).replace('{mrt}', mrt.toFixed(3)).replace('{goodB}', goodBName.toLowerCase())}
               </p>
             )}
           </div>
@@ -370,11 +368,11 @@ export function PPFCurve() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Параметры благ</CardTitle>
+            <CardTitle className="text-lg">{t('ppf.paramsTitle')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="goodA">Название блага A</Label>
+              <Label htmlFor="goodA">{t('ppf.goodAName')}</Label>
               <Input
                 id="goodA"
                 value={goodAName}
@@ -385,7 +383,7 @@ export function PPFCurve() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Макс. производство {goodAName.toLowerCase()}</Label>
+                <Label>{t('ppf.maxProductionA').replace('{good}', goodAName.toLowerCase())}</Label>
                 <span className="font-mono text-muted-foreground">{maxA}</span>
               </div>
               <Slider
@@ -400,7 +398,7 @@ export function PPFCurve() {
             <Separator />
 
             <div className="space-y-2">
-              <Label htmlFor="goodB">Название блага B</Label>
+              <Label htmlFor="goodB">{t('ppf.goodBName')}</Label>
               <Input
                 id="goodB"
                 value={goodBName}
@@ -411,7 +409,7 @@ export function PPFCurve() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Макс. производство {goodBName.toLowerCase()}</Label>
+                <Label>{t('ppf.maxProductionA').replace('{good}', goodBName.toLowerCase())}</Label>
                 <span className="font-mono text-muted-foreground">{maxB}</span>
               </div>
               <Slider
@@ -427,12 +425,12 @@ export function PPFCurve() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Форма кривой и эффективность</CardTitle>
+            <CardTitle className="text-lg">{t('ppf.curveShapeTitle')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Параметр эффективности (выпуклость)</Label>
+                <Label>{t('ppf.efficiencyLabel')}</Label>
                 <span className="font-mono text-muted-foreground">{efficiency.toFixed(2)}</span>
               </div>
               <Slider
@@ -444,10 +442,10 @@ export function PPFCurve() {
               />
               <p className="text-xs text-muted-foreground">
                 {efficiency < 0.8
-                  ? 'Кривая сильно выпукла — высокая специализация ресурсов'
+                  ? t('ppf.efficiency.high')
                   : efficiency > 1.2
-                    ? 'Кривая ближе к линейной — ресурсы более взаимозаменяемы'
-                    : 'Стандартная выпуклость — умеренная специализация ресурсов'}
+                    ? t('ppf.efficiency.linear')
+                    : t('ppf.efficiency.standard')}
               </p>
             </div>
 
@@ -455,7 +453,7 @@ export function PPFCurve() {
 
             {/* Linear vs Concave toggle */}
             <div className="space-y-3">
-              <Label className="text-sm font-semibold">Тип КПВ</Label>
+              <Label className="text-sm font-semibold">{t('ppf.curveType')}</Label>
               <div className="flex gap-2">
                 <Button
                   variant={!isLinear ? 'default' : 'outline'}
@@ -463,7 +461,7 @@ export function PPFCurve() {
                   onClick={() => setIsLinear(false)}
                   className="flex-1"
                 >
-                  Выпуклая КПВ
+                  {t('ppf.concaveCurve')}
                 </Button>
                 <Button
                   variant={isLinear ? 'default' : 'outline'}
@@ -471,13 +469,13 @@ export function PPFCurve() {
                   onClick={() => setIsLinear(true)}
                   className="flex-1"
                 >
-                  Линейная КПВ
+                  {t('ppf.linearCurve')}
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
                 {isLinear
-                  ? 'Линейная КПВ: постоянные альтернативные издержки (ресурсы взаимозаменяемы)'
-                  : 'Выпуклая КПВ: возрастающие альтернативные издержки (ресурсы специализированы)'}
+                  ? t('ppf.linearDesc')
+                  : t('ppf.concaveDesc')}
               </p>
             </div>
 
@@ -485,7 +483,7 @@ export function PPFCurve() {
 
             {/* Preset Scenarios */}
             <div className="space-y-3">
-              <Label className="text-sm font-semibold">Сценарии</Label>
+              <Label className="text-sm font-semibold">{t('ppf.scenarios')}</Label>
               <div className="grid grid-cols-3 gap-2">
                 <Button
                   variant="outline"
@@ -494,7 +492,7 @@ export function PPFCurve() {
                   className="flex flex-col items-center gap-1 h-auto py-2"
                 >
                   <TrendingUp className="h-4 w-4 text-emerald-600" />
-                  <span className="text-xs">Эконом. рост</span>
+                  <span className="text-xs">{t('ppf.economicGrowth')}</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -503,7 +501,7 @@ export function PPFCurve() {
                   className="flex flex-col items-center gap-1 h-auto py-2"
                 >
                   <Zap className="h-4 w-4 text-amber-600" />
-                  <span className="text-xs">Техн. прорыв</span>
+                  <span className="text-xs">{t('ppf.techBreakthrough')}</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -512,13 +510,13 @@ export function PPFCurve() {
                   className="flex flex-col items-center gap-1 h-auto py-2"
                 >
                   <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-xs">Сброс</span>
+                  <span className="text-xs">{t('ppf.reset')}</span>
                 </Button>
               </div>
               <div className="text-xs text-muted-foreground space-y-0.5">
-                <p>• <strong>Экономический рост</strong> — КПВ смещается вправо-вверх (больше ресурсов)</p>
-                <p>• <strong>Технологический прорыв</strong> — КПВ смещается асимметрично (прогресс в одной отрасли)</p>
-                <p>• <strong>Сброс</strong> — возврат к исходным параметрам</p>
+                <p>• <strong>{t('ppf.economicGrowth')}</strong> — {t('ppf.scenarioGrowth')}</p>
+                <p>• <strong>{t('ppf.techBreakthrough')}</strong> — {t('ppf.scenarioTech')}</p>
+                <p>• <strong>{t('ppf.reset')}</strong> — {t('ppf.scenarioReset')}</p>
               </div>
             </div>
           </CardContent>
@@ -547,7 +545,7 @@ export function PPFCurve() {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
             <Info className="h-4 w-4" />
-            Формула КПВ
+            {t('ppf.formulaTitle')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -556,9 +554,8 @@ export function PPFCurve() {
               B = B<sub>max</sub> × (1 − (A / A<sub>max</sub>)<sup>eff</sup>)<sup>1/eff</sup>
             </div>
             <p className="text-muted-foreground">
-              где <strong>A<sub>max</sub></strong> и <strong>B<sub>max</sub></strong> — максимальный выпуск каждого блага,
-              а <strong>eff</strong> — параметр эффективности (выпуклости). При eff = 1 кривая становится линейной.
-              При eff &gt; 1 кривая более выпукла (сильнее возрастающие альтернативные издержки).
+              {t('ppf.formulaDesc')} <strong>A<sub>max</sub></strong> {t('ppf.and')} <strong>B<sub>max</sub></strong> — {t('ppf.formulaMaxOutput')}
+              {t('ppf.formulaEff')}
             </p>
             <div className="flex flex-wrap gap-2 mt-2">
               <Badge variant="outline" className="font-mono text-xs">
@@ -571,7 +568,7 @@ export function PPFCurve() {
                 B<sub>max</sub> = {maxB}
               </Badge>
               <Badge variant={isLinear ? 'default' : 'secondary'} className="font-mono text-xs">
-                {isLinear ? 'Линейная' : 'Выпуклая'}
+                {isLinear ? t('ppf.linear') : t('ppf.concave')}
               </Badge>
             </div>
           </div>

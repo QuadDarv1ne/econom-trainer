@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
 import { useEconomicsStore, getLevelFromXP, getLevelTitle, getLevelColor } from '@/store/economics-store'
+import { useI18n } from '@/lib/i18n-provider'
 import {
   Trophy,
   Flame,
@@ -52,6 +53,7 @@ interface Achievement {
 }
 
 export function Achievements() {
+  const { t } = useI18n()
   const quizResults = useEconomicsStore((s) => s.quizResults)
   const gdpResults = useEconomicsStore((s) => s.gdpResults)
   const financeResults = useEconomicsStore((s) => s.financeResults)
@@ -85,8 +87,8 @@ export function Achievements() {
   const achievements: Achievement[] = useMemo(() => [
     {
       id: 'first-quiz',
-      title: 'Первый квиз',
-      description: 'Пройдите свой первый квиз',
+      title: t('achievement.firstQuiz.title'),
+      description: t('achievement.firstQuiz.desc'),
       icon: Brain,
       color: 'text-violet-600',
       bg: 'bg-violet-50 dark:bg-violet-950/30',
@@ -96,8 +98,8 @@ export function Achievements() {
     },
     {
       id: 'quiz-master',
-      title: 'Знаток экономики',
-      description: 'Наберите 80%+ в квизе',
+      title: t('achievement.quizMaster.title'),
+      description: t('achievement.quizMaster.desc'),
       icon: Crown,
       color: 'text-yellow-600',
       bg: 'bg-yellow-50 dark:bg-yellow-950/30',
@@ -107,8 +109,8 @@ export function Achievements() {
     },
     {
       id: 'gdp-calc',
-      title: 'Макроэкономист',
-      description: 'Рассчитайте ВВП 3 раза',
+      title: t('achievement.gdpCalc.title'),
+      description: t('achievement.gdpCalc.desc'),
       icon: Calculator,
       color: 'text-emerald-600',
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',
@@ -118,8 +120,8 @@ export function Achievements() {
     },
     {
       id: 'finance-streak',
-      title: 'Точность',
-      description: 'Решите 5 финансовых задач правильно',
+      title: t('achievement.financeStreak.title'),
+      description: t('achievement.financeStreak.desc'),
       icon: Target,
       color: 'text-amber-600',
       bg: 'bg-amber-50 dark:bg-amber-950/30',
@@ -129,8 +131,8 @@ export function Achievements() {
     },
     {
       id: 'streak-3',
-      title: 'Серия 3',
-      description: 'Дайте 3 правильных ответа подряд',
+      title: t('achievement.streak3.title'),
+      description: t('achievement.streak3.desc'),
       icon: Flame,
       color: 'text-orange-600',
       bg: 'bg-orange-50 dark:bg-orange-950/30',
@@ -140,8 +142,8 @@ export function Achievements() {
     },
     {
       id: 'ten-sessions',
-      title: 'Трудоголик',
-      description: 'Проведите 10 тренировок',
+      title: t('achievement.tenSessions.title'),
+      description: t('achievement.tenSessions.desc'),
       icon: Zap,
       color: 'text-blue-600',
       bg: 'bg-blue-50 dark:bg-blue-950/30',
@@ -151,8 +153,8 @@ export function Achievements() {
     },
     {
       id: 'perfect-quiz',
-      title: 'Перфекционист',
-      description: 'Пройдите квиз без ошибок',
+      title: t('achievement.perfectQuiz.title'),
+      description: t('achievement.perfectQuiz.desc'),
       icon: Star,
       color: 'text-pink-600',
       bg: 'bg-pink-50 dark:bg-pink-950/30',
@@ -162,8 +164,8 @@ export function Achievements() {
     },
     {
       id: 'finance-10',
-      title: 'Финансист',
-      description: 'Решите 10 финансовых задач',
+      title: t('achievement.finance10.title'),
+      description: t('achievement.finance10.desc'),
       icon: TrendingUp,
       color: 'text-green-600',
       bg: 'bg-green-50 dark:bg-green-950/30',
@@ -173,8 +175,8 @@ export function Achievements() {
     },
     {
       id: 'quiz-5',
-      title: 'Постоянство',
-      description: 'Пройдите 5 квизов',
+      title: t('achievement.quiz5.title'),
+      description: t('achievement.quiz5.desc'),
       icon: Medal,
       color: 'text-teal-600',
       bg: 'bg-teal-50 dark:bg-teal-950/30',
@@ -184,8 +186,8 @@ export function Achievements() {
     },
     {
       id: 'all-modules',
-      title: 'Универсал',
-      description: 'Используйте все типы тренировок',
+      title: t('achievement.allModules.title'),
+      description: t('achievement.allModules.desc'),
       icon: Award,
       color: 'text-purple-600',
       bg: 'bg-purple-50 dark:bg-purple-950/30',
@@ -195,8 +197,8 @@ export function Achievements() {
     },
     {
       id: 'elasticity-master',
-      title: 'Эластичность',
-      description: 'Рассчитайте 3 вида эластичности',
+      title: t('achievement.elasticityMaster.title'),
+      description: t('achievement.elasticityMaster.desc'),
       icon: Scale,
       color: 'text-cyan-600',
       bg: 'bg-cyan-50 dark:bg-cyan-950/30',
@@ -206,8 +208,8 @@ export function Achievements() {
     },
     {
       id: 'streak-7',
-      title: 'Серия 7',
-      description: 'Дайте 7 правильных ответов подряд',
+      title: t('achievement.streak7.title'),
+      description: t('achievement.streak7.desc'),
       icon: Flame,
       color: 'text-red-600',
       bg: 'bg-red-50 dark:bg-red-950/30',
@@ -217,8 +219,8 @@ export function Achievements() {
     },
     {
       id: 'phillips-explorer',
-      title: 'Исследователь Филлипса',
-      description: 'Проведите 3+ тренировки по макро',
+      title: t('achievement.phillipsExplorer.title'),
+      description: t('achievement.phillipsExplorer.desc'),
       icon: TrendingDown,
       color: 'text-rose-600',
       bg: 'bg-rose-50 dark:bg-rose-950/30',
@@ -228,8 +230,8 @@ export function Achievements() {
     },
     {
       id: 'game-theorist',
-      title: 'Теоретик игр',
-      description: 'Проведите 5+ тренировок',
+      title: t('achievement.gameTheorist.title'),
+      description: t('achievement.gameTheorist.desc'),
       icon: Swords,
       color: 'text-indigo-600',
       bg: 'bg-indigo-50 dark:bg-indigo-950/30',
@@ -239,8 +241,8 @@ export function Achievements() {
     },
     {
       id: 'marathon',
-      title: 'Марафонец',
-      description: 'Проведите 25 тренировок',
+      title: t('achievement.marathon.title'),
+      description: t('achievement.marathon.desc'),
       icon: Rocket,
       color: 'text-fuchsia-600',
       bg: 'bg-fuchsia-50 dark:bg-fuchsia-950/30',
@@ -250,8 +252,8 @@ export function Achievements() {
     },
     {
       id: 'scholar',
-      title: 'Академик',
-      description: 'Достигните 90%+ в квизе',
+      title: t('achievement.scholar.title'),
+      description: t('achievement.scholar.desc'),
       icon: GraduationCap,
       color: 'text-sky-600',
       bg: 'bg-sky-50 dark:bg-sky-950/30',
@@ -261,8 +263,8 @@ export function Achievements() {
     },
     {
       id: 'tax-expert',
-      title: 'Налоговый эксперт',
-      description: 'Проведите 8+ тренировок',
+      title: t('achievement.taxExpert.title'),
+      description: t('achievement.taxExpert.desc'),
       icon: Receipt,
       color: 'text-lime-600',
       bg: 'bg-lime-50 dark:bg-lime-950/30',
@@ -272,8 +274,8 @@ export function Achievements() {
     },
     {
       id: 'ppf-master',
-      title: 'КПВ-мастер',
-      description: 'Проведите 12+ тренировок',
+      title: t('achievement.ppfMaster.title'),
+      description: t('achievement.ppfMaster.desc'),
       icon: ArrowLeftRight,
       color: 'text-green-600',
       bg: 'bg-green-50 dark:bg-green-950/30',
@@ -283,8 +285,8 @@ export function Achievements() {
     },
     {
       id: 'cost-analyst',
-      title: 'Аналитик издержек',
-      description: 'Проведите 15+ тренировок',
+      title: t('achievement.costAnalyst.title'),
+      description: t('achievement.costAnalyst.desc'),
       icon: BarChart3,
       color: 'text-blue-600',
       bg: 'bg-blue-50 dark:bg-blue-950/30',
@@ -305,23 +307,23 @@ export function Achievements() {
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <div className="text-center sm:text-left">
               <div className={`text-4xl font-bold ${levelColor}`}>
-                Ур. {xpState.level}
+                {t('achievements.level')} {xpState.level}
               </div>
               <div className={`text-lg font-semibold ${levelColor}`}>
                 {levelTitle}
               </div>
               <div className="text-sm text-muted-foreground mt-1">
-                {totalXP.toLocaleString('ru-RU')} XP всего
+                {totalXP.toLocaleString('ru-RU')} {t('achievements.totalXP')}
               </div>
             </div>
             <div className="flex-1 w-full">
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-muted-foreground">Прогресс до уровня {xpState.level + 1}</span>
+                <span className="text-muted-foreground">{t('achievements.progressToLevel')} {xpState.level + 1}</span>
                 <span className="font-medium">{xpState.xpInCurrentLevel.toLocaleString('ru-RU')} / {xpState.xpToNextLevel.toLocaleString('ru-RU')} XP</span>
               </div>
               <Progress value={(xpState.xpInCurrentLevel / xpState.xpToNextLevel) * 100} className="h-3" />
               <div className="text-xs text-muted-foreground mt-2">
-                Осталось {(xpState.xpToNextLevel - xpState.xpInCurrentLevel).toLocaleString('ru-RU')} XP до следующего уровня
+                {t('achievements.remaining')} {(xpState.xpToNextLevel - xpState.xpInCurrentLevel).toLocaleString('ru-RU')} {t('achievements.toNextLevel')}
               </div>
             </div>
           </div>
@@ -334,28 +336,28 @@ export function Achievements() {
           <CardContent className="p-4 text-center">
             <Trophy className="h-6 w-6 mx-auto mb-1 text-yellow-500" />
             <div className="text-2xl font-bold">{unlockedCount}/{achievements.length}</div>
-            <div className="text-xs text-muted-foreground">Достижений</div>
+            <div className="text-xs text-muted-foreground">{t('achievements.achievementsCount')}</div>
           </CardContent>
         </Card>
         <Card className="border-2 border-primary/20">
           <CardContent className="p-4 text-center">
             <Star className="h-6 w-6 mx-auto mb-1 text-primary" />
             <div className="text-2xl font-bold">{totalBadgeXP.toLocaleString('ru-RU')}</div>
-            <div className="text-xs text-muted-foreground">XP за бейджи</div>
+            <div className="text-xs text-muted-foreground">{t('achievements.badgeXP')}</div>
           </CardContent>
         </Card>
         <Card className="border-2 border-primary/20">
           <CardContent className="p-4 text-center">
             <TrendingUp className="h-6 w-6 mx-auto mb-1 text-green-500" />
             <div className="text-2xl font-bold">{Math.round((unlockedCount / achievements.length) * 100)}%</div>
-            <div className="text-xs text-muted-foreground">Прогресс</div>
+            <div className="text-xs text-muted-foreground">{t('achievements.progress')}</div>
           </CardContent>
         </Card>
         <Card className="border-2 border-primary/20">
           <CardContent className="p-4 text-center">
             <GraduationCap className="h-6 w-6 mx-auto mb-1 text-blue-500" />
             <div className="text-2xl font-bold">{xpState.level}</div>
-            <div className="text-xs text-muted-foreground">Уровень</div>
+            <div className="text-xs text-muted-foreground">{t('achievements.levelLabel')}</div>
           </CardContent>
         </Card>
       </div>
@@ -409,12 +411,12 @@ export function Achievements() {
           <Card className="border-dashed cursor-pointer hover:bg-accent/50 transition-colors">
             <CardContent className="p-4 flex items-center justify-between">
               <div>
-                <div className="text-sm font-medium">Сбросить прогресс</div>
-                <div className="text-xs text-muted-foreground">Удалить все результаты, XP и достижения</div>
+                <div className="text-sm font-medium">{t('achievements.resetTitle')}</div>
+                <div className="text-xs text-muted-foreground">{t('achievements.resetDescription')}</div>
               </div>
               <Button variant="outline" size="sm">
                 <RotateCcw className="h-4 w-4 mr-1" />
-                Сбросить
+                {t('achievements.resetButton')}
               </Button>
             </CardContent>
           </Card>
@@ -423,26 +425,26 @@ export function Achievements() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-destructive">
               <AlertTriangle className="h-5 w-5" />
-              Подтверждение сброса
+              {t('achievements.confirmTitle')}
             </DialogTitle>
             <DialogDescription>
-              Вы уверены, что хотите сбросить весь прогресс? Это действие нельзя отменить.
+              {t('achievements.confirmDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="p-4 bg-destructive/10 rounded-lg">
             <p className="text-sm text-destructive font-medium">
-              Будет удалено:
+              {t('achievements.willDelete')}
             </p>
             <ul className="text-sm text-muted-foreground mt-2 space-y-1">
-              <li>• Весь накопленный опыт (XP)</li>
-              <li>• Все достижения и бейджи</li>
-              <li>• Статистика по модулям</li>
-              <li>• Результаты квизов и задач</li>
+              <li>{t('achievements.deleteXP')}</li>
+              <li>{t('achievements.deleteBadges')}</li>
+              <li>{t('achievements.deleteModuleStats')}</li>
+              <li>{t('achievements.deleteResults')}</li>
             </ul>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => {}}>
-              Отмена
+              {t('achievements.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -450,7 +452,7 @@ export function Achievements() {
                 resetProgress()
               }}
             >
-              Да, сбросить прогресс
+              {t('achievements.resetConfirmButton')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
 import { useEconomicsStore } from '@/store/economics-store'
 import { useToast } from '@/hooks/use-toast'
+import { useI18n } from '@/lib/i18n-provider'
 import { DollarSign, Percent, TrendingUp, Calculator, CheckCircle2, XCircle, RotateCcw } from 'lucide-react'
 
 interface CompoundProblem {
@@ -29,14 +30,14 @@ interface NPVProblem {
   question: string
 }
 
-function generateCompoundProblem(): CompoundProblem {
+function generateCompoundProblem(t: (key: string) => string): CompoundProblem {
   const principal = (Math.floor(Math.random() * 90) + 10) * 1000
   const rate = (Math.floor(Math.random() * 15) + 3)
   const years = Math.floor(Math.random() * 8) + 2
   const compounding = [1, 2, 4, 12][Math.floor(Math.random() * 4)]
   const answer = principal * Math.pow(1 + rate / 100 / compounding, compounding * years)
   const compLabel =
-    compounding === 1 ? 'ежегодно' : compounding === 2 ? 'по полугодиям' : compounding === 4 ? 'поквартально' : 'ежемесячно'
+    compounding === 1 ? t('finance.compounding.annually') : compounding === 2 ? t('finance.compounding.semiannually') : compounding === 4 ? t('finance.compounding.quarterly') : t('finance.compounding.monthly')
 
   return {
     principal,
@@ -44,11 +45,15 @@ function generateCompoundProblem(): CompoundProblem {
     years,
     compounding,
     answer,
-    question: `Найдите будущую стоимость вклада ${principal.toLocaleString('ru-RU')} руб. под ${rate}% годовых на ${years} лет при ${compLabel} начислении процентов.`,
+    question: t('finance.problem.compound')
+      .replace('{principal}', principal.toLocaleString('ru-RU'))
+      .replace('{rate}', String(rate))
+      .replace('{years}', String(years))
+      .replace('{compounding}', compLabel),
   }
 }
 
-function generateNPVProblem(): NPVProblem {
+function generateNPVProblem(t: (key: string) => string): NPVProblem {
   const initialInvestment = (Math.floor(Math.random() * 40) + 10) * 1000
   const rate = Math.floor(Math.random() * 12) + 5
   const numYears = Math.floor(Math.random() * 3) + 3
@@ -58,16 +63,21 @@ function generateNPVProblem(): NPVProblem {
   const npv =
     cashFlows.reduce((sum, cf, i) => sum + cf / Math.pow(1 + rate / 100, i + 1), 0) - initialInvestment
 
+  const cashFlowsStr = cashFlows.map((cf, i) => t('finance.npvCashFlow.year').replace('{year}', String(i + 1)) + ' ' + cf.toLocaleString('ru-RU')).join(', ')
+
   return {
     initialInvestment,
     cashFlows,
     rate,
     answer: npv,
-    question: `Рассчитайте NPV проекта: начальные инвестиции ${initialInvestment.toLocaleString('ru-RU')} руб., ставка дисконтирования ${rate}%, денежные потоки: ${cashFlows.map((cf, i) => `${i + 1} год: ${cf.toLocaleString('ru-RU')}`).join(', ')} руб.`,
+    question: t('finance.problem.npv')
+      .replace('{investment}', initialInvestment.toLocaleString('ru-RU'))
+      .replace('{rate}', String(rate))
+      .replace('{cashFlows}', cashFlowsStr),
   }
 }
 
-function generateAnnuityProblem(): { question: string; answer: number; pmf: number; rate: number; years: number } {
+function generateAnnuityProblem(t: (key: string) => string): { question: string; answer: number; pmf: number; rate: number; years: number } {
   const rate = Math.floor(Math.random() * 10) + 3
   const years = Math.floor(Math.random() * 10) + 5
   const futureValue = (Math.floor(Math.random() * 50) + 10) * 10000
@@ -75,7 +85,10 @@ function generateAnnuityProblem(): { question: string; answer: number; pmf: numb
   const pmf = futureValue * (r / (Math.pow(1 + r, years) - 1))
 
   return {
-    question: `Какой ежегодный платёж нужно вносить, чтобы через ${years} лет накопить ${futureValue.toLocaleString('ru-RU')} руб. при ставке ${rate}% годовых?`,
+    question: t('finance.problem.annuity')
+      .replace('{years}', String(years))
+      .replace('{futureValue}', futureValue.toLocaleString('ru-RU'))
+      .replace('{rate}', String(rate)),
     answer: pmf,
     pmf,
     rate,
@@ -84,6 +97,7 @@ function generateAnnuityProblem(): { question: string; answer: number; pmf: numb
 }
 
 export function FinancialMath() {
+  const { t, locale } = useI18n()
   const [compoundProblem, setCompoundProblem] = useState<CompoundProblem | null>(null)
   const [npvProblem, setNPVProblem] = useState<NPVProblem | null>(null)
   const [annuityProblem, setAnnuityProblem] = useState<{
@@ -106,7 +120,7 @@ export function FinancialMath() {
     (correctAnswer: number, problemType: string) => {
       const parsed = parseFloat(userAnswer.replace(',', '.'))
       if (isNaN(parsed)) {
-        toast({ title: 'Введите число', description: 'Пожалуйста, введите числовой ответ', variant: 'destructive' })
+        toast({ title: t('finance.enterNumber'), description: t('finance.enterNumberDesc'), variant: 'destructive' })
         return
       }
       const tolerance = Math.max(Math.abs(correctAnswer) * 0.02, 100)
@@ -131,43 +145,43 @@ export function FinancialMath() {
         date: new Date().toISOString(),
       })
     },
-    [userAnswer, addFinanceResult, toast]
+    [userAnswer, addFinanceResult, toast, t]
   )
 
   const newCompoundProblem = useCallback(() => {
-    setCompoundProblem(generateCompoundProblem())
+    setCompoundProblem(generateCompoundProblem(t))
     setUserAnswer('')
     setShowResult(false)
-  }, [])
+  }, [t])
 
   const newNPVProblem = useCallback(() => {
-    setNPVProblem(generateNPVProblem())
+    setNPVProblem(generateNPVProblem(t))
     setUserAnswer('')
     setShowResult(false)
-  }, [])
+  }, [t])
 
   const newAnnuityProblem = useCallback(() => {
-    setAnnuityProblem(generateAnnuityProblem())
+    setAnnuityProblem(generateAnnuityProblem(t))
     setUserAnswer('')
     setShowResult(false)
-  }, [])
+  }, [t])
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-3 gap-3 text-center">
         <div className="p-3 bg-muted/50 rounded-lg">
           <div className="text-xl font-bold">{totalAttempted}</div>
-          <div className="text-xs text-muted-foreground">Решено</div>
+          <div className="text-xs text-muted-foreground">{t('finance.solved')}</div>
         </div>
         <div className="p-3 bg-muted/50 rounded-lg">
           <div className="text-xl font-bold">
             {totalAttempted > 0 ? Math.round((totalCorrect / totalAttempted) * 100) : 0}%
           </div>
-          <div className="text-xs text-muted-foreground">Точность</div>
+          <div className="text-xs text-muted-foreground">{t('finance.accuracy')}</div>
         </div>
         <div className="p-3 bg-muted/50 rounded-lg">
           <div className="text-xl font-bold">{streak}</div>
-          <div className="text-xs text-muted-foreground">Серия</div>
+          <div className="text-xs text-muted-foreground">{t('finance.streak')}</div>
         </div>
       </div>
 
@@ -175,15 +189,15 @@ export function FinancialMath() {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="compound" className="text-xs sm:text-sm">
             <Percent className="h-4 w-4 mr-1" />
-            Сложный процент
+            {t('finance.tab.compound')}
           </TabsTrigger>
           <TabsTrigger value="npv" className="text-xs sm:text-sm">
             <DollarSign className="h-4 w-4 mr-1" />
-            NPV
+            {t('finance.tab.npv')}
           </TabsTrigger>
           <TabsTrigger value="annuity" className="text-xs sm:text-sm">
             <TrendingUp className="h-4 w-4 mr-1" />
-            Аннуитет
+            {t('finance.tab.annuity')}
           </TabsTrigger>
         </TabsList>
 
@@ -192,17 +206,17 @@ export function FinancialMath() {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Percent className="h-5 w-5" />
-                Сложные проценты
+                {t('finance.compound.title')}
               </CardTitle>
               <CardDescription>
-                Формула: FV = PV × (1 + r/n)^(n×t), где PV — начальная сумма, r — годовая ставка, n — число начислений в год, t — лет
+                {t('finance.compound.formula')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {!compoundProblem ? (
                 <Button onClick={newCompoundProblem} className="w-full" size="lg">
                   <Calculator className="h-4 w-4 mr-2" />
-                  Сгенерировать задачу
+                  {t('finance.generateProblem')}
                 </Button>
               ) : (
                 <>
@@ -211,10 +225,10 @@ export function FinancialMath() {
                   </div>
                   <div className="flex gap-3">
                     <div className="flex-1">
-                      <Label>Ваш ответ (руб.)</Label>
+                      <Label>{t('finance.yourAnswer.rub')}</Label>
                       <Input
                         type="number"
-                        placeholder="Введите будущую стоимость..."
+                        placeholder={t('finance.placeholder.futureValue')}
                         value={userAnswer}
                         onChange={(e) => setUserAnswer(e.target.value)}
                         disabled={showResult}
@@ -226,12 +240,12 @@ export function FinancialMath() {
                         onClick={() => checkAnswer(compoundProblem.answer, 'Сложный процент')}
                         className="mt-6"
                       >
-                        Проверить
+                        {t('finance.check')}
                       </Button>
                     ) : (
                       <Button onClick={newCompoundProblem} variant="outline" className="mt-6">
                         <RotateCcw className="h-4 w-4 mr-2" />
-                        Новая
+                        {t('finance.new')}
                       </Button>
                     )}
                   </div>
@@ -244,11 +258,11 @@ export function FinancialMath() {
                           <XCircle className="h-5 w-5 text-red-600" />
                         )}
                         <span className="font-semibold">
-                          {isCorrect ? 'Правильно!' : 'Неправильно'}
+                          {isCorrect ? t('finance.correct') : t('finance.incorrect')}
                         </span>
                       </div>
                       <div className="text-sm">
-                        Правильный ответ: <strong>{compoundProblem.answer.toLocaleString('ru-RU', { maximumFractionDigits: 0 })} руб.</strong>
+                        {t('finance.correctAnswer')} <strong>{compoundProblem.answer.toLocaleString('ru-RU', { maximumFractionDigits: 0 })} {t('finance.rub')}</strong>
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
                         FV = {compoundProblem.principal.toLocaleString('ru-RU')} × (1 + {compoundProblem.rate}/{compoundProblem.compounding * 100})
@@ -267,17 +281,17 @@ export function FinancialMath() {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <DollarSign className="h-5 w-5" />
-                NPV (Чистая приведённая стоимость)
+                {t('finance.npv.title')}
               </CardTitle>
               <CardDescription>
-                Формула: NPV = -I₀ + Σ(CFt / (1+r)^t), где I₀ — инвестиции, CFt — денежный поток периода t, r — ставка дисконтирования
+                {t('finance.npv.formula')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {!npvProblem ? (
                 <Button onClick={newNPVProblem} className="w-full" size="lg">
                   <Calculator className="h-4 w-4 mr-2" />
-                  Сгенерировать задачу
+                  {t('finance.generateProblem')}
                 </Button>
               ) : (
                 <>
@@ -286,10 +300,10 @@ export function FinancialMath() {
                   </div>
                   <div className="flex gap-3">
                     <div className="flex-1">
-                      <Label>Ваш ответ (руб.)</Label>
+                      <Label>{t('finance.yourAnswer.rub')}</Label>
                       <Input
                         type="number"
-                        placeholder="Введите NPV..."
+                        placeholder={t('finance.placeholder.npv')}
                         value={userAnswer}
                         onChange={(e) => setUserAnswer(e.target.value)}
                         disabled={showResult}
@@ -298,12 +312,12 @@ export function FinancialMath() {
                     </div>
                     {!showResult ? (
                       <Button onClick={() => checkAnswer(npvProblem.answer, 'NPV')} className="mt-6">
-                        Проверить
+                        {t('finance.check')}
                       </Button>
                     ) : (
                       <Button onClick={newNPVProblem} variant="outline" className="mt-6">
                         <RotateCcw className="h-4 w-4 mr-2" />
-                        Новая
+                        {t('finance.new')}
                       </Button>
                     )}
                   </div>
@@ -316,16 +330,16 @@ export function FinancialMath() {
                           <XCircle className="h-5 w-5 text-red-600" />
                         )}
                         <span className="font-semibold">
-                          {isCorrect ? 'Правильно!' : 'Неправильно'}
+                          {isCorrect ? t('finance.correct') : t('finance.incorrect')}
                         </span>
                       </div>
                       <div className="text-sm">
-                        Правильный ответ: <strong>{npvProblem.answer.toLocaleString('ru-RU', { maximumFractionDigits: 0 })} руб.</strong>
+                        {t('finance.correctAnswer')} <strong>{npvProblem.answer.toLocaleString('ru-RU', { maximumFractionDigits: 0 })} {t('finance.rub')}</strong>
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
                         {npvProblem.answer > 0
-                          ? 'NPV > 0 — проект прибыльный, стоит принять'
-                          : 'NPV < 0 — проект убыточный, стоит отклонить'}
+                          ? t('finance.npv.profitable')
+                          : t('finance.npv.unprofitable')}
                       </div>
                     </div>
                   )}
@@ -340,17 +354,17 @@ export function FinancialMath() {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
-                Фонд накопления (Аннуитет)
+                {t('finance.annuity.title')}
               </CardTitle>
               <CardDescription>
-                Формула: PMT = FV × r / ((1+r)^n - 1), где FV — целевая сумма, r — ставка за период, n — число периодов
+                {t('finance.annuity.formula')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {!annuityProblem ? (
                 <Button onClick={newAnnuityProblem} className="w-full" size="lg">
                   <Calculator className="h-4 w-4 mr-2" />
-                  Сгенерировать задачу
+                  {t('finance.generateProblem')}
                 </Button>
               ) : (
                 <>
@@ -359,10 +373,10 @@ export function FinancialMath() {
                   </div>
                   <div className="flex gap-3">
                     <div className="flex-1">
-                      <Label>Ваш ответ (руб./год)</Label>
+                      <Label>{t('finance.yourAnswer.rubPerYear')}</Label>
                       <Input
                         type="number"
-                        placeholder="Введите ежегодный платёж..."
+                        placeholder={t('finance.placeholder.annuity')}
                         value={userAnswer}
                         onChange={(e) => setUserAnswer(e.target.value)}
                         disabled={showResult}
@@ -371,12 +385,12 @@ export function FinancialMath() {
                     </div>
                     {!showResult ? (
                       <Button onClick={() => checkAnswer(annuityProblem.answer, 'Аннуитет')} className="mt-6">
-                        Проверить
+                        {t('finance.check')}
                       </Button>
                     ) : (
                       <Button onClick={newAnnuityProblem} variant="outline" className="mt-6">
                         <RotateCcw className="h-4 w-4 mr-2" />
-                        Новая
+                        {t('finance.new')}
                       </Button>
                     )}
                   </div>
@@ -389,11 +403,11 @@ export function FinancialMath() {
                           <XCircle className="h-5 w-5 text-red-600" />
                         )}
                         <span className="font-semibold">
-                          {isCorrect ? 'Правильно!' : 'Неправильно'}
+                          {isCorrect ? t('finance.correct') : t('finance.incorrect')}
                         </span>
                       </div>
                       <div className="text-sm">
-                        Правильный ответ: <strong>{annuityProblem.answer.toLocaleString('ru-RU', { maximumFractionDigits: 0 })} руб./год</strong>
+                        {t('finance.correctAnswer')} <strong>{annuityProblem.answer.toLocaleString('ru-RU', { maximumFractionDigits: 0 })} {t('finance.rubPerYear')}</strong>
                       </div>
                     </div>
                   )}
@@ -406,23 +420,23 @@ export function FinancialMath() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Справочник формул</CardTitle>
+          <CardTitle className="text-lg">{t('finance.formulaRef.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Сложный процент:</strong> FV = PV × (1 + r/n)^(n×t)
+            <strong>{t('finance.formulaRef.compound')}</strong> FV = PV × (1 + r/n)^(n×t)
           </div>
           <Separator />
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>NPV:</strong> NPV = -I₀ + Σ CFt / (1 + r)^t
+            <strong>{t('finance.formulaRef.npv')}</strong> NPV = -I₀ + Σ CFt / (1 + r)^t
           </div>
           <Separator />
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Аннуитет (фонд накопления):</strong> PMT = FV × r / ((1 + r)^n - 1)
+            <strong>{t('finance.formulaRef.annuity')}</strong> PMT = FV × r / ((1 + r)^n - 1)
           </div>
           <Separator />
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Уравнение Фишера:</strong> (1 + i) = (1 + r) × (1 + π), где i — номинальная ставка, r — реальная, π — инфляция
+            <strong>{t('finance.formulaRef.fisher')}</strong> {t('finance.formulaRef.fisherDesc')}
           </div>
         </CardContent>
       </Card>

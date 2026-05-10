@@ -24,6 +24,7 @@ import {
 } from 'recharts'
 import { BarChart3, TrendingUp, TrendingDown, Info, Users, Building2, Store, ShieldAlert } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { useI18n } from '@/lib/i18n-provider'
 
 type MarketType = 'perfect' | 'monopoly' | 'monopolistic' | 'oligopoly'
 
@@ -36,6 +37,7 @@ interface MarketData {
 }
 
 export function MarketStructures() {
+  const { t } = useI18n()
   const [marketType, setMarketType] = useState<MarketType>('perfect')
   const [demandIntercept, setDemandIntercept] = useState(100)
   const [demandSlope, setDemandSlope] = useState(1)
@@ -165,35 +167,59 @@ export function MarketStructures() {
 
   const marketInfo = {
     perfect: {
-      title: 'Совершенная конкуренция',
+      title: t('market.structure.perfect'),
       icon: Users,
       color: 'text-green-600',
       bg: 'bg-green-50 dark:bg-green-950/30',
-      features: ['Множество продавцов', 'Однородный продукт', 'Свободный вход/выход', 'Цена = MC', 'Нулевая прибыль (долгосрочно)'],
+      features: [
+        t('market.features.multipleSellers'),
+        t('market.features.homogeneousProduct'),
+        t('market.features.freeEntry'),
+        t('market.features.priceEqualsMC'),
+        t('market.features.zeroProfitLongRun'),
+      ],
       efficiency: 'allocative',
     },
     monopoly: {
-      title: 'Монополия',
+      title: t('market.structure.monopoly'),
       icon: Building2,
       color: 'text-red-600',
       bg: 'bg-red-50 dark:bg-red-950/30',
-      features: ['Один продавец', 'Уникальный продукт', 'Барьеры входа', 'Цена > MR = MC', 'Положительная прибыль'],
+      features: [
+        t('market.features.singleSeller'),
+        t('market.features.uniqueProduct'),
+        t('market.features.entryBarriers'),
+        t('market.features.priceGreaterThanMR'),
+        t('market.features.positiveProfit'),
+      ],
       efficiency: 'none',
     },
     monopolistic: {
-      title: 'Монополистическая конкуренция',
+      title: t('market.structure.monopolistic'),
       icon: Store,
       color: 'text-amber-600',
       bg: 'bg-amber-50 dark:bg-amber-950/30',
-      features: ['Множество продавцов', 'Дифференцированный продукт', 'Свободный вход/выход', 'Цена > MR = MC', 'Нулевая прибыль (долгосрочно)'],
+      features: [
+        t('market.features.multipleSellers'),
+        t('market.features.differentiatedProduct'),
+        t('market.features.freeEntry'),
+        t('market.features.priceGreaterThanMR'),
+        t('market.features.zeroProfitLongRun'),
+      ],
       efficiency: 'none',
     },
     oligopoly: {
-      title: 'Олигополия',
+      title: t('market.structure.oligopoly'),
       icon: ShieldAlert,
       color: 'text-purple-600',
       bg: 'bg-purple-50 dark:bg-purple-950/30',
-      features: ['Несколько продавцов', 'Дифференцированный/однородный', 'Барьеры входа', 'Зависимость от конкурентов', 'Возможна коллизия'],
+      features: [
+        t('market.features.fewSellers'),
+        t('market.features.differentiatedOrHomogeneous'),
+        t('market.features.entryBarriers'),
+        t('market.features.dependenceOnCompetitors'),
+        t('market.features.collusionPossible'),
+      ],
       efficiency: 'none',
     },
   }
@@ -208,11 +234,10 @@ export function MarketStructures() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BarChart3 className="h-5 w-5" />
-            Рыночные структуры
+            {t('market.title')}
           </CardTitle>
           <CardDescription>
-            Сравнительный анализ совершенной конкуренции, монополии, монополистической конкуренции и олигополии.
-            Изучите, как разные структуры влияют на цену, объём и общественное благосостояние.
+            {t('market.description')}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -222,22 +247,22 @@ export function MarketStructures() {
         <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full">
           <TabsTrigger value="perfect" className="flex items-center gap-1.5">
             <Users className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Соверш. конкуренция</span>
+            <span className="hidden sm:inline">{t('market.structure.perfect').slice(0, 10)}...</span>
             <span className="sm:hidden">СК</span>
           </TabsTrigger>
           <TabsTrigger value="monopoly" className="flex items-center gap-1.5">
             <Building2 className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Монополия</span>
+            <span className="hidden sm:inline">{t('market.structure.monopoly')}</span>
             <span className="sm:hidden">МП</span>
           </TabsTrigger>
           <TabsTrigger value="monopolistic" className="flex items-center gap-1.5">
             <Store className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Моноп. конкуренция</span>
+            <span className="hidden sm:inline">{t('market.structure.monopolistic').slice(0, 10)}...</span>
             <span className="sm:hidden">МК</span>
           </TabsTrigger>
           <TabsTrigger value="oligopoly" className="flex items-center gap-1.5">
             <ShieldAlert className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Олигополия</span>
+            <span className="hidden sm:inline">{t('market.structure.oligopoly')}</span>
             <span className="sm:hidden">ОЛ</span>
           </TabsTrigger>
         </TabsList>
@@ -272,12 +297,12 @@ export function MarketStructures() {
             {/* Chart */}
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">График рыночного равновесия</CardTitle>
+                <CardTitle className="text-lg">{t('market.chartTitle')}</CardTitle>
                 <CardDescription>
-                  {type === 'perfect' ? 'P = MR = MC — цена равна предельным издержкам' :
-                   type === 'monopoly' ? 'MR = MC — монополия ограничивает выпуск для максимизации прибыли' :
-                   type === 'monopolistic' ? 'MR = MC — похоже на монополию, но с конкуренцией' :
-                   'Изломанная кривая спроса — реакция на действия конкурентов'}
+                  {type === 'perfect' ? t('market.chartDesc.perfect') :
+                   type === 'monopoly' ? t('market.chartDesc.monopoly') :
+                   type === 'monopolistic' ? t('market.chartDesc.monopolistic') :
+                   t('market.chartDesc.oligopoly')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -287,11 +312,11 @@ export function MarketStructures() {
                       <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                       <XAxis
                         dataKey="quantity"
-                        label={{ value: 'Объём (Q)', position: 'insideBottom', offset: -5, fontSize: 12 }}
+                        label={{ value: t('market.quantityLabel'), position: 'insideBottom', offset: -5, fontSize: 12 }}
                         fontSize={11}
                       />
                       <YAxis
-                        label={{ value: 'Цена/Издержки', angle: -90, position: 'insideLeft', fontSize: 12 }}
+                        label={{ value: t('market.priceCost'), angle: -90, position: 'insideLeft', fontSize: 12 }}
                         fontSize={11}
                         domain={[0, demandIntercept * 1.1]}
                       />
@@ -303,16 +328,16 @@ export function MarketStructures() {
                           fontSize: '12px',
                         }}
                         formatter={(value: number, name: string) => {
-                          if (name === 'demand') return [value.toFixed(1), 'Спрос (D)']
-                          if (name === 'mr') return [value?.toFixed(1), 'Предельная выручка (MR)']
-                          if (name === 'mc') return [value?.toFixed(1), 'Предельные издержки (MC)']
-                          if (name === 'atc') return [value?.toFixed(1), 'Средние издержки (ATC)']
+                          if (name === 'demand') return [value.toFixed(1), t('market.demand')]
+                          if (name === 'mr') return [value?.toFixed(1), t('market.mr')]
+                          if (name === 'mc') return [value?.toFixed(1), t('market.mc')]
+                          if (name === 'atc') return [value?.toFixed(1), t('market.atc')]
                           return [value, name]
                         }}
                       />
                       <Legend
                         formatter={(value) => {
-                          if (value === 'demand') return 'Спрос (D)'
+                          if (value === 'demand') return t('market.demand')
                           if (value === 'mr') return 'MR'
                           if (value === 'mc') return 'MC'
                           if (value === 'atc') return 'ATC'
@@ -369,19 +394,19 @@ export function MarketStructures() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <Card className="border-2 border-blue-200 dark:border-blue-900">
                 <CardContent className="p-3 text-center">
-                  <div className="text-xs text-muted-foreground">Равновесная цена (P*)</div>
+                  <div className="text-xs text-muted-foreground">{t('market.equilibriumPrice')}</div>
                   <div className="text-xl font-mono font-bold text-blue-600">{equilibrium.p.toFixed(1)}</div>
                 </CardContent>
               </Card>
               <Card className="border-2 border-blue-200 dark:border-blue-900">
                 <CardContent className="p-3 text-center">
-                  <div className="text-xs text-muted-foreground">Равновесный объём (Q*)</div>
+                  <div className="text-xs text-muted-foreground">{t('market.equilibriumQuantity')}</div>
                   <div className="text-xl font-mono font-bold text-blue-600">{Math.round(equilibrium.q)}</div>
                 </CardContent>
               </Card>
               <Card className="border-2 border-green-200 dark:border-green-900">
                 <CardContent className="p-3 text-center">
-                  <div className="text-xs text-muted-foreground">Прибыль</div>
+                  <div className="text-xs text-muted-foreground">{t('market.profit')}</div>
                   <div className={`text-xl font-mono font-bold ${equilibrium.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {equilibrium.profit > 0 ? '+' : ''}{Math.round(equilibrium.profit).toLocaleString('ru-RU')}
                   </div>
@@ -389,7 +414,7 @@ export function MarketStructures() {
               </Card>
               <Card className="border-2 border-orange-200 dark:border-orange-900">
                 <CardContent className="p-3 text-center">
-                  <div className="text-xs text-muted-foreground">Излишек потребителя</div>
+                  <div className="text-xs text-muted-foreground">{t('market.consumerSurplus')}</div>
                   <div className="text-xl font-mono font-bold text-orange-600">{surpluses.cs.toLocaleString('ru-RU')}</div>
                 </CardContent>
               </Card>
@@ -401,13 +426,12 @@ export function MarketStructures() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center gap-2">
                     <TrendingUp className="h-4 w-4 text-green-500" />
-                    Излишек потребителя (CS)
+                    {t('market.consumerSurplus')} (CS)
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
                   <p className="mb-2">
-                    Разница между тем, что потребители <strong className="text-foreground">готовы заплатить</strong>,
-                    и тем, что они <strong className="text-foreground">фактически платят</strong>.
+                    {t('market.csDescription')}
                   </p>
                   <div className="p-2 bg-green-50 dark:bg-green-950/30 rounded font-mono text-center">
                     CS = ½ × (P<sub>max</sub> − P*) × Q* = {surpluses.cs.toLocaleString('ru-RU')}
@@ -419,20 +443,19 @@ export function MarketStructures() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center gap-2">
                     <TrendingDown className="h-4 w-4 text-blue-500" />
-                    Излишек производителя (PS)
+                    {t('market.producerSurplus')} (PS)
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
                   <p className="mb-2">
-                    Разница между тем, что производители <strong className="text-foreground">получают</strong>,
-                    и тем, что они <strong className="text-foreground">готовы принять</strong> (MC).
+                    {t('market.psDescription')}
                   </p>
                   <div className="p-2 bg-blue-50 dark:bg-blue-950/30 rounded font-mono text-center">
                     PS = (P* − MC) × Q* = {surpluses.ps.toLocaleString('ru-RU')}
                   </div>
                   {type === 'perfect' && (
                     <p className="text-xs mt-2 text-green-600">
-                      При совершенной конкуренции в долгосрочном периоде PS = 0
+                      {t('market.psPerfectCompetiton')}
                     </p>
                   )}
                 </CardContent>
@@ -442,20 +465,19 @@ export function MarketStructures() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center gap-2">
                     <Info className="h-4 w-4 text-red-500" />
-                    Потери общества (DWL)
+                    {t('market.dwl')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
                   <p className="mb-2">
-                    Потери благосостояния от <strong className="text-foreground">неэффективного распределения</strong> ресурсов.
-                    Возникают при отклонении от P = MC.
+                    {t('market.dwlDescription')}
                   </p>
                   <div className={`p-2 rounded font-mono text-center ${surpluses.dwl > 0 ? 'bg-red-50 dark:bg-red-950/30' : 'bg-green-50 dark:bg-green-950/30'}`}>
                     DWL = {surpluses.dwl.toLocaleString('ru-RU')}
                   </div>
                   {type === 'perfect' && (
                     <p className="text-xs mt-2 text-green-600">
-                      При совершенной конкуренции DWL = 0 — allocative efficiency!
+                      {t('market.dwlPerfectCompetiton')}
                     </p>
                   )}
                 </CardContent>
@@ -468,13 +490,13 @@ export function MarketStructures() {
       {/* Controls */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Параметры модели</CardTitle>
+          <CardTitle className="text-lg">{t('market.paramsTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Макс. цена спроса (пересечение с осью)</Label>
+                <Label>{t('market.maxPrice')}</Label>
                 <Badge variant="secondary">{demandIntercept}</Badge>
               </div>
               <Slider value={[demandIntercept]} min={50} max={200} step={5} onValueChange={(v) => { awardXP(); setDemandIntercept(v[0]) }} />
@@ -482,7 +504,7 @@ export function MarketStructures() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Наклон спроса</Label>
+                <Label>{t('market.demandSlope')}</Label>
                 <Badge variant="secondary">{demandSlope.toFixed(1)}</Badge>
               </div>
               <Slider value={[demandSlope]} min={0.5} max={3} step={0.1} onValueChange={(v) => { awardXP(); setDemandSlope(v[0]) }} />
@@ -490,7 +512,7 @@ export function MarketStructures() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Постоянные издержки (MC)</Label>
+                <Label>{t('market.mcConstant')}</Label>
                 <Badge variant="secondary">{mcConstant}</Badge>
               </div>
               <Slider value={[mcConstant]} min={5} max={80} step={5} onValueChange={(v) => { awardXP(); setMcConstant(v[0]) }} />
@@ -498,7 +520,7 @@ export function MarketStructures() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Фиксированные издержки</Label>
+                <Label>{t('market.fixedCost')}</Label>
                 <Badge variant="secondary">{fixedCost}</Badge>
               </div>
               <Slider value={[fixedCost]} min={0} max={2000} step={100} onValueChange={(v) => { awardXP(); setFixedCost(v[0]) }} />
@@ -507,7 +529,7 @@ export function MarketStructures() {
             {marketType === 'oligopoly' && (
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <Label>Точка излома кривой спроса</Label>
+                  <Label>{t('market.kinkPoint')}</Label>
                   <Badge variant="secondary">{oligopolyKink}</Badge>
                 </div>
                 <Slider value={[oligopolyKink]} min={10} max={100} step={5} onValueChange={(v) => { awardXP(); setOligopolyKink(v[0]) }} />
@@ -520,69 +542,69 @@ export function MarketStructures() {
       {/* Comparison Table */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Сравнение рыночных структур</CardTitle>
+          <CardTitle className="text-lg">{t('market.comparison')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left p-2">Характеристика</th>
-                  <th className="text-center p-2 text-green-600">Соверш. конкуренция</th>
-                  <th className="text-center p-2 text-amber-600">Моноп. конкуренция</th>
-                  <th className="text-center p-2 text-purple-600">Олигополия</th>
-                  <th className="text-center p-2 text-red-600">Монополия</th>
+                  <th className="text-left p-2">{t('market.characteristic')}</th>
+                  <th className="text-center p-2 text-green-600">{t('market.structure.perfect').slice(0, 8)}.</th>
+                  <th className="text-center p-2 text-amber-600">{t('market.structure.monopolistic').slice(0, 8)}.</th>
+                  <th className="text-center p-2 text-purple-600">{t('market.structure.oligopoly')}</th>
+                  <th className="text-center p-2 text-red-600">{t('market.structure.monopoly')}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="border-b">
-                  <td className="p-2 font-medium">Число фирм</td>
-                  <td className="text-center p-2">Много</td>
-                  <td className="text-center p-2">Много</td>
-                  <td className="text-center p-2">Несколько</td>
-                  <td className="text-center p-2">Одна</td>
+                  <td className="p-2 font-medium">{t('market.table.numFirms')}</td>
+                  <td className="text-center p-2">{t('market.table.many')}</td>
+                  <td className="text-center p-2">{t('market.table.many')}</td>
+                  <td className="text-center p-2">{t('market.table.few')}</td>
+                  <td className="text-center p-2">{t('market.table.one')}</td>
                 </tr>
                 <tr className="border-b">
-                  <td className="p-2 font-medium">Продукт</td>
-                  <td className="text-center p-2">Однородный</td>
-                  <td className="text-center p-2">Дифференцированный</td>
-                  <td className="text-center p-2">Однородный/дифф.</td>
-                  <td className="text-center p-2">Уникальный</td>
+                  <td className="p-2 font-medium">{t('market.table.product')}</td>
+                  <td className="text-center p-2">{t('market.table.homogeneous')}</td>
+                  <td className="text-center p-2">{t('market.table.differentiated')}</td>
+                  <td className="text-center p-2">{t('market.table.homogeneousOrDiff')}</td>
+                  <td className="text-center p-2">{t('market.table.unique')}</td>
                 </tr>
                 <tr className="border-b">
-                  <td className="p-2 font-medium">Контроль над ценой</td>
-                  <td className="text-center p-2">Нет</td>
-                  <td className="text-center p-2">Небольшой</td>
-                  <td className="text-center p-2">Значительный</td>
-                  <td className="text-center p-2">Полный</td>
+                  <td className="p-2 font-medium">{t('market.table.priceControl')}</td>
+                  <td className="text-center p-2">{t('market.table.none')}</td>
+                  <td className="text-center p-2">{t('market.table.small')}</td>
+                  <td className="text-center p-2">{t('market.table.significant')}</td>
+                  <td className="text-center p-2">{t('market.table.full')}</td>
                 </tr>
                 <tr className="border-b">
-                  <td className="p-2 font-medium">Барьеры входа</td>
-                  <td className="text-center p-2">Отсутствуют</td>
-                  <td className="text-center p-2">Низкие</td>
-                  <td className="text-center p-2">Высокие</td>
-                  <td className="text-center p-2">Очень высокие</td>
+                  <td className="p-2 font-medium">{t('market.table.entryBarriers')}</td>
+                  <td className="text-center p-2">{t('market.table.absent')}</td>
+                  <td className="text-center p-2">{t('market.table.low')}</td>
+                  <td className="text-center p-2">{t('market.table.high')}</td>
+                  <td className="text-center p-2">{t('market.table.veryHigh')}</td>
                 </tr>
                 <tr className="border-b">
-                  <td className="p-2 font-medium">Прибыль (долгоср.)</td>
-                  <td className="text-center p-2">Нулевая</td>
-                  <td className="text-center p-2">Нулевая</td>
-                  <td className="text-center p-2">Положительная</td>
-                  <td className="text-center p-2">Положительная</td>
+                  <td className="p-2 font-medium">{t('market.table.longRunProfit')}</td>
+                  <td className="text-center p-2">{t('market.table.zero')}</td>
+                  <td className="text-center p-2">{t('market.table.zero')}</td>
+                  <td className="text-center p-2">{t('market.table.positive')}</td>
+                  <td className="text-center p-2">{t('market.table.positive')}</td>
                 </tr>
                 <tr className="border-b">
-                  <td className="p-2 font-medium">Эффективность</td>
-                  <td className="text-center p-2 text-green-600">Высокая</td>
-                  <td className="text-center p-2 text-yellow-600">Избыточные мощности</td>
-                  <td className="text-center p-2 text-orange-600">Зависит</td>
-                  <td className="text-center p-2 text-red-600">Низкая (DWL {'>'} 0)</td>
+                  <td className="p-2 font-medium">{t('market.table.efficiency')}</td>
+                  <td className="text-center p-2 text-green-600">{t('market.table.high')}</td>
+                  <td className="text-center p-2 text-yellow-600">{t('market.table.excessCapacity')}</td>
+                  <td className="text-center p-2 text-orange-600">{t('market.table.depends')}</td>
+                  <td className="text-center p-2 text-red-600">{t('market.table.low')} (DWL {'>'} 0)</td>
                 </tr>
                 <tr>
-                  <td className="p-2 font-medium">Примеры</td>
-                  <td className="text-center p-2">Агрорынок</td>
-                  <td className="text-center p-2">Рестораны</td>
-                  <td className="text-center p-2">Авто, нефть</td>
-                  <td className="text-center p-2">Ж/д, коммуналка</td>
+                  <td className="p-2 font-medium">{t('market.examples')}</td>
+                  <td className="text-center p-2">{t('market.examples.agri')}</td>
+                  <td className="text-center p-2">{t('market.examples.restaurants')}</td>
+                  <td className="text-center p-2">{t('market.examples.auto')}</td>
+                  <td className="text-center p-2">{t('market.examples.utility')}</td>
                 </tr>
               </tbody>
             </table>

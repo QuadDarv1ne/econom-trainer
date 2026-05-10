@@ -1,8 +1,10 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import dynamic from 'next/dynamic'
+import { default as nextDynamic } from 'next/dynamic'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -42,91 +44,86 @@ import {
 } from 'lucide-react'
 
 // Lazy-load all module components for performance
-const GDPCalculator = dynamic(() => import('@/components/economics/gdp-calculator').then(m => ({ default: m.GDPCalculator })), { ssr: false })
-const SupplyDemand = dynamic(() => import('@/components/economics/supply-demand').then(m => ({ default: m.SupplyDemand })), { ssr: false })
-const ElasticityCalculator = dynamic(() => import('@/components/economics/elasticity-calculator').then(m => ({ default: m.ElasticityCalculator })), { ssr: false })
-const KeynesianCross = dynamic(() => import('@/components/economics/keynesian-cross').then(m => ({ default: m.KeynesianCross })), { ssr: false })
-const InflationCalculator = dynamic(() => import('@/components/economics/inflation-calculator').then(m => ({ default: m.InflationCalculator })), { ssr: false })
-const PhillipsCurve = dynamic(() => import('@/components/economics/phillips-curve').then(m => ({ default: m.PhillipsCurve })), { ssr: false })
-const LorenzCurve = dynamic(() => import('@/components/economics/lorenz-curve').then(m => ({ default: m.LorenzCurve })), { ssr: false })
-const PPFCurve = dynamic(() => import('@/components/economics/ppf').then(m => ({ default: m.PPFCurve })), { ssr: false })
-const CostAnalysis = dynamic(() => import('@/components/economics/cost-analysis').then(m => ({ default: m.CostAnalysis })), { ssr: false })
-const ComparativeAdvantage = dynamic(() => import('@/components/economics/comparative-advantage').then(m => ({ default: m.ComparativeAdvantage })), { ssr: false })
-const BreakEvenAnalysis = dynamic(() => import('@/components/economics/break-even').then(m => ({ default: m.BreakEvenAnalysis })), { ssr: false })
-const TaxCalculator = dynamic(() => import('@/components/economics/tax-calculator').then(m => ({ default: m.TaxCalculator })), { ssr: false })
-const GameTheory = dynamic(() => import('@/components/economics/game-theory').then(m => ({ default: m.GameTheory })), { ssr: false })
-const EconomicsQuiz = dynamic(() => import('@/components/economics/quiz').then(m => ({ default: m.EconomicsQuiz })), { ssr: false })
-const FinancialMath = dynamic(() => import('@/components/economics/financial-math').then(m => ({ default: m.FinancialMath })), { ssr: false })
-const Glossary = dynamic(() => import('@/components/economics/glossary').then(m => ({ default: m.Glossary })), { ssr: false })
-const Achievements = dynamic(() => import('@/components/economics/achievements').then(m => ({ default: m.Achievements })), { ssr: false })
-const ProgressTracker = dynamic(() => import('@/components/economics/progress-tracker').then(m => ({ default: m.ProgressTracker })), { ssr: false })
-const ISLMModel = dynamic(() => import('@/components/economics/is-lm').then(m => ({ default: m.ISLMModel })), { ssr: false })
-const MarketStructures = dynamic(() => import('@/components/economics/market-structures').then(m => ({ default: m.MarketStructures })), { ssr: false })
-const CurrencyCalculator = dynamic(() => import('@/components/economics/currency-calculator').then(m => ({ default: m.CurrencyCalculator })), { ssr: false })
-const PriceIndices = dynamic(() => import('@/components/economics/price-indices').then(m => ({ default: m.PriceIndices })), { ssr: false })
-const ThemeToggle = dynamic(() => import('@/components/economics/theme-toggle').then(m => ({ default: m.ThemeToggle })), { ssr: false })
+const GDPCalculator = nextDynamic(() => import('@/components/economics/gdp-calculator').then(m => ({ default: m.GDPCalculator })), { ssr: false })
+const SupplyDemand = nextDynamic(() => import('@/components/economics/supply-demand').then(m => ({ default: m.SupplyDemand })), { ssr: false })
+const ElasticityCalculator = nextDynamic(() => import('@/components/economics/elasticity-calculator').then(m => ({ default: m.ElasticityCalculator })), { ssr: false })
+const KeynesianCross = nextDynamic(() => import('@/components/economics/keynesian-cross').then(m => ({ default: m.KeynesianCross })), { ssr: false })
+const InflationCalculator = nextDynamic(() => import('@/components/economics/inflation-calculator').then(m => ({ default: m.InflationCalculator })), { ssr: false })
+const PhillipsCurve = nextDynamic(() => import('@/components/economics/phillips-curve').then(m => ({ default: m.PhillipsCurve })), { ssr: false })
+const LorenzCurve = nextDynamic(() => import('@/components/economics/lorenz-curve').then(m => ({ default: m.LorenzCurve })), { ssr: false })
+const PPFCurve = nextDynamic(() => import('@/components/economics/ppf').then(m => ({ default: m.PPFCurve })), { ssr: false })
+const CostAnalysis = nextDynamic(() => import('@/components/economics/cost-analysis').then(m => ({ default: m.CostAnalysis })), { ssr: false })
+const ComparativeAdvantage = nextDynamic(() => import('@/components/economics/comparative-advantage').then(m => ({ default: m.ComparativeAdvantage })), { ssr: false })
+const BreakEvenAnalysis = nextDynamic(() => import('@/components/economics/break-even').then(m => ({ default: m.BreakEvenAnalysis })), { ssr: false })
+const TaxCalculator = nextDynamic(() => import('@/components/economics/tax-calculator').then(m => ({ default: m.TaxCalculator })), { ssr: false })
+const GameTheory = nextDynamic(() => import('@/components/economics/game-theory').then(m => ({ default: m.GameTheory })), { ssr: false })
+const EconomicsQuiz = nextDynamic(() => import('@/components/economics/quiz').then(m => ({ default: m.EconomicsQuiz })), { ssr: false })
+const FinancialMath = nextDynamic(() => import('@/components/economics/financial-math').then(m => ({ default: m.FinancialMath })), { ssr: false })
+const Glossary = nextDynamic(() => import('@/components/economics/glossary').then(m => ({ default: m.Glossary })), { ssr: false })
+const Achievements = nextDynamic(() => import('@/components/economics/achievements').then(m => ({ default: m.Achievements })), { ssr: false })
+const ProgressTracker = nextDynamic(() => import('@/components/economics/progress-tracker').then(m => ({ default: m.ProgressTracker })), { ssr: false })
+const ISLMModel = nextDynamic(() => import('@/components/economics/is-lm').then(m => ({ default: m.ISLMModel })), { ssr: false })
+const MarketStructures = nextDynamic(() => import('@/components/economics/market-structures').then(m => ({ default: m.MarketStructures })), { ssr: false })
+const CurrencyCalculator = nextDynamic(() => import('@/components/economics/currency-calculator').then(m => ({ default: m.CurrencyCalculator })), { ssr: false })
+const PriceIndices = nextDynamic(() => import('@/components/economics/price-indices').then(m => ({ default: m.PriceIndices })), { ssr: false })
+const ThemeToggle = nextDynamic(() => import('@/components/economics/theme-toggle').then(m => ({ default: m.ThemeToggle })), { ssr: false })
 
 // Module definitions with categories for grouped navigation
-const moduleCategories = [
-  { id: 'macro', label: 'Макро', color: 'text-emerald-600' },
-  { id: 'micro', label: 'Микро', color: 'text-blue-600' },
-  { id: 'finance', label: 'Финансы', color: 'text-amber-600' },
-  { id: 'tools', label: 'Инструменты', color: 'text-violet-600' },
-] as const
+const moduleCategoryIds = ['macro', 'micro', 'finance', 'tools'] as const
 
 const modules = [
-  { id: 'gdp', title: 'ВВП и макропоказатели', description: 'Расчёт номинального и реального ВВП, дефлятора, инфляции', icon: Calculator, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30', category: 'Макро', catId: 'macro', xpReward: 15 },
-  { id: 'supply-demand', title: 'Спрос и предложение', description: 'Интерактивный график с анализом равновесия', icon: ArrowRightLeft, color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-950/30', category: 'Микро', catId: 'micro', xpReward: 15 },
-  { id: 'elasticity', title: 'Калькулятор эластичности', description: 'Эластичность по цене, доходу, перекрёстная', icon: Gauge, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-950/30', category: 'Микро', catId: 'micro', xpReward: 15 },
-  { id: 'keynesian', title: 'Кейнсианский крест', description: 'Модель доходов-расходов с мультипликатором', icon: Crosshair, color: 'text-teal-600', bg: 'bg-teal-50 dark:bg-teal-950/30', category: 'Макро', catId: 'macro', xpReward: 20 },
-  { id: 'inflation', title: 'Калькулятор инфляции', description: 'Обесценение денег и покупательная способность', icon: Landmark, color: 'text-rose-600', bg: 'bg-rose-50 dark:bg-rose-950/30', category: 'Макро', catId: 'macro', xpReward: 15 },
-  { id: 'phillips', title: 'Кривая Филлипса', description: 'Инфляция и безработица: краткосрочный и долгосрочный разрез', icon: TrendingDown, color: 'text-cyan-600', bg: 'bg-cyan-50 dark:bg-cyan-950/30', category: 'Макро', catId: 'macro', xpReward: 20 },
-  { id: 'lorenz', title: 'Кривая Лоренца и Джини', description: 'Визуализация неравенства доходов и коэффициент Джини', icon: Scale, color: 'text-amber-700', bg: 'bg-amber-50 dark:bg-amber-950/30', category: 'Макро', catId: 'macro', xpReward: 20 },
-  { id: 'is-lm', title: 'Модель IS-LM', description: 'Равновесие товарного и денежного рынков, фискальная и денежная политика', icon: Landmark, color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-950/30', category: 'Макро', catId: 'macro', xpReward: 25 },
-  { id: 'ppf', title: 'Кривая производственных возможностей', description: 'КПВ: альтернативные издержки, MRT, экономический рост', icon: ArrowLeftRight, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-950/30', category: 'Микро', catId: 'micro', xpReward: 15 },
-  { id: 'costs', title: 'Анализ издержек фирмы', description: 'ATC, AVC, MC, AFC: графики и ключевые точки', icon: BarChart3, color: 'text-blue-700', bg: 'bg-blue-50 dark:bg-blue-950/30', category: 'Микро', catId: 'micro', xpReward: 20 },
-  { id: 'comparative', title: 'Сравнительное преимущество', description: 'Модель Рикардо: выгоды международной торговли', icon: Globe, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-950/30', category: 'Микро', catId: 'micro', xpReward: 15 },
-  { id: 'breakeven', title: 'Точка безубыточности', description: 'CVP-анализ: расчёт BEP, маржинальность, запас прочности', icon: Target, color: 'text-pink-600', bg: 'bg-pink-50 dark:bg-pink-950/30', category: 'Фин.анализ', catId: 'finance', xpReward: 15 },
-  { id: 'tax', title: 'Калькулятор налогов', description: 'НДФЛ с прогрессивной шкалой, НДС, налог на прибыль', icon: Receipt, color: 'text-lime-600', bg: 'bg-lime-50 dark:bg-lime-950/30', category: 'Финансы', catId: 'finance', xpReward: 20 },
-  { id: 'game-theory', title: 'Теория игр', description: 'Дилемма заключённого, ястребы и голуби, равновесие Нэша', icon: Swords, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/30', category: 'Микро', catId: 'micro', xpReward: 20 },
-  { id: 'market-structures', title: 'Рыночные структуры', description: 'Совершенная конкуренция, монополия, олигополия, моноп. конкуренция', icon: Building2, color: 'text-teal-600', bg: 'bg-teal-50 dark:bg-teal-950/30', category: 'Микро', catId: 'micro', xpReward: 25 },
-  { id: 'price-indices', title: 'Индексы цен', description: 'ИПЦ, дефлятор ВВП, расчёт инфляции и покупательной способности', icon: TrendingUp, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-950/30', category: 'Макро', catId: 'macro', xpReward: 15 },
-  { id: 'quiz', title: 'Квиз по экономике', description: '45 вопросов по микро- и макроэкономике с таймером', icon: Brain, color: 'text-violet-600', bg: 'bg-violet-50 dark:bg-violet-950/30', category: 'Тесты', catId: 'tools', xpReward: 10 },
-  { id: 'currency', title: 'Валютный калькулятор', description: 'Конвертация, кросс-курсы и динамика валют', icon: Coins, color: 'text-cyan-600', bg: 'bg-cyan-50 dark:bg-cyan-950/30', category: 'Финансы', catId: 'finance', xpReward: 15 },
-  { id: 'finance', title: 'Финансовая математика', description: 'Сложные проценты, NPV, аннуитетные расчёты', icon: DollarSign, color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/30', category: 'Финансы', catId: 'finance', xpReward: 20 },
-  { id: 'glossary', title: 'Глоссарий терминов', description: '40+ ключевых терминов с формулами и поиском', icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/30', category: 'Справка', catId: 'tools', xpReward: 5 },
-  { id: 'achievements', title: 'Достижения', description: '19 бейджей, XP и уровни за тренировки', icon: Trophy, color: 'text-yellow-600', bg: 'bg-yellow-50 dark:bg-yellow-950/30', category: 'Мотивация', catId: 'tools', xpReward: 0 },
-  { id: 'progress', title: 'Прогресс', description: 'Статистика тренировок и аналитика прогресса', icon: BarChart3, color: 'text-sky-600', bg: 'bg-sky-50 dark:bg-sky-950/30', category: 'Аналитика', catId: 'tools', xpReward: 0 },
+  { id: 'gdp', titleKey: 'module.gdp.title', descriptionKey: 'module.gdp.description', icon: Calculator, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 15 },
+  { id: 'supply-demand', titleKey: 'module.supply-demand.title', descriptionKey: 'module.supply-demand.description', icon: ArrowRightLeft, color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 15 },
+  { id: 'elasticity', titleKey: 'module.elasticity.title', descriptionKey: 'module.elasticity.description', icon: Gauge, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 15 },
+  { id: 'keynesian', titleKey: 'module.keynesian.title', descriptionKey: 'module.keynesian.description', icon: Crosshair, color: 'text-teal-600', bg: 'bg-teal-50 dark:bg-teal-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 20 },
+  { id: 'inflation', titleKey: 'module.inflation.title', descriptionKey: 'module.inflation.description', icon: Landmark, color: 'text-rose-600', bg: 'bg-rose-50 dark:bg-rose-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 15 },
+  { id: 'phillips', titleKey: 'module.phillips.title', descriptionKey: 'module.phillips.description', icon: TrendingDown, color: 'text-cyan-600', bg: 'bg-cyan-50 dark:bg-cyan-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 20 },
+  { id: 'lorenz', titleKey: 'module.lorenz.title', descriptionKey: 'module.lorenz.description', icon: Scale, color: 'text-amber-700', bg: 'bg-amber-50 dark:bg-amber-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 20 },
+  { id: 'is-lm', titleKey: 'module.is-lm.title', descriptionKey: 'module.is-lm.description', icon: Landmark, color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 25 },
+  { id: 'ppf', titleKey: 'module.ppf.title', descriptionKey: 'module.ppf.description', icon: ArrowLeftRight, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 15 },
+  { id: 'costs', titleKey: 'module.costs.title', descriptionKey: 'module.costs.description', icon: BarChart3, color: 'text-blue-700', bg: 'bg-blue-50 dark:bg-blue-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 20 },
+  { id: 'comparative', titleKey: 'module.comparative.title', descriptionKey: 'module.comparative.description', icon: Globe, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 15 },
+  { id: 'breakeven', titleKey: 'module.breakeven.title', descriptionKey: 'module.breakeven.description', icon: Target, color: 'text-pink-600', bg: 'bg-pink-50 dark:bg-pink-950/30', categoryKey: 'home.modcat.financeAnalysis', catId: 'finance', xpReward: 15 },
+  { id: 'tax', titleKey: 'module.tax.title', descriptionKey: 'module.tax.description', icon: Receipt, color: 'text-lime-600', bg: 'bg-lime-50 dark:bg-lime-950/30', categoryKey: 'home.modcat.finance', catId: 'finance', xpReward: 20 },
+  { id: 'game-theory', titleKey: 'module.game-theory.title', descriptionKey: 'module.game-theory.description', icon: Swords, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 20 },
+  { id: 'market-structures', titleKey: 'module.market-structures.title', descriptionKey: 'module.market-structures.description', icon: Building2, color: 'text-teal-600', bg: 'bg-teal-50 dark:bg-teal-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 25 },
+  { id: 'price-indices', titleKey: 'price-indices.title', descriptionKey: 'price-indices.description', icon: TrendingUp, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 15 },
+  { id: 'quiz', titleKey: 'module.quiz.title', descriptionKey: 'module.quiz.description', icon: Brain, color: 'text-violet-600', bg: 'bg-violet-50 dark:bg-violet-950/30', categoryKey: 'home.modcat.tests', catId: 'tools', xpReward: 10 },
+  { id: 'currency', titleKey: 'module.currency.title', descriptionKey: 'module.currency.description', icon: Coins, color: 'text-cyan-600', bg: 'bg-cyan-50 dark:bg-cyan-950/30', categoryKey: 'home.modcat.finance', catId: 'finance', xpReward: 15 },
+  { id: 'finance', titleKey: 'module.finance.title', descriptionKey: 'module.finance.description', icon: DollarSign, color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/30', categoryKey: 'home.modcat.finance', catId: 'finance', xpReward: 20 },
+  { id: 'glossary', titleKey: 'module.glossary.title', descriptionKey: 'module.glossary.description', icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/30', categoryKey: 'home.modcat.reference', catId: 'tools', xpReward: 5 },
+  { id: 'achievements', titleKey: 'module.achievements.title', descriptionKey: 'module.achievements.description', icon: Trophy, color: 'text-yellow-600', bg: 'bg-yellow-50 dark:bg-yellow-950/30', categoryKey: 'home.modcat.motivation', catId: 'tools', xpReward: 0 },
+  { id: 'progress', titleKey: 'module.progress.title', descriptionKey: 'module.progress.description', icon: BarChart3, color: 'text-sky-600', bg: 'bg-sky-50 dark:bg-sky-950/30', categoryKey: 'home.modcat.analytics', catId: 'tools', xpReward: 0 },
 ]
 
 const tabItems = [
-  { value: 'home', icon: GraduationCap, label: 'Главная', catId: null },
-  // Макро
-  { value: 'gdp', icon: Calculator, label: 'ВВП', catId: 'macro' },
-  { value: 'keynesian', icon: Crosshair, label: 'Кейнс', catId: 'macro' },
-  { value: 'inflation', icon: Landmark, label: 'Инфл.', catId: 'macro' },
-  { value: 'phillips', icon: TrendingDown, label: 'Филлипс', catId: 'macro' },
-  { value: 'lorenz', icon: Scale, label: 'Лоренц', catId: 'macro' },
-  { value: 'is-lm', icon: Landmark, label: 'IS-LM', catId: 'macro' },
-  // Микро
-  { value: 'supply-demand', icon: ArrowRightLeft, label: 'D/S', catId: 'micro' },
-  { value: 'elasticity', icon: Gauge, label: 'Эласт.', catId: 'micro' },
-  { value: 'ppf', icon: ArrowLeftRight, label: 'КПВ', catId: 'micro' },
-  { value: 'costs', icon: BarChart3, label: 'Издержки', catId: 'micro' },
-  { value: 'comparative', icon: Globe, label: 'МЭ', catId: 'micro' },
-  { value: 'game-theory', icon: Swords, label: 'Игры', catId: 'micro' },
-  { value: 'market-structures', icon: Building2, label: 'Структуры', catId: 'micro' },
-  { value: 'price-indices', icon: TrendingUp, label: 'Индексы', catId: 'macro' },
-  // Финансы
-  { value: 'breakeven', icon: Target, label: 'BEP', catId: 'finance' },
-  { value: 'tax', icon: Receipt, label: 'Налоги', catId: 'finance' },
-  { value: 'currency', icon: Coins, label: 'Валюта', catId: 'finance' },
-  { value: 'finance', icon: DollarSign, label: 'Фин.мат', catId: 'finance' },
-  // Инструменты
-  { value: 'quiz', icon: Brain, label: 'Квиз', catId: 'tools' },
-  { value: 'glossary', icon: BookOpen, label: 'Словарь', catId: 'tools' },
-  { value: 'achievements', icon: Trophy, label: 'Бейджи', catId: 'tools' },
-  { value: 'progress', icon: BarChart3, label: 'Прогресс', catId: 'tools' },
+  { value: 'home', icon: GraduationCap, labelKey: 'home.tab.home', catId: null },
+  // Macro
+  { value: 'gdp', icon: Calculator, labelKey: 'home.tab.gdp', catId: 'macro' },
+  { value: 'keynesian', icon: Crosshair, labelKey: 'home.tab.keynesian', catId: 'macro' },
+  { value: 'inflation', icon: Landmark, labelKey: 'home.tab.inflation', catId: 'macro' },
+  { value: 'phillips', icon: TrendingDown, labelKey: 'home.tab.phillips', catId: 'macro' },
+  { value: 'lorenz', icon: Scale, labelKey: 'home.tab.lorenz', catId: 'macro' },
+  { value: 'is-lm', icon: Landmark, labelKey: 'home.tab.islm', catId: 'macro' },
+  // Micro
+  { value: 'supply-demand', icon: ArrowRightLeft, labelKey: 'home.tab.supplyDemand', catId: 'micro' },
+  { value: 'elasticity', icon: Gauge, labelKey: 'home.tab.elasticity', catId: 'micro' },
+  { value: 'ppf', icon: ArrowLeftRight, labelKey: 'home.tab.ppf', catId: 'micro' },
+  { value: 'costs', icon: BarChart3, labelKey: 'home.tab.costs', catId: 'micro' },
+  { value: 'comparative', icon: Globe, labelKey: 'home.tab.comparative', catId: 'micro' },
+  { value: 'game-theory', icon: Swords, labelKey: 'home.tab.gameTheory', catId: 'micro' },
+  { value: 'market-structures', icon: Building2, labelKey: 'home.tab.marketStructures', catId: 'micro' },
+  { value: 'price-indices', icon: TrendingUp, labelKey: 'home.tab.priceIndices', catId: 'macro' },
+  // Finance
+  { value: 'breakeven', icon: Target, labelKey: 'home.tab.breakeven', catId: 'finance' },
+  { value: 'tax', icon: Receipt, labelKey: 'home.tab.tax', catId: 'finance' },
+  { value: 'currency', icon: Coins, labelKey: 'home.tab.currency', catId: 'finance' },
+  { value: 'finance', icon: DollarSign, labelKey: 'home.tab.finance', catId: 'finance' },
+  // Tools
+  { value: 'quiz', icon: Brain, labelKey: 'home.tab.quiz', catId: 'tools' },
+  { value: 'glossary', icon: BookOpen, labelKey: 'home.tab.glossary', catId: 'tools' },
+  { value: 'achievements', icon: Trophy, labelKey: 'home.tab.achievements', catId: 'tools' },
+  { value: 'progress', icon: BarChart3, labelKey: 'home.tab.progress', catId: 'tools' },
 ]
 
 const cardVariants = {
@@ -208,9 +205,9 @@ export default function Home() {
               <GraduationCap className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-lg font-bold leading-tight">Экономический тренажёр</h1>
+              <h1 className="text-lg font-bold leading-tight">{t('home.title')}</h1>
               <p className="text-xs text-muted-foreground hidden sm:block">
-                Интерактивный тренажёр для экономистов
+                {t('home.header.subtitle')}
               </p>
             </div>
           </div>
@@ -218,8 +215,8 @@ export default function Home() {
             {totalXP > 0 && (
               <Badge variant="outline" className="hidden sm:flex items-center gap-1">
                 <Zap className="h-3 w-3 text-yellow-500" />
-                <span className={levelColor}>Ур.{xpState.level}</span>
-                <span className="text-muted-foreground">{totalXP.toLocaleString('ru-RU')} XP</span>
+                <span className={levelColor}>{t('home.header.levelAbbr')}{xpState.level}</span>
+                <span className="text-muted-foreground">{totalXP.toLocaleString('ru-RU')} {t('home.header.xpLabel')}</span>
               </Badge>
             )}
             <LanguageToggle />
@@ -248,7 +245,7 @@ export default function Home() {
                     )}
                     <TabsTrigger value={item.value} className="text-xs px-2 py-2 flex items-center gap-1">
                       <item.icon className="h-3.5 w-3.5" />
-                      <span className="hidden sm:inline">{item.label}</span>
+                      <span className="hidden sm:inline">{t(item.labelKey)}</span>
                     </TabsTrigger>
                   </span>
                 ))}
@@ -268,25 +265,24 @@ export default function Home() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-2">
                 <Sparkles className="h-4 w-4" />
-                22 модуля • 45 вопросов • 40+ терминов • 19 достижений • Система XP
+                {t('home.hero.badge')}
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                Тренируй экономическое мышление
+                {t('home.hero.title')}
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base">
-                Интерактивные модули для расчётов, анализа графиков, решения задач и проверки знаний
-                по микро- и макроэкономике, теории игр, налогам и финансам. Зарабатывайте XP и повышайте уровень!
+                {t('home.hero.subtitle')}
               </p>
               {totalXP > 0 && (
                 <div className="inline-flex items-center gap-3 flex-wrap justify-center">
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800">
                     <Zap className="h-5 w-5 text-yellow-500" />
-                    <span className={`font-bold text-lg ${levelColor}`}>Уровень {xpState.level} — {levelTitle}</span>
-                    <span className="text-muted-foreground text-sm">({totalXP.toLocaleString('ru-RU')} XP)</span>
+                    <span className={`font-bold text-lg ${levelColor}`}>{t('home.hero.level')} {xpState.level} — {levelTitle}</span>
+                    <span className="text-muted-foreground text-sm">({totalXP.toLocaleString('ru-RU')} {t('home.header.xpLabel')})</span>
                   </div>
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/5 border border-primary/20">
                     <LayoutGrid className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">{exploredCount}/22 модуля открыто</span>
+                    <span className="text-sm font-medium">{exploredCount}/22 {t('home.hero.modulesExplored')}</span>
                   </div>
                 </div>
               )}
@@ -328,25 +324,25 @@ export default function Home() {
                                 </Badge>
                               )}
                               <Badge variant="outline" className="text-xs">
-                                {mod.category}
+                                {t(mod.categoryKey)}
                               </Badge>
                             </div>
                           </div>
-                          <CardTitle className="text-sm mt-2">{mod.title}</CardTitle>
-                          <CardDescription className="text-xs">{mod.description}</CardDescription>
+                          <CardTitle className="text-sm mt-2">{t(mod.titleKey)}</CardTitle>
+                          <CardDescription className="text-xs">{t(mod.descriptionKey)}</CardDescription>
                         </CardHeader>
                         <CardContent className="pt-0 space-y-2">
                           {isExplored ? (
                             <div className="space-y-1">
                               <div className="flex items-center justify-between text-xs">
-                                <span className="text-muted-foreground">Прогресс</span>
+                                <span className="text-muted-foreground">{t('home.card.progress')}</span>
                                 <span className="font-medium">{progress}%</span>
                               </div>
                               <Progress value={progress} className="h-1.5" />
                             </div>
                           ) : (
                             <div className="text-xs text-primary font-medium flex items-center gap-1">
-                              Начать
+                              {t('home.card.start')}
                               <TrendingUp className="h-3 w-3" />
                             </div>
                           )}
@@ -363,7 +359,7 @@ export default function Home() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <GraduationCap className="h-5 w-5" />
-                  Как пользоваться тренажёром
+                  {t('home.howto.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -371,37 +367,37 @@ export default function Home() {
                   <div className="space-y-1">
                     <div className="font-semibold flex items-center gap-2">
                       <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">1</span>
-                      Выберите модуль
+                      {t('home.howto.step1.title')}
                     </div>
-                    <p className="text-muted-foreground">22 модуля: от ВВП до теории игр, налогов и индексов цен.</p>
+                    <p className="text-muted-foreground">{t('home.howto.step1.desc')}</p>
                   </div>
                   <div className="space-y-1">
                     <div className="font-semibold flex items-center gap-2">
                       <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">2</span>
-                      Решайте задачи
+                      {t('home.howto.step2.title')}
                     </div>
-                    <p className="text-muted-foreground">Ползунки, графики, формулы — всё интерактивно.</p>
+                    <p className="text-muted-foreground">{t('home.howto.step2.desc')}</p>
                   </div>
                   <div className="space-y-1">
                     <div className="font-semibold flex items-center gap-2">
                       <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">3</span>
-                      Изучайте теорию
+                      {t('home.howto.step3.title')}
                     </div>
-                    <p className="text-muted-foreground">Формулы и пояснения для закрепления материала.</p>
+                    <p className="text-muted-foreground">{t('home.howto.step3.desc')}</p>
                   </div>
                   <div className="space-y-1">
                     <div className="font-semibold flex items-center gap-2">
                       <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">4</span>
-                      Зарабатывайте XP
+                      {t('home.howto.step4.title')}
                     </div>
-                    <p className="text-muted-foreground">Каждая тренировка приносит XP и повышает уровень.</p>
+                    <p className="text-muted-foreground">{t('home.howto.step4.desc')}</p>
                   </div>
                   <div className="space-y-1">
                     <div className="font-semibold flex items-center gap-2">
                       <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">5</span>
-                      Отслеживайте прогресс
+                      {t('home.howto.step5.title')}
                     </div>
-                    <p className="text-muted-foreground">Бейджи, уровень и статистика во вкладке &laquo;Достижения&raquo;.</p>
+                    <p className="text-muted-foreground">{t('home.howto.step5.desc')}</p>
                   </div>
                 </div>
               </CardContent>
@@ -413,14 +409,14 @@ export default function Home() {
         </Tabs>
       </main>
 
-      {/* Footer with dynamic stats */}
+      {/* Footer with nextDynamic stats */}
       <footer className="border-t mt-auto">
         <div className="container mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
-          Экономический тренажёр v7.1 — интерактивная платформа для изучения экономики
+          {t('home.footer.text')}
           {totalXP > 0 && (
-            <span className="hidden sm:inline"> • {totalXP.toLocaleString('ru-RU')} XP • {exploredCount}/22 модуля</span>
+            <span className="hidden sm:inline"> • {totalXP.toLocaleString('ru-RU')} {t('home.header.xpLabel')} • {exploredCount}/22 {t('home.hero.modulesExplored')}</span>
           )}
-          <span className="hidden sm:inline"> • Автор: Дуплей М.И.</span>
+          <span className="hidden sm:inline"> • {t('home.footer.author')}</span>
         </div>
       </footer>
     </div>

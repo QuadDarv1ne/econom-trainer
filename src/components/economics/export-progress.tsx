@@ -5,6 +5,8 @@ import jsPDF from 'jspdf'
 import 'jspdf-autotable'
 import { useEconomicsStore, getLevelTitle, getLevelColor } from '@/store/economics-store'
 import { downloadProgressCSV, downloadProgressJSON } from '@/lib/export-progress'
+import { useI18n } from '@/lib/i18n-provider'
+import { getCurrentLocale, t } from '@/lib/i18n'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Download, Trophy, Calendar, Target, Zap, Copy, Check, Share2 } from 'lucide-react'
@@ -13,7 +15,8 @@ import { toast } from 'sonner'
 export function exportProgressToPDF() {
   const doc = new jsPDF()
   const progress = useEconomicsStore.getState().getFullProgress()
-  const now = new Date().toLocaleString('ru-RU')
+  const locale = getCurrentLocale()
+  const now = new Date().toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US')
 
   // Header
   doc.setFillColor(34, 197, 94)
@@ -22,44 +25,44 @@ export function exportProgressToPDF() {
   doc.setTextColor(255, 255, 255)
   doc.setFontSize(24)
   doc.setFont('helvetica', 'bold')
-  doc.text('Экономический тренажёр', 105, 20, { align: 'center' })
+  doc.text(t('export.pdf.title', locale), 105, 20, { align: 'center' })
   
   doc.setFontSize(12)
   doc.setFont('helvetica', 'normal')
-  doc.text(`Отчёт о прогрессе`, 105, 30, { align: 'center' })
+  doc.text(t('export.pdf.reportTitle', locale), 105, 30, { align: 'center' })
 
   // User info
   doc.setTextColor(0, 0, 0)
   doc.setFontSize(10)
-  doc.text(`Дата генерации: ${now}`, 14, 48)
+  doc.text(`${t('export.pdf.generatedDate', locale)}: ${now}`, 14, 48)
 
   // Level info
   const levelTitle = getLevelTitle(progress.level)
   doc.setFontSize(16)
   doc.setFont('helvetica', 'bold')
-  doc.text(`Уровень ${progress.level}: ${levelTitle}`, 14, 58)
+  doc.text(`${t('export.csv.level', locale)} ${progress.level}: ${levelTitle}`, 14, 58)
   
   doc.setFontSize(11)
   doc.setFont('helvetica', 'normal')
-  doc.text(`Общий опыт: ${progress.totalXP.toLocaleString('ru-RU')} XP`, 14, 65)
-  doc.text(`Всего сессий: ${progress.totalSessions}`, 14, 71)
+  doc.text(`${t('export.csv.totalXP', locale)}: ${progress.totalXP.toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US')} XP`, 14, 65)
+  doc.text(`${t('progress.sessions', locale)}: ${progress.totalSessions}`, 14, 71)
 
   // Statistics table
   doc.setFontSize(12)
   doc.setFont('helvetica', 'bold')
-  doc.text('Статистика по модулям', 14, 85)
+  doc.text(t('export.pdf.moduleStats', locale), 14, 85)
 
   const statsData = [
-    ['Квизы', `${progress.quizStats.accuracy}%`, `${progress.quizStats.correct}/${progress.quizStats.total}`],
-    ['Фин. математика', `${progress.financeStats.accuracy}%`, `${progress.financeStats.correct}/${progress.financeStats.total}`],
-    ['Расчёты ВВП', '-', `${progress.gdpCount}`],
-    ['Эластичность', '-', `${progress.elasticityCount}`],
+    [t('module.quiz.title', locale), `${progress.quizStats.accuracy}%`, `${progress.quizStats.correct}/${progress.quizStats.total}`],
+    [t('module.finance.title', locale), `${progress.financeStats.accuracy}%`, `${progress.financeStats.correct}/${progress.financeStats.total}`],
+    [t('module.gdp.title', locale), '-', `${progress.gdpCount}`],
+    [t('module.elasticity.title', locale), '-', `${progress.elasticityCount}`],
   ]
 
   // @ts-ignore - jspdf-autotable adds this
   doc.autoTable({
     startY: 90,
-    head: [['Модуль', 'Точность', 'Решено']],
+    head: [[t('export.pdf.tableHeaders.module', locale), t('export.pdf.tableHeaders.accuracy', locale), t('export.pdf.tableHeaders.solved', locale)]],
     body: statsData,
     theme: 'striped',
     headStyles: { fillColor: [34, 197, 94] },
@@ -71,30 +74,30 @@ export function exportProgressToPDF() {
   // Module breakdown
   doc.setFontSize(12)
   doc.setFont('helvetica', 'bold')
-  doc.text('Активность по модулям', 14, finalY)
+  doc.text(t('export.pdf.moduleActivity', locale), 14, finalY)
 
   const moduleNames: Record<string, string> = {
-    'gdp': 'ВВП и макропоказатели',
-    'supply-demand': 'Спрос и предложение',
-    'elasticity': 'Калькулятор эластичности',
-    'keynesian': 'Кейнсианский крест',
-    'inflation': 'Калькулятор инфляции',
-    'phillips': 'Кривая Филлипса',
-    'lorenz': 'Кривая Лоренца и Джини',
-    'is-lm': 'Модель IS-LM',
-    'ppf': 'Кривая производственных возможностей',
-    'costs': 'Анализ издержек фирмы',
-    'comparative': 'Сравнительное преимущество',
-    'breakeven': 'Точка безубыточности',
-    'tax': 'Калькулятор налогов',
-    'game-theory': 'Теория игр',
-    'market-structures': 'Рыночные структуры',
-    'currency': 'Валютный калькулятор',
-    'quiz': 'Квиз по экономике',
-    'finance': 'Финансовая математика',
-    'glossary': 'Глоссарий терминов',
-    'achievements': 'Достижения',
-    'progress': 'Прогресс',
+    'gdp': t('module.gdp.title', locale),
+    'supply-demand': t('module.supply-demand.title', locale),
+    'elasticity': t('module.elasticity.title', locale),
+    'keynesian': t('module.keynesian.title', locale),
+    'inflation': t('module.inflation.title', locale),
+    'phillips': t('module.phillips.title', locale),
+    'lorenz': t('module.lorenz.title', locale),
+    'is-lm': t('module.is-lm.title', locale),
+    'ppf': t('module.ppf.title', locale),
+    'costs': t('module.costs.title', locale),
+    'comparative': t('module.comparative.title', locale),
+    'breakeven': t('module.breakeven.title', locale),
+    'tax': t('module.tax.title', locale),
+    'game-theory': t('module.game-theory.title', locale),
+    'market-structures': t('module.market-structures.title', locale),
+    'currency': t('module.currency.title', locale),
+    'quiz': t('module.quiz.title', locale),
+    'finance': t('module.finance.title', locale),
+    'glossary': t('module.glossary.title', locale),
+    'achievements': t('module.achievements.title', locale),
+    'progress': t('module.progress.title', locale),
   }
 
   const moduleData = Object.entries(progress.moduleCounts)
@@ -110,7 +113,7 @@ export function exportProgressToPDF() {
     // @ts-ignore
     doc.autoTable({
       startY: finalY + 5,
-      head: [['Модуль', 'Взаимодействий']],
+      head: [[t('export.pdf.tableHeaders.module', locale), t('export.pdf.tableHeaders.interactions', locale)]],
       body: moduleData,
       theme: 'grid',
       headStyles: { fillColor: [59, 130, 246] },
@@ -124,19 +127,19 @@ export function exportProgressToPDF() {
   // Achievements section
   doc.setFontSize(12)
   doc.setFont('helvetica', 'bold')
-  doc.text('Достижения и прогресс', 14, finalY)
+  doc.text(t('export.pdf.achievements', locale), 14, finalY)
 
   doc.setFontSize(10)
   doc.setFont('helvetica', 'normal')
   
   const achievementsText = [
-    `• Ваш текущий уровень: ${levelTitle}`,
-    `• Общий опыт: ${progress.totalXP.toLocaleString('ru-RU')} XP`,
-    `• Пройдено сессий: ${progress.totalSessions}`,
-    `• Точность в квизах: ${progress.quizStats.accuracy}%`,
-    `• Точность в финансовых задачах: ${progress.financeStats.accuracy}%`,
+    `• ${t('progress.title', locale)}: ${levelTitle}`,
+    `• ${t('export.csv.totalXP', locale)}: ${progress.totalXP.toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US')} XP`,
+    `• ${t('progress.sessions', locale)}: ${progress.totalSessions}`,
+    `• ${t('export.csv.quizAccuracy', locale)}: ${progress.quizStats.accuracy}%`,
+    `• ${t('finance.accuracy', locale)}: ${progress.financeStats.accuracy}%`,
     '',
-    'Продолжайте тренироваться, чтобы достичь новых уровней!',
+    locale === 'ru' ? 'Продолжайте тренироваться, чтобы достичь новых уровней!' : 'Keep training to reach new levels!',
   ]
 
   let y = finalY + 8
@@ -148,8 +151,8 @@ export function exportProgressToPDF() {
   // Footer
   doc.setFontSize(8)
   doc.setTextColor(128, 128, 128)
-  doc.text('Экономический тренажёр v7.0', 105, 290, { align: 'center' })
-  doc.text(`Сгенерировано: ${now}`, 105, 295, { align: 'center' })
+  doc.text(t('export.pdf.title', locale) + ' v7.0', 105, 290, { align: 'center' })
+  doc.text(`${t('export.pdf.generatedDate', locale)}: ${now}`, 105, 295, { align: 'center' })
 
   // Save
   doc.save(`economics-trainer-progress-${Date.now()}.pdf`)
@@ -157,55 +160,65 @@ export function exportProgressToPDF() {
 
 export function exportProgressToText(): string {
   const progress = useEconomicsStore.getState().getFullProgress()
-  const now = new Date().toLocaleString('ru-RU')
+  const locale = getCurrentLocale()
+  const now = new Date().toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US')
   const levelTitle = getLevelTitle(progress.level)
 
   const moduleNames: Record<string, string> = {
-    'gdp': 'ВВП и макропоказатели',
-    'supply-demand': 'Спрос и предложение',
-    'elasticity': 'Калькулятор эластичности',
-    'keynesian': 'Кейнсианский крест',
-    'inflation': 'Калькулятор инфляции',
-    'phillips': 'Кривая Филлипса',
-    'lorenz': 'Кривая Лоренца и Джини',
-    'is-lm': 'Модель IS-LM',
-    'ppf': 'Кривая производственных возможностей',
-    'costs': 'Анализ издержек фирмы',
-    'comparative': 'Сравнительное преимущество',
-    'breakeven': 'Точка безубыточности',
-    'tax': 'Калькулятор налогов',
-    'game-theory': 'Теория игр',
-    'market-structures': 'Рыночные структуры',
-    'currency': 'Валютный калькулятор',
-    'quiz': 'Квиз по экономике',
-    'finance': 'Финансовая математика',
-    'glossary': 'Глоссарий терминов',
-    'achievements': 'Достижения',
-    'progress': 'Прогресс',
+    'gdp': t('module.gdp.title', locale),
+    'supply-demand': t('module.supply-demand.title', locale),
+    'elasticity': t('module.elasticity.title', locale),
+    'keynesian': t('module.keynesian.title', locale),
+    'inflation': t('module.inflation.title', locale),
+    'phillips': t('module.phillips.title', locale),
+    'lorenz': t('module.lorenz.title', locale),
+    'is-lm': t('module.is-lm.title', locale),
+    'ppf': t('module.ppf.title', locale),
+    'costs': t('module.costs.title', locale),
+    'comparative': t('module.comparative.title', locale),
+    'breakeven': t('module.breakeven.title', locale),
+    'tax': t('module.tax.title', locale),
+    'game-theory': t('module.game-theory.title', locale),
+    'market-structures': t('module.market-structures.title', locale),
+    'currency': t('module.currency.title', locale),
+    'quiz': t('module.quiz.title', locale),
+    'finance': t('module.finance.title', locale),
+    'glossary': t('module.glossary.title', locale),
+    'achievements': t('module.achievements.title', locale),
+    'progress': t('module.progress.title', locale),
   }
 
   const activeModules = Object.entries(progress.moduleCounts)
     .filter(([_, count]) => count > 0)
     .sort((a, b) => b[1] - a[1])
 
+  const title = t('export.pdf.title', locale)
+  const reportTitle = t('export.pdf.reportTitle', locale)
+  const levelLabel = t('export.csv.level', locale)
+  const xpLabel = t('export.csv.totalXP', locale)
+  const sessionsLabel = t('progress.sessions', locale)
+  const statsLabel = t('export.pdf.moduleStats', locale)
+  const activityLabel = t('export.pdf.moduleActivity', locale)
+  const continueText = locale === 'ru' ? 'Продолжайте тренироваться!' : 'Keep training!'
+
   const lines = [
-    '📊 Экономический тренажёр — Отчёт о прогрессе',
+    `📊 ${title} — ${reportTitle}`,
     `📅 ${now}`,
     '',
-    `🏆 Уровень ${progress.level}: ${levelTitle}`,
-    `⭐ Опыт: ${progress.totalXP.toLocaleString('ru-RU')} XP`,
-    `📈 Сессий: ${progress.totalSessions}`,
+    `🏆 ${levelLabel} ${progress.level}: ${levelTitle}`,
+    `⭐ ${xpLabel}: ${progress.totalXP.toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US')} XP`,
+    `📈 ${sessionsLabel}: ${progress.totalSessions}`,
     '',
-    '📋 Статистика:',
-    `• Квизы: ${progress.quizStats.accuracy}% (${progress.quizStats.correct}/${progress.quizStats.total})`,
-    `• Фин. математика: ${progress.financeStats.accuracy}% (${progress.financeStats.correct}/${progress.financeStats.total})`,
-    `• Расчёты ВВП: ${progress.gdpCount}`,
-    `• Эластичность: ${progress.elasticityCount}`,
+    `📋 ${statsLabel}:`,
+    `• ${t('module.quiz.title', locale)}: ${progress.quizStats.accuracy}% (${progress.quizStats.correct}/${progress.quizStats.total})`,
+    `• ${t('module.finance.title', locale)}: ${progress.financeStats.accuracy}% (${progress.financeStats.correct}/${progress.financeStats.total})`,
+    `• ${t('module.gdp.title', locale)}: ${progress.gdpCount}`,
+    `• ${t('module.elasticity.title', locale)}: ${progress.elasticityCount}`,
     '',
-    '🎯 Активность по модулям:',
+    `🎯 ${activityLabel}:`,
     ...activeModules.map(([id, count]) => `• ${moduleNames[id] || id}: ${count}`),
     '',
-    'Продолжайте тренироваться! 💪',
+    `${continueText} 💪`,
     'https://github.com/QuadDarv1ne/econom-trainer',
   ]
 
@@ -215,6 +228,7 @@ export function exportProgressToText(): string {
 export function ExportProgressButton() {
   const totalXP = useEconomicsStore((s) => s.totalXP)
   const [copied, setCopied] = useState(false)
+  const { t } = useI18n()
 
   if (totalXP === 0) {
     return null
@@ -225,7 +239,7 @@ export function ExportProgressButton() {
     await navigator.clipboard.writeText(text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
-    toast.success('Прогресс скопирован в буфер обмена!')
+    toast.success(t('export.copied'))
   }
 
   const handleShare = async () => {
@@ -234,19 +248,19 @@ export function ExportProgressButton() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Мой прогресс — Экономический тренажёр',
+          title: t('progress.title') + ' — ' + t('export.pdf.title'),
           text: text,
         })
-        toast.success('Поделиться успешно!')
+        toast.success(t('export.shareSuccess'))
       } catch (err) {
         if ((err as Error).name !== 'AbortError') {
-          toast.error('Не удалось поделиться')
+          toast.error(t('export.shareFailed'))
         }
       }
     } else {
       // Fallback to copy
       await handleCopy()
-      toast.success('Поделиться не доступно, прогресс скопирован')
+      toast.success(t('export.shareFallback'))
     }
   }
 
@@ -266,11 +280,11 @@ export function ExportProgressButton() {
       </Button>
       <Button onClick={handleCopy} variant="outline" size="sm">
         {copied ? <Check className="h-4 w-4 mr-2 text-green-500" /> : <Copy className="h-4 w-4 mr-2" />}
-        {copied ? 'Скопировано!' : 'Копировать'}
+        {copied ? t('export.copySuccess') : t('export.copy')}
       </Button>
       <Button onClick={handleShare} variant="outline" size="sm">
         <Share2 className="h-4 w-4 mr-2" />
-        Поделиться
+        {t('export.share')}
       </Button>
     </div>
   )

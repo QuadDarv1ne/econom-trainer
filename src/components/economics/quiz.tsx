@@ -9,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { useEconomicsStore } from '@/store/economics-store'
 import { useToast } from '@/hooks/use-toast'
+import { useI18n } from '@/lib/i18n-provider'
 import { Brain, CheckCircle2, XCircle, Clock, ArrowRight, RotateCcw } from 'lucide-react'
 
 interface Question {
@@ -623,6 +624,7 @@ export function EconomicsQuiz() {
   const [answers, setAnswers] = useState<(number | null)[]>([])
   const addQuizResult = useEconomicsStore((s) => s.addQuizResult)
   const { toast } = useToast()
+  const { t } = useI18n()
 
   // Ref to track current question index inside interval callbacks
   const currentQuestionRef = useRef(currentQuestion)
@@ -696,15 +698,15 @@ export function EconomicsQuiz() {
       const finalScore = score
       addQuizResult({
         id: Date.now().toString(),
-        topic: 'Экономическая теория',
+        topic: t('quiz.topicEconomicTheory'),
         score: finalScore,
         total: shuffledQuestions.length,
         date: new Date().toISOString(),
       })
       setQuizState('finished')
       toast({
-        title: 'Квиз завершён!',
-        description: `Ваш результат: ${finalScore} из ${shuffledQuestions.length}`,
+        title: t('quiz.finishedTitle'),
+        description: `${t('quiz.finishedDescription')} ${finalScore} ${t('quiz.of')} ${shuffledQuestions.length}`,
       })
       return
     }
@@ -712,7 +714,7 @@ export function EconomicsQuiz() {
     setSelectedAnswer(null)
     setTimeLeft(QUIZ_TIME)
     setQuizState('active')
-  }, [currentQuestion, shuffledQuestions, score, addQuizResult, toast])
+  }, [currentQuestion, shuffledQuestions, score, addQuizResult, toast, t])
 
   const getDifficultyColor = (d: string) => {
     if (d === 'easy') return 'secondary'
@@ -726,30 +728,30 @@ export function EconomicsQuiz() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
-            Квиз по экономической теории
+            {t('quiz.economicTheoryTitle')}
           </CardTitle>
           <CardDescription>
-            Проверьте свои знания микро- и макроэкономики. 10 случайных вопросов из {questions.length}, 30 секунд на каждый.
+            {t('quiz.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-3 gap-3 text-center">
             <div className="p-4 bg-muted/50 rounded-lg">
               <div className="text-2xl font-bold">{questions.length}</div>
-              <div className="text-sm text-muted-foreground">Вопросов в базе</div>
+              <div className="text-sm text-muted-foreground">{t('quiz.questionsInBank')}</div>
             </div>
             <div className="p-4 bg-muted/50 rounded-lg">
               <div className="text-2xl font-bold">10</div>
-              <div className="text-sm text-muted-foreground">Вопросов в квизе</div>
+              <div className="text-sm text-muted-foreground">{t('quiz.questionsInQuiz')}</div>
             </div>
             <div className="p-4 bg-muted/50 rounded-lg">
-              <div className="text-2xl font-bold">30с</div>
-              <div className="text-sm text-muted-foreground">На вопрос</div>
+              <div className="text-2xl font-bold">30{t('quiz.secondsSuffix')}</div>
+              <div className="text-sm text-muted-foreground">{t('quiz.perQuestion')}</div>
             </div>
           </div>
           <Button onClick={startQuiz} size="lg" className="w-full">
             <Brain className="h-4 w-4 mr-2" />
-            Начать квиз
+            {t('quiz.startQuiz')}
           </Button>
         </CardContent>
       </Card>
@@ -763,7 +765,7 @@ export function EconomicsQuiz() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
-            Результаты квиза
+            {t('quiz.resultsTitle')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -771,13 +773,13 @@ export function EconomicsQuiz() {
             <div className="text-5xl font-bold">
               {score}/{shuffledQuestions.length}
             </div>
-            <div className="text-lg text-muted-foreground">Правильных ответов</div>
+            <div className="text-lg text-muted-foreground">{t('quiz.correctAnswers')}</div>
             <Progress value={percentage} className="h-3" />
             <Badge
               variant={percentage >= 75 ? 'default' : percentage >= 50 ? 'secondary' : 'destructive'}
               className="text-base px-4 py-1"
             >
-              {percentage >= 75 ? 'Отлично!' : percentage >= 50 ? 'Неплохо' : 'Нужно подтянуть'}
+              {percentage >= 75 ? t('quiz.excellent') : percentage >= 50 ? t('quiz.good') : t('quiz.needsImprovement')}
             </Badge>
           </div>
 
@@ -800,7 +802,7 @@ export function EconomicsQuiz() {
                   <div className="font-medium">{q.question}</div>
                   {answers[i] !== q.correctAnswer && (
                     <div className="text-muted-foreground mt-1">
-                      Правильный ответ: {q.options[q.correctAnswer]}
+                      {t('quiz.correctAnswer')} {q.options[q.correctAnswer]}
                     </div>
                   )}
                 </div>
@@ -810,7 +812,7 @@ export function EconomicsQuiz() {
 
           <Button onClick={startQuiz} className="w-full" size="lg">
             <RotateCcw className="h-4 w-4 mr-2" />
-            Пройти ещё раз
+            {t('quiz.playAgain')}
           </Button>
         </CardContent>
       </Card>
@@ -824,17 +826,17 @@ export function EconomicsQuiz() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Badge variant="outline">
-            Вопрос {currentQuestion + 1} из {shuffledQuestions.length}
+            {t('quiz.questionOf').replace('{current}', String(currentQuestion + 1)).replace('{total}', String(shuffledQuestions.length))}
           </Badge>
           <Badge variant={getDifficultyColor(question.difficulty) as "secondary" | "default" | "destructive"}>
-            {question.difficulty === 'easy' ? 'Лёгкий' : question.difficulty === 'medium' ? 'Средний' : 'Сложный'}
+            {question.difficulty === 'easy' ? t('quiz.difficultyEasy') : question.difficulty === 'medium' ? t('quiz.difficultyMedium') : t('quiz.difficultyHard')}
           </Badge>
           <Badge variant="outline">{question.topic}</Badge>
         </div>
         <div className="flex items-center gap-1">
           <Clock className={`h-4 w-4 ${timeLeft <= 10 ? 'text-red-500' : ''}`} />
           <span className={`font-mono font-bold ${timeLeft <= 10 ? 'text-red-500' : ''}`}>
-            {timeLeft}с
+            {timeLeft}{t('quiz.secondsSuffix')}
           </span>
         </div>
       </div>
@@ -846,13 +848,13 @@ export function EconomicsQuiz() {
           <CardContent className="p-4 text-center space-y-3">
             <div className="text-lg font-bold text-red-600 flex items-center justify-center gap-2">
               <Clock className="h-5 w-5" />
-              Время вышло!
+              {t('quiz.timeUp')}
             </div>
             <p className="text-sm text-muted-foreground">
-              Вы не успели ответить на этот вопрос.
+              {t('quiz.timeUpDescription')}
             </p>
             <Button onClick={handleTimeUp} variant="destructive">
-              Продолжить
+              {t('quiz.continue')}
             </Button>
           </CardContent>
         </Card>
@@ -905,11 +907,11 @@ export function EconomicsQuiz() {
               <div className="font-semibold">
                 {selectedAnswer === question.correctAnswer ? (
                   <span className="text-green-600 flex items-center gap-1">
-                    <CheckCircle2 className="h-4 w-4" /> Правильно!
+                    <CheckCircle2 className="h-4 w-4" /> {t('quiz.correctExclamation')}
                   </span>
                 ) : (
                   <span className="text-red-600 flex items-center gap-1">
-                    <XCircle className="h-4 w-4" /> Неправильно
+                    <XCircle className="h-4 w-4" /> {t('quiz.incorrectExclamation')}
                   </span>
                 )}
               </div>
@@ -921,8 +923,8 @@ export function EconomicsQuiz() {
             <Button onClick={nextQuestion} className="w-full">
               <ArrowRight className="h-4 w-4 mr-2" />
               {currentQuestion + 1 >= shuffledQuestions.length
-                ? 'Показать результаты'
-                : 'Следующий вопрос'}
+                ? t('quiz.showResults')
+                : t('quiz.nextQuestion')}
             </Button>
           )}
         </CardContent>

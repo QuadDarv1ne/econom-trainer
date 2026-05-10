@@ -19,6 +19,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { Users, Swords, Info, Shield, RotateCcw } from 'lucide-react'
+import { useI18n } from '@/lib/i18n-provider'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -91,17 +92,17 @@ let gameTheoryXpEarned = false
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export function GameTheory() {
+  const { t } = useI18n()
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Swords className="h-5 w-5" />
-            Теория игр: интерактивный модуль
+            {t('gameTheory.title')}
           </CardTitle>
           <CardDescription>
-            Исследуйте классические модели теории игр: дилемму заключённого, битву полов
-            и эволюционную игру «Ястребы и Голуби». Выбирайте стратегии и наблюдайте за исходами.
+            {t('gameTheory.description')}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -110,15 +111,15 @@ export function GameTheory() {
         <TabsList className="w-full flex-wrap h-auto gap-1 p-1">
           <TabsTrigger value="prisoner" className="flex-1 min-w-[140px] text-xs sm:text-sm">
             <Swords className="h-4 w-4 mr-1" />
-            Дилемма заключённого
+            {t('gameTheory.tab.prisoner')}
           </TabsTrigger>
           <TabsTrigger value="battle" className="flex-1 min-w-[140px] text-xs sm:text-sm">
             <Users className="h-4 w-4 mr-1" />
-            Битва полов
+            {t('gameTheory.tab.battle')}
           </TabsTrigger>
           <TabsTrigger value="hawks" className="flex-1 min-w-[140px] text-xs sm:text-sm">
             <Shield className="h-4 w-4 mr-1" />
-            Ястребы и Голуби
+            {t('gameTheory.tab.hawks')}
           </TabsTrigger>
         </TabsList>
 
@@ -141,6 +142,7 @@ export function GameTheory() {
 // ═════════════════════════════════════════════════════════════════════════════
 
 function PrisonersDilemma() {
+  const { t } = useI18n()
   const [playerHistory, setPlayerHistory] = useState<PDChoice[]>([])
   const [rounds, setRounds] = useState<PDRound[]>([])
   const [aiStrategy, setAiStrategy] = useState<PDStrategy>('random')
@@ -191,11 +193,11 @@ function PrisonersDilemma() {
     setLastResult(null)
   }, [])
 
-  const strategyLabels: Record<PDStrategy, string> = {
-    random: 'Случайная',
-    'always-defect': 'Всегда предаёт',
-    'tit-for-tat': 'Око за око',
-  }
+  const strategyLabels: Record<PDStrategy, string> = useMemo(() => ({
+    random: t('gameTheory.strategy.random'),
+    'always-defect': t('gameTheory.strategy.alwaysDefect'),
+    'tit-for-tat': t('gameTheory.strategy.titForTat'),
+  }), [t])
 
   return (
     <div className="space-y-4">
@@ -204,10 +206,10 @@ function PrisonersDilemma() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Info className="h-4 w-4" />
-            Матрица выигрышей
+            {t('gameTheory.payoffMatrix')}
           </CardTitle>
           <CardDescription>
-            Формат: (Выигрыш Игрока 1, Выигрыш Игрока 2)
+            {t('gameTheory.format')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -218,14 +220,14 @@ function PrisonersDilemma() {
                   <th className="border border-border p-2 sm:p-3 bg-muted/50" />
                   <th className="border border-border p-2 sm:p-3 bg-muted/50 text-center">
                     <div className="flex flex-col items-center gap-1">
-                      <Badge variant="outline" className="text-xs">Игрок 2</Badge>
-                      <span>Сотрудничать</span>
+                      <Badge variant="outline" className="text-xs">{t('gameTheory.player2')}</Badge>
+                      <span>{t('gameTheory.cooperate')}</span>
                     </div>
                   </th>
                   <th className="border border-border p-2 sm:p-3 bg-muted/50 text-center">
                     <div className="flex flex-col items-center gap-1">
-                      <Badge variant="outline" className="text-xs">Игрок 2</Badge>
-                      <span>Предать</span>
+                      <Badge variant="outline" className="text-xs">{t('gameTheory.player2')}</Badge>
+                      <span>{t('gameTheory.defect')}</span>
                     </div>
                   </th>
                 </tr>
@@ -234,13 +236,13 @@ function PrisonersDilemma() {
                 <tr>
                   <td className="border border-border p-2 sm:p-3 bg-muted/50 text-center">
                     <div className="flex flex-col items-center gap-1">
-                      <Badge variant="outline" className="text-xs">Игрок 1</Badge>
-                      <span>Сотрудничать</span>
+                      <Badge variant="outline" className="text-xs">{t('gameTheory.player1')}</Badge>
+                      <span>{t('gameTheory.cooperate')}</span>
                     </div>
                   </td>
                   <td className="border-2 border-border p-2 sm:p-3 text-center bg-green-500/10 border-green-500/30">
                     <div className="font-mono font-semibold">(-1, -1)</div>
-                    <Badge className="mt-1 bg-green-600 text-xs">Парето-оптимум</Badge>
+                    <Badge className="mt-1 bg-green-600 text-xs">{t('gameTheory.paretoOptimum')}</Badge>
                   </td>
                   <td className="border border-border p-2 sm:p-3 text-center">
                     <div className="font-mono font-semibold">(-10, 0)</div>
@@ -249,8 +251,8 @@ function PrisonersDilemma() {
                 <tr>
                   <td className="border border-border p-2 sm:p-3 bg-muted/50 text-center">
                     <div className="flex flex-col items-center gap-1">
-                      <Badge variant="outline" className="text-xs">Игрок 1</Badge>
-                      <span>Предать</span>
+                      <Badge variant="outline" className="text-xs">{t('gameTheory.player1')}</Badge>
+                      <span>{t('gameTheory.defect')}</span>
                     </div>
                   </td>
                   <td className="border border-border p-2 sm:p-3 text-center">
@@ -258,7 +260,7 @@ function PrisonersDilemma() {
                   </td>
                   <td className="border-2 border-border p-2 sm:p-3 text-center bg-amber-500/10 border-amber-500/30">
                     <div className="font-mono font-semibold">(-5, -5)</div>
-                    <Badge className="mt-1 bg-amber-600 text-xs">Равновесие Нэша</Badge>
+                    <Badge className="mt-1 bg-amber-600 text-xs">{t('gameTheory.nashEquilibrium')}</Badge>
                   </td>
                 </tr>
               </tbody>
@@ -267,13 +269,13 @@ function PrisonersDilemma() {
 
           <div className="mt-4 flex flex-wrap gap-2">
             <Badge variant="outline" className="border-amber-500 text-amber-600">
-              🟡 Равновесие Нэша: взаимное предательство
+              {t('gameTheory.nashMutualDefect')}
             </Badge>
             <Badge variant="outline" className="border-green-500 text-green-600">
-              🟢 Парето-оптимум: взаимное сотрудничество
+              {t('gameTheory.paretoMutualCoop')}
             </Badge>
             <Badge variant="outline" className="border-red-500 text-red-600">
-              🔴 Доминирующая стратегия: Предать
+              {t('gameTheory.dominantDefect')}
             </Badge>
           </div>
         </CardContent>
@@ -282,15 +284,15 @@ function PrisonersDilemma() {
       {/* Interactive Game */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Играйте против ИИ</CardTitle>
+          <CardTitle className="text-lg">{t('gameTheory.playAgainstAI')}</CardTitle>
           <CardDescription>
-            Выберите стратегию оппонента и свой ход в каждом раунде
+            {t('gameTheory.aiStrategyDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Strategy selector */}
           <div className="space-y-2">
-            <p className="text-sm font-medium">Стратегия ИИ-оппонента:</p>
+            <p className="text-sm font-medium">{t('gameTheory.aiStrategy')}</p>
             <div className="flex flex-wrap gap-2">
               {(['random', 'always-defect', 'tit-for-tat'] as PDStrategy[]).map(
                 (s) => (
@@ -319,40 +321,40 @@ function PrisonersDilemma() {
               variant="outline"
               onClick={() => playRound('cooperate')}
             >
-              🤝 Сотрудничать
+              {t('gameTheory.cooperate')}
             </Button>
             <Button
               className="flex-1 h-14 text-base"
               variant="outline"
               onClick={() => playRound('defect')}
             >
-              🗡️ Предать
+              {t('gameTheory.defect')}
             </Button>
           </div>
 
           {/* Last result */}
           {lastResult && (
             <div className="p-4 bg-muted/50 rounded-lg space-y-2">
-              <div className="font-semibold text-center">Результат раунда {rounds.length}</div>
+              <div className="font-semibold text-center">{t('gameTheory.roundResult')} {rounds.length}</div>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div className="p-2 bg-background rounded text-center">
-                  <div className="text-muted-foreground text-xs">Ваш выбор</div>
+                  <div className="text-muted-foreground text-xs">{t('gameTheory.yourChoice')}</div>
                   <div className="font-semibold">
-                    {lastResult.player === 'cooperate' ? '🤝 Сотрудничество' : '🗡️ Предательство'}
+                    {lastResult.player === 'cooperate' ? t('gameTheory.cooperation') : t('gameTheory.betrayal')}
                   </div>
                 </div>
                 <div className="p-2 bg-background rounded text-center">
-                  <div className="text-muted-foreground text-xs">Выбор ИИ</div>
+                  <div className="text-muted-foreground text-xs">{t('gameTheory.aiChoice')}</div>
                   <div className="font-semibold">
-                    {lastResult.ai === 'cooperate' ? '🤝 Сотрудничество' : '🗡️ Предательство'}
+                    {lastResult.ai === 'cooperate' ? t('gameTheory.cooperation') : t('gameTheory.betrayal')}
                   </div>
                 </div>
                 <div className="p-2 bg-background rounded text-center">
-                  <div className="text-muted-foreground text-xs">Ваш выигрыш</div>
+                  <div className="text-muted-foreground text-xs">{t('gameTheory.yourPayoff')}</div>
                   <div className="font-mono font-bold text-lg">{lastResult.playerPayoff}</div>
                 </div>
                 <div className="p-2 bg-background rounded text-center">
-                  <div className="text-muted-foreground text-xs">Выигрыш ИИ</div>
+                  <div className="text-muted-foreground text-xs">{t('gameTheory.aiPayoff')}</div>
                   <div className="font-mono font-bold text-lg">{lastResult.aiPayoff}</div>
                 </div>
               </div>
@@ -365,22 +367,22 @@ function PrisonersDilemma() {
               <Separator />
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="text-sm">
-                  <span className="text-muted-foreground">Раундов:</span>{' '}
+                  <span className="text-muted-foreground">{t('gameTheory.rounds')}</span>{' '}
                   <span className="font-bold">{rounds.length}</span>
                 </div>
                 <div className="flex gap-4 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Вы:</span>{' '}
+                    <span className="text-muted-foreground">{t('gameTheory.you:')}</span>{' '}
                     <span className="font-mono font-bold">{totalPlayerScore}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">ИИ:</span>{' '}
+                    <span className="text-muted-foreground">{t('gameTheory.ai:')}</span>{' '}
                     <span className="font-mono font-bold">{totalAIScore}</span>
                   </div>
                 </div>
                 <Button variant="ghost" size="sm" onClick={resetGame}>
                   <RotateCcw className="h-4 w-4 mr-1" />
-                  Сброс
+                  {t('gameTheory.reset')}
                 </Button>
               </div>
 
@@ -389,11 +391,11 @@ function PrisonersDilemma() {
                 <table className="w-full text-xs">
                   <thead className="bg-muted/50 sticky top-0">
                     <tr>
-                      <th className="p-2 text-left">#</th>
-                      <th className="p-2 text-left">Вы</th>
-                      <th className="p-2 text-left">ИИ</th>
-                      <th className="p-2 text-right">Ваш Σ</th>
-                      <th className="p-2 text-right">ИИ Σ</th>
+                      <th className="p-2 text-left">{t('gameTheory.history.number')}</th>
+                      <th className="p-2 text-left">{t('gameTheory.history.you')}</th>
+                      <th className="p-2 text-left">{t('gameTheory.history.ai')}</th>
+                      <th className="p-2 text-right">{t('gameTheory.history.yourSum')}</th>
+                      <th className="p-2 text-right">{t('gameTheory.history.aiSum')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -427,30 +429,21 @@ function PrisonersDilemma() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Info className="h-4 w-4" />
-            Анализ дилеммы заключённого
+            {t('gameTheory.prisonerAnalysis.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-sm space-y-3">
           <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg">
-            <strong>Равновесие Нэша (взаимное предательство (-5, -5)):</strong> Ни один игрок не может
-            улучшить свой результат, односторонне изменив стратегию. Если игрок 1 предаёт, то игроку 2
-            лучше тоже предать (-5 &gt; -10). Если игрок 1 сотрудничает, игроку 2 всё равно выгоднее
-            предать (0 &gt; -1). Таким образом, «Предать» — доминирующая стратегия.
+            <strong>{t('gameTheory.prisonerAnalysis.nash')}</strong>
           </div>
           <div className="p-3 bg-green-500/5 border border-green-500/20 rounded-lg">
-            <strong>Парето-оптимум (взаимное сотрудничество (-1, -1)):</strong> При взаимном сотрудничестве
-            оба игрока получают лучший результат, чем при взаимном предательстве (-1 &gt; -5). Однако
-            это состояние нестабильно: у каждого есть стимул отклониться и получить 0 вместо -1.
+            <strong>{t('gameTheory.prisonerAnalysis.pareto')}</strong>
           </div>
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Парадокс:</strong> Рациональные игроки, преследующие собственный интерес, приходят
-            к худшему для обоих исходу. Это основная проблема теории игр и причина возникновения
-            институтов, норм и механизмов принуждения к сотрудничеству.
+            <strong>{t('gameTheory.prisonerAnalysis.paradox')}</strong>
           </div>
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Стратегия «Око за око»:</strong> В повторяющейся игре эта простая стратегия
-            (сотрудничать первым, затем повторять действие оппонента) способствует возникновению
-            сотрудничества и является одной из наиболее успешных в турнирах по теории игр.
+            <strong>{t('gameTheory.prisonerAnalysis.titForTat')}</strong>
           </div>
         </CardContent>
       </Card>
@@ -463,6 +456,7 @@ function PrisonersDilemma() {
 // ═════════════════════════════════════════════════════════════════════════════
 
 function BattleOfTheSexes() {
+  const { t } = useI18n()
   const [player1Choice, setPlayer1Choice] = useState<BotSChoice | null>(null)
   const [player2Choice, setPlayer2Choice] = useState<BotSChoice | null>(null)
   const [result, setResult] = useState<{
@@ -535,10 +529,10 @@ function BattleOfTheSexes() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Info className="h-4 w-4" />
-            Матрица выигрышей
+            {t('gameTheory.payoffMatrix')}
           </CardTitle>
           <CardDescription>
-            Игрок 1 предпочитает Оперу, Игрок 2 — Футбол. Формат: (Игрок 1, Игрок 2)
+            {t('gameTheory.battleDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -549,14 +543,14 @@ function BattleOfTheSexes() {
                   <th className="border border-border p-2 sm:p-3 bg-muted/50" />
                   <th className="border border-border p-2 sm:p-3 bg-muted/50 text-center">
                     <div className="flex flex-col items-center gap-1">
-                      <Badge variant="outline" className="text-xs">Игрок 2</Badge>
-                      <span>🎭 Опера</span>
+                      <Badge variant="outline" className="text-xs">{t('gameTheory.player2')}</Badge>
+                      <span>{t('gameTheory.opera')}</span>
                     </div>
                   </th>
                   <th className="border border-border p-2 sm:p-3 bg-muted/50 text-center">
                     <div className="flex flex-col items-center gap-1">
-                      <Badge variant="outline" className="text-xs">Игрок 2</Badge>
-                      <span>⚽ Футбол</span>
+                      <Badge variant="outline" className="text-xs">{t('gameTheory.player2')}</Badge>
+                      <span>{t('gameTheory.football')}</span>
                     </div>
                   </th>
                 </tr>
@@ -566,8 +560,8 @@ function BattleOfTheSexes() {
                   <tr key={p1}>
                     <td className="border border-border p-2 sm:p-3 bg-muted/50 text-center">
                       <div className="flex flex-col items-center gap-1">
-                        <Badge variant="outline" className="text-xs">Игрок 1</Badge>
-                        <span>{p1 === 'opera' ? '🎭 Опера' : '⚽ Футбол'}</span>
+                        <Badge variant="outline" className="text-xs">{t('gameTheory.player1')}</Badge>
+                        <span>{p1 === 'opera' ? t('gameTheory.opera') : t('gameTheory.football')}</span>
                       </div>
                     </td>
                     {(['opera', 'football'] as BotSChoice[]).map((p2) => {
@@ -583,7 +577,7 @@ function BattleOfTheSexes() {
                           <div className="font-mono font-semibold">({p1Payoff}, {p2Payoff})</div>
                           {isNash && (
                             <Badge className="mt-1 bg-green-600 text-xs">
-                              Равновесие Нэша
+                              {t('gameTheory.nashEquilibrium')}
                             </Badge>
                           )}
                         </td>
@@ -597,10 +591,10 @@ function BattleOfTheSexes() {
 
           <div className="mt-4 flex flex-wrap gap-2">
             <Badge variant="outline" className="border-green-500 text-green-600">
-              🟢 Два чистых равновесия Нэша: (Опера, Опера) и (Футбол, Футбол)
+              {t('gameTheory.nashEquilibrium')}: ({t('gameTheory.opera')}, {t('gameTheory.opera')}), ({t('gameTheory.football')}, {t('gameTheory.football')})
             </Badge>
             <Badge variant="outline" className="border-purple-500 text-purple-600">
-              🟣 Одно смешанное равновесие Нэша
+              {t('gameTheory.mixedStrategy')}
             </Badge>
           </div>
         </CardContent>
@@ -609,15 +603,15 @@ function BattleOfTheSexes() {
       {/* Interactive Game */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Интерактивная игра</CardTitle>
+          <CardTitle className="text-lg">{t('gameTheory.interactiveGame')}</CardTitle>
           <CardDescription>
-            Выберите стратегии для обоих игроков и наблюдайте результат
+            {t('gameTheory.battleGameDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <p className="text-sm font-medium">Игрок 1 (предпочитает Оперу):</p>
+              <p className="text-sm font-medium">{t('gameTheory.player1Pref')}</p>
               <div className="flex gap-2">
                 <Button
                   variant={player1Choice === 'opera' ? 'default' : 'outline'}
@@ -625,7 +619,7 @@ function BattleOfTheSexes() {
                   className="flex-1"
                   onClick={() => setPlayer1Choice('opera')}
                 >
-                  🎭 Опера
+                  {t('gameTheory.opera')}
                 </Button>
                 <Button
                   variant={player1Choice === 'football' ? 'default' : 'outline'}
@@ -633,12 +627,12 @@ function BattleOfTheSexes() {
                   className="flex-1"
                   onClick={() => setPlayer1Choice('football')}
                 >
-                  ⚽ Футбол
+                  {t('gameTheory.football')}
                 </Button>
               </div>
             </div>
             <div className="space-y-2">
-              <p className="text-sm font-medium">Игрок 2 (предпочитает Футбол):</p>
+              <p className="text-sm font-medium">{t('gameTheory.player2Pref')}</p>
               <div className="flex gap-2">
                 <Button
                   variant={player2Choice === 'opera' ? 'default' : 'outline'}
@@ -646,7 +640,7 @@ function BattleOfTheSexes() {
                   className="flex-1"
                   onClick={() => setPlayer2Choice('opera')}
                 >
-                  🎭 Опера
+                  {t('gameTheory.opera')}
                 </Button>
                 <Button
                   variant={player2Choice === 'football' ? 'default' : 'outline'}
@@ -654,7 +648,7 @@ function BattleOfTheSexes() {
                   className="flex-1"
                   onClick={() => setPlayer2Choice('football')}
                 >
-                  ⚽ Футбол
+                  {t('gameTheory.football')}
                 </Button>
               </div>
             </div>
@@ -666,19 +660,19 @@ function BattleOfTheSexes() {
             disabled={!player1Choice || !player2Choice}
             onClick={playRound}
           >
-            Сыграть раунд
+            {t('gameTheory.playRound')}
           </Button>
 
           {result && (
             <div className="p-4 bg-muted/50 rounded-lg space-y-2">
-              <div className="font-semibold text-center">Результат раунда {rounds.length}</div>
+              <div className="font-semibold text-center">{t('gameTheory.roundResult')} {rounds.length}</div>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div className="p-2 bg-background rounded text-center">
-                  <div className="text-muted-foreground text-xs">Игрок 1</div>
+                  <div className="text-muted-foreground text-xs">{t('gameTheory.player1')}</div>
                   <div className="font-mono font-bold text-lg">{result.p1}</div>
                 </div>
                 <div className="p-2 bg-background rounded text-center">
-                  <div className="text-muted-foreground text-xs">Игрок 2</div>
+                  <div className="text-muted-foreground text-xs">{t('gameTheory.player2')}</div>
                   <div className="font-mono font-bold text-lg">{result.p2}</div>
                 </div>
               </div>
@@ -690,15 +684,15 @@ function BattleOfTheSexes() {
               <Separator />
               <div className="flex items-center justify-between flex-wrap gap-2 text-sm">
                 <div>
-                  Раундов: <strong>{rounds.length}</strong>
+                  {t('gameTheory.rounds')} <strong>{rounds.length}</strong>
                 </div>
                 <div className="flex gap-4">
-                  <span>Игрок 1 Σ: <strong className="font-mono">{totalP1}</strong></span>
-                  <span>Игрок 2 Σ: <strong className="font-mono">{totalP2}</strong></span>
+                  <span>{t('gameTheory.player1')} Σ: <strong className="font-mono">{totalP1}</strong></span>
+                  <span>{t('gameTheory.player2')} Σ: <strong className="font-mono">{totalP2}</strong></span>
                 </div>
                 <Button variant="ghost" size="sm" onClick={resetGame}>
                   <RotateCcw className="h-4 w-4 mr-1" />
-                  Сброс
+                  {t('gameTheory.reset')}
                 </Button>
               </div>
 
@@ -707,11 +701,11 @@ function BattleOfTheSexes() {
                 <table className="w-full text-xs">
                   <thead className="bg-muted/50 sticky top-0">
                     <tr>
-                      <th className="p-2 text-left">#</th>
-                      <th className="p-2 text-left">Игрок 1</th>
-                      <th className="p-2 text-left">Игрок 2</th>
-                      <th className="p-2 text-right">Игрок 1 Σ</th>
-                      <th className="p-2 text-right">Игрок 2 Σ</th>
+                      <th className="p-2 text-left">{t('gameTheory.history.number')}</th>
+                      <th className="p-2 text-left">{t('gameTheory.player1')}</th>
+                      <th className="p-2 text-left">{t('gameTheory.player2')}</th>
+                      <th className="p-2 text-right">{t('gameTheory.player1')} Σ</th>
+                      <th className="p-2 text-right">{t('gameTheory.player2')} Σ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -741,29 +735,29 @@ function BattleOfTheSexes() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Info className="h-4 w-4" />
-            Смешанная стратегия
+            {t('gameTheory.mixedStrategy')}
           </CardTitle>
           <CardDescription>
-            Расчёт равновесия в смешанных стратегиях
+            {t('gameTheory.mixedStrategyDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="text-sm space-y-4">
           <div className="p-4 bg-purple-500/5 border border-purple-500/20 rounded-lg space-y-3">
-            <div className="font-semibold text-base">Смешанное равновесие Нэша</div>
+            <div className="font-semibold text-base">{t('gameTheory.mixedStrategy')}</div>
             <div className="space-y-2">
               <div>
-                <strong>Игрок 1</strong> выбирает Оперу с вероятностью p:
+                <strong>{t('gameTheory.player1')}</strong> {t('gameTheory.opera')}:
                 <div className="mt-1 p-2 bg-background rounded font-mono text-xs">
-                  E[Игрок2|Опера] = E[Игрок2|Футбол]<br />
+                  E[{t('gameTheory.player2')}|{t('gameTheory.opera')}] = E[{t('gameTheory.player2')}|{t('gameTheory.football')}]<br />
                   2p + 0(1−p) = 0p + 3(1−p)<br />
                   2p = 3 − 3p<br />
                   5p = 3 → <strong>p = 3/5 = {mixedP1Opera.toFixed(2)}</strong>
                 </div>
               </div>
               <div>
-                <strong>Игрок 2</strong> выбирает Оперу с вероятностью q:
+                <strong>{t('gameTheory.player2')}</strong> {t('gameTheory.opera')}:
                 <div className="mt-1 p-2 bg-background rounded font-mono text-xs">
-                  E[Игрок1|Опера] = E[Игрок1|Футбол]<br />
+                  E[{t('gameTheory.player1')}|{t('gameTheory.opera')}] = E[{t('gameTheory.player1')}|{t('gameTheory.football')}]<br />
                   3q + 0(1−q) = 0q + 2(1−q)<br />
                   3q = 2 − 2q<br />
                   5q = 2 → <strong>q = 2/5 = {mixedP2Opera.toFixed(2)}</strong>
@@ -774,23 +768,23 @@ function BattleOfTheSexes() {
             <Separator />
 
             <div>
-              <strong>Ожидаемые выигрыши в смешанном равновесии:</strong>
+              <strong>{t('gameTheory.expectedPayoffs')}</strong>
               <div className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div className="p-2 bg-background rounded font-mono text-xs">
-                  Игрок 1: 3 × {mixedP2Opera.toFixed(2)} = {mixedP1Expected.toFixed(2)}
+                  {t('gameTheory.player1')}: 3 × {mixedP2Opera.toFixed(2)} = {mixedP1Expected.toFixed(2)}
                 </div>
                 <div className="p-2 bg-background rounded font-mono text-xs">
-                  Игрок 2: 2 × {mixedP1Opera.toFixed(2)} = {mixedP2Expected.toFixed(2)}
+                  {t('gameTheory.player2')}: 2 × {mixedP1Opera.toFixed(2)} = {mixedP2Expected.toFixed(2)}
                 </div>
               </div>
             </div>
           </div>
 
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Замечание:</strong> В смешанном равновесии ожидаемые выигрыши ({mixedP1Expected.toFixed(2)}, {mixedP2Expected.toFixed(2)})
-            ниже, чем в любом из чистых равновесий Нэша ((3, 2) или (2, 3)). Это иллюстрирует
-            координационную проблему: игрокам нужно согласовать свои действия, чтобы достичь
-            более выгодного исхода для обоих.
+            <strong>{t('gameTheory.note')}</strong>{' '}
+            {t('gameTheory.note.mixedPayoffs')
+              .replace('{p1}', mixedP1Expected.toFixed(2))
+              .replace('{p2}', mixedP2Expected.toFixed(2))}
           </div>
         </CardContent>
       </Card>
@@ -800,24 +794,18 @@ function BattleOfTheSexes() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Info className="h-4 w-4" />
-            Анализ «Битвы полов»
+            {t('gameTheory.battleAnalysis')}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-sm space-y-3">
           <div className="p-3 bg-green-500/5 border border-green-500/20 rounded-lg">
-            <strong>Чистые равновесия Нэша:</strong> (Опера, Опера) и (Футбол, Футбол).
-            В обоих случаях игроки координируют свои действия, но распределение выигрышей
-            неравномерно: один игрок получает больше.
+            <strong>{t('gameTheory.battleAnalysis.pure')}</strong>
           </div>
           <div className="p-3 bg-purple-500/5 border border-purple-500/20 rounded-lg">
-            <strong>Смешанное равновесие:</strong> Каждый игрок рандомизирует с определённой
-            вероятностью, делая оппонента безразличным к выбору. Это равновесие менее
-            эффективно, чем чистые, но не требует координации.
+            <strong>{t('gameTheory.battleAnalysis.mixed')}</strong>
           </div>
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Проблема координации:</strong> Главный вопрос — как игрокам договориться
-            о том, какое именно равновесие реализовать. В реальности социальные нормы,
-            коммуникация и фокальные точки (точки Шеллинга) помогают решить эту проблему.
+            <strong>{t('gameTheory.battleAnalysis.coordination')}</strong>
           </div>
         </CardContent>
       </Card>
@@ -830,6 +818,7 @@ function BattleOfTheSexes() {
 // ═════════════════════════════════════════════════════════════════════════════
 
 function HawksAndDoves() {
+  const { t } = useI18n()
   const [V, setV] = useState(50)
   const [C, setC] = useState(100)
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
@@ -906,17 +895,17 @@ function HawksAndDoves() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Shield className="h-4 w-4" />
-            Параметры игры
+            {t('gameTheory.gameParams')}
           </CardTitle>
           <CardDescription>
-            Настройте ценность ресурса (V) и стоимость конфликта (C)
+            {t('gameTheory.paramsDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">
-                V — Ценность ресурса
+                {t('gameTheory.resourceValue')}
               </span>
               <span className="font-mono text-sm font-bold bg-muted px-2 py-0.5 rounded">
                 {V}
@@ -933,7 +922,7 @@ function HawksAndDoves() {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">
-                C — Стоимость конфликта
+                {t('gameTheory.conflictCost')}
               </span>
               <span className="font-mono text-sm font-bold bg-muted px-2 py-0.5 rounded">
                 {C}
@@ -951,11 +940,11 @@ function HawksAndDoves() {
           <div className="flex flex-wrap gap-2">
             {isESSValid ? (
               <Badge className="bg-green-600">
-                V &lt; C → Эволюционно стабильная стратегия (ЭСС) существует
+                {t('gameTheory.essExists')}
               </Badge>
             ) : (
               <Badge variant="destructive">
-                V ≥ C → Ястребы доминируют, ЭСС = все ястребы
+                {t('gameTheory.hawksDominate')}
               </Badge>
             )}
           </div>
@@ -967,10 +956,10 @@ function HawksAndDoves() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Info className="h-4 w-4" />
-            Матрица выигрышей
+            {t('gameTheory.payoffMatrix')}
           </CardTitle>
           <CardDescription>
-            Формат: (Выигрыш строки, Выигрыш столбца)
+            {t('gameTheory.format')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -980,34 +969,34 @@ function HawksAndDoves() {
                 <tr>
                   <th className="border border-border p-2 sm:p-3 bg-muted/50" />
                   <th className="border border-border p-2 sm:p-3 bg-muted/50 text-center">
-                    <span>🛡️ Голубь</span>
+                    <span>{t('gameTheory.dove')}</span>
                   </th>
                   <th className="border border-border p-2 sm:p-3 bg-muted/50 text-center">
-                    <span>⚔️ Ястреб</span>
+                    <span>{t('gameTheory.hawk')}</span>
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td className="border border-border p-2 sm:p-3 bg-muted/50 text-center font-medium">
-                    🛡️ Голубь
+                    {t('gameTheory.dove')}
                   </td>
                   <td className="border border-border p-2 sm:p-3 text-center">
                     <div className="font-mono font-semibold">({doveVsDove.toFixed(1)}, {doveVsDove.toFixed(1)})</div>
-                    <div className="text-xs text-muted-foreground mt-1">Делят ресурс</div>
+                    <div className="text-xs text-muted-foreground mt-1">{t('gameTheory.shareResource')}</div>
                   </td>
                   <td className="border border-border p-2 sm:p-3 text-center">
                     <div className="font-mono font-semibold">({doveVsHawk.toFixed(1)}, {hawkVsDove.toFixed(1)})</div>
-                    <div className="text-xs text-muted-foreground mt-1">Ястреб забирает всё</div>
+                    <div className="text-xs text-muted-foreground mt-1">{t('gameTheory.hawkTakesAll')}</div>
                   </td>
                 </tr>
                 <tr>
                   <td className="border border-border p-2 sm:p-3 bg-muted/50 text-center font-medium">
-                    ⚔️ Ястреб
+                    {t('gameTheory.hawk')}
                   </td>
                   <td className="border border-border p-2 sm:p-3 text-center">
                     <div className="font-mono font-semibold">({hawkVsDove.toFixed(1)}, {doveVsHawk.toFixed(1)})</div>
-                    <div className="text-xs text-muted-foreground mt-1">Ястреб забирает всё</div>
+                    <div className="text-xs text-muted-foreground mt-1">{t('gameTheory.hawkTakesAll')}</div>
                   </td>
                   <td className={`border border-border p-2 sm:p-3 text-center ${
                     isESSValid ? 'bg-amber-500/10 border-2 border-amber-500/30' : 'bg-red-500/10 border-2 border-red-500/30'
@@ -1016,7 +1005,7 @@ function HawksAndDoves() {
                       ({hawkVsHawk.toFixed(1)}, {hawkVsHawk.toFixed(1)})
                     </div>
                     <div className="text-xs text-muted-foreground mt-1">
-                      {isESSValid ? 'Драка (отрицательный выигрыш)' : 'Драка (но V≥C)'}
+                      {isESSValid ? t('gameTheory.fightNegative') : t('gameTheory.fightButVC')}
                     </div>
                   </td>
                 </tr>
@@ -1029,7 +1018,7 @@ function HawksAndDoves() {
       {/* ESS Analysis */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Эволюционно стабильная стратегия (ЭСС)</CardTitle>
+          <CardTitle className="text-lg">{t('gameTheory.essTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="text-sm space-y-4">
           <div className={`p-4 rounded-lg border ${
@@ -1038,17 +1027,17 @@ function HawksAndDoves() {
             {isESSValid ? (
               <>
                 <div className="font-semibold text-base mb-2">
-                  Смешанная ЭСС: доля ястребов = V/C
+                  {t('gameTheory.mixedESS')}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="p-3 bg-background rounded-lg text-center">
-                    <div className="text-xs text-muted-foreground">Доля ястребов</div>
+                    <div className="text-xs text-muted-foreground">{t('gameTheory.hawkShare')}</div>
                     <div className="font-mono font-bold text-2xl">
                       {(essProportion * 100).toFixed(1)}%
                     </div>
                   </div>
                   <div className="p-3 bg-background rounded-lg text-center">
-                    <div className="text-xs text-muted-foreground">Доля голубей</div>
+                    <div className="text-xs text-muted-foreground">{t('gameTheory.doveShare')}</div>
                     <div className="font-mono font-bold text-2xl">
                       {((1 - essProportion) * 100).toFixed(1)}%
                     </div>
@@ -1062,7 +1051,7 @@ function HawksAndDoves() {
                 </div>
 
                 <div className="mt-3 p-2 bg-background rounded font-mono text-xs">
-                  Фитнес Ястреба = Фитнес Голубя<br />
+                  {t('gameTheory.player1')} = {t('gameTheory.player2')}<br />
                   p·(V−C)/2 + (1−p)·V = (1−p)·V/2<br />
                   p·(V−C)/2 + V − pV = V/2 − pV/2<br />
                   p(V−C)/2 − pV + pV/2 = V/2 − V<br />
@@ -1074,12 +1063,10 @@ function HawksAndDoves() {
             ) : (
               <div>
                 <div className="font-semibold text-base mb-2">
-                  Чистая ЭСС: все ястребы
+                  {t('gameTheory.pureESS')}
                 </div>
                 <p>
-                  Когда V ≥ C, стратегия «Ястреб» доминирует: даже при встрече двух ястребов
-                  ожидаемый выигрыш ({hawkVsHawk.toFixed(1)}) не хуже, чем у голубя
-                  ({doveVsDove.toFixed(1)}). Популяция голубей не может вторгнуться.
+                  {t('gameTheory.pureESSDesc')}
                 </p>
               </div>
             )}
@@ -1087,17 +1074,14 @@ function HawksAndDoves() {
 
           {/* Dominant strategy note */}
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Доминирующая стратегия:</strong>{' '}
+            <strong>{t('gameTheory.dominantStrategy')}</strong>{' '}
             {isESSValid ? (
               <span>
-                Ни одна стратегия не доминирует строго. Это приводит к смешанной ЭСС,
-                где обе стратегии сосуществуют в определённой пропорции.
+                {t('gameTheory.dominantStrategyNote.mixed')}
               </span>
             ) : (
               <span>
-                При данных параметрах Ястреб является доминирующей стратегией:
-                даже в наихудшем случае (встреча с другим ястребом) выигрыш не хуже,
-                чем у голубя.
+                {t('gameTheory.dominantStrategyNote.pure')}
               </span>
             )}
           </div>
@@ -1107,16 +1091,16 @@ function HawksAndDoves() {
       {/* Population Simulation */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Симуляция популяции</CardTitle>
+          <CardTitle className="text-lg">{t('gameTheory.populationSim')}</CardTitle>
           <CardDescription>
-            Репликаторная динамика: начальная доля ястребов = 50%, {generations} поколений
+            {t('gameTheory.replicatorDesc').replace('{generations}', String(generations))}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">
-                Число поколений
+                {t('gameTheory.generations')}
               </span>
               <span className="font-mono text-sm font-bold bg-muted px-2 py-0.5 rounded">
                 {generations}
@@ -1132,7 +1116,7 @@ function HawksAndDoves() {
           </div>
 
           <Button className="w-full" size="lg" onClick={runSimulation}>
-            🧬 Запустить симуляцию
+            {t('gameTheory.runSimulation')}
           </Button>
 
           {populationData.length > 0 && (
@@ -1148,7 +1132,7 @@ function HawksAndDoves() {
                       dataKey="generation"
                       fontSize={11}
                       label={{
-                        value: 'Поколение',
+                        value: t('gameTheory.generation'),
                         position: 'insideBottom',
                         offset: -5,
                         fontSize: 12,
@@ -1158,7 +1142,7 @@ function HawksAndDoves() {
                       fontSize={11}
                       domain={[0, 100]}
                       label={{
-                        value: 'Доля (%)',
+                        value: t('gameTheory.sharePercent'),
                         angle: -90,
                         position: 'insideLeft',
                         offset: 5,
@@ -1180,13 +1164,13 @@ function HawksAndDoves() {
                     <Legend />
                     <Bar
                       dataKey="hawks"
-                      name="⚔️ Ястребы"
+                      name={t('gameTheory.hawks')}
                       fill="#ef4444"
                       radius={[2, 2, 0, 0]}
                     />
                     <Bar
                       dataKey="doves"
-                      name="🛡️ Голуби"
+                      name={t('gameTheory.doves')}
                       fill="#22c55e"
                       radius={[2, 2, 0, 0]}
                     />
@@ -1197,38 +1181,38 @@ function HawksAndDoves() {
               {/* ESS convergence info */}
               {isESSValid && (
                 <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg text-sm">
-                  <strong>ЭСС достигнута:</strong> Доля ястребов стабилизируется около{' '}
+                  <strong>{t('gameTheory.essReached')}</strong>{' '}
                   <span className="font-mono font-bold">{(essProportion * 100).toFixed(1)}%</span>.
-                  Начав с 50% ястребов, популяция сходится к равновесию,
-                  где фитнес обеих стратегий одинаков.
+                  {' '}
+                  {t('gameTheory.essReachedDesc').replace('{percent}', (essProportion * 100).toFixed(1))}
                 </div>
               )}
 
               {!isESSValid && (
                 <div className="p-3 bg-red-500/5 border border-red-500/20 rounded-lg text-sm">
-                  <strong>Ястребы доминируют:</strong> Поскольку V ≥ C, доля ястребов
-                  стремится к 100%. Стратегия «Голубь» не может выжить в популяции.
+                  <strong>{t('gameTheory.hawksDominateSim')}</strong>{' '}
+                  {t('gameTheory.hawksDominateDesc')}
                 </div>
               )}
 
               {/* Summary stats */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
                 <div className="p-2 bg-muted/50 rounded text-center">
-                  <div className="text-xs text-muted-foreground">Ястребы (начало)</div>
+                  <div className="text-xs text-muted-foreground">{t('gameTheory.hawksStart')}</div>
                   <div className="font-mono font-bold">{populationData[0]?.hawks.toFixed(1)}%</div>
                 </div>
                 <div className="p-2 bg-muted/50 rounded text-center">
-                  <div className="text-xs text-muted-foreground">Голуби (начало)</div>
+                  <div className="text-xs text-muted-foreground">{t('gameTheory.dovesStart')}</div>
                   <div className="font-mono font-bold">{populationData[0]?.doves.toFixed(1)}%</div>
                 </div>
                 <div className="p-2 bg-muted/50 rounded text-center">
-                  <div className="text-xs text-muted-foreground">Ястребы (конец)</div>
+                  <div className="text-xs text-muted-foreground">{t('gameTheory.hawksEnd')}</div>
                   <div className="font-mono font-bold">
                     {populationData[populationData.length - 1]?.hawks.toFixed(1)}%
                   </div>
                 </div>
                 <div className="p-2 bg-muted/50 rounded text-center">
-                  <div className="text-xs text-muted-foreground">Голуби (конец)</div>
+                  <div className="text-xs text-muted-foreground">{t('gameTheory.dovesEnd')}</div>
                   <div className="font-mono font-bold">
                     {populationData[populationData.length - 1]?.doves.toFixed(1)}%
                   </div>
@@ -1244,30 +1228,21 @@ function HawksAndDoves() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Info className="h-4 w-4" />
-            Анализ эволюционной игры
+            {t('gameTheory.evolutionAnalysis')}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-sm space-y-3">
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Модель «Ястребы и Голуби»</strong> (Maynard Smith &amp; Price, 1973) —
-            первая эволюционная игра. Ястребы агрессивно борются за ресурс, голуби
-            избегают конфликта. Результат встречи зависит от типа обоих участников.
+            <strong>{t('gameTheory.evolutionAnalysis.model')}</strong>
           </div>
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>ЭСС (Эволюционно стабильная стратегия):</strong> Стратегия, которая
-            не может быть вытеснена никакой альтернативной стратегией при малом вторжении.
-            Если V &lt; C, то смешанная стратегия с долей ястребов p* = V/C является ЭСС.
+            <strong>{t('gameTheory.evolutionAnalysis.ess')}</strong>
           </div>
           <div className="p-3 bg-muted/50 rounded-lg">
-            <strong>Репликаторная динамика:</strong> Доля стратегии в популяции растёт,
-            если её фитнес выше среднего по популяции. Это приводит к сходимости к ЭСС
-            из любого начального состояния (кроме краевых случаев).
+            <strong>{t('gameTheory.evolutionAnalysis.replicator')}</strong>
           </div>
           <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg">
-            <strong>Практическое значение:</strong> Модель объясняет, почему агрессия
-            не вытесняет сотрудничество в природе. Если стоимость конфликта (C) превышает
-            ценность ресурса (V), популяция стабилизируется с долей «голубей».
-            Это основа для понимания эволюции альтруизма и кооперации.
+            <strong>{t('gameTheory.evolutionAnalysis.practical')}</strong>
           </div>
         </CardContent>
       </Card>

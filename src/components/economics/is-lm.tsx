@@ -22,8 +22,10 @@ import {
 } from 'recharts'
 import { TrendingUp, TrendingDown, RotateCcw, Landmark, Banknote, Info, ArrowRight } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { useI18n } from '@/lib/i18n-provider'
 
 export function ISLMModel() {
+  const { t } = useI18n()
   // IS curve parameters
   const [autonomousInvestment, setAutonomousInvestment] = useState(200)
   const [govSpending, setGovSpending] = useState(150)
@@ -125,7 +127,7 @@ export function ISLMModel() {
     setMoneySupply(1000)
     setMoneyDemandSensitivity(0.5)
     setInterestSensitivity(100)
-    toast({ title: 'Сброс', description: 'Параметры возвращены к значениям по умолчанию' })
+    toast({ title: t('islm.reset'), description: t('islm.resetDesc') })
   }
 
   const applyExpansionaryFiscal = () => {
@@ -148,11 +150,10 @@ export function ISLMModel() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Landmark className="h-5 w-5" />
-            Модель IS-LM
+            {t('islm.title')}
           </CardTitle>
           <CardDescription>
-            Модель инвестиций-сбережений (IS) и ликвидности-денег (LM). Показывает равновесие на товарном и денежном рынках
-            в краткосрочном периоде. Инструмент анализа эффективности фискальной и денежно-кредитной политики.
+            {t('islm.description')}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -161,9 +162,9 @@ export function ISLMModel() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-base">Кривые IS и LM</CardTitle>
+            <CardTitle className="text-base">{t('islm.graph')}</CardTitle>
             <CardDescription>
-              IS — отрицательный наклон (товарный рынок), LM — положительный наклон (денежный рынок)
+              {t('islm.graphDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -173,12 +174,12 @@ export function ISLMModel() {
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                   <XAxis
                     dataKey="income"
-                    label={{ value: 'Доход / ВВП (Y)', position: 'insideBottom', offset: -10, fontSize: 12 }}
+                    label={{ value: t('islm.income'), position: 'insideBottom', offset: -10, fontSize: 12 }}
                     fontSize={11}
                   />
                   <YAxis
                     domain={[0, 15]}
-                    label={{ value: 'Процентная ставка (r, %)', angle: -90, position: 'insideLeft', fontSize: 12 }}
+                    label={{ value: t('islm.interestRate'), angle: -90, position: 'insideLeft', fontSize: 12 }}
                     fontSize={11}
                   />
                   <Tooltip
@@ -189,16 +190,16 @@ export function ISLMModel() {
                       fontSize: '12px',
                     }}
                     formatter={(value: number, name: string) => {
-                      if (name === 'isRate') return [`${value.toFixed(2)}%`, 'IS — Товарный рынок']
-                      if (name === 'lmRate') return [`${value.toFixed(2)}%`, 'LM — Денежный рынок']
+                      if (name === 'isRate') return [`${value.toFixed(2)}%`, t('islm.isCurve')]
+                      if (name === 'lmRate') return [`${value.toFixed(2)}%`, t('islm.lmCurve')]
                       return [value, name]
                     }}
-                    labelFormatter={(label) => `Доход: ${label}`}
+                    labelFormatter={(label) => `${t('islm.income')}: ${label}`}
                   />
                   <Legend
                     formatter={(value) => {
-                      if (value === 'isRate') return 'IS — Товарный рынок'
-                      if (value === 'lmRate') return 'LM — Денежный рынок'
+                      if (value === 'isRate') return t('islm.isCurve')
+                      if (value === 'lmRate') return t('islm.lmCurve')
                       return value
                     }}
                   />
@@ -269,15 +270,15 @@ export function ISLMModel() {
             <div className="flex flex-wrap items-center gap-4 mt-4 text-sm">
               <div className="flex items-center gap-2">
                 <div className="h-0.5 w-6 rounded bg-red-500" />
-                <span className="text-muted-foreground">IS — отрицательный наклон</span>
+                <span className="text-muted-foreground">{t('islm.isCurve')} — {t('islm.negativeSlope')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-0.5 w-6 rounded bg-green-500" />
-                <span className="text-muted-foreground">LM — положительный наклон</span>
+                <span className="text-muted-foreground">{t('islm.lmCurve')} — {t('islm.positiveSlope')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-3 w-3 rounded-full bg-blue-500" />
-                <span className="text-muted-foreground">Равновесие E</span>
+                <span className="text-muted-foreground">{t('islm.equilibrium')} E</span>
               </div>
             </div>
           </CardContent>
@@ -290,13 +291,13 @@ export function ISLMModel() {
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-red-500" />
-                Параметры IS (товарный рынок)
+                {t('islm.isParams')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm">Автономные инвестиции (I₀)</Label>
+                  <Label className="text-sm">{t('islm.autonomousInvestment')}</Label>
                   <Badge variant="secondary">{autonomousInvestment}</Badge>
                 </div>
                 <Slider value={[autonomousInvestment]} min={50} max={500} step={10} onValueChange={(v) => { awardXP(); setAutonomousInvestment(v[0]) }} />
@@ -304,7 +305,7 @@ export function ISLMModel() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm">Гос. расходы (G)</Label>
+                  <Label className="text-sm">{t('islm.govSpending')}</Label>
                   <Badge variant="secondary">{govSpending}</Badge>
                 </div>
                 <Slider value={[govSpending]} min={0} max={500} step={10} onValueChange={(v) => { awardXP(); setGovSpending(v[0]) }} />
@@ -312,7 +313,7 @@ export function ISLMModel() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm">MPC (склонность к потреблению)</Label>
+                  <Label className="text-sm">{t('islm.mpc')}</Label>
                   <Badge variant="secondary">{mpc.toFixed(2)}</Badge>
                 </div>
                 <Slider value={[mpc]} min={0.1} max={0.95} step={0.05} onValueChange={(v) => { awardXP(); setMpc(v[0]) }} />
@@ -320,7 +321,7 @@ export function ISLMModel() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm">Ставка налога (t)</Label>
+                  <Label className="text-sm">{t('islm.taxRate')}</Label>
                   <Badge variant="secondary">{(taxRate * 100).toFixed(0)}%</Badge>
                 </div>
                 <Slider value={[taxRate]} min={0} max={0.5} step={0.05} onValueChange={(v) => { awardXP(); setTaxRate(v[0]) }} />
@@ -328,11 +329,11 @@ export function ISLMModel() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm">Чувствительность инвестиций (d)</Label>
+                  <Label className="text-sm">{t('islm.investmentSensitivity')}</Label>
                   <Badge variant="secondary">{investmentSensitivity}</Badge>
                 </div>
                 <Slider value={[investmentSensitivity]} min={10} max={200} step={10} onValueChange={(v) => { awardXP(); setInvestmentSensitivity(v[0]) }} />
-                <p className="text-xs text-muted-foreground">На сколько инвестиции реагируют на ставку</p>
+                <p className="text-xs text-muted-foreground">{t('islm.investmentSensitivityDesc')}</p>
               </div>
             </CardContent>
           </Card>
@@ -342,13 +343,13 @@ export function ISLMModel() {
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <Banknote className="h-4 w-4 text-green-500" />
-                Параметры LM (денежный рынок)
+                {t('islm.lmParams')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm">Предложение денег (M/P)</Label>
+                  <Label className="text-sm">{t('islm.moneySupply')}</Label>
                   <Badge variant="secondary">{moneySupply}</Badge>
                 </div>
                 <Slider value={[moneySupply]} min={200} max={2000} step={50} onValueChange={(v) => { awardXP(); setMoneySupply(v[0]) }} />
@@ -356,7 +357,7 @@ export function ISLMModel() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm">Чувств. спроса к доходу (k)</Label>
+                  <Label className="text-sm">{t('islm.moneyDemandIncome')}</Label>
                   <Badge variant="secondary">{moneyDemandSensitivity.toFixed(2)}</Badge>
                 </div>
                 <Slider value={[moneyDemandSensitivity]} min={0.1} max={2} step={0.1} onValueChange={(v) => { awardXP(); setMoneyDemandSensitivity(v[0]) }} />
@@ -364,11 +365,11 @@ export function ISLMModel() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm">Чувств. спроса к ставке (h)</Label>
+                  <Label className="text-sm">{t('islm.moneyDemandRate')}</Label>
                   <Badge variant="secondary">{interestSensitivity}</Badge>
                 </div>
                 <Slider value={[interestSensitivity]} min={20} max={300} step={10} onValueChange={(v) => { awardXP(); setInterestSensitivity(v[0]) }} />
-                <p className="text-xs text-muted-foreground">Насколько спрос на деньги реагирует на r</p>
+                <p className="text-xs text-muted-foreground">{t('islm.moneyDemandRateDesc')}</p>
               </div>
             </CardContent>
           </Card>
@@ -379,25 +380,25 @@ export function ISLMModel() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Card className="border-2 border-blue-200 dark:border-blue-900">
           <CardContent className="p-3 text-center">
-            <div className="text-xs text-muted-foreground">Равновесный доход (Y*)</div>
+            <div className="text-xs text-muted-foreground">{t('islm.equilibriumY')}</div>
             <div className="text-xl font-mono font-bold text-blue-600">{Math.round(equilibriumY).toLocaleString('ru-RU')}</div>
           </CardContent>
         </Card>
         <Card className="border-2 border-blue-200 dark:border-blue-900">
           <CardContent className="p-3 text-center">
-            <div className="text-xs text-muted-foreground">Равновесная ставка (r*)</div>
+            <div className="text-xs text-muted-foreground">{t('islm.equilibriumR')}</div>
             <div className="text-xl font-mono font-bold text-blue-600">{equilibriumR.toFixed(2)}%</div>
           </CardContent>
         </Card>
         <Card className="border-2 border-red-200 dark:border-red-900">
           <CardContent className="p-3 text-center">
-            <div className="text-xs text-muted-foreground">Наклон IS</div>
+            <div className="text-xs text-muted-foreground">{t('islm.isSlope')}</div>
             <div className="text-xl font-mono font-bold text-red-600">{isSlope.toFixed(5)}</div>
           </CardContent>
         </Card>
         <Card className="border-2 border-green-200 dark:border-green-900">
           <CardContent className="p-3 text-center">
-            <div className="text-xs text-muted-foreground">Наклон LM</div>
+            <div className="text-xs text-muted-foreground">{t('islm.lmSlope')}</div>
             <div className="text-xl font-mono font-bold text-green-600">{lmSlope.toFixed(5)}</div>
           </CardContent>
         </Card>
@@ -409,21 +410,21 @@ export function ISLMModel() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              Мультипликаторы политики
+              {t('islm.multipliers')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Фискальный мультипликатор (∂Y/∂G)</span>
+              <span className="text-muted-foreground">{t('islm.fiscalMultiplier')}</span>
               <span className="font-mono font-bold">{fiscalMultiplier.toFixed(3)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Денежный мультипликатор (∂Y/∂M)</span>
+              <span className="text-muted-foreground">{t('islm.monetaryMultiplier')}</span>
               <span className="font-mono font-bold">{monetaryMultiplier.toFixed(3)}</span>
             </div>
             <Separator />
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Эффект вытеснения (Crowding out)</span>
+              <span className="text-muted-foreground">{t('islm.crowdingOut')}</span>
               <span className={`font-mono font-bold ${crowdingOut > 0 ? 'text-orange-600' : ''}`}>{Math.round(crowdingOut).toLocaleString('ru-RU')}</span>
             </div>
           </CardContent>
@@ -433,7 +434,7 @@ export function ISLMModel() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Info className="h-4 w-4" />
-              Уравнения модели
+              {t('islm.equations')}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm space-y-2 font-mono">
@@ -453,22 +454,22 @@ export function ISLMModel() {
       {/* Policy Scenarios */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Сценарии политики</CardTitle>
-          <CardDescription>Быстрые пресеты для анализа последствий</CardDescription>
+          <CardTitle className="text-base">{t('islm.policyScenarios')}</CardTitle>
+          <CardDescription>{t('islm.policyScenariosDesc')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <Button variant="outline" className="justify-start" onClick={applyExpansionaryFiscal}>
               <TrendingUp className="h-4 w-4 mr-2 text-green-500" />
-              Экспансионная фискальная
+              {t('islm.expansionaryFiscal')}
             </Button>
             <Button variant="outline" className="justify-start" onClick={applyContractionaryMonetary}>
               <TrendingDown className="h-4 w-4 mr-2 text-red-500" />
-              Сжимающая денежная
+              {t('islm.contractionaryMonetary')}
             </Button>
             <Button variant="outline" className="justify-start" onClick={reset}>
               <RotateCcw className="h-4 w-4 mr-2" />
-              Сброс
+              {t('islm.reset')}
             </Button>
           </div>
         </CardContent>
@@ -480,20 +481,17 @@ export function ISLMModel() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <ArrowRight className="h-4 w-4 text-red-500" />
-              Кривая IS
+              {t('islm.isCurve')}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-2">
+            <p>{t('islm.isText')}</p>
             <p>
-              IS (Investment-Savings) — все точки равновесия на <strong className="text-foreground">товарном рынке</strong>,
-              где совокупный спрос равен выпуску (AD = Y).
-            </p>
-            <p>
-              <strong className="text-foreground">Отрицательный наклон:</strong> рост дохода Y увеличивает сбережения,
+              <strong className="text-foreground">{t('islm.negativeSlope')}:</strong> рост дохода Y увеличивает сбережения,
               для сохранения равновесия ставка r должна упасть, чтобы стимулировать инвестиции.
             </p>
             <p>
-              <strong className="text-foreground">Сдвиги IS:</strong> рост G или I₀ сдвигает IS вправо (экспансия);
+              <strong className="text-foreground">{t('islm.shiftsLabel')}:</strong> рост G или I₀ сдвигает IS вправо (экспансия);
               рост налогов — влево (сжатие).
             </p>
           </CardContent>
@@ -503,20 +501,17 @@ export function ISLMModel() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <ArrowRight className="h-4 w-4 text-green-500" />
-              Кривая LM
+              {t('islm.lmCurve')}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-2">
+            <p>{t('islm.lmText')}</p>
             <p>
-              LM (Liquidity preference-Money supply) — все точки равновесия на <strong className="text-foreground">денежном рынке</strong>,
-              где спрос на деньги равен их предложению (L = M/P).
-            </p>
-            <p>
-              <strong className="text-foreground">Положительный наклон:</strong> рост дохода Y увеличивает транзакционный
+              <strong className="text-foreground">{t('islm.positiveSlope')}:</strong> рост дохода Y увеличивает транзакционный
               спрос на деньги, для сохранения равновесия ставка r должна вырасти.
             </p>
             <p>
-              <strong className="text-foreground">Сдвиги LM:</strong> рост M/P сдвигает LM вправо; сокращение денежной массы — влево.
+              <strong className="text-foreground">{t('islm.shiftsLabel')}:</strong> рост M/P сдвигает LM вправо; сокращение денежной массы — влево.
             </p>
           </CardContent>
         </Card>
@@ -525,20 +520,20 @@ export function ISLMModel() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Info className="h-4 w-4 text-blue-500" />
-              Эффективность политики
+              {t('islm.policyEfficiency')}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-2">
             <p>
-              <strong className="text-foreground">Фискальная политика</strong> эффективнее при <strong className="text-foreground">пологой LM</strong>{' '}
-              (h → ∞, ликвидная ловушка) или <strong className="text-foreground">крутой IS</strong> (d → 0).
+              <strong className="text-foreground">{t('islm.fiscalPolicy')}</strong> эффективнее при <strong className="text-foreground">{t('islm.flatLM')}</strong>{' '}
+              (h → ∞, {t('islm.liquidityTrap')}) или <strong className="text-foreground">{t('islm.steepIS')}</strong> (d → 0).
             </p>
             <p>
-              <strong className="text-foreground">Денежная политика</strong> эффективнее при <strong className="text-foreground">крутой LM</strong>{' '}
-              (h → 0) или <strong className="text-foreground">пологой IS</strong> (d → ∞).
+              <strong className="text-foreground">{t('islm.monetaryPolicy')}</strong> эффективнее при <strong className="text-foreground">{t('islm.steepLM')}</strong>{' '}
+              (h → 0) или <strong className="text-foreground">{t('islm.flatIS')}</strong> (d → ∞).
             </p>
             <p>
-              <strong className="text-foreground">Вытеснение (Crowding out):</strong> рост G повышает r, что снижает I.
+              <strong className="text-foreground">{t('islm.crowdingOut')}:</strong> рост G повышает r, что снижает I.
               Чем чувствительнее инвестиции к ставке (больший d), тем сильнее вытеснение.
             </p>
           </CardContent>

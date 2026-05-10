@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
+import { useI18n } from '@/lib/i18n-provider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -94,6 +95,7 @@ function ChartTooltipContent({ active, payload, formatter }: {
 // Main component
 // ═══════════════════════════════════════════════════════════════════════
 export function TaxCalculator() {
+  const { t } = useI18n()
   // ── НДФЛ state ──────────────────────────────────────────────────────
   const [ndflIncome, setNdflIncome] = useState('600000')
   const [ndflDeduction, setNdflDeduction] = useState('0')
@@ -194,11 +196,10 @@ export function TaxCalculator() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calculator className="h-5 w-5" />
-            Калькулятор налогов
+            {t('tax.title')}
           </CardTitle>
           <CardDescription>
-            Интерактивный расчёт основных налогов РФ: НДФЛ, НДС и налог на прибыль.
-            Изучите, как работают налоговые ставки и формулы на практике.
+            {t('tax.description')}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -207,7 +208,7 @@ export function TaxCalculator() {
       <Tabs defaultValue="ndfl" className="space-y-4">
         <TabsList className="w-full sm:w-auto">
           <TabsTrigger value="ndfl" className="gap-1.5">
-            <Receipt className="h-4 w-4" /> НДФЛ
+            <Receipt className="h-4 w-4" /> {t('tax.incomeTax')}
           </TabsTrigger>
           <TabsTrigger value="nds" className="gap-1.5">
             <Percent className="h-4 w-4" /> НДС
@@ -232,7 +233,7 @@ export function TaxCalculator() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Годовой доход (руб.)</Label>
+                  <Label>{t('tax.income')} (руб.)</Label>
                   <Input
                     type="number"
                     value={ndflIncome}
@@ -241,7 +242,7 @@ export function TaxCalculator() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Налоговый вычет (руб.)</Label>
+                  <Label>{t('tax.deductions')} (руб.)</Label>
                   <Input
                     type="number"
                     value={ndflDeduction}
@@ -289,10 +290,10 @@ export function TaxCalculator() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left p-2">Ставка</th>
+                      <th className="text-left p-2">{t('tax.taxRate')}</th>
                       <th className="text-left p-2">Диапазон</th>
                       <th className="text-right p-2">Облагаемая сумма</th>
-                      <th className="text-right p-2">Налог</th>
+                      <th className="text-right p-2">{t('tax.incomeTax')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -329,7 +330,7 @@ export function TaxCalculator() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="border-2 border-primary/20">
               <CardHeader className="pb-2">
-                <CardDescription>Общий налог</CardDescription>
+                <CardDescription>{t('tax.totalTax')}</CardDescription>
                 <CardTitle className="text-xl font-mono text-red-600">
                   {fmt(ndflResult.totalTax)} ₽
                 </CardTitle>
@@ -341,7 +342,7 @@ export function TaxCalculator() {
 
             <Card className="border-2 border-primary/20">
               <CardHeader className="pb-2">
-                <CardDescription>Эффективная ставка</CardDescription>
+                <CardDescription>{t('tax.effectiveRate')}</CardDescription>
                 <CardTitle className="text-xl font-mono">
                   {fmtDec(ndflResult.effectiveRate * 100)}%
                 </CardTitle>
@@ -365,7 +366,7 @@ export function TaxCalculator() {
 
             <Card className="border-2 border-green-500/30 bg-green-50/50 dark:bg-green-950/20">
               <CardHeader className="pb-2">
-                <CardDescription>Чистый доход</CardDescription>
+                <CardDescription>{t('tax.netIncome')}</CardDescription>
                 <CardTitle className="text-xl font-mono text-green-700 dark:text-green-400">
                   {fmt(ndflResult.netIncome)} ₽
                 </CardTitle>
@@ -406,7 +407,7 @@ export function TaxCalculator() {
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Info className="h-4 w-4 text-primary" />
-                Прогрессивная vs плоская шкала
+                {t('tax.theory')}
               </CardTitle>
             </CardHeader>
             <CardContent className="text-sm space-y-3">
@@ -628,7 +629,7 @@ export function TaxCalculator() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Выручка (руб.)</Label>
+                  <Label>{t('tax.businessRevenue')} (руб.)</Label>
                   <Input
                     type="number"
                     value={profitRevenue}
@@ -637,7 +638,7 @@ export function TaxCalculator() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Расходы (руб.)</Label>
+                  <Label>{t('tax.businessExpenses')} (руб.)</Label>
                   <Input
                     type="number"
                     value={profitExpenses}
@@ -690,7 +691,7 @@ export function TaxCalculator() {
 
             <Card className="border-2 border-red-500/20">
               <CardHeader className="pb-2">
-                <CardDescription>Налог на прибыль</CardDescription>
+                <CardDescription>{t('tax.incomeTax')}</CardDescription>
                 <CardTitle className="text-xl font-mono text-red-600">
                   {fmt(profitResult.tax)} ₽
                 </CardTitle>
@@ -702,7 +703,7 @@ export function TaxCalculator() {
 
             <Card className="border-2 border-green-500/30 bg-green-50/50 dark:bg-green-950/20">
               <CardHeader className="pb-2">
-                <CardDescription>Чистая прибыль</CardDescription>
+                <CardDescription>{t('tax.netIncome')}</CardDescription>
                 <CardTitle className="text-xl font-mono text-green-700 dark:text-green-400">
                   {fmt(profitResult.netProfit)} ₽
                 </CardTitle>
@@ -714,7 +715,7 @@ export function TaxCalculator() {
 
             <Card className="border-2 border-primary/20">
               <CardHeader className="pb-2">
-                <CardDescription>Эффективная ставка</CardDescription>
+                <CardDescription>{t('tax.effectiveRate')}</CardDescription>
                 <CardTitle className="text-xl font-mono">
                   {fmtDec(profitResult.effectiveRate * 100)}%
                 </CardTitle>

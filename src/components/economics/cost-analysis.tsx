@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
+import { useI18n } from '@/lib/i18n-provider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Slider } from '@/components/ui/slider'
 import { Badge } from '@/components/ui/badge'
@@ -77,6 +78,7 @@ function CostLegend({ price }: { price: number }) {
 }
 
 export function CostAnalysis() {
+  const { t } = useI18n()
   // Firm parameters
   const [fixedCosts, setFixedCosts] = useState(200)
   const [varCost, setVarCost] = useState(5)
@@ -207,13 +209,13 @@ export function CostAnalysis() {
   // Decision status based on price
   const decisionStatus = useMemo(() => {
     if (price >= (breakevenPrice ?? Infinity)) {
-      return { label: 'Прибыльная зона', color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-950/30', icon: CheckCircle2 }
+      return { label: t('costs.profitable'), color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-950/30', icon: CheckCircle2 }
     } else if (price >= shutdownPrice) {
-      return { label: 'Убыток, но продолжаем', color: 'text-yellow-600', bg: 'bg-yellow-50 dark:bg-yellow-950/30', icon: AlertTriangle }
+      return { label: t('costs.lossContinue'), color: 'text-yellow-600', bg: 'bg-yellow-50 dark:bg-yellow-950/30', icon: AlertTriangle }
     } else {
-      return { label: 'Точка закрытия', color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-950/30', icon: AlertTriangle }
+      return { label: t('costs.shutdown'), color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-950/30', icon: AlertTriangle }
     }
-  }, [price, breakevenPrice, shutdownPrice])
+  }, [price, breakevenPrice, shutdownPrice, t])
 
   const DecisionIcon = decisionStatus.icon
 
@@ -239,11 +241,10 @@ export function CostAnalysis() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BarChart3 className="h-5 w-5" />
-            Анализ издержек фирмы
+            {t('costs.title')}
           </CardTitle>
           <CardDescription>
-            Интерактивная модель издержек совершенного конкурента. Настройте параметры фирмы и исследуйте
-            взаимосвязь MC, ATC и AVC — ключевой график микроэкономики.
+            {t('costs.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
@@ -251,7 +252,7 @@ export function CostAnalysis() {
             {/* Fixed Costs slider */}
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Постоянные издержки (FC)</Label>
+                <Label>{t('costs.fixedCosts')}</Label>
                 <span className="font-mono text-muted-foreground">{fixedCosts}</span>
               </div>
               <Slider
@@ -266,7 +267,7 @@ export function CostAnalysis() {
             {/* Variable cost per unit slider */}
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Переменные затраты на ед. (v)</Label>
+                <Label>{t('costs.variableCosts')}</Label>
                 <span className="font-mono text-muted-foreground">{varCost}</span>
               </div>
               <Slider
@@ -281,7 +282,7 @@ export function CostAnalysis() {
             {/* Quadratic coefficient slider */}
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Квадратичный коэффициент (q)</Label>
+                <Label>{t('costs.quadCoef')}</Label>
                 <span className="font-mono text-muted-foreground">{quadCoef.toFixed(2)}</span>
               </div>
               <Slider
@@ -296,7 +297,7 @@ export function CostAnalysis() {
             {/* Max quantity slider */}
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Максимальный объём (Q)</Label>
+                <Label>{t('costs.maxQ')}</Label>
                 <span className="font-mono text-muted-foreground">{maxQ}</span>
               </div>
               <Slider
@@ -311,7 +312,7 @@ export function CostAnalysis() {
 
           {/* Formulas */}
           <div className="p-3 bg-muted/50 rounded-lg text-sm space-y-1">
-            <div className="font-semibold mb-1">Формулы издержек:</div>
+            <div className="font-semibold mb-1">{t('costs.formulas')}</div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 font-mono text-xs">
               <span>TC = FC + v·Q + q·Q²</span>
               <span>VC = v·Q + q·Q²</span>
@@ -324,7 +325,7 @@ export function CostAnalysis() {
 
           <Button onClick={reset} variant="outline" className="w-full">
             <RotateCcw className="h-4 w-4 mr-2" />
-            Сбросить параметры
+            {t('costs.resetParams')}
           </Button>
         </CardContent>
       </Card>
@@ -334,10 +335,10 @@ export function CostAnalysis() {
         <CardHeader className="pb-2">
           <CardTitle className="text-lg flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
-            Кривые издержек
+            {t('costs.costCurves')}
           </CardTitle>
           <CardDescription>
-            ATC, AVC, MC и AFC — основной график микроэкономики фирмы
+            {t('costs.costCurvesDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -347,11 +348,11 @@ export function CostAnalysis() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                 <XAxis
                   dataKey="quantity"
-                  label={{ value: 'Объём производства (Q)', position: 'insideBottom', offset: -10, fontSize: 12 }}
+                  label={{ value: t('costs.quantityLabel'), position: 'insideBottom', offset: -10, fontSize: 12 }}
                   fontSize={11}
                 />
                 <YAxis
-                  label={{ value: 'Издержки', angle: -90, position: 'insideLeft', fontSize: 12 }}
+                  label={{ value: t('costs.costsLabel'), angle: -90, position: 'insideLeft', fontSize: 12 }}
                   fontSize={11}
                   domain={[0, 'auto']}
                 />
@@ -455,11 +456,11 @@ export function CostAnalysis() {
           <div className="mt-3 flex flex-wrap gap-3 justify-center text-xs">
             {minATC_Q && (
               <Badge variant="outline" className="text-xs" style={{ borderColor: COLORS.atc, color: COLORS.atc }}>
-                Точка безубыточности: Q = {minATC_Q}, ATC = {minATC_value}
+                {t('costs.breakevenPoint')}: Q = {minATC_Q}, ATC = {minATC_value}
               </Badge>
             )}
             <Badge variant="outline" className="text-xs" style={{ borderColor: COLORS.avc, color: COLORS.avc }}>
-              Точка закрытия: min AVC = {shutdownPrice}
+              {t('costs.shutdownPoint')}: min AVC = {shutdownPrice}
             </Badge>
           </div>
         </CardContent>
@@ -468,9 +469,9 @@ export function CostAnalysis() {
       {/* Interactive Q Slider + Cost Cards */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Расчёт издержек при заданном объёме</CardTitle>
+          <CardTitle className="text-lg">{t('costs.calcTitle')}</CardTitle>
           <CardDescription>
-            Выберите объём производства и цену для расчёта текущих издержек и прибыли
+            {t('costs.calcDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -478,7 +479,7 @@ export function CostAnalysis() {
             {/* Q slider */}
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Объём производства (Q)</Label>
+                <Label>{t('costs.quantity')}</Label>
                 <span className="font-mono text-muted-foreground">{currentQ}</span>
               </div>
               <Slider
@@ -492,7 +493,7 @@ export function CostAnalysis() {
 
             {/* Price input */}
             <div className="space-y-2">
-              <Label htmlFor="price-input">Цена продукции (P)</Label>
+              <Label htmlFor="price-input">{t('costs.price')}</Label>
               <div className="flex items-center gap-2">
                 <Input
                   id="price-input"
@@ -504,7 +505,7 @@ export function CostAnalysis() {
                   step={1}
                   className="w-24 font-mono"
                 />
-                <span className="text-sm text-muted-foreground">руб./ед.</span>
+                <span className="text-sm text-muted-foreground">{t('finance.rub')}/ед.</span>
               </div>
             </div>
           </div>
@@ -518,10 +519,10 @@ export function CostAnalysis() {
               </div>
               <div className="text-xs text-muted-foreground">
                 {price >= (breakevenPrice ?? Infinity)
-                  ? `Цена P=${price} покрывает все издержки. Фирма получает экономическую прибыль.`
+                  ? `${t('costs.interp.positive')} P=${price} ≥ min ATC.`
                   : price >= shutdownPrice
-                    ? `Цена P=${price} не покрывает ATC, но покрывает AVC. Фирме выгодно продолжать производство в краткосрочном периоде, чтобы минимизировать убытки.`
-                    : `Цена P=${price} ниже min AVC. Фирме следует закрыться — каждая произведённая единица увеличивает убытки.`
+                    ? `P=${price} не покрывает ATC, но покрывает AVC. ${t('costs.interp.negative')} ${t('costs.shortRunLabel')}.`
+                    : `P=${price} < min AVC. ${t('costs.interp.negative')} ${t('costs.shutdownPoint')}.`
                 }
               </div>
             </div>
@@ -533,26 +534,26 @@ export function CostAnalysis() {
               <CardContent className="p-3 text-center">
                 <div className="text-xs text-muted-foreground">FC</div>
                 <div className="text-lg font-mono font-bold" style={{ color: COLORS.atc }}>{currentCosts.fc}</div>
-                <div className="text-xs text-muted-foreground">Постоянные</div>
+                <div className="text-xs text-muted-foreground">{t('costs.fixed')}</div>
               </CardContent>
             </Card>
             <Card className="border-2 border-orange-200 dark:border-orange-900">
               <CardContent className="p-3 text-center">
                 <div className="text-xs text-muted-foreground">VC</div>
                 <div className="text-lg font-mono font-bold" style={{ color: COLORS.avc }}>{currentCosts.vc}</div>
-                <div className="text-xs text-muted-foreground">Переменные</div>
+                <div className="text-xs text-muted-foreground">{t('costs.variable')}</div>
               </CardContent>
             </Card>
             <Card className="border-2 border-red-200 dark:border-red-900">
               <CardContent className="p-3 text-center">
                 <div className="text-xs text-muted-foreground">TC</div>
                 <div className="text-lg font-mono font-bold" style={{ color: COLORS.mc }}>{currentCosts.tc}</div>
-                <div className="text-xs text-muted-foreground">Общие</div>
+                <div className="text-xs text-muted-foreground">{t('costs.total')}</div>
               </CardContent>
             </Card>
             <Card className="border-2 border-green-200 dark:border-green-900">
               <CardContent className="p-3 text-center">
-                <div className="text-xs text-muted-foreground">Прибыль</div>
+                <div className="text-xs text-muted-foreground">{t('costs.profit')}</div>
                 <div className={`text-lg font-mono font-bold ${currentCosts.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {currentCosts.profit > 0 ? '+' : ''}{currentCosts.profit}
                 </div>
@@ -596,12 +597,12 @@ export function CostAnalysis() {
           {/* Profit detail */}
           <div className="p-3 bg-muted/50 rounded-lg text-sm">
             <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-              <span>Выручка (TR = P×Q):</span>
+              <span>{t('costs.totalRevenue')}:</span>
               <span className="font-mono font-semibold">{currentCosts.revenue}</span>
-              <span>Общие издержки (TC):</span>
+              <span>{t('costs.totalCosts')}:</span>
               <span className="font-mono font-semibold">{currentCosts.tc}</span>
               <Separator className="col-span-2 my-1" />
-              <span className="font-semibold">Прибыль (π = TR - TC):</span>
+              <span className="font-semibold">{t('costs.profit')}:</span>
               <span className={`font-mono font-bold ${currentCosts.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {currentCosts.profit > 0 ? '+' : ''}{currentCosts.profit}
               </span>
@@ -613,9 +614,9 @@ export function CostAnalysis() {
       {/* Total Cost Curves Chart (TC, VC, FC) */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Общие издержки</CardTitle>
+          <CardTitle className="text-lg">{t('costs.totalCostCurves')}</CardTitle>
           <CardDescription>
-            TC, VC и FC — абсолютные значения общих издержек
+            {t('costs.totalCostDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -637,7 +638,7 @@ export function CostAnalysis() {
                   fontSize={11}
                 />
                 <YAxis
-                  label={{ value: 'Издержки', angle: -90, position: 'insideLeft', fontSize: 12 }}
+                  label={{ value: t('costs.costsLabel'), angle: -90, position: 'insideLeft', fontSize: 12 }}
                   fontSize={11}
                 />
                 <Tooltip
@@ -698,9 +699,9 @@ export function CostAnalysis() {
       {/* Table of costs at key quantities */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Таблица издержек</CardTitle>
+          <CardTitle className="text-lg">{t('costs.table')}</CardTitle>
           <CardDescription>
-            Значения издержек при ключевых объёмах производства
+            {t('costs.tableDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -745,24 +746,20 @@ export function CostAnalysis() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Info className="h-4 w-4 text-blue-500" />
-              Краткосрочный и долгосрочный период
+              {t('costs.shortRun')}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm space-y-3">
             <div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
-              <div className="font-semibold text-blue-700 dark:text-blue-400 mb-1">Краткосрочный период (SR)</div>
+              <div className="font-semibold text-blue-700 dark:text-blue-400 mb-1">{t('costs.shortRunLabel')}</div>
               <p className="text-muted-foreground">
-                Хотя бы один фактор производства фиксирован (например, капитал, размер завода).
-                Фирма несёт постоянные издержки (FC) независимо от объёма выпуска.
-                Кривые SR-ATC имеют U-образную форму.
+                {t('costs.theory.fixed')}
               </p>
             </div>
             <div className="p-3 bg-green-50 dark:bg-green-950/30 rounded-lg">
-              <div className="font-semibold text-green-700 dark:text-green-400 mb-1">Долгосрочный период (LR)</div>
+              <div className="font-semibold text-green-700 dark:text-green-400 mb-1">{t('costs.longRunLabel')}</div>
               <p className="text-muted-foreground">
-                Все факторы переменны. Фирма может изменить масштаб производства.
-                Нет постоянных издержек (FC = 0). Кривая LR-ATC — огибающая всех краткосрочных ATC.
-                При положительной отдаче от масштаба LR-ATC убывает, при постоянной — горизонтальна, при отрицательной — возрастает.
+                {t('costs.theory.variable')}
               </p>
             </div>
           </CardContent>
@@ -773,24 +770,23 @@ export function CostAnalysis() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Info className="h-4 w-4 text-orange-500" />
-              Связь MC с ATC и AVC
+              {t('costs.mcRelationship')}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm space-y-3">
             <div className="p-3 bg-orange-50 dark:bg-orange-950/30 rounded-lg">
               <p className="text-muted-foreground mb-2">
-                <strong>Ключевое правило:</strong> предельные издержки (MC) пересекают средние общие (ATC) и средние
-                переменные (AVC) издержки в точках их минимума.
+                <strong>{t('costs.keyRule')}:</strong> {t('costs.theory.marginal')}
               </p>
               <ul className="space-y-1 text-muted-foreground list-disc list-inside">
                 <li>Если MC &lt; ATC — ATC убывает (предельные тянут средние вниз)</li>
                 <li>Если MC &gt; ATC — ATC возрастает (предельные тянут средние вверх)</li>
-                <li>MC = ATC — точка минимума ATC (точка безубыточности)</li>
-                <li>MC = AVC — точка минимума AVC (точка закрытия)</li>
+                <li>MC = ATC — {t('costs.breakevenPoint')}</li>
+                <li>MC = AVC — {t('costs.shutdownPoint')}</li>
               </ul>
             </div>
             <div className="p-3 bg-muted/50 rounded-lg">
-              <div className="font-semibold mb-1">Математическое объяснение:</div>
+              <div className="font-semibold mb-1">{t('costs.mathExplanation')}:</div>
               <p className="text-muted-foreground text-xs font-mono">
                 d(ATC)/dQ = (MC·Q - TC) / Q² = (MC - ATC) / Q
               </p>
@@ -806,25 +802,23 @@ export function CostAnalysis() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-green-500" />
-              Почему MC пересекает ATC в минимуме
+              {t('costs.whyMCCrosses')}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm space-y-3">
             <div className="p-3 bg-green-50 dark:bg-green-950/30 rounded-lg">
               <p className="text-muted-foreground">
-                Представьте, что средний балл студента — это ATC, а балл за последний экзамен — это MC.
+                {t('costs.theory')}
               </p>
               <ul className="mt-2 space-y-1 text-muted-foreground list-disc list-inside">
-                <li>Если последний балл <strong>ниже</strong> среднего — средний балл <strong>падает</strong></li>
-                <li>Если последний балл <strong>выше</strong> среднего — средний балл <strong>растёт</strong></li>
-                <li>Если последний балл <strong>равен</strong> среднему — средний <strong>не меняется</strong> (точка экстремума)</li>
+                <li>Если MC &lt; ATC — ATC убывает</li>
+                <li>Если MC &gt; ATC — ATC возрастает</li>
+                <li>MC = ATC — {t('costs.breakevenPoint')}</li>
               </ul>
             </div>
             <div className="p-3 bg-muted/50 rounded-lg">
               <p className="text-muted-foreground">
-                Точно так же с издержками: пока MC ниже ATC, производство каждой дополнительной единицы обходится
-                дешевле среднего, и ATC снижается. Когда MC превышает ATC, новые единицы дорожают,
-                и средние издержки начинают расти. Точка пересечения — это минимум ATC.
+                {t('costs.theory.marginal')}
               </p>
             </div>
           </CardContent>
@@ -835,20 +829,19 @@ export function CostAnalysis() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-red-500" />
-              Точка закрытия vs Точка безубыточности
+              {t('costs.shutdownVsBreakeven')}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm space-y-3">
             <div className="p-3 bg-red-50 dark:bg-red-950/30 rounded-lg">
-              <div className="font-semibold text-red-700 dark:text-red-400 mb-1">Точка закрытия (Shutdown point)</div>
+              <div className="font-semibold text-red-700 dark:text-red-400 mb-1">{t('costs.shutdownPointDetail')}</div>
               <p className="text-muted-foreground">
                 Минимум AVC. Если цена падает ниже min AVC, фирма не покрывает даже переменные издержки.
-                Каждая произведённая единица увеличивает убытки сверх постоянных издержек.
-                <strong> Решение: прекратить производство</strong> (Q = 0), убыток = FC.
+                {t('costs.theory.marginal')}
               </p>
             </div>
             <div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
-              <div className="font-semibold text-blue-700 dark:text-blue-400 mb-1">Точка безубыточности (Breakeven point)</div>
+              <div className="font-semibold text-blue-700 dark:text-blue-400 mb-1">{t('costs.breakevenPointDetail')}</div>
               <p className="text-muted-foreground">
                 Минимум ATC. При P = min ATC фирма покрывает все издержки (и постоянные, и переменные),
                 но экономическая прибыль равна нулю.
@@ -856,7 +849,7 @@ export function CostAnalysis() {
               </p>
             </div>
             <div className="p-3 bg-yellow-50 dark:bg-yellow-950/30 rounded-lg">
-              <div className="font-semibold text-yellow-700 dark:text-yellow-400 mb-1">Зона убытка, но продолжаем</div>
+              <div className="font-semibold text-yellow-700 dark:text-yellow-400 mb-1">{t('costs.lossZone')}</div>
               <p className="text-muted-foreground">
                 При min AVC &lt; P &lt; min ATC фирма несёт убытки, но продолжает производство:
                 выручка покрывает все VC и часть FC. Убыток меньше, чем при закрытии (FC).
@@ -871,30 +864,30 @@ export function CostAnalysis() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
-            Сводка ключевых показателей
+            {t('costs.summary')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
             <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">min ATC (безубыточность)</div>
+              <div className="text-xs text-muted-foreground">{t('costs.breakevenPoint')}</div>
               <div className="font-mono font-bold" style={{ color: COLORS.atc }}>{minATC_value ?? '—'}</div>
               <div className="text-xs text-muted-foreground">при Q = {minATC_Q ?? '—'}</div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">min AVC (закрытие)</div>
+              <div className="text-xs text-muted-foreground">{t('costs.shutdownPoint')}</div>
               <div className="font-mono font-bold" style={{ color: COLORS.avc }}>{shutdownPrice}</div>
               <div className="text-xs text-muted-foreground">при Q → 0</div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Текущая цена P</div>
+              <div className="text-xs text-muted-foreground">{t('costs.currentPrice')} P</div>
               <div className="font-mono font-bold" style={{ color: COLORS.price }}>{price}</div>
               <div className="text-xs text-muted-foreground">
                 {price >= (breakevenPrice ?? Infinity) ? '≥ min ATC' : price >= shutdownPrice ? '∈ [min AVC, min ATC)' : '< min AVC'}
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Прибыль при Q={currentQ}</div>
+              <div className="text-xs text-muted-foreground">{t('costs.profitAtQ')}={currentQ}</div>
               <div className={`font-mono font-bold ${currentCosts.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {currentCosts.profit > 0 ? '+' : ''}{currentCosts.profit}
               </div>

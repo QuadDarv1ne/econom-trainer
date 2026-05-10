@@ -15,8 +15,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
     >
       <I18nProvider>
         {children}
+        <OnlineStatusIndicator />
       </I18nProvider>
-      <OnlineStatusIndicator />
       <Toaster />
     </ThemeProvider>
   );
