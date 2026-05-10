@@ -10,6 +10,8 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Progress } from '@/components/ui/progress'
 import { useEconomicsStore, getLevelFromXP, getLevelTitle, getLevelColor, getModuleInteractionCount } from '@/store/economics-store'
+import { useI18n } from '@/lib/i18n-provider'
+import { LanguageToggle } from '@/components/economics/language-toggle'
 import {
   Calculator,
   ArrowRightLeft,
@@ -163,6 +165,7 @@ const categoryBreaks = new Set(['gdp', 'supply-demand', 'breakeven', 'quiz'])
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('home')
+  const { locale, t } = useI18n()
   const totalXP = useEconomicsStore((s) => s.totalXP)
   const moduleInteractions = useEconomicsStore((s) => s.moduleInteractions)
   const xpState = getLevelFromXP(totalXP)
@@ -215,13 +218,7 @@ export default function Home() {
                 <span className="text-muted-foreground">{totalXP.toLocaleString('ru-RU')} XP</span>
               </Badge>
             )}
-            <a
-              href="/download"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors"
-            >
-              <Download className="h-3.5 w-3.5" />
-              Скачать
-            </a>
+            <LanguageToggle />
             <ThemeToggle />
             <Badge variant="outline" className="hidden sm:flex">
               <Sparkles className="h-3 w-3 mr-1" />
