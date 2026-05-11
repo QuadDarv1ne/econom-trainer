@@ -39,7 +39,11 @@ export function exportToCSV(): string {
 
   // Module interactions
   csv += `${t('export.csv.module', locale)},${t('export.csv.interactions', locale)}\n`
-  Object.entries(state.moduleInteractions).forEach(([module, count]) => {
+  const moduleCounts: Record<string, number> = {}
+  state.moduleInteractions.forEach((interaction) => {
+    moduleCounts[interaction.moduleId] = (moduleCounts[interaction.moduleId] || 0) + 1
+  })
+  Object.entries(moduleCounts).forEach(([module, count]) => {
     csv += `"${module}",${count}\n`
   })
   csv += `\n`
