@@ -1,4 +1,4 @@
-import NextAuth, { type NextAuthConfig } from "next-auth";
+import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import { authenticator } from "otplib";
 import { checkRateLimit, getClientIP } from "@/lib/rate-limit";
 
-export const authConfig: NextAuthConfig = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
@@ -46,29 +46,28 @@ export const authConfig: NextAuthConfig = {
           return null;
         }
 
-        // Если 2FA включена, проверяем второй фактор
+        // If 2FA is enabled, verify second factor
         if (user.twoFactorEnabled && user.twoFactorConf) {
           const code = credentials.twoFactorCode as string;
           if (!code) {
-            // Бросаем ошибку с кастомным сообщением для фронтенда
             throw new Error("TwoFactorRequired");
           }
 
-          // Проверяем TOTP код
+          // Verify TOTP code
           const isTOTPValid = authenticator.verify({
             token: code,
             secret: user.twoFactorConf.secret,
           });
 
           if (!isTOTPValid) {
-            // Проверяем backup коды
+            // Check backup codes
             const backupCodes = JSON.parse(user.twoFactorConf.backupCodes || "[]") as string[];
             let backupUsed = false;
 
             for (let i = 0; i < backupCodes.length; i++) {
               const matches = await bcrypt.compare(code, backupCodes[i]);
               if (matches) {
-                // Удаляем использованный код
+                // Remove used code
                 backupCodes.splice(i, 1);
                 await prisma.twoFactorConfirmation.update({
                   where: { userId: user.id },
@@ -80,7 +79,7 @@ export const authConfig: NextAuthConfig = {
             }
 
             if (!backupUsed) {
-              return null; // Неверный код
+              return null; // Invalid code
             }
           }
         }
@@ -130,6 +129,4 @@ export const authConfig: NextAuthConfig = {
     },
   },
   secret: process.env.AUTH_SECRET,
-};
-
-export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
+});

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { auth } from '@/auth-edge';
 
 export default auth(async (req) => {
   const url = req.nextUrl.clone();
