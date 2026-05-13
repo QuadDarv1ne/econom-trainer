@@ -90,6 +90,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name: user.name,
           image: user.image,
           twoFactorEnabled: user.twoFactorEnabled,
+          sessionHash: user.sessionHash,
         };
       },
     }),
@@ -106,6 +107,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.id = user.id;
         token.twoFactorEnabled = (user as any).twoFactorEnabled;
+        token.sessionHash = (user as any).sessionHash;
       }
       if (trigger === "update" && session) {
         return { ...token, ...session };
@@ -116,6 +118,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (token) {
         session.user.id = token.id as string;
         session.user.twoFactorEnabled = token.twoFactorEnabled as boolean;
+        (session.user as any).sessionHash = token.sessionHash;
       }
       return session;
     },

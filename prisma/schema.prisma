@@ -27,6 +27,9 @@ model User {
   twoFactorSecret  String?  // TOTP secret (encrypted)
   backupCodes      String?  // JSON array of hashed backup codes
 
+  // Session management
+  sessionHash      String?  // Current valid session hash (invalidates old JWTs)
+
   // Relations
   accounts      Account[]
   sessions      Session[]

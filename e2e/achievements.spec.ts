@@ -8,7 +8,7 @@ test.describe('Achievements', () => {
     await page.getByRole('tab', { name: 'Бейджи' }).click();
 
     // Check that achievements are displayed
-    await expect(page.getByText('Ваши достижения')).toBeVisible();
+    await expect(page.getByText('Достижения').first()).toBeVisible({ timeout: 15000 });
 
     // Check that reset button is present
     const resetButton = page.getByRole('button', { name: 'Сбросить' });

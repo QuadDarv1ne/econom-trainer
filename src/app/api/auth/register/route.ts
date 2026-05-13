@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
+import { randomBytes } from 'crypto';
+import { getEmailVerificationEmailHtml } from '@/lib/email';
 
 export async function POST(req: Request) {
   try {
@@ -62,33 +64,27 @@ export async function POST(req: Request) {
       },
     });
 
-    // Send welcome email
-    const escapeHtml = (str: string) =>
-      str.replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]!));
-    const welcomeHtml = `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #2563eb;">Экономический тренажёр</h2>
-        <p>Здравствуйте, ${escapeHtml(name)}!</p>
-        <p>Добро пожаловать в Экономический тренажёр! Ваш аккаунт успешно создан.</p>
-        <p>Начните обучение: изучайте микроэкономику, макроэкономику и финансовую математику через интерактивные модули.</p>
-        <a href="${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}"
-           style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px;
-                  text-decoration: none; border-radius: 6px; margin: 16px 0;">
-          Начать обучение
-        </a>
-        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
-        <p style="color: #999; font-size: 12px;">
-          Экономический тренажёр — интерактивная платформа для изучения экономики
-        </p>
-      </div>
-    `;
+    // Generate email verification token
+    const token = randomBytes(32).toString('hex');
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-    // Import dynamically to avoid build issues
+    await prisma.verificationToken.create({
+      data: {
+        identifier: user.email!,
+        token,
+        expires,
+      },
+    });
+
+    // Send verification email
+    const verificationUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(user.email!)}`;
+    const verificationHtml = getEmailVerificationEmailHtml(user.name || 'Пользователь', verificationUrl);
+
     const { sendEmail } = await import('@/lib/email');
     await sendEmail({
       to: user.email!,
-      subject: 'Добро пожаловать в Экономический тренажёр!',
-      html: welcomeHtml,
+      subject: 'Подтвердите email — Экономический тренажёр',
+      html: verificationHtml,
     });
 
     return NextResponse.json(

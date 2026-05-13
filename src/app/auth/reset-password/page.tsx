@@ -69,38 +69,33 @@ function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          </CardHeader>
-        </Card>
-      </div>
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        </CardHeader>
+      </Card>
     );
   }
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              <CheckCircle2 className="h-16 w-16 text-green-500" />
-            </div>
-            <CardTitle>{t('auth.resetPassword.successTitle')}</CardTitle>
-            <CardDescription>{t('auth.resetPassword.successDesc')}</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            <CheckCircle2 className="h-16 w-16 text-green-500" />
+          </div>
+          <CardTitle>{t('auth.resetPassword.successTitle')}</CardTitle>
+          <CardDescription>{t('auth.resetPassword.successDesc')}</CardDescription>
+        </CardHeader>
+      </Card>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md">
         <CardHeader className="space-y-2 text-center">
           <div className="flex justify-center">
             <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center">
@@ -151,7 +146,6 @@ function ResetPasswordForm() {
           </form>
         </CardContent>
       </Card>
-    </div>
   );
 }
 

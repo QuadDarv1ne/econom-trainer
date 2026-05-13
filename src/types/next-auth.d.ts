@@ -8,12 +8,14 @@ declare module 'next-auth' {
       email?: string | null;
       image?: string | null;
       twoFactorEnabled?: boolean;
+      sessionHash?: string | null;
     };
   }
 
   interface User {
     id: string;
     twoFactorEnabled?: boolean;
+    sessionHash?: string | null;
   }
 }
 
@@ -21,5 +23,6 @@ declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
     twoFactorEnabled?: boolean;
+    sessionHash?: string | null;
   }
 }

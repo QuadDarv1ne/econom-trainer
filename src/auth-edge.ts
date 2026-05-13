@@ -15,6 +15,7 @@ export const authConfig: NextAuthConfig = {
       if (user) {
         token.id = user.id;
         token.twoFactorEnabled = (user as any).twoFactorEnabled;
+        token.sessionHash = (user as any).sessionHash;
       }
       if (trigger === "update" && session) {
         return { ...token, ...session };
@@ -25,6 +26,7 @@ export const authConfig: NextAuthConfig = {
       if (token) {
         session.user.id = token.id as string;
         session.user.twoFactorEnabled = token.twoFactorEnabled as boolean;
+        (session.user as any).sessionHash = token.sessionHash;
       }
       return session;
     },

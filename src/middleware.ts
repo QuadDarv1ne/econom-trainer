@@ -24,5 +24,5 @@ export default auth(async (req) => {
 });
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/api/profile/:path*', '/api/progress/:path*'],
+  matcher: ['/dashboard/:path*', '/profile/:path*', '/api/profile/:path*', '/api/progress/:path*'],
 };

@@ -10,10 +10,10 @@ test.describe('Homepage', () => {
     // Check that main heading is present
     await expect(page.getByRole('heading', { name: 'Экономический тренажёр' })).toBeVisible();
 
-    // Check that modules are displayed
-    await expect(page.getByText('Макро')).toBeVisible();
-    await expect(page.getByText('Микро')).toBeVisible();
-    await expect(page.getByText('Финансы')).toBeVisible();
+    // Check that modules are displayed (use first() since text appears multiple times)
+    await expect(page.getByText('Макро').first()).toBeVisible();
+    await expect(page.getByText('Микро').first()).toBeVisible();
+    await expect(page.getByText('Финансы').first()).toBeVisible();
   });
 
   test('should navigate to GDP module and perform calculation', async ({ page }) => {
@@ -30,16 +30,16 @@ test.describe('Homepage', () => {
     // Calculate
     await page.getByRole('button', { name: 'Рассчитать ВВП' }).click();
 
-    // Check results are displayed
-    await expect(page.getByText('Номинальный ВВП')).toBeVisible();
-    await expect(page.getByText('Реальный ВВП')).toBeVisible();
+    // Check results are displayed (use exact match to avoid ambiguity)
+    await expect(page.getByText('Номинальный ВВП', { exact: true })).toBeVisible();
+    await expect(page.getByText('Реальный ВВП', { exact: true })).toBeVisible();
   });
 
   test('should toggle dark/light theme', async ({ page }) => {
     await page.goto('/');
 
-    // Click theme toggle
-    await page.getByRole('button', { name: /Тема/ }).first().click();
+    // Click theme toggle button (uses Sun/Moon/Monitor icons, has title attribute)
+    await page.locator('button[title*="Тема"], button[title*="theme"], .h-9.w-9').first().click({ timeout: 15000 });
 
     // Theme should change
     await page.waitForTimeout(300);

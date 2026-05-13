@@ -1,0 +1,969 @@
+'use client';
+
+import type React from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { PasswordInput } from '@/components/ui/password-input';
+import {
+  GraduationCap,
+  User,
+  Mail,
+  Phone,
+  Shield,
+  QrCode,
+  Copy,
+  Check,
+  Loader2,
+  LogOut,
+  Home,
+  BarChart3,
+  Zap,
+  AlertCircle,
+  CheckCircle2,
+  Camera,
+  Trash2,
+  KeyRound,
+  ChevronRight,
+  Clock,
+  Monitor,
+  Smartphone,
+  Tablet,
+  X,
+  AlertTriangle,
+} from 'lucide-react';
+import { useEconomicsStore } from '@/store/economics-store';
+import { useI18n } from '@/lib/i18n-provider';
+
+interface UserProfile {
+  id: string;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  image: string | null;
+  role: string;
+  twoFactorEnabled: boolean;
+  emailVerified: Date | null;
+  createdAt: Date;
+}
+
+export default function ProfilePage() {
+  const { data: session, status, update } = useSession();
+  const { t } = useI18n();
+  const router = useRouter();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  // Profile edit
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Password change
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+
+  // Account deletion
+  const [deletePassword, setDeletePassword] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  // Email verification
+  const [sendingVerification, setSendingVerification] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  // 2FA
+  const [qrCode, setQrCode] = useState('');
+  const [secret, setSecret] = useState('');
+  const [backupCodes, setBackupCodes] = useState<string[]>([]);
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [settingUp2FA, setSettingUp2FA] = useState(false);
+  const [verifying2FA, setVerifying2FA] = useState(false);
+  const [showQR, setShowQR] = useState(false);
+  const [showBackupCodes, setShowBackupCodes] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
+
+  // Local progress sync
+  const totalXP = useEconomicsStore((s) => s.totalXP);
+  const [syncing, setSyncing] = useState(false);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/login');
+      return;
+    }
+
+    if (status === 'authenticated') {
+      fetchProfile();
+    }
+  }, [status, router]);
+
+  // Cooldown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+
+    const timer = setTimeout(() => {
+      setResendCooldown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
+
+  async function fetchProfile() {
+    try {
+      const res = await fetch('/api/profile');
+      if (res.ok) {
+        const data = await res.json();
+        setProfile(data);
+        setName(data.name || '');
+        setPhone(data.phone || '');
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function updateProfile(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setProfile(data);
+        setSuccess(t('dashboard.profile.updated'));
+        update();
+      } else {
+        const data = await res.json();
+        setError(data.error);
+      }
+    } catch {
+      setError(t('dashboard.profile.saveError'));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Simple validation
+    if (!file.type.startsWith('image/')) {
+      setError('Выберите файл изображения');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Размер файла не должен превышать 5 МБ');
+      return;
+    }
+
+    // Convert to base64 data URL
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const imageData = ev.target?.result as string;
+
+      try {
+        const res = await fetch('/api/profile', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: imageData }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setProfile(data);
+          update();
+        }
+      } catch {
+        setError('Ошибка загрузки аватара');
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function removeAvatar() {
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: '' }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setProfile(data);
+        update();
+      }
+    } catch {
+      setError('Ошибка удаления аватара');
+    }
+  }
+
+  async function changePassword(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    if (newPassword !== confirmNewPassword) {
+      setError(t('profile.passwordMismatch'));
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setError('Пароль должен содержать минимум 8 символов');
+      return;
+    }
+
+    setChangingPassword(true);
+
+    try {
+      const res = await fetch('/api/profile/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setSuccess(t('profile.passwordUpdated'));
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmNewPassword('');
+      } else {
+        setError(data.error);
+      }
+    } catch {
+      setError('Ошибка сервера');
+    } finally {
+      setChangingPassword(false);
+    }
+  }
+
+  async function sendVerificationEmail() {
+    setSendingVerification(true);
+    setError('');
+
+    try {
+      const res = await fetch('/api/profile/verify-email', { method: 'POST' });
+      const data = await res.json();
+
+      if (res.ok) {
+        setSuccess(t('profile.verificationSent'));
+        setResendCooldown(60); // 60 seconds cooldown
+      } else {
+        setError(data.error);
+      }
+    } catch {
+      setError('Ошибка отправки письма');
+    } finally {
+      setSendingVerification(false);
+    }
+  }
+
+  async function setup2FA() {
+    setSettingUp2FA(true);
+    setError('');
+
+    try {
+      const res = await fetch('/api/auth/two-factor/setup', { method: 'POST' });
+      const data = await res.json();
+
+      if (res.ok) {
+        setQrCode(data.qrCode);
+        setSecret(data.secret);
+        setShowQR(true);
+      } else {
+        setError(data.error);
+      }
+    } catch {
+      setError('Ошибка настройки 2FA');
+    } finally {
+      setSettingUp2FA(false);
+    }
+  }
+
+  async function verify2FA() {
+    setVerifying2FA(true);
+    setError('');
+
+    try {
+      const res = await fetch('/api/auth/two-factor/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: twoFactorCode }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setBackupCodes(data.backupCodes);
+        setShowBackupCodes(true);
+        setShowQR(false);
+        setProfile((p) => (p ? { ...p, twoFactorEnabled: true } : null));
+        update();
+      } else {
+        setError(data.error);
+      }
+    } catch {
+      setError('Ошибка верификации');
+    } finally {
+      setVerifying2FA(false);
+    }
+  }
+
+  async function disable2FA() {
+    try {
+      const res = await fetch('/api/auth/two-factor/disable', { method: 'POST' });
+      if (res.ok) {
+        setProfile((p) => (p ? { ...p, twoFactorEnabled: false } : null));
+        setQrCode('');
+        setSecret('');
+        setBackupCodes([]);
+        update();
+      }
+    } catch {
+      setError('Ошибка отключения 2FA');
+    }
+  }
+
+  async function deleteAccount() {
+    setDeleting(true);
+    setError('');
+
+    try {
+      const res = await fetch('/api/profile/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: deletePassword }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        signOut({ callbackUrl: '/' });
+      } else {
+        setError(data.error);
+      }
+    } catch {
+      setError('Ошибка удаления аккаунта');
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  async function syncProgress() {
+    setSyncing(true);
+    try {
+      const store = useEconomicsStore.getState();
+      const res = await fetch('/api/progress/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          totalXP: store.totalXP,
+          quizResults: store.quizResults,
+          moduleHistory: store.moduleInteractions,
+          achievements: store.unlockedAchievements,
+        }),
+      });
+
+      if (res.ok) {
+        setSuccess(t('dashboard.progress.synced'));
+      }
+    } catch {
+      setError(t('dashboard.progress.syncError'));
+    } finally {
+      setSyncing(false);
+    }
+  }
+
+  function getInitials(name: string | null) {
+    if (!name) return '?';
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  }
+
+  function formatDate(date: Date | null) {
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('ru-RU', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+
+  if (status === 'loading' || loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
+          <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-lg bg-muted animate-pulse" />
+              <div className="h-5 w-24 bg-muted animate-pulse rounded" />
+            </div>
+          </div>
+        </header>
+        <main className="container mx-auto px-4 py-8 max-w-4xl space-y-6">
+          <div className="h-10 w-64 bg-muted animate-pulse rounded" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="h-48 bg-muted animate-pulse rounded-lg" />
+            <div className="h-48 bg-muted animate-pulse rounded-lg" />
+            <div className="h-48 bg-muted animate-pulse rounded-lg" />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link href="/">
+              <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
+                <GraduationCap className="h-5 w-5 text-primary-foreground" />
+              </div>
+            </Link>
+            <h1 className="text-lg font-bold">{t('profile.title')}</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link href="/">
+              <Button variant="ghost" size="sm">
+                <Home className="h-4 w-4 mr-2" />
+                {t('dashboard.home')}
+              </Button>
+            </Link>
+            <Link href="/dashboard">
+              <Button variant="ghost" size="sm">
+                <BarChart3 className="h-4 w-4 mr-2" />
+                {t('dashboard.title')}
+              </Button>
+            </Link>
+            <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: '/' })}>
+              <LogOut className="h-4 w-4 mr-2" />
+              {t('dashboard.signOut')}
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-8 max-w-4xl">
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        {success && (
+          <Alert className="mb-4 border-green-500 bg-green-50 dark:bg-green-950/20">
+            <CheckCircle2 className="h-4 w-4 text-green-500" />
+            <AlertDescription className="text-green-700 dark:text-green-400">{success}</AlertDescription>
+          </Alert>
+        )}
+
+        <Tabs defaultValue="personal" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="personal">
+              <User className="h-4 w-4 mr-2" />
+              {t('profile.personalInfo')}
+            </TabsTrigger>
+            <TabsTrigger value="security">
+              <Shield className="h-4 w-4 mr-2" />
+              {t('profile.accountSettings')}
+            </TabsTrigger>
+            <TabsTrigger value="progress">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              {t('dashboard.tab.progress')}
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Personal Info Tab */}
+          <TabsContent value="personal" className="space-y-6">
+            {/* Avatar Card */}
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-6">
+                  <div className="relative group">
+                    <Avatar className="h-24 w-24">
+                      <AvatarImage src={profile?.image || ''} />
+                      <AvatarFallback className="text-2xl">{getInitials(profile?.name)}</AvatarFallback>
+                    </Avatar>
+                    <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                      <Camera className="h-6 w-6 text-white" />
+                    </div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleAvatarUpload}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold">{profile?.name || t('dashboard.progress.student')}</h3>
+                    <p className="text-muted-foreground">{profile?.email}</p>
+                    <div className="flex gap-2">
+                      <Badge variant="secondary">{t('profile.role')}: {profile?.role}</Badge>
+                      {profile?.emailVerified ? (
+                        <Badge variant="default" className="bg-green-500">
+                          <Check className="h-3 w-3 mr-1" />
+                          {t('dashboard.profile.emailVerified')}
+                        </Badge>
+                      ) : (
+                        <Badge variant="destructive">{t('profile.emailUnverified')}</Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4 flex gap-2">
+                  <Button size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                    <Camera className="h-4 w-4 mr-2" />
+                    {t('profile.avatar.change')}
+                  </Button>
+                  {profile?.image && (
+                    <Button size="sm" variant="outline" onClick={removeAvatar}>
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      {t('profile.avatar.remove')}
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Profile Form */}
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('profile.personalInfo')}</CardTitle>
+                <CardDescription>{t('profile.personalInfoDesc')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={updateProfile} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">{t('dashboard.profile.name')}</Label>
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder={t('dashboard.profile.namePlaceholder')}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>{t('dashboard.profile.email')}</Label>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Mail className="h-4 w-4" />
+                        <span>{profile?.email}</span>
+                      </div>
+                      {!profile?.emailVerified && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={sendVerificationEmail}
+                          disabled={sendingVerification || resendCooldown > 0}
+                        >
+                          {sendingVerification ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : resendCooldown > 0 ? (
+                            <Clock className="h-3 w-3" />
+                          ) : (
+                            <Mail className="h-3 w-3" />
+                          )}
+                          <span className="ml-2">
+                            {resendCooldown > 0
+                              ? `${resendCooldown}с`
+                              : sendingVerification
+                                ? '...'
+                                : t('profile.verifyEmail')}
+                          </span>
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">{t('dashboard.profile.phone')}</Label>
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder={t('dashboard.profile.phonePlaceholder')}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>{t('profile.memberSince')}</Label>
+                    <p className="text-muted-foreground">{formatDate(profile?.createdAt)}</p>
+                  </div>
+
+                  <Button type="submit" disabled={saving}>
+                    {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {t('dashboard.profile.save')}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Security Tab */}
+          <TabsContent value="security" className="space-y-6">
+            {/* Password Change */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <KeyRound className="h-5 w-5" />
+                  {t('profile.changePassword')}
+                </CardTitle>
+                <CardDescription>{t('profile.accountSettingsDesc')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={changePassword} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="currentPassword">{t('profile.currentPassword')}</Label>
+                    <PasswordInput
+                      id="currentPassword"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="newPassword">{t('profile.newPassword')}</Label>
+                    <PasswordInput
+                      id="newPassword"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmNewPassword">{t('profile.confirmNewPassword')}</Label>
+                    <PasswordInput
+                      id="confirmNewPassword"
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <Button type="submit" disabled={changingPassword}>
+                    {changingPassword ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {t('profile.changePassword')}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            {/* 2FA */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  {t('dashboard.security.title')}
+                </CardTitle>
+                <CardDescription>
+                  {t('dashboard.security.desc')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {profile?.twoFactorEnabled ? (
+                  <div className="space-y-4">
+                    <Alert className="border-green-500 bg-green-50 dark:bg-green-950/20">
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      <AlertDescription className="text-green-700 dark:text-green-400">
+                        {t('dashboard.security.enabled')}
+                      </AlertDescription>
+                    </Alert>
+
+                    <Button variant="destructive" onClick={disable2FA}>
+                      {t('dashboard.security.disable')}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <Alert>
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        {t('dashboard.security.warning')}
+                      </AlertDescription>
+                    </Alert>
+
+                    {!showQR && (
+                      <Button onClick={setup2FA} disabled={settingUp2FA}>
+                        {settingUp2FA ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                          <QrCode className="mr-2 h-4 w-4" />
+                        )}
+                        {t('dashboard.security.setup')}
+                      </Button>
+                    )}
+
+                    {showQR && (
+                      <div className="space-y-4 pt-4">
+                        <Separator />
+                        <div className="text-center space-y-2">
+                          <h4 className="font-semibold">{t('dashboard.security.scanQr')}</h4>
+                          <div className="inline-block p-4 bg-white rounded-lg">
+                            <img src={qrCode} alt="2FA QR Code" className="w-48 h-48" />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <h4 className="font-semibold">{t('dashboard.security.manualEntry')}</h4>
+                          <div className="flex items-center gap-2">
+                            <code className="bg-muted px-3 py-2 rounded text-sm font-mono">{secret}</code>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                navigator.clipboard.writeText(secret);
+                                setCopiedCode(true);
+                                setTimeout(() => setCopiedCode(false), 2000);
+                              }}
+                            >
+                              {copiedCode ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <h4 className="font-semibold">{t('dashboard.security.enterCode')}</h4>
+                          <div className="flex flex-col gap-2">
+                            <InputOTP
+                              maxLength={6}
+                              value={twoFactorCode}
+                              onChange={setTwoFactorCode}
+                            >
+                              <InputOTPGroup>
+                                <InputOTPSlot index={0} />
+                                <InputOTPSlot index={1} />
+                                <InputOTPSlot index={2} />
+                              </InputOTPGroup>
+                              <InputOTPGroup>
+                                <InputOTPSlot index={3} />
+                                <InputOTPSlot index={4} />
+                                <InputOTPSlot index={5} />
+                              </InputOTPGroup>
+                            </InputOTP>
+                            <Button onClick={verify2FA} disabled={verifying2FA} className="self-start">
+                              {verifying2FA ? <Loader2 className="h-4 w-4 animate-spin" /> : t('dashboard.security.verify')}
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {showBackupCodes && (
+                      <div className="space-y-4 pt-4">
+                        <Separator />
+                        <Alert className="border-amber-500 bg-amber-50 dark:bg-amber-950/20">
+                          <AlertCircle className="h-4 w-4 text-amber-500" />
+                          <AlertDescription className="text-amber-700 dark:text-amber-400">
+                            <strong>{t('dashboard.security.saveCodes')}</strong>
+                          </AlertDescription>
+                        </Alert>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          {backupCodes.map((code, i) => (
+                            <div
+                              key={i}
+                              className="flex items-center justify-between bg-muted px-3 py-2 rounded"
+                            >
+                              <code className="font-mono text-sm">{code}</code>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(code);
+                                }}
+                              >
+                                <Copy className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+
+                        <Button onClick={() => setShowBackupCodes(false)}>
+                          {t('dashboard.security.savedCodes')}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Session Management */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Monitor className="h-5 w-5" />
+                  {t('profile.activeSessions')}
+                </CardTitle>
+                <CardDescription>{t('profile.activeSessionsDesc')}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Monitor className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <p className="font-medium">{t('profile.currentSession')}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {t('profile.lastActive')}: {new Date().toLocaleString('ru-RU')}
+                      </p>
+                    </div>
+                  </div>
+                  <Badge>{t('profile.currentSession')}</Badge>
+                </div>
+
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    try {
+                      const res = await fetch('/api/profile/revoke-sessions', { method: 'POST' });
+                      if (res.ok) {
+                        signOut({ callbackUrl: '/auth/login' });
+                      }
+                    } catch {
+                      setError('Ошибка завершения сессий');
+                    }
+                  }}
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  {t('profile.revokeAll')}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Delete Account */}
+            <Card className="border-red-200 dark:border-red-900">
+              <CardHeader>
+                <CardTitle className="text-red-600 dark:text-red-400 flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5" />
+                  {t('profile.deleteAccount')}
+                </CardTitle>
+                <CardDescription>{t('profile.deleteAccountDesc')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {!showDeleteConfirm ? (
+                  <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
+                    {t('profile.deleteAccount')}
+                  </Button>
+                ) : (
+                  <div className="space-y-4">
+                    <Alert variant="destructive">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription>{t('profile.deleteWarning')}</AlertDescription>
+                    </Alert>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="deletePassword">{t('profile.deleteConfirm')}</Label>
+                      <PasswordInput
+                        id="deletePassword"
+                        value={deletePassword}
+                        onChange={(e) => setDeletePassword(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button variant="destructive" onClick={deleteAccount} disabled={deleting}>
+                        {deleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                        {t('profile.deleteAccount')}
+                      </Button>
+                      <Button variant="outline" onClick={() => { setShowDeleteConfirm(false); setDeletePassword(''); }}>
+                        {t('auth.error.tryAgain')}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Progress Tab */}
+          <TabsContent value="progress" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5" />
+                  {t('dashboard.progress.title')}
+                </CardTitle>
+                <CardDescription>{t('dashboard.progress.desc')}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <Card>
+                    <CardContent className="pt-6 text-center">
+                      <Zap className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
+                      <div className="text-3xl font-bold">{totalXP}</div>
+                      <div className="text-sm text-muted-foreground">{t('dashboard.progress.totalXP')}</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6 text-center">
+                      <User className="h-8 w-8 text-primary mx-auto mb-2" />
+                      <div className="text-3xl font-bold">{profile?.name || t('dashboard.progress.student')}</div>
+                      <div className="text-sm text-muted-foreground">{t('dashboard.progress.account')}</div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <Button onClick={syncProgress} disabled={syncing} className="w-full">
+                  {syncing ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : null}
+                  {t('dashboard.progress.sync')}
+                </Button>
+
+                <p className="text-xs text-muted-foreground text-center">
+                  {t('dashboard.progress.note')}
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </main>
+    </div>
+  );
+}

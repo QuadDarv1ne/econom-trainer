@@ -249,6 +249,12 @@ export default function DashboardPage() {
                 {t('dashboard.home')}
               </Button>
             </Link>
+            <Link href="/profile">
+              <Button variant="ghost" size="sm">
+                <User className="h-4 w-4 mr-2" />
+                {t('profile.title')}
+              </Button>
+            </Link>
             <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: '/' })}>
               <LogOut className="h-4 w-4 mr-2" />
               {t('dashboard.signOut')}
@@ -492,7 +498,7 @@ export default function DashboardPage() {
                 <CardDescription>{t('dashboard.progress.desc')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Card>
                     <CardContent className="pt-6 text-center">
                       <Zap className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
@@ -505,6 +511,20 @@ export default function DashboardPage() {
                       <User className="h-8 w-8 text-primary mx-auto mb-2" />
                       <div className="text-3xl font-bold">{profile?.name || t('dashboard.progress.student')}</div>
                       <div className="text-sm text-muted-foreground">{t('dashboard.progress.account')}</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6 text-center">
+                      <CheckCircle2 className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                      <div className="text-3xl font-bold">{useEconomicsStore.getState().quizResults.length}</div>
+                      <div className="text-sm text-muted-foreground">{t('dashboard.progress.quizzes')}</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6 text-center">
+                      <BarChart3 className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                      <div className="text-3xl font-bold">{useEconomicsStore.getState().moduleInteractions.length}</div>
+                      <div className="text-sm text-muted-foreground">{t('dashboard.progress.sessions')}</div>
                     </CardContent>
                   </Card>
                 </div>
