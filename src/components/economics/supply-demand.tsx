@@ -6,6 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Separator } from '@/components/ui/separator'
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -16,8 +20,9 @@ import {
   Tooltip,
   Legend,
   ReferenceLine,
+  ReferenceDot,
 } from 'recharts'
-import { ArrowRightLeft, Info } from 'lucide-react'
+import { ArrowRightLeft, Info, CheckCircle2, XCircle, RotateCcw } from 'lucide-react'
 import { useI18n } from '@/lib/i18n-provider'
 
 interface Equilibrium {
@@ -32,6 +37,7 @@ export function SupplyDemand() {
   const [supplySlope, setSupplySlope] = useState(0.8)
   const [demandShift, setDemandShift] = useState(0)
   const [supplyShift, setSupplyShift] = useState(0)
+  const [activeTab, setActiveTab] = useState('explore')
   const { t } = useI18n()
 
   // XP tracking — award once per session on first slider change
@@ -42,6 +48,65 @@ export function SupplyDemand() {
       setHasEarnedXP(true)
       addModuleInteraction({ moduleId: 'supply-demand', action: 'interact', xpEarned: MODULE_XP['supply-demand'] })
     }
+  }
+
+  // Practice problem state
+  const [practiceAnswer, setPracticeAnswer] = useState('')
+  const [practiceResult, setPracticeResult] = useState<'correct' | 'incorrect' | null>(null)
+  const [practiceStreak, setPracticeStreak] = useState(0)
+  const [practiceProblem, setPracticeProblem] = useState(() => generatePracticeProblem())
+
+  function generatePracticeProblem() {
+    const types = ['equilibrium', 'elasticity', 'shift'] as const
+    const type = types[Math.floor(Math.random() * types.length)]
+    const a = Math.round(Math.random() * 80 + 40)
+    const b = Math.round(Math.random() * 2 + 0.5 * 10) / 10
+    const c = Math.round(Math.random() * 20 + 5)
+    const d = Math.round(Math.random() * 1.5 + 0.3 * 10) / 10
+    let question: string
+    let answer: number
+
+    if (type === 'equilibrium') {
+      // Qd = a - bP, Qs = c + dP. Find equilibrium price: a - bP = c + dP => P = (a-c)/(b+d)
+      question = t('supply-demand.practice.equilibrium').replace('{a}', String(a)).replace('{b}', String(b)).replace('{c}', String(c)).replace('{d}', String(d))
+      answer = Math.round(((a - c) / (b + d)) * 100) / 100
+    } else if (type === 'elasticity') {
+      // Ed = (dQ/Q) / (dP/P) = b * (P/Q) at a given price
+      const p = Math.round(Math.random() * (a / b - 1) * 10) / 10 + 1
+      const q = a - b * p
+      const ed = Math.abs(b * (p / q))
+      question = t('supply-demand.practice.elasticity').replace('{a}', String(a)).replace('{b}', String(b)).replace('{p}', String(p))
+      answer = Math.round(ed * 100) / 100
+    } else {
+      // If demand increases by X, find new equilibrium quantity
+      const shift = Math.round(Math.random() * 20 + 5)
+      const eqQ1 = (a - c) / (b + d)
+      const eqQ2 = (a + shift - c) / (b + d)
+      const deltaQ = eqQ2 - eqQ1
+      question = t('supply-demand.practice.shift').replace('{a}', String(a)).replace('{b}', String(b)).replace('{c}', String(c)).replace('{d}', String(d)).replace('{shift}', String(shift))
+      answer = Math.round(deltaQ * 100) / 100
+    }
+
+    return { type, question, answer, tolerance: Math.max(0.1, Math.abs(answer) * 0.02) }
+  }
+
+  const checkPracticeAnswer = () => {
+    const parsed = parseFloat(practiceAnswer)
+    if (isNaN(parsed)) return
+    if (Math.abs(parsed - practiceProblem.answer) <= practiceProblem.tolerance) {
+      setPracticeResult('correct')
+      setPracticeStreak((s) => s + 1)
+      addModuleInteraction({ moduleId: 'supply-demand', action: 'practice', xpEarned: 5 })
+    } else {
+      setPracticeResult('incorrect')
+      setPracticeStreak(0)
+    }
+  }
+
+  const nextPracticeProblem = () => {
+    setPracticeProblem(generatePracticeProblem())
+    setPracticeAnswer('')
+    setPracticeResult(null)
   }
 
   const generateData = useMemo(() => {
@@ -100,6 +165,13 @@ export function SupplyDemand() {
 
   return (
     <div className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="explore">{t('supply-demand.tab.explore')}</TabsTrigger>
+          <TabsTrigger value="practice">{t('supply-demand.tab.practice')}</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="explore" className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -117,11 +189,11 @@ export function SupplyDemand() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                 <XAxis
                   dataKey="quantity"
-                  label={{ value: 'Объём (Q)', position: 'insideBottom', offset: -5 }}
+                  label={{ value: t('supply-demand.axis.quantity'), position: 'insideBottom', offset: -5 }}
                   fontSize={12}
                 />
                 <YAxis
-                  label={{ value: 'Цена (P)', angle: -90, position: 'insideLeft' }}
+                  label={{ value: t('supply-demand.axis.price'), angle: -90, position: 'insideLeft' }}
                   fontSize={12}
                 />
                 <Tooltip
@@ -140,15 +212,14 @@ export function SupplyDemand() {
                 <Legend
                   formatter={(value) => (value === 'demand' ? t('supply-demand.legend.demand') : t('supply-demand.legend.supply'))}
                 />
-                <ReferenceLine
+                <ReferenceDot
                   x={equilibrium.quantity}
-                  stroke="hsl(var(--muted-foreground))"
-                  strokeDasharray="5 5"
-                />
-                <ReferenceLine
                   y={equilibrium.price}
-                  stroke="hsl(var(--muted-foreground))"
-                  strokeDasharray="5 5"
+                  r={5}
+                  fill="#f59e0b"
+                  stroke="#d97706"
+                  strokeWidth={2}
+                  label={{ value: 'E', position: 'top', fill: '#f59e0b', fontSize: 13, fontWeight: 'bold' }}
                 />
                 <Line
                   type="monotone"
@@ -254,25 +325,25 @@ export function SupplyDemand() {
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
             <Info className="h-4 w-4" />
-            Равновесие рынка
+            {t('supply-demand.equilibrium')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="p-3 bg-muted/50 rounded-lg text-center">
-              <div className="text-sm text-muted-foreground">Равн. цена (P*)</div>
+              <div className="text-sm text-muted-foreground">{t('supply-demand.summary.price')}</div>
               <div className="text-xl font-mono font-bold">{equilibrium.price.toFixed(1)}</div>
             </div>
             <div className="p-3 bg-muted/50 rounded-lg text-center">
-              <div className="text-sm text-muted-foreground">Равн. объём (Q*)</div>
+              <div className="text-sm text-muted-foreground">{t('supply-demand.summary.quantity')}</div>
               <div className="text-xl font-mono font-bold">{equilibrium.quantity.toFixed(1)}</div>
             </div>
             <div className="p-3 bg-muted/50 rounded-lg text-center">
-              <div className="text-sm text-muted-foreground mb-1">Эффект на цену</div>
+              <div className="text-sm text-muted-foreground mb-1">{t('supply-demand.summary.priceEffect')}</div>
               <Badge variant={getEffectOnPrice().variant}>{getEffectOnPrice().text}</Badge>
             </div>
             <div className="p-3 bg-muted/50 rounded-lg text-center">
-              <div className="text-sm text-muted-foreground mb-1">Эффект на объём</div>
+              <div className="text-sm text-muted-foreground mb-1">{t('supply-demand.summary.quantityEffect')}</div>
               <Badge variant={getEffectOnQuantity().variant}>{getEffectOnQuantity().text}</Badge>
             </div>
           </div>
@@ -281,6 +352,56 @@ export function SupplyDemand() {
           </div>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="practice" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">{t('supply-demand.practice.title')}</CardTitle>
+              <CardDescription>{t('supply-demand.practice.description')}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {practiceStreak > 0 && (
+                <Badge variant="default" className="flex items-center gap-1 w-fit">
+                  🔥 {t('supply-demand.practice.streak')}: {practiceStreak}
+                </Badge>
+              )}
+              <div className="p-4 bg-muted/50 rounded-lg text-sm">{practiceProblem.question}</div>
+              <div className="flex gap-2">
+                <Input
+                  type="number"
+                  placeholder={t('supply-demand.practice.answerPlaceholder')}
+                  value={practiceAnswer}
+                  onChange={(e) => setPracticeAnswer(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && checkPracticeAnswer()}
+                  className="max-w-[200px]"
+                />
+                <Button onClick={checkPracticeAnswer} disabled={practiceResult !== null}>
+                  {t('supply-demand.practice.check')}
+                </Button>
+                {practiceResult !== null && (
+                  <Button variant="outline" onClick={nextPracticeProblem}>
+                    <RotateCcw className="h-4 w-4 mr-1" />
+                    {t('supply-demand.practice.next')}
+                  </Button>
+                )}
+              </div>
+              {practiceResult === 'correct' && (
+                <div className="flex items-center gap-2 text-green-600 text-sm">
+                  <CheckCircle2 className="h-4 w-4" />
+                  {t('supply-demand.practice.correct')} {t('supply-demand.practice.answer')}: {practiceProblem.answer}
+                </div>
+              )}
+              {practiceResult === 'incorrect' && (
+                <div className="flex items-center gap-2 text-red-600 text-sm">
+                  <XCircle className="h-4 w-4" />
+                  {t('supply-demand.practice.incorrect')} {t('supply-demand.practice.correctAnswer')}: {practiceProblem.answer}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

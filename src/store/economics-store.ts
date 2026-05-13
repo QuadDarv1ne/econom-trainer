@@ -47,6 +47,20 @@ export interface ModuleInteraction {
   details?: Record<string, unknown>
 }
 
+// Daily challenge tracking
+export interface DailyChallenge {
+  date: string // YYYY-MM-DD
+  score: number
+  total: number
+}
+
+// Learning streak state
+export interface StreakState {
+  currentStreak: number
+  longestStreak: number
+  lastActiveDate: string | null // YYYY-MM-DD
+}
+
 // XP and Level system
 export interface XPState {
   totalXP: number
@@ -103,7 +117,7 @@ export const MODULE_IDS = [
   'gdp', 'supply-demand', 'elasticity', 'keynesian', 'inflation',
   'phillips', 'lorenz', 'is-lm', 'ppf', 'costs', 'comparative',
   'breakeven', 'tax', 'game-theory', 'market-structures', 'currency', 'price-indices',
-  'economic-crises', 'monetary-policy',
+  'economic-crises', 'monetary-policy', 'adas',
   'quiz', 'finance',
   'glossary', 'achievements', 'progress',
 ] as const
@@ -131,6 +145,7 @@ export const MODULE_XP: Record<string, number> = {
   'price-indices': 15,
   'economic-crises': 25,
   'monetary-policy': 25,
+  'adas': 20,
   'quiz': 0, // Quiz uses its own scoring: score * 10
   'finance': 0, // Finance uses its own scoring
   'glossary': 5,
@@ -162,6 +177,7 @@ export function getModuleDisplayName(moduleId: string, locale: string): string {
     'price-indices': 'price-indices.title',
     'economic-crises': 'module.economic-crises.title',
     'monetary-policy': 'module.monetary-policy.title',
+    'adas': 'module.adas.title',
     'currency': 'module.currency.title',
     'quiz': 'module.quiz.title',
     'finance': 'module.finance.title',
@@ -188,11 +204,15 @@ export interface EconomicsState {
   moduleInteractions: ModuleInteraction[]
   unlockedAchievements: string[]
   totalXP: number
+  dailyChallenges: DailyChallenge[]
+  streakState: StreakState
   addQuizResult: (result: QuizResult) => void
   addGDPResult: (result: GDPResult) => void
   addFinanceResult: (result: FinanceResult) => void
   addElasticityResult: (result: ElasticityResult) => void
   addModuleInteraction: (interaction: Omit<ModuleInteraction, 'id' | 'date'>) => void
+  completeDailyChallenge: (result: DailyChallenge) => void
+  recordActivity: () => void
   unlockAchievement: (id: string) => void
   addXP: (amount: number) => void
   getTotalScore: () => { quizzes: number; gdp: number; finance: number; elasticity: number }
@@ -222,6 +242,8 @@ export const useEconomicsStore = create<EconomicsState>()(
       moduleInteractions: [],
       unlockedAchievements: [],
       totalXP: 0,
+      dailyChallenges: [],
+      streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
 
       addQuizResult: (result) => {
         set((state) => {
@@ -229,6 +251,7 @@ export const useEconomicsStore = create<EconomicsState>()(
           const xpEarned = result.score * 10
           return { quizResults: newResults, totalXP: state.totalXP + xpEarned }
         })
+        get().recordActivity()
       },
 
       addGDPResult: (result) => {
@@ -236,6 +259,7 @@ export const useEconomicsStore = create<EconomicsState>()(
           const newResults = [result, ...state.gdpResults].slice(0, 50)
           return { gdpResults: newResults, totalXP: state.totalXP + 15 }
         })
+        get().recordActivity()
       },
 
       addFinanceResult: (result) => {
@@ -244,6 +268,7 @@ export const useEconomicsStore = create<EconomicsState>()(
           const xpEarned = result.correct ? 20 : 5
           return { financeResults: newResults, totalXP: state.totalXP + xpEarned }
         })
+        get().recordActivity()
       },
 
       addElasticityResult: (result) => {
@@ -251,6 +276,7 @@ export const useEconomicsStore = create<EconomicsState>()(
           const newResults = [result, ...state.elasticityResults].slice(0, 50)
           return { elasticityResults: newResults, totalXP: state.totalXP + 15 }
         })
+        get().recordActivity()
       },
 
       addModuleInteraction: (interaction) => {
@@ -264,6 +290,46 @@ export const useEconomicsStore = create<EconomicsState>()(
           return {
             moduleInteractions: newInteractions,
             totalXP: state.totalXP + interaction.xpEarned,
+          }
+        })
+        get().recordActivity()
+      },
+
+      completeDailyChallenge: (result) => {
+        set((state) => {
+          const xpEarned = 30 + result.score * 10
+          const newChallenges = [result, ...state.dailyChallenges].slice(0, 30)
+          return { dailyChallenges: newChallenges, totalXP: state.totalXP + xpEarned }
+        })
+        get().recordActivity()
+      },
+
+      recordActivity: () => {
+        const today = new Date().toISOString().split('T')[0]
+        set((state) => {
+          const { currentStreak, longestStreak, lastActiveDate } = state.streakState
+          if (lastActiveDate === today) return state // Already recorded today
+
+          let newStreak: number
+          if (lastActiveDate) {
+            const last = new Date(lastActiveDate)
+            const now = new Date(today)
+            const diffDays = Math.round((now.getTime() - last.getTime()) / (1000 * 60 * 60 * 24))
+            if (diffDays === 1) {
+              newStreak = currentStreak + 1
+            } else {
+              newStreak = 1
+            }
+          } else {
+            newStreak = 1
+          }
+
+          return {
+            streakState: {
+              currentStreak: newStreak,
+              longestStreak: Math.max(longestStreak, newStreak),
+              lastActiveDate: today,
+            },
           }
         })
       },
@@ -325,6 +391,8 @@ export const useEconomicsStore = create<EconomicsState>()(
           moduleInteractions: [],
           unlockedAchievements: [],
           totalXP: 0,
+          dailyChallenges: [],
+          streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
         }
         set(newState)
       },
@@ -377,6 +445,8 @@ export const useEconomicsStore = create<EconomicsState>()(
         moduleInteractions: state.moduleInteractions,
         unlockedAchievements: state.unlockedAchievements,
         totalXP: state.totalXP,
+        dailyChallenges: state.dailyChallenges,
+        streakState: state.streakState,
       }),
     },
   ),

@@ -83,6 +83,7 @@ const CurrencyCalculator = nextDynamic(() => import('@/components/economics/curr
 const PriceIndices = nextDynamic(() => import('@/components/economics/price-indices').then(m => ({ default: m.PriceIndices })), { ssr: false })
 const EconomicCrises = nextDynamic(() => import('@/components/economics/economic-crises').then(m => ({ default: m.EconomicCrises })), { ssr: false })
 const MonetaryPolicy = nextDynamic(() => import('@/components/economics/monetary-policy').then(m => ({ default: m.MonetaryPolicy })), { ssr: false })
+const ADASModel = nextDynamic(() => import('@/components/economics/adas-model').then(m => ({ default: m.ADASModel })), { ssr: false })
 const ThemeToggle = nextDynamic(() => import('@/components/economics/theme-toggle').then(m => ({ default: m.ThemeToggle })), { ssr: false })
 
 // Module definitions with categories for grouped navigation
@@ -107,6 +108,7 @@ const modules = [
   { id: 'price-indices', titleKey: 'price-indices.title', descriptionKey: 'price-indices.description', icon: TrendingUp, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 15 },
   { id: 'economic-crises', titleKey: 'module.economic-crises.title', descriptionKey: 'module.economic-crises.description', icon: AlertTriangle, color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 25 },
   { id: 'monetary-policy', titleKey: 'module.monetary-policy.title', descriptionKey: 'module.monetary-policy.description', icon: Landmark, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 25 },
+  { id: 'adas', titleKey: 'module.adas.title', descriptionKey: 'module.adas.description', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 20 },
   { id: 'quiz', titleKey: 'module.quiz.title', descriptionKey: 'module.quiz.description', icon: Brain, color: 'text-violet-600', bg: 'bg-violet-50 dark:bg-violet-950/30', categoryKey: 'home.modcat.tests', catId: 'tools', xpReward: 10 },
   { id: 'currency', titleKey: 'module.currency.title', descriptionKey: 'module.currency.description', icon: Coins, color: 'text-cyan-600', bg: 'bg-cyan-50 dark:bg-cyan-950/30', categoryKey: 'home.modcat.finance', catId: 'finance', xpReward: 15 },
   { id: 'finance', titleKey: 'module.finance.title', descriptionKey: 'module.finance.description', icon: DollarSign, color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/30', categoryKey: 'home.modcat.finance', catId: 'finance', xpReward: 20 },
@@ -135,6 +137,7 @@ const tabItems = [
   { value: 'price-indices', icon: TrendingUp, labelKey: 'home.tab.priceIndices', catId: 'macro' },
   { value: 'economic-crises', icon: AlertTriangle, labelKey: 'home.tab.economicCrises', catId: 'macro' },
   { value: 'monetary-policy', icon: Landmark, labelKey: 'home.tab.monetaryPolicy', catId: 'macro' },
+  { value: 'adas', icon: TrendingUp, labelKey: 'home.tab.adas', catId: 'macro' },
   // Finance
   { value: 'breakeven', icon: Target, labelKey: 'home.tab.breakeven', catId: 'finance' },
   { value: 'tax', icon: Receipt, labelKey: 'home.tab.tax', catId: 'finance' },
@@ -177,6 +180,7 @@ const moduleComponents: Record<string, React.ComponentType> = {
   'price-indices': PriceIndices,
   'economic-crises': EconomicCrises,
   'monetary-policy': MonetaryPolicy,
+  'adas': ADASModel,
   'quiz': EconomicsQuiz,
   'finance': FinancialMath,
   'glossary': Glossary,
