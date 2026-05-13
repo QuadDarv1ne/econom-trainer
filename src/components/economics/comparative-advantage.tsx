@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -38,11 +38,8 @@ export function ComparativeAdvantage() {
 
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
 
-  // Sync country names with current locale
-  useEffect(() => {
-    setCountry1((prev) => ({ ...prev, name: t('comparative.countryA') }))
-    setCountry2((prev) => ({ ...prev, name: t('comparative.countryB') }))
-  }, [t])
+  const c1Name = t('comparative.countryA')
+  const c2Name = t('comparative.countryB')
 
   const analysis = useMemo(() => {
     // Opportunity cost: how many B per 1 A, and how many A per 1 B
@@ -51,12 +48,12 @@ export function ComparativeAdvantage() {
     const c2OcA = country2.goodA / country2.goodB
     const c2OcB = country2.goodB / country2.goodA
 
-    const advA = c1OcA < c2OcA ? country1.name : c1OcA > c2OcA ? country2.name : t('comparative.noAdvantage')
-    const advB = c1OcB < c2OcB ? country1.name : c1OcB > c2OcB ? country2.name : t('comparative.noAdvantage')
+    const advA = c1OcA < c2OcA ? c1Name : c1OcA > c2OcA ? c2Name : t('comparative.noAdvantage')
+    const advB = c1OcB < c2OcB ? c1Name : c1OcB > c2OcB ? c2Name : t('comparative.noAdvantage')
 
     // Absolute advantage
-    const absAdvA = country1.goodA < country2.goodA ? country1.name : country1.goodA > country2.goodA ? country2.name : t('comparative.noAdvantage')
-    const absAdvB = country1.goodB < country2.goodB ? country1.name : country1.goodB > country2.goodB ? country2.name : t('comparative.noAdvantage')
+    const absAdvA = country1.goodA < country2.goodA ? c1Name : country1.goodA > country2.goodA ? c2Name : t('comparative.noAdvantage')
+    const absAdvB = country1.goodB < country2.goodB ? c1Name : country1.goodB > country2.goodB ? c2Name : t('comparative.noAdvantage')
 
     // Gains from trade (specialization)
     // Assume each country has 24 hours
@@ -79,22 +76,22 @@ export function ComparativeAdvantage() {
 
     const chartData = [
       {
-        name: `${country1.name} (${t('comparative.before')})`,
+        name: `${c1Name} (${t('comparative.before')})`,
         [t('comparative.good') + ' A']: c1ProdA_before,
         [t('comparative.good') + ' B']: c1ProdB_before,
       },
       {
-        name: `${country1.name} (${t('comparative.after')})`,
+        name: `${c1Name} (${t('comparative.after')})`,
         [t('comparative.good') + ' A']: c1ProdA_after,
         [t('comparative.good') + ' B']: c1ProdB_after,
       },
       {
-        name: `${country2.name} (${t('comparative.before')})`,
+        name: `${c2Name} (${t('comparative.before')})`,
         [t('comparative.good') + ' A']: c2ProdA_before,
         [t('comparative.good') + ' B']: c2ProdB_before,
       },
       {
-        name: `${country2.name} (${t('comparative.after')})`,
+        name: `${c2Name} (${t('comparative.after')})`,
         [t('comparative.good') + ' A']: c2ProdA_after,
         [t('comparative.good') + ' B']: c2ProdB_after,
       },
@@ -142,7 +139,7 @@ export function ComparativeAdvantage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Country A */}
             <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-              <h3 className="font-semibold">{country1.name}</h3>
+              <h3 className="font-semibold">{c1Name}</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label className="text-xs">{t('comparative.goodA')}</Label>
@@ -173,7 +170,7 @@ export function ComparativeAdvantage() {
 
             {/* Country B */}
             <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-              <h3 className="font-semibold">{country2.name}</h3>
+              <h3 className="font-semibold">{c2Name}</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label className="text-xs">{t('comparative.goodA')}</Label>
@@ -224,10 +221,10 @@ export function ComparativeAdvantage() {
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
                 <div className="p-2 bg-muted/50 rounded">
-                  <strong>{country1.name}:</strong> 1A = {analysis.c1OcA.toFixed(2)}B, 1B = {analysis.c1OcB.toFixed(2)}A
+                  <strong>{c1Name}:</strong> 1A = {analysis.c1OcA.toFixed(2)}B, 1B = {analysis.c1OcB.toFixed(2)}A
                 </div>
                 <div className="p-2 bg-muted/50 rounded">
-                  <strong>{country2.name}:</strong> 1A = {analysis.c2OcA.toFixed(2)}B, 1B = {analysis.c2OcB.toFixed(2)}A
+                  <strong>{c2Name}:</strong> 1A = {analysis.c2OcA.toFixed(2)}B, 1B = {analysis.c2OcB.toFixed(2)}A
                 </div>
               </CardContent>
             </Card>
@@ -252,8 +249,8 @@ export function ComparativeAdvantage() {
               <CardTitle className="text-lg">{t('comparative.gainsTitle')}</CardTitle>
               <CardDescription>
                 {analysis.c1SpecializesA
-                  ? `${country1.name} ${t('comparative.specializes')} A, ${country2.name} — B`
-                  : `${country1.name} ${t('comparative.specializes')} B, ${country2.name} — A`}
+                  ? `${c1Name} ${t('comparative.specializes')} A, ${c2Name} — B`
+                  : `${c1Name} ${t('comparative.specializes')} B, ${c2Name} — A`}
               </CardDescription>
             </CardHeader>
             <CardContent>

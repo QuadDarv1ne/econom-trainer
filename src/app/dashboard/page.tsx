@@ -408,7 +408,6 @@ export default function DashboardPage() {
                         <div className="text-center space-y-2">
                           <h4 className="font-semibold">{t('dashboard.security.scanQr')}</h4>
                           <div className="inline-block p-4 bg-white rounded-lg">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={qrCode} alt="2FA QR Code" className="w-48 h-48" />
                           </div>
                         </div>
