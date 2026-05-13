@@ -56,10 +56,12 @@ export async function POST(req: Request) {
     });
 
     // Send welcome email
+    const escapeHtml = (str: string) =>
+      str.replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]!));
     const welcomeHtml = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2563eb;">Экономический тренажёр</h2>
-        <p>Здравствуйте, ${name}!</p>
+        <p>Здравствуйте, ${escapeHtml(name)}!</p>
         <p>Добро пожаловать в Экономический тренажёр! Ваш аккаунт успешно создан.</p>
         <p>Начните обучение: изучайте микроэкономику, макроэкономику и финансовую математику через интерактивные модули.</p>
         <a href="${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}"

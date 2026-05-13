@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
   },
   reactStrictMode: true,
   poweredByHeader: false,
+  serverExternalPackages: ["@prisma/client", "prisma"],
   turbopack: {},
 };
 

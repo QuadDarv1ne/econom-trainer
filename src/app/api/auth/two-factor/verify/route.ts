@@ -52,7 +52,7 @@ export async function POST(req: Request) {
       data: { twoFactorEnabled: true },
     });
 
-    await prisma.twoFactorConf.update({
+    await prisma.twoFactorConfirmation.update({
       where: { userId: user.id },
       data: { backupCodes: JSON.stringify(hashedBackupCodes) },
     });

@@ -64,8 +64,8 @@ export default function LoginPage() {
               <GraduationCap className="h-6 w-6 text-primary-foreground" />
             </div>
           </div>
-          <CardTitle className="text-2xl">{t('auth.login.title', 'ru')}</CardTitle>
-          <CardDescription>{t('auth.login.subtitle', 'ru')}</CardDescription>
+          <CardTitle className="text-2xl">{t('auth.login.title')}</CardTitle>
+          <CardDescription>{t('auth.login.subtitle')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
@@ -91,9 +91,9 @@ export default function LoginPage() {
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="password">{t('auth.login.password', 'ru')}</Label>
+                    <Label htmlFor="password">{t('auth.login.password')}</Label>
                     <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline">
-                      {t('auth.login.forgotPassword', 'ru')}
+                      {t('auth.login.forgotPassword')}
                     </Link>
                   </div>
                   <Input
@@ -109,7 +109,7 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <Label htmlFor="twoFactor" className="flex items-center gap-2">
                   <KeyRound className="h-4 w-4" />
-                  {t('auth.login.twoFactorCode', 'ru')}
+                  {t('auth.login.twoFactorCode')}
                 </Label>
                 <Input
                   id="twoFactor"
@@ -122,32 +122,32 @@ export default function LoginPage() {
                   required
                 />
                 <p className="text-xs text-muted-foreground text-center">
-                  {t('auth.login.twoFactorHint', 'ru')}
+                  {t('auth.login.twoFactorHint')}
                 </p>
               </div>
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t('auth.login.loading', 'ru')}</>
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t('auth.login.loading')}</>
               ) : show2FA ? (
-                t('auth.login.verify2FA', 'ru')
+                t('auth.login.verify2FA')
               ) : (
-                t('auth.login.submit', 'ru')
+                t('auth.login.submit')
               )}
             </Button>
           </form>
 
           <div className="mt-4 text-center text-sm">
-            <span className="text-muted-foreground">{t('auth.login.noAccount', 'ru')}</span>{' '}
+            <span className="text-muted-foreground">{t('auth.login.noAccount')}</span>{' '}
             <Link href="/auth/register" className="text-primary hover:underline">
-              {t('auth.login.signUp', 'ru')}
+              {t('auth.login.signUp')}
             </Link>
           </div>
 
           <div className="mt-4 text-center">
             <Link href="/" className="text-xs text-muted-foreground hover:underline">
-              {t('auth.login.backToHome', 'ru')}
+              {t('auth.login.backToHome')}
             </Link>
           </div>
         </CardContent>

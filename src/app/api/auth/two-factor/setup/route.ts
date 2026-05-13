@@ -26,11 +26,11 @@ export async function POST(req: Request) {
 
     // Generate secret
     const secret = authenticator.generateSecret();
-    const uri = authenticator.keyURI(user.email || session.user.id, 'Экономический тренажёр');
+    const uri = authenticator.keyuri(user.email || session.user.email || 'user', 'Экономический тренажёр', secret);
     const qrCode = await qrcode.toDataURL(uri);
 
     // Store secret temporarily (will be confirmed on verification)
-    await prisma.twoFactorConf.upsert({
+    await prisma.twoFactorConfirmation.upsert({
       where: { userId: user.id },
       create: {
         userId: user.id,

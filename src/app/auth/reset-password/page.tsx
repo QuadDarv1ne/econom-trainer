@@ -90,8 +90,8 @@ function ResetPasswordForm() {
             <div className="flex justify-center mb-4">
               <CheckCircle2 className="h-16 w-16 text-green-500" />
             </div>
-            <CardTitle>{t('auth.resetPassword.successTitle', 'ru')}</CardTitle>
-            <CardDescription>{t('auth.resetPassword.successDesc', 'ru')}</CardDescription>
+            <CardTitle>{t('auth.resetPassword.successTitle')}</CardTitle>
+            <CardDescription>{t('auth.resetPassword.successDesc')}</CardDescription>
           </CardHeader>
         </Card>
       </div>
@@ -107,8 +107,8 @@ function ResetPasswordForm() {
               <KeyRound className="h-6 w-6 text-primary-foreground" />
             </div>
           </div>
-          <CardTitle className="text-2xl">{t('auth.resetPassword.title', 'ru')}</CardTitle>
-          <CardDescription>{t('auth.resetPassword.subtitle', 'ru')}</CardDescription>
+          <CardTitle className="text-2xl">{t('auth.resetPassword.title')}</CardTitle>
+          <CardDescription>{t('auth.resetPassword.subtitle')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
@@ -120,7 +120,7 @@ function ResetPasswordForm() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="password">{t('auth.resetPassword.newPassword', 'ru')}</Label>
+              <Label htmlFor="password">{t('auth.resetPassword.newPassword')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -131,7 +131,7 @@ function ResetPasswordForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">{t('auth.resetPassword.confirmPassword', 'ru')}</Label>
+              <Label htmlFor="confirmPassword">{t('auth.resetPassword.confirmPassword')}</Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -143,9 +143,9 @@ function ResetPasswordForm() {
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t('auth.resetPassword.loading', 'ru')}</>
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t('auth.resetPassword.loading')}</>
               ) : (
-                t('auth.resetPassword.submit', 'ru')
+                t('auth.resetPassword.submit')
               )}
             </Button>
           </form>

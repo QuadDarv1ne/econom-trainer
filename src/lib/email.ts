@@ -50,6 +50,9 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions): 
   }
 }
 
+const escapeHtml = (str: string) =>
+  str.replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]!));
+
 export function getPasswordResetEmailHtml(
   name: string,
   resetUrl: string
@@ -57,7 +60,7 @@ export function getPasswordResetEmailHtml(
   return `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #2563eb;">Экономический тренажёр</h2>
-      <p>Здравствуйте, ${name}!</p>
+      <p>Здравствуйте, ${escapeHtml(name)}!</p>
       <p>Вы запросили сброс пароля. Нажмите на кнопку ниже, чтобы установить новый пароль:</p>
       <a href="${resetUrl}"
          style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px;
@@ -85,7 +88,7 @@ export function getEmailVerificationEmailHtml(
   return `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #2563eb;">Экономический тренажёр</h2>
-      <p>Здравствуйте, ${name}!</p>
+      <p>Здравствуйте, ${escapeHtml(name)}!</p>
       <p>Спасибо за регистрацию. Нажмите на кнопку ниже, чтобы подтвердить email:</p>
       <a href="${verificationUrl}"
          style="display: inline-block; background: #10b981; color: white; padding: 12px 24px;

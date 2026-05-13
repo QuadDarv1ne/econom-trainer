@@ -52,17 +52,17 @@ export default function ForgotPasswordPage() {
               <Mail className="h-6 w-6 text-primary-foreground" />
             </div>
           </div>
-          <CardTitle className="text-2xl">{t('auth.forgotPassword.title', 'ru')}</CardTitle>
-          <CardDescription>{t('auth.forgotPassword.subtitle', 'ru')}</CardDescription>
+          <CardTitle className="text-2xl">{t('auth.forgotPassword.title')}</CardTitle>
+          <CardDescription>{t('auth.forgotPassword.subtitle')}</CardDescription>
         </CardHeader>
         <CardContent>
           {success ? (
             <div className="text-center space-y-4">
               <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto" />
-              <h3 className="font-semibold">{t('auth.forgotPassword.successTitle', 'ru')}</h3>
-              <p className="text-sm text-muted-foreground">{t('auth.forgotPassword.successDesc', 'ru')}</p>
+              <h3 className="font-semibold">{t('auth.forgotPassword.successTitle')}</h3>
+              <p className="text-sm text-muted-foreground">{t('auth.forgotPassword.successDesc')}</p>
               <Link href="/auth/login">
-                <Button className="mt-4">{t('auth.forgotPassword.backToLogin', 'ru')}</Button>
+                <Button className="mt-4">{t('auth.forgotPassword.backToLogin')}</Button>
               </Link>
             </div>
           ) : (
@@ -88,15 +88,15 @@ export default function ForgotPasswordPage() {
 
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? (
-                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t('auth.forgotPassword.loading', 'ru')}</>
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t('auth.forgotPassword.loading')}</>
                 ) : (
-                  t('auth.forgotPassword.submit', 'ru')
+                  t('auth.forgotPassword.submit')
                 )}
               </Button>
 
               <div className="text-center text-sm">
                 <Link href="/auth/login" className="text-primary hover:underline">
-                  {t('auth.forgotPassword.backToLogin', 'ru')}
+                  {t('auth.forgotPassword.backToLogin')}
                 </Link>
               </div>
             </form>

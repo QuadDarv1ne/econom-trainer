@@ -62,7 +62,7 @@ export const authConfig: NextAuthConfig = {
               if (matches) {
                 // Удаляем использованный код
                 backupCodes.splice(i, 1);
-                await prisma.twoFactorConf.update({
+                await prisma.twoFactorConfirmation.update({
                   where: { userId: user.id },
                   data: { backupCodes: JSON.stringify(backupCodes) },
                 });

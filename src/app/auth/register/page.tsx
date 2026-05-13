@@ -69,8 +69,8 @@ export default function RegisterPage() {
             <div className="flex justify-center mb-4">
               <CheckCircle2 className="h-16 w-16 text-green-500" />
             </div>
-            <CardTitle>{t('auth.register.successTitle', 'ru')}</CardTitle>
-            <CardDescription>{t('auth.register.successDesc', 'ru')}</CardDescription>
+            <CardTitle>{t('auth.register.successTitle')}</CardTitle>
+            <CardDescription>{t('auth.register.successDesc')}</CardDescription>
           </CardHeader>
         </Card>
       </div>
@@ -86,8 +86,8 @@ export default function RegisterPage() {
               <GraduationCap className="h-6 w-6 text-primary-foreground" />
             </div>
           </div>
-          <CardTitle className="text-2xl">{t('auth.register.title', 'ru')}</CardTitle>
-          <CardDescription>{t('auth.register.subtitle', 'ru')}</CardDescription>
+          <CardTitle className="text-2xl">{t('auth.register.title')}</CardTitle>
+          <CardDescription>{t('auth.register.subtitle')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
@@ -99,7 +99,7 @@ export default function RegisterPage() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="name">{t('auth.register.name', 'ru')}</Label>
+              <Label htmlFor="name">{t('auth.register.name')}</Label>
               <Input
                 id="name"
                 type="text"
@@ -123,7 +123,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">{t('auth.register.phone', 'ru')} ({t('auth.register.optional', 'ru')})</Label>
+              <Label htmlFor="phone">{t('auth.register.phone')} ({t('auth.register.optional')})</Label>
               <Input
                 id="phone"
                 type="tel"
@@ -134,7 +134,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">{t('auth.register.password', 'ru')}</Label>
+              <Label htmlFor="password">{t('auth.register.password')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -142,11 +142,11 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <p className="text-xs text-muted-foreground">{t('auth.register.passwordHint', 'ru')}</p>
+              <p className="text-xs text-muted-foreground">{t('auth.register.passwordHint')}</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">{t('auth.register.confirmPassword', 'ru')}</Label>
+              <Label htmlFor="confirmPassword">{t('auth.register.confirmPassword')}</Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -158,17 +158,17 @@ export default function RegisterPage() {
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t('auth.register.loading', 'ru')}</>
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t('auth.register.loading')}</>
               ) : (
-                t('auth.register.submit', 'ru')
+                t('auth.register.submit')
               )}
             </Button>
           </form>
 
           <div className="mt-4 text-center text-sm">
-            <span className="text-muted-foreground">{t('auth.register.hasAccount', 'ru')}</span>{' '}
+            <span className="text-muted-foreground">{t('auth.register.hasAccount')}</span>{' '}
             <Link href="/auth/login" className="text-primary hover:underline">
-              {t('auth.register.signIn', 'ru')}
+              {t('auth.register.signIn')}
             </Link>
           </div>
         </CardContent>

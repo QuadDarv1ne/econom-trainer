@@ -22,25 +22,25 @@ function VerifyEmailContent() {
               <GraduationCap className="h-6 w-6 text-primary-foreground" />
             </div>
           </div>
-          <CardTitle className="text-2xl">{t('auth.verifyEmail.title', 'ru')}</CardTitle>
+          <CardTitle className="text-2xl">{t('auth.verifyEmail.title')}</CardTitle>
         </CardHeader>
         <CardContent className="text-center">
           {success ? (
             <div className="space-y-4">
               <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto" />
-              <CardDescription>{t('auth.verifyEmail.success', 'ru')}</CardDescription>
+              <CardDescription>{t('auth.verifyEmail.success')}</CardDescription>
               <Link href="/auth/login" className="text-primary hover:underline">
-                {t('auth.verifyEmail.backToLogin', 'ru')}
+                {t('auth.verifyEmail.backToLogin')}
               </Link>
             </div>
           ) : (
             <div className="space-y-4">
               <AlertCircle className="h-16 w-16 text-yellow-500 mx-auto" />
               <Alert variant="default">
-                <AlertDescription>{t('auth.verifyEmail.pending', 'ru')}</AlertDescription>
+                <AlertDescription>{t('auth.verifyEmail.pending')}</AlertDescription>
               </Alert>
               <Link href="/" className="text-primary hover:underline">
-                {t('auth.verifyEmail.backToHome', 'ru')}
+                {t('auth.verifyEmail.backToHome')}
               </Link>
             </div>
           )}

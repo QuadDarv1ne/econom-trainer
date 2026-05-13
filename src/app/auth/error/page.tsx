@@ -18,18 +18,18 @@ export default function AuthErrorPage() {
               <AlertCircle className="h-6 w-6 text-destructive" />
             </div>
           </div>
-          <CardTitle className="text-2xl">{t('auth.error.title', 'ru')}</CardTitle>
-          <CardDescription>{t('auth.error.subtitle', 'ru')}</CardDescription>
+          <CardTitle className="text-2xl">{t('auth.error.title')}</CardTitle>
+          <CardDescription>{t('auth.error.subtitle')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-2">
             <Link href="/auth/login">
-              <Button className="w-full">{t('auth.error.tryAgain', 'ru')}</Button>
+              <Button className="w-full">{t('auth.error.tryAgain')}</Button>
             </Link>
             <Link href="/">
               <Button variant="outline" className="w-full">
                 <Home className="mr-2 h-4 w-4" />
-                {t('auth.error.backToHome', 'ru')}
+                {t('auth.error.backToHome')}
               </Button>
             </Link>
           </div>

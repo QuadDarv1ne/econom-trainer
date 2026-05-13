@@ -14,7 +14,7 @@ export async function POST() {
       data: { twoFactorEnabled: false },
     });
 
-    await prisma.twoFactorConf.deleteMany({
+    await prisma.twoFactorConfirmation.deleteMany({
       where: { userId: session.user.id },
     });
 
