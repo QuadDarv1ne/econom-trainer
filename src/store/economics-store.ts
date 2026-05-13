@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { t, getCurrentLocale } from '@/lib/i18n'
 
 export interface QuizResult {
@@ -101,7 +102,9 @@ export function getLevelColor(level: number): string {
 export const MODULE_IDS = [
   'gdp', 'supply-demand', 'elasticity', 'keynesian', 'inflation',
   'phillips', 'lorenz', 'is-lm', 'ppf', 'costs', 'comparative',
-  'breakeven', 'tax', 'game-theory', 'market-structures', 'currency', 'price-indices', 'quiz', 'finance',
+  'breakeven', 'tax', 'game-theory', 'market-structures', 'currency', 'price-indices',
+  'economic-crises', 'monetary-policy',
+  'quiz', 'finance',
   'glossary', 'achievements', 'progress',
 ] as const
 
@@ -126,6 +129,8 @@ export const MODULE_XP: Record<string, number> = {
   'market-structures': 25,
   'currency': 15,
   'price-indices': 15,
+  'economic-crises': 25,
+  'monetary-policy': 25,
   'quiz': 0, // Quiz uses its own scoring: score * 10
   'finance': 0, // Finance uses its own scoring
   'glossary': 5,
@@ -135,6 +140,38 @@ export const MODULE_XP: Record<string, number> = {
 
 export function getModuleInteractionCount(interactions: ModuleInteraction[], moduleId: string): number {
   return interactions.filter((i) => i.moduleId === moduleId).length
+}
+
+export function getModuleDisplayName(moduleId: string, locale: string): string {
+  const nameMap: Record<string, string> = {
+    'gdp': 'module.gdp.title',
+    'supply-demand': 'module.supply-demand.title',
+    'elasticity': 'module.elasticity.title',
+    'keynesian': 'module.keynesian.title',
+    'inflation': 'module.inflation.title',
+    'phillips': 'module.phillips.title',
+    'lorenz': 'module.lorenz.title',
+    'is-lm': 'module.is-lm.title',
+    'ppf': 'module.ppf.title',
+    'costs': 'module.costs.title',
+    'comparative': 'module.comparative.title',
+    'breakeven': 'module.breakeven.title',
+    'tax': 'module.tax.title',
+    'game-theory': 'module.game-theory.title',
+    'market-structures': 'module.market-structures.title',
+    'price-indices': 'price-indices.title',
+    'economic-crises': 'module.economic-crises.title',
+    'monetary-policy': 'module.monetary-policy.title',
+    'currency': 'module.currency.title',
+    'quiz': 'module.quiz.title',
+    'finance': 'module.finance.title',
+    'glossary': 'module.glossary.title',
+    'achievements': 'module.achievements.title',
+    'progress': 'module.progress.title',
+  }
+  const key = nameMap[moduleId]
+  if (!key) return moduleId
+  return t(key, locale as 'ru' | 'en')
 }
 
 export function getModuleLastInteraction(interactions: ModuleInteraction[], moduleId: string): string | null {
@@ -173,219 +210,162 @@ export interface EconomicsState {
   }
 }
 
-const STORAGE_KEY = 'economics-trainer-data'
-
-function loadFromStorage(): Partial<EconomicsState> {
-  if (typeof window === 'undefined') return {}
-  try {
-    const data = localStorage.getItem(STORAGE_KEY)
-    if (data) {
-      const parsed = JSON.parse(data)
-      return {
-        quizResults: parsed.quizResults || [],
-        gdpResults: parsed.gdpResults || [],
-        financeResults: parsed.financeResults || [],
-        elasticityResults: parsed.elasticityResults || [],
-        moduleInteractions: parsed.moduleInteractions || [],
-        totalXP: parsed.totalXP || 0,
-      }
-    }
-  } catch {
-    // ignore
-  }
-  return {}
-}
-
-function saveToStorage(state: Partial<EconomicsState>) {
-  if (typeof window === 'undefined') return
-  try {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        quizResults: state.quizResults || [],
-        gdpResults: state.gdpResults || [],
-        financeResults: state.financeResults || [],
-        elasticityResults: state.elasticityResults || [],
-        moduleInteractions: state.moduleInteractions || [],
-        totalXP: state.totalXP || 0,
-      })
-    )
-  } catch {
-    // ignore
-  }
-}
-
-export const useEconomicsStore = create<EconomicsState>((set, get) => ({
-  quizResults: [],
-  gdpResults: [],
-  financeResults: [],
-  elasticityResults: [],
-  moduleInteractions: [],
-  totalXP: 0,
-
-  addQuizResult: (result) => {
-    set((state) => {
-      const newResults = [result, ...state.quizResults].slice(0, 50)
-      const xpEarned = result.score * 10
-      const newState = { quizResults: newResults, totalXP: state.totalXP + xpEarned }
-      saveToStorage({ ...state, ...newState })
-      return newState
-    })
-  },
-
-  addGDPResult: (result) => {
-    set((state) => {
-      const newResults = [result, ...state.gdpResults].slice(0, 50)
-      const newState = { gdpResults: newResults, totalXP: state.totalXP + 15 }
-      saveToStorage({ ...state, ...newState })
-      return newState
-    })
-  },
-
-  addFinanceResult: (result) => {
-    set((state) => {
-      const newResults = [result, ...state.financeResults].slice(0, 50)
-      const xpEarned = result.correct ? 20 : 5
-      const newState = { financeResults: newResults, totalXP: state.totalXP + xpEarned }
-      saveToStorage({ ...state, ...newState })
-      return newState
-    })
-  },
-
-  addElasticityResult: (result) => {
-    set((state) => {
-      const newResults = [result, ...state.elasticityResults].slice(0, 50)
-      const newState = { elasticityResults: newResults, totalXP: state.totalXP + 15 }
-      saveToStorage({ ...state, ...newState })
-      return newState
-    })
-  },
-
-  addModuleInteraction: (interaction) => {
-    set((state) => {
-      const newInteraction: ModuleInteraction = {
-        ...interaction,
-        id: Date.now().toString(),
-        date: new Date().toISOString(),
-      }
-      const newInteractions = [newInteraction, ...state.moduleInteractions].slice(0, 500)
-      const newState = {
-        moduleInteractions: newInteractions,
-        totalXP: state.totalXP + interaction.xpEarned,
-      }
-      saveToStorage({ ...state, ...newState })
-      return newState
-    })
-  },
-
-  addXP: (amount) => {
-    set((state) => {
-      const newState = { totalXP: state.totalXP + amount }
-      saveToStorage({ ...state, ...newState })
-      return newState
-    })
-  },
-
-  getTotalScore: () => {
-    const state = get()
-    const quizCorrect = state.quizResults.reduce((sum, r) => sum + r.score, 0)
-    const quizTotal = state.quizResults.reduce((sum, r) => sum + r.total, 0)
-    const gdpTotal = state.gdpResults.length
-    const financeCorrect = state.financeResults.filter((r) => r.correct).length
-    const financeTotal = state.financeResults.length
-    const elasticityTotal = state.elasticityResults.length
-    return {
-      quizzes: quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 0,
-      gdp: gdpTotal,
-      finance: financeTotal > 0 ? Math.round((financeCorrect / financeTotal) * 100) : 0,
-      elasticity: elasticityTotal,
-    }
-  },
-
-  getStreak: () => {
-    const state = get()
-    const allResults = [
-      ...state.quizResults.map((r) => ({ date: r.date, success: r.score > r.total / 2 })),
-      ...state.financeResults.map((r) => ({ date: r.date, success: r.correct })),
-    ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-
-    let streak = 0
-    for (const result of allResults) {
-      if (result.success) streak++
-      else break
-    }
-    return streak
-  },
-
-  getXPState: () => {
-    const state = get()
-    const { level, xpInCurrentLevel, xpToNextLevel } = getLevelFromXP(state.totalXP)
-    return { totalXP: state.totalXP, level, xpToNextLevel, xpInCurrentLevel }
-  },
-
-  resetProgress: () => {
-    const newState = {
+export const useEconomicsStore = create<EconomicsState>()(
+  persist(
+    (set, get) => ({
       quizResults: [],
       gdpResults: [],
       financeResults: [],
       elasticityResults: [],
       moduleInteractions: [],
       totalXP: 0,
-    }
-    saveToStorage(newState)
-    set(newState)
-  },
 
-  getFullProgress: () => {
-    const state = get()
-    const { level } = getLevelFromXP(state.totalXP)
-    const levelTitle = getLevelTitle(level)
-    
-    const quizCorrect = state.quizResults.reduce((sum, r) => sum + r.score, 0)
-    const quizTotal = state.quizResults.reduce((sum, r) => sum + r.total, 0)
-    const financeCorrect = state.financeResults.filter((r) => r.correct).length
-    const financeTotal = state.financeResults.length
-    
-    const moduleCounts: Record<string, number> = {}
-    MODULE_IDS.forEach((id) => {
-      moduleCounts[id] = getModuleInteractionCount(state.moduleInteractions, id)
-    })
-    
-    const totalSessions = state.quizResults.length + state.gdpResults.length + state.financeResults.length + state.elasticityResults.length
-    
-    return {
-      totalXP: state.totalXP,
-      level,
-      levelTitle,
-      totalSessions,
-      moduleCounts,
-      quizStats: {
-        correct: quizCorrect,
-        total: quizTotal,
-        accuracy: quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 0,
+      addQuizResult: (result) => {
+        set((state) => {
+          const newResults = [result, ...state.quizResults].slice(0, 50)
+          const xpEarned = result.score * 10
+          return { quizResults: newResults, totalXP: state.totalXP + xpEarned }
+        })
       },
-      financeStats: {
-        correct: financeCorrect,
-        total: financeTotal,
-        accuracy: financeTotal > 0 ? Math.round((financeCorrect / financeTotal) * 100) : 0,
-      },
-      gdpCount: state.gdpResults.length,
-      elasticityCount: state.elasticityResults.length,
-    }
-  },
-}))
 
-// Hydrate from localStorage on client
-if (typeof window !== 'undefined') {
-  const stored = loadFromStorage()
-  if (stored.quizResults || stored.gdpResults || stored.financeResults || stored.elasticityResults || stored.moduleInteractions || stored.totalXP) {
-    useEconomicsStore.setState({
-      quizResults: stored.quizResults || [],
-      gdpResults: stored.gdpResults || [],
-      financeResults: stored.financeResults || [],
-      elasticityResults: stored.elasticityResults || [],
-      moduleInteractions: stored.moduleInteractions || [],
-      totalXP: stored.totalXP || 0,
-    })
-  }
-}
+      addGDPResult: (result) => {
+        set((state) => {
+          const newResults = [result, ...state.gdpResults].slice(0, 50)
+          return { gdpResults: newResults, totalXP: state.totalXP + 15 }
+        })
+      },
+
+      addFinanceResult: (result) => {
+        set((state) => {
+          const newResults = [result, ...state.financeResults].slice(0, 50)
+          const xpEarned = result.correct ? 20 : 5
+          return { financeResults: newResults, totalXP: state.totalXP + xpEarned }
+        })
+      },
+
+      addElasticityResult: (result) => {
+        set((state) => {
+          const newResults = [result, ...state.elasticityResults].slice(0, 50)
+          return { elasticityResults: newResults, totalXP: state.totalXP + 15 }
+        })
+      },
+
+      addModuleInteraction: (interaction) => {
+        set((state) => {
+          const newInteraction: ModuleInteraction = {
+            ...interaction,
+            id: Date.now().toString(),
+            date: new Date().toISOString(),
+          }
+          const newInteractions = [newInteraction, ...state.moduleInteractions].slice(0, 500)
+          return {
+            moduleInteractions: newInteractions,
+            totalXP: state.totalXP + interaction.xpEarned,
+          }
+        })
+      },
+
+      addXP: (amount) => {
+        set((state) => ({ totalXP: state.totalXP + amount }))
+      },
+
+      getTotalScore: () => {
+        const state = get()
+        const quizCorrect = state.quizResults.reduce((sum, r) => sum + r.score, 0)
+        const quizTotal = state.quizResults.reduce((sum, r) => sum + r.total, 0)
+        const gdpTotal = state.gdpResults.length
+        const financeCorrect = state.financeResults.filter((r) => r.correct).length
+        const financeTotal = state.financeResults.length
+        const elasticityTotal = state.elasticityResults.length
+        return {
+          quizzes: quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 0,
+          gdp: gdpTotal,
+          finance: financeTotal > 0 ? Math.round((financeCorrect / financeTotal) * 100) : 0,
+          elasticity: elasticityTotal,
+        }
+      },
+
+      getStreak: () => {
+        const state = get()
+        const allResults = [
+          ...state.quizResults.map((r) => ({ date: r.date, success: r.score > r.total / 2 })),
+          ...state.financeResults.map((r) => ({ date: r.date, success: r.correct })),
+        ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+        let streak = 0
+        for (const result of allResults) {
+          if (result.success) streak++
+          else break
+        }
+        return streak
+      },
+
+      getXPState: () => {
+        const state = get()
+        const { level, xpInCurrentLevel, xpToNextLevel } = getLevelFromXP(state.totalXP)
+        return { totalXP: state.totalXP, level, xpToNextLevel, xpInCurrentLevel }
+      },
+
+      resetProgress: () => {
+        const newState = {
+          quizResults: [],
+          gdpResults: [],
+          financeResults: [],
+          elasticityResults: [],
+          moduleInteractions: [],
+          totalXP: 0,
+        }
+        set(newState)
+      },
+
+      getFullProgress: () => {
+        const state = get()
+        const { level } = getLevelFromXP(state.totalXP)
+        const levelTitle = getLevelTitle(level)
+
+        const quizCorrect = state.quizResults.reduce((sum, r) => sum + r.score, 0)
+        const quizTotal = state.quizResults.reduce((sum, r) => sum + r.total, 0)
+        const financeCorrect = state.financeResults.filter((r) => r.correct).length
+        const financeTotal = state.financeResults.length
+
+        const moduleCounts: Record<string, number> = {}
+        MODULE_IDS.forEach((id) => {
+          moduleCounts[id] = getModuleInteractionCount(state.moduleInteractions, id)
+        })
+
+        const totalSessions = state.quizResults.length + state.gdpResults.length + state.financeResults.length + state.elasticityResults.length
+
+        return {
+          totalXP: state.totalXP,
+          level,
+          levelTitle,
+          totalSessions,
+          moduleCounts,
+          quizStats: {
+            correct: quizCorrect,
+            total: quizTotal,
+            accuracy: quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 0,
+          },
+          financeStats: {
+            correct: financeCorrect,
+            total: financeTotal,
+            accuracy: financeTotal > 0 ? Math.round((financeCorrect / financeTotal) * 100) : 0,
+          },
+          gdpCount: state.gdpResults.length,
+          elasticityCount: state.elasticityResults.length,
+        }
+      },
+    }),
+    {
+      name: 'economics-trainer-data',
+      partialize: (state) => ({
+        quizResults: state.quizResults,
+        gdpResults: state.gdpResults,
+        financeResults: state.financeResults,
+        elasticityResults: state.elasticityResults,
+        moduleInteractions: state.moduleInteractions,
+        totalXP: state.totalXP,
+      }),
+    },
+  ),
+)

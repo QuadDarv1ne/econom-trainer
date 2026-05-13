@@ -1,0 +1,48 @@
+import { NextResponse } from 'next/server';
+import { auth } from '@/auth';
+import { authenticator } from 'otplib';
+import qrcode from 'qrcode';
+import { prisma } from '@/lib/prisma';
+
+// Generate TOTP secret and QR code
+export async function POST(req: Request) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'Пользователь не найден' }, { status: 404 });
+    }
+
+    if (user.twoFactorEnabled) {
+      return NextResponse.json({ error: '2FA уже включена' }, { status: 400 });
+    }
+
+    // Generate secret
+    const secret = authenticator.generateSecret();
+    const uri = authenticator.keyURI(user.email || session.user.id, 'Экономический тренажёр');
+    const qrCode = await qrcode.toDataURL(uri);
+
+    // Store secret temporarily (will be confirmed on verification)
+    await prisma.twoFactorConf.upsert({
+      where: { userId: user.id },
+      create: {
+        userId: user.id,
+        secret,
+        backupCodes: JSON.stringify([]),
+      },
+      update: { secret },
+    });
+
+    return NextResponse.json({ secret, qrCode });
+  } catch (error) {
+    console.error('2FA setup error:', error);
+    return NextResponse.json({ error: 'Ошибка сервера' }, { status: 500 });
+  }
+}

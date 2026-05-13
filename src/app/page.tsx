@@ -1,8 +1,8 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-
 import { useState, useMemo } from 'react'
+import { useSession, signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { default as nextDynamic } from 'next/dynamic'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -11,6 +11,16 @@ import { Badge } from '@/components/ui/badge'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Progress } from '@/components/ui/progress'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { useEconomicsStore, getLevelFromXP, getLevelTitle, getLevelColor, getModuleInteractionCount } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { LanguageToggle } from '@/components/economics/language-toggle'
@@ -41,6 +51,11 @@ import {
   LayoutGrid,
   Building2,
   Coins,
+  AlertTriangle,
+  LogIn,
+  UserCircle,
+  Shield,
+  LogOut,
 } from 'lucide-react'
 
 // Lazy-load all module components for performance
@@ -66,6 +81,8 @@ const ISLMModel = nextDynamic(() => import('@/components/economics/is-lm').then(
 const MarketStructures = nextDynamic(() => import('@/components/economics/market-structures').then(m => ({ default: m.MarketStructures })), { ssr: false })
 const CurrencyCalculator = nextDynamic(() => import('@/components/economics/currency-calculator').then(m => ({ default: m.CurrencyCalculator })), { ssr: false })
 const PriceIndices = nextDynamic(() => import('@/components/economics/price-indices').then(m => ({ default: m.PriceIndices })), { ssr: false })
+const EconomicCrises = nextDynamic(() => import('@/components/economics/economic-crises').then(m => ({ default: m.EconomicCrises })), { ssr: false })
+const MonetaryPolicy = nextDynamic(() => import('@/components/economics/monetary-policy').then(m => ({ default: m.MonetaryPolicy })), { ssr: false })
 const ThemeToggle = nextDynamic(() => import('@/components/economics/theme-toggle').then(m => ({ default: m.ThemeToggle })), { ssr: false })
 
 // Module definitions with categories for grouped navigation
@@ -88,6 +105,8 @@ const modules = [
   { id: 'game-theory', titleKey: 'module.game-theory.title', descriptionKey: 'module.game-theory.description', icon: Swords, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 20 },
   { id: 'market-structures', titleKey: 'module.market-structures.title', descriptionKey: 'module.market-structures.description', icon: Building2, color: 'text-teal-600', bg: 'bg-teal-50 dark:bg-teal-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 25 },
   { id: 'price-indices', titleKey: 'price-indices.title', descriptionKey: 'price-indices.description', icon: TrendingUp, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 15 },
+  { id: 'economic-crises', titleKey: 'module.economic-crises.title', descriptionKey: 'module.economic-crises.description', icon: AlertTriangle, color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 25 },
+  { id: 'monetary-policy', titleKey: 'module.monetary-policy.title', descriptionKey: 'module.monetary-policy.description', icon: Landmark, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 25 },
   { id: 'quiz', titleKey: 'module.quiz.title', descriptionKey: 'module.quiz.description', icon: Brain, color: 'text-violet-600', bg: 'bg-violet-50 dark:bg-violet-950/30', categoryKey: 'home.modcat.tests', catId: 'tools', xpReward: 10 },
   { id: 'currency', titleKey: 'module.currency.title', descriptionKey: 'module.currency.description', icon: Coins, color: 'text-cyan-600', bg: 'bg-cyan-50 dark:bg-cyan-950/30', categoryKey: 'home.modcat.finance', catId: 'finance', xpReward: 15 },
   { id: 'finance', titleKey: 'module.finance.title', descriptionKey: 'module.finance.description', icon: DollarSign, color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/30', categoryKey: 'home.modcat.finance', catId: 'finance', xpReward: 20 },
@@ -114,6 +133,8 @@ const tabItems = [
   { value: 'game-theory', icon: Swords, labelKey: 'home.tab.gameTheory', catId: 'micro' },
   { value: 'market-structures', icon: Building2, labelKey: 'home.tab.marketStructures', catId: 'micro' },
   { value: 'price-indices', icon: TrendingUp, labelKey: 'home.tab.priceIndices', catId: 'macro' },
+  { value: 'economic-crises', icon: AlertTriangle, labelKey: 'home.tab.economicCrises', catId: 'macro' },
+  { value: 'monetary-policy', icon: Landmark, labelKey: 'home.tab.monetaryPolicy', catId: 'macro' },
   // Finance
   { value: 'breakeven', icon: Target, labelKey: 'home.tab.breakeven', catId: 'finance' },
   { value: 'tax', icon: Receipt, labelKey: 'home.tab.tax', catId: 'finance' },
@@ -154,6 +175,8 @@ const moduleComponents: Record<string, React.ComponentType> = {
   'market-structures': MarketStructures,
   'currency': CurrencyCalculator,
   'price-indices': PriceIndices,
+  'economic-crises': EconomicCrises,
+  'monetary-policy': MonetaryPolicy,
   'quiz': EconomicsQuiz,
   'finance': FinancialMath,
   'glossary': Glossary,
@@ -166,12 +189,18 @@ const categoryBreaks = new Set(['gdp', 'supply-demand', 'breakeven', 'quiz'])
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('home')
+  const { data: session } = useSession()
+  const router = useRouter()
   const { locale, t } = useI18n()
   const totalXP = useEconomicsStore((s) => s.totalXP)
   const moduleInteractions = useEconomicsStore((s) => s.moduleInteractions)
   const xpState = getLevelFromXP(totalXP)
   const levelTitle = getLevelTitle(xpState.level)
   const levelColor = getLevelColor(xpState.level)
+
+  const userInitials = session?.user?.name
+    ? session.user.name.split(' ').map(n => n[0]).join('').toUpperCase()
+    : session?.user?.email?.[0].toUpperCase() || '?'
 
   // Compute progress per module
   const moduleProgress = useMemo(() => {
@@ -221,10 +250,45 @@ export default function Home() {
             )}
             <LanguageToggle />
             <ThemeToggle />
-            <Badge variant="outline" className="hidden sm:flex">
-              <Sparkles className="h-3 w-3 mr-1" />
-              v7.0
-            </Badge>
+
+            {session ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="h-8 w-8 cursor-pointer">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                      {userInitials}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{session.user?.name || 'Студент'}</span>
+                      <span className="text-xs text-muted-foreground">{session.user?.email}</span>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+                    <UserCircle className="mr-2 h-4 w-4" />
+                    Личный кабинет
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+                    <Shield className="mr-2 h-4 w-4" />
+                    Безопасность
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/' })}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Выйти
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" size="sm" onClick={() => router.push('/auth/login')} className="hidden sm:flex">
+                <LogIn className="h-4 w-4 mr-1" />
+                Войти
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -282,7 +346,7 @@ export default function Home() {
                   </div>
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/5 border border-primary/20">
                     <LayoutGrid className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">{exploredCount}/22 {t('home.hero.modulesExplored')}</span>
+                    <span className="text-sm font-medium">{exploredCount}/24 {t('home.hero.modulesExplored')}</span>
                   </div>
                 </div>
               )}
@@ -414,7 +478,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
           {t('home.footer.text')}
           {totalXP > 0 && (
-            <span className="hidden sm:inline"> • {totalXP.toLocaleString('ru-RU')} {t('home.header.xpLabel')} • {exploredCount}/22 {t('home.hero.modulesExplored')}</span>
+            <span className="hidden sm:inline"> • {totalXP.toLocaleString('ru-RU')} {t('home.header.xpLabel')} • {exploredCount}/24 {t('home.hero.modulesExplored')}</span>
           )}
           <span className="hidden sm:inline"> • {t('home.footer.author')}</span>
         </div>

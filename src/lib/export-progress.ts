@@ -2,7 +2,7 @@
  * Utility functions for exporting progress data
  */
 
-import { useEconomicsStore, getLevelFromXP, getLevelTitle } from '@/store/economics-store'
+import { useEconomicsStore, getLevelFromXP, getLevelTitle, getModuleDisplayName } from '@/store/economics-store'
 import { getCurrentLocale, t } from '@/lib/i18n'
 
 export interface ExportData {
@@ -34,7 +34,7 @@ export function exportToCSV(): string {
   csv += `${t('export.csv.level', locale)},${level.level}\n`
   csv += `${t('export.csv.levelName', locale)},${getLevelTitle(level.level)}\n`
   csv += `${t('export.csv.interactions', locale)},${state.moduleInteractions.length}\n`
-  csv += `Created,${timestamp}\n`
+  csv += `${t('export.csv.created', locale)},${timestamp}\n`
   csv += `\n`
 
   // Module interactions
@@ -44,7 +44,7 @@ export function exportToCSV(): string {
     moduleCounts[interaction.moduleId] = (moduleCounts[interaction.moduleId] || 0) + 1
   })
   Object.entries(moduleCounts).forEach(([module, count]) => {
-    csv += `"${module}",${count}\n`
+    csv += `"${getModuleDisplayName(module, locale)}",${count}\n`
   })
   csv += `\n`
 
@@ -55,9 +55,9 @@ export function exportToCSV(): string {
   const financeTotal = state.financeResults.length
 
   csv += `${t('export.csv.quizResults', locale)},${quizCorrect}\n`
-  csv += `Quiz total questions,${quizTotal}\n`
-  csv += `${t('export.csv.financeTasks', locale)} correct,${financeCorrect}\n`
-  csv += `Finance total tasks,${financeTotal}\n`
+  csv += `${t('export.csv.quizTotalQuestions', locale)},${quizTotal}\n`
+  csv += `${t('export.csv.financeTasksCorrect', locale)},${financeCorrect}\n`
+  csv += `${t('export.csv.financeTasksTotal', locale)},${financeTotal}\n`
 
   return csv
 }

@@ -1,6 +1,5 @@
 // Prisma schema для ЭкономТренажёра
-// Используется для серверной синхронизации прогресса (опционально)
-// Клиентская часть работает на localStorage + Zustand
+// Полная система аутентификации + серверная синхронизация прогресса
 
 generator client {
   provider = "prisma-client-js"
@@ -11,30 +10,126 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ===== Auth Models (NextAuth.js compatible) =====
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  phone         String?
+  passwordHash  String?   // For credentials auth
+  role          String    @default("student") // student | teacher | admin
+
+  // 2FA
+  twoFactorEnabled Boolean  @default(false)
+  twoFactorSecret  String?  // TOTP secret (encrypted)
+  backupCodes      String?  // JSON array of hashed backup codes
+
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  progress      UserProgress?
+  twoFactorConf TwoFactorConfirmation?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+// ===== Progress Models =====
+
 model UserProgress {
   id               String   @id @default(cuid())
   userId           String   @unique
   totalXP          Int      @default(0)
   level            Int      @default(1)
-  quizResults      String? // JSON stringified QuizResult[]
-  moduleHistory    String? // JSON stringified ModuleInteraction[]
-  achievements     String? // JSON stringified string[]
-  lastActiveAt     DateTime @updatedAt
+  quizResults      String?  // JSON: QuizResult[]
+  moduleHistory    String?  // JSON: ModuleInteraction[]
+  achievements     String?  // JSON: string[] (achievement IDs)
+  settings         String?  // JSON: { theme, language, notifications }
+  lastSyncAt       DateTime @updatedAt
   createdAt        DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([totalXP])
 }
 
+model TwoFactorConfirmation {
+  id        String @id @default(cuid())
+  userId    String @unique
+  secret    String // TOTP secret
+  backupCodes String // JSON: hashed backup codes
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ===== Content Models =====
+
 model QuizQuestion {
   id        String   @id @default(cuid())
   topic     String
   question  String
-  options   String // JSON stringified string[]
-  answer    Int // index of correct option
+  options   String   // JSON: string[]
+  answer    Int      // index of correct option
   explanation String
-  difficulty String @default("medium") // easy | medium | hard
-  category  String // macro | micro | finance | game_theory
+  difficulty String  @default("medium") // easy | medium | hard
+  category  String   // macro | micro | finance | game_theory
   createdAt DateTime @default(now())
 
   @@index([category])

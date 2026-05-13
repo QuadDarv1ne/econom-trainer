@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
-import { useEconomicsStore, getLevelTitle, getLevelColor } from '@/store/economics-store'
+import { useEconomicsStore, getLevelTitle, getLevelColor, getModuleDisplayName } from '@/store/economics-store'
 import { downloadProgressCSV, downloadProgressJSON } from '@/lib/export-progress'
 import { useI18n } from '@/lib/i18n-provider'
 import { getCurrentLocale, t } from '@/lib/i18n'
@@ -76,36 +76,12 @@ export function exportProgressToPDF() {
   doc.setFont('helvetica', 'bold')
   doc.text(t('export.pdf.moduleActivity', locale), 14, finalY)
 
-  const moduleNames: Record<string, string> = {
-    'gdp': t('module.gdp.title', locale),
-    'supply-demand': t('module.supply-demand.title', locale),
-    'elasticity': t('module.elasticity.title', locale),
-    'keynesian': t('module.keynesian.title', locale),
-    'inflation': t('module.inflation.title', locale),
-    'phillips': t('module.phillips.title', locale),
-    'lorenz': t('module.lorenz.title', locale),
-    'is-lm': t('module.is-lm.title', locale),
-    'ppf': t('module.ppf.title', locale),
-    'costs': t('module.costs.title', locale),
-    'comparative': t('module.comparative.title', locale),
-    'breakeven': t('module.breakeven.title', locale),
-    'tax': t('module.tax.title', locale),
-    'game-theory': t('module.game-theory.title', locale),
-    'market-structures': t('module.market-structures.title', locale),
-    'currency': t('module.currency.title', locale),
-    'quiz': t('module.quiz.title', locale),
-    'finance': t('module.finance.title', locale),
-    'glossary': t('module.glossary.title', locale),
-    'achievements': t('module.achievements.title', locale),
-    'progress': t('module.progress.title', locale),
-  }
-
   const moduleData = Object.entries(progress.moduleCounts)
     .filter(([_, count]) => count > 0)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10)
     .map(([moduleId, count]) => [
-      moduleNames[moduleId] || moduleId,
+      getModuleDisplayName(moduleId, locale),
       count.toString(),
     ])
 
@@ -164,30 +140,6 @@ export function exportProgressToText(): string {
   const now = new Date().toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US')
   const levelTitle = getLevelTitle(progress.level)
 
-  const moduleNames: Record<string, string> = {
-    'gdp': t('module.gdp.title', locale),
-    'supply-demand': t('module.supply-demand.title', locale),
-    'elasticity': t('module.elasticity.title', locale),
-    'keynesian': t('module.keynesian.title', locale),
-    'inflation': t('module.inflation.title', locale),
-    'phillips': t('module.phillips.title', locale),
-    'lorenz': t('module.lorenz.title', locale),
-    'is-lm': t('module.is-lm.title', locale),
-    'ppf': t('module.ppf.title', locale),
-    'costs': t('module.costs.title', locale),
-    'comparative': t('module.comparative.title', locale),
-    'breakeven': t('module.breakeven.title', locale),
-    'tax': t('module.tax.title', locale),
-    'game-theory': t('module.game-theory.title', locale),
-    'market-structures': t('module.market-structures.title', locale),
-    'currency': t('module.currency.title', locale),
-    'quiz': t('module.quiz.title', locale),
-    'finance': t('module.finance.title', locale),
-    'glossary': t('module.glossary.title', locale),
-    'achievements': t('module.achievements.title', locale),
-    'progress': t('module.progress.title', locale),
-  }
-
   const activeModules = Object.entries(progress.moduleCounts)
     .filter(([_, count]) => count > 0)
     .sort((a, b) => b[1] - a[1])
@@ -216,7 +168,7 @@ export function exportProgressToText(): string {
     `• ${t('module.elasticity.title', locale)}: ${progress.elasticityCount}`,
     '',
     `🎯 ${activityLabel}:`,
-    ...activeModules.map(([id, count]) => `• ${moduleNames[id] || id}: ${count}`),
+    ...activeModules.map(([id, count]) => `• ${getModuleDisplayName(id, locale)}: ${count}`),
     '',
     `${continueText} 💪`,
     'https://github.com/QuadDarv1ne/econom-trainer',
