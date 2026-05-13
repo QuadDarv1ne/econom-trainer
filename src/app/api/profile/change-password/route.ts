@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { randomBytes } from 'crypto';
 
 // POST - Change password
 export async function POST(req: Request) {
@@ -48,10 +49,11 @@ export async function POST(req: Request) {
     }
 
     const newHash = await bcrypt.hash(newPassword, 12);
+    const newSessionHash = randomBytes(32).toString('hex');
 
     await prisma.user.update({
       where: { id: session.user.id },
-      data: { passwordHash: newHash },
+      data: { passwordHash: newHash, sessionHash: newSessionHash },
     });
 
     return NextResponse.json({ message: 'Пароль изменён' });

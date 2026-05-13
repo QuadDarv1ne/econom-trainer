@@ -112,6 +112,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (trigger === "update" && session) {
         return { ...token, ...session };
       }
+
+      // Validate sessionHash against database on every request
+      if (token.id && token.sessionHash) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { sessionHash: true },
+          });
+          if (!dbUser || dbUser.sessionHash !== token.sessionHash) {
+            // Session has been revoked - clear token
+            return {} as typeof token;
+          }
+        } catch {
+          // If DB check fails, allow the token to pass gracefully
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {

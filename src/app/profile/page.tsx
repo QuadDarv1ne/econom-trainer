@@ -35,12 +35,12 @@ import {
   Camera,
   Trash2,
   KeyRound,
-  ChevronRight,
+  _ChevronRight,
   Clock,
   Monitor,
-  Smartphone,
-  Tablet,
-  X,
+  _Smartphone,
+  _Tablet,
+  _X,
   AlertTriangle,
 } from 'lucide-react';
 import { useEconomicsStore } from '@/store/economics-store';
@@ -59,7 +59,7 @@ interface UserProfile {
 }
 
 export default function ProfilePage() {
-  const { data: session, status, update } = useSession();
+  const { data: _session, status, update } = useSession();
   const { t } = useI18n();
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -176,11 +176,11 @@ export default function ProfilePage() {
 
     // Simple validation
     if (!file.type.startsWith('image/')) {
-      setError('Выберите файл изображения');
+      setError(t('auth.error.avatarSelect'));
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      setError('Размер файла не должен превышать 5 МБ');
+      setError(t('auth.error.avatarSize'));
       return;
     }
 
@@ -202,7 +202,7 @@ export default function ProfilePage() {
           update();
         }
       } catch {
-        setError('Ошибка загрузки аватара');
+        setError(t('auth.error.avatarUploadError'));
       }
     };
     reader.readAsDataURL(file);
@@ -222,7 +222,7 @@ export default function ProfilePage() {
         update();
       }
     } catch {
-      setError('Ошибка удаления аватара');
+      setError(t('auth.error.avatarRemoveError'));
     }
   }
 
@@ -237,7 +237,7 @@ export default function ProfilePage() {
     }
 
     if (newPassword.length < 8) {
-      setError('Пароль должен содержать минимум 8 символов');
+      setError(t('auth.error.minPasswordLength'));
       return;
     }
 
@@ -257,11 +257,13 @@ export default function ProfilePage() {
         setCurrentPassword('');
         setNewPassword('');
         setConfirmNewPassword('');
+        // Sign out since all sessions are invalidated by password change
+        signOut({ callbackUrl: '/auth/login' });
       } else {
         setError(data.error);
       }
     } catch {
-      setError('Ошибка сервера');
+      setError(t('auth.error.serverError'));
     } finally {
       setChangingPassword(false);
     }
@@ -282,7 +284,7 @@ export default function ProfilePage() {
         setError(data.error);
       }
     } catch {
-      setError('Ошибка отправки письма');
+      setError(t('auth.error.verificationSendError'));
     } finally {
       setSendingVerification(false);
     }
@@ -304,7 +306,7 @@ export default function ProfilePage() {
         setError(data.error);
       }
     } catch {
-      setError('Ошибка настройки 2FA');
+      setError(t('auth.error.2faSetupError'));
     } finally {
       setSettingUp2FA(false);
     }
@@ -333,7 +335,7 @@ export default function ProfilePage() {
         setError(data.error);
       }
     } catch {
-      setError('Ошибка верификации');
+      setError(t('auth.error.2faVerifyError'));
     } finally {
       setVerifying2FA(false);
     }
@@ -350,7 +352,7 @@ export default function ProfilePage() {
         update();
       }
     } catch {
-      setError('Ошибка отключения 2FA');
+      setError(t('auth.error.2faDisableError'));
     }
   }
 
@@ -373,7 +375,7 @@ export default function ProfilePage() {
         setError(data.error);
       }
     } catch {
-      setError('Ошибка удаления аккаунта');
+      setError(t('auth.error.accountDeleteError'));
     } finally {
       setDeleting(false);
     }
@@ -865,7 +867,7 @@ export default function ProfilePage() {
                         signOut({ callbackUrl: '/auth/login' });
                       }
                     } catch {
-                      setError('Ошибка завершения сессий');
+                      setError(t('auth.error.sessionError'));
                     }
                   }}
                 >

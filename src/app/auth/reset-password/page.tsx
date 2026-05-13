@@ -1,15 +1,49 @@
 'use client';
 
 import type React from 'react';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { GraduationCap as _GraduationCap, AlertCircle, Loader2, KeyRound, CheckCircle2 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { GraduationCap as _GraduationCap, AlertCircle, Loader2, KeyRound, CheckCircle2, Check, X } from 'lucide-react';
 import { useI18n } from '@/lib/i18n-provider';
+import { PasswordInput } from '@/components/ui/password-input';
+
+interface PasswordStrength {
+  score: number;
+  label: string;
+  color: string;
+  requirements: {
+    minLength: boolean;
+    hasUpper: boolean;
+    hasLower: boolean;
+    hasNumber: boolean;
+    hasSpecial: boolean;
+  };
+}
+
+function getPasswordStrength(password: string): PasswordStrength {
+  const requirements = {
+    minLength: password.length >= 8,
+    hasUpper: /[A-ZА-ЯЁ]/.test(password),
+    hasLower: /[a-zа-яё]/.test(password),
+    hasNumber: /[0-9]/.test(password),
+    hasSpecial: /[!@#$%^&*()_+\-={};':"\\|,.<>/?[\]]/.test(password),
+  };
+
+  const metCount = Object.values(requirements).filter(Boolean).length;
+  let score = Math.min(4, metCount - 1);
+  if (password.length >= 12 && metCount >= 4) score = Math.max(score, 3);
+  if (password.length >= 16 && metCount >= 5) score = 4;
+
+  const labels = ['passwordStrength.weak', 'passwordStrength.weak', 'passwordStrength.fair', 'passwordStrength.good', 'passwordStrength.strong'];
+  const colors = ['bg-red-500', 'bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500'];
+
+  return { score, label: labels[score], color: colors[score], requirements };
+}
 
 function ResetPasswordForm() {
   const { t } = useI18n();
@@ -23,23 +57,25 @@ function ResetPasswordForm() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const passwordStrength = useMemo(() => getPasswordStrength(password), [password]);
+
   useEffect(() => {
     if (!token) {
-      setError('Отсутствует токен восстановления');
+      setError(t('auth.error.missingToken'));
     }
-  }, [token]);
+  }, [token, t]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
 
     if (password !== confirmPassword) {
-      setError('Пароли не совпадают');
+      setError(t('profile.passwordMismatch'));
       return;
     }
 
     if (password.length < 8) {
-      setError('Пароль должен содержать минимум 8 символов');
+      setError(t('passwordStrength.minLength'));
       return;
     }
 
@@ -116,24 +152,59 @@ function ResetPasswordForm() {
 
             <div className="space-y-2">
               <Label htmlFor="password">{t('auth.resetPassword.newPassword')}</Label>
-              <Input
+              <PasswordInput
                 id="password"
-                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+
+              {password && (
+                <div className="space-y-2 pt-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">{t('passwordStrength.label')}</span>
+                    <span className="text-xs font-medium">{t(passwordStrength.label)}</span>
+                  </div>
+                  <Progress
+                    value={(passwordStrength.score / 4) * 100}
+                    className={`h-1 ${passwordStrength.color}`}
+                  />
+
+                  <div className="grid grid-cols-2 gap-1 pt-1">
+                    {[
+                      { key: 'passwordStrength.minLength', met: passwordStrength.requirements.minLength },
+                      { key: 'passwordStrength.hasUpper', met: passwordStrength.requirements.hasUpper },
+                      { key: 'passwordStrength.hasLower', met: passwordStrength.requirements.hasLower },
+                      { key: 'passwordStrength.hasNumber', met: passwordStrength.requirements.hasNumber },
+                      { key: 'passwordStrength.hasSpecial', met: passwordStrength.requirements.hasSpecial },
+                    ].map(({ key, met }) => (
+                      <div key={key} className="flex items-center gap-1 text-xs">
+                        {met ? (
+                          <Check className="h-3 w-3 text-green-500" />
+                        ) : (
+                          <X className="h-3 w-3 text-muted-foreground" />
+                        )}
+                        <span className={met ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'}>
+                          {t(key)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">{t('auth.resetPassword.confirmPassword')}</Label>
-              <Input
+              <PasswordInput
                 id="confirmPassword"
-                type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
+              {confirmPassword && password !== confirmPassword && (
+                <p className="text-xs text-red-500">{t('profile.passwordMismatch')}</p>
+              )}
             </div>
 
             <Button type="submit" className="w-full" disabled={loading}>
