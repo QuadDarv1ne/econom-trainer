@@ -267,30 +267,30 @@ export default function Home() {
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>
                     <div className="flex flex-col">
-                      <span className="font-medium">{session.user?.name || 'Студент'}</span>
+                      <span className="font-medium">{session.user?.name || t('level.student')}</span>
                       <span className="text-xs text-muted-foreground">{session.user?.email}</span>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => router.push('/dashboard')}>
                     <UserCircle className="mr-2 h-4 w-4" />
-                    Личный кабинет
+                    {t('dashboard.title')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => router.push('/dashboard')}>
                     <Shield className="mr-2 h-4 w-4" />
-                    Безопасность
+                    {t('dashboard.tab.security')}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/' })}>
                     <LogOut className="mr-2 h-4 w-4" />
-                    Выйти
+                    {t('dashboard.signOut')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <Button variant="ghost" size="sm" onClick={() => router.push('/auth/login')} className="hidden sm:flex">
                 <LogIn className="h-4 w-4 mr-1" />
-                Войти
+                {t('auth.login.submit')}
               </Button>
             )}
           </div>
