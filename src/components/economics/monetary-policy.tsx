@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useEconomicsStore } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
-import { Landmark, TrendingUp, TrendingDown, Activity, RotateCcw, Info, Percent } from 'lucide-react'
+import { TrendingUp, TrendingDown, Activity, RotateCcw, Info, Percent } from 'lucide-react'
 import {
   ChartContainer,
   ChartTooltip,

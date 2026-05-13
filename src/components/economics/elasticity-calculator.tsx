@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useEconomicsStore } from '@/store/economics-store'
-import { Gauge, RotateCcw, AlertTriangle, CheckCircle2, Info } from 'lucide-react'
+import { Gauge, RotateCcw, Info } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
 

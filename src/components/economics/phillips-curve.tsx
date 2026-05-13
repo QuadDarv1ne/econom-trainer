@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import {
   ComposedChart,
-  Line,
   Area,
   XAxis,
   YAxis,

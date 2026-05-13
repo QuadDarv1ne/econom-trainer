@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Separator } from '@/components/ui/separator'
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -19,7 +18,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ReferenceLine,
   ReferenceDot,
 } from 'recharts'
 import { ArrowRightLeft, Info, CheckCircle2, XCircle, RotateCcw } from 'lucide-react'
@@ -31,9 +29,9 @@ interface Equilibrium {
 }
 
 export function SupplyDemand() {
-  const [demandIntercept, setDemandIntercept] = useState(100)
+  const demandIntercept = 100
   const [demandSlope, setDemandSlope] = useState(1)
-  const [supplyIntercept, setSupplyIntercept] = useState(10)
+  const supplyIntercept = 10
   const [supplySlope, setSupplySlope] = useState(0.8)
   const [demandShift, setDemandShift] = useState(0)
   const [supplyShift, setSupplyShift] = useState(0)
@@ -124,7 +122,7 @@ export function SupplyDemand() {
       }
     }
     return data
-  }, [demandIntercept, demandSlope, supplyIntercept, supplySlope, demandShift, supplyShift])
+  }, [demandSlope, supplySlope, demandShift, supplyShift])
 
   const equilibrium: Equilibrium = useMemo(() => {
     const eqQ =
@@ -135,7 +133,7 @@ export function SupplyDemand() {
       price: Math.max(0, eqP),
       quantity: Math.max(0, eqQ),
     }
-  }, [demandIntercept, demandSlope, supplyIntercept, supplySlope, demandShift, supplyShift])
+  }, [demandSlope, supplySlope, demandShift, supplyShift])
 
   const getScenarioDescription = () => {
     const scenarios: string[] = []

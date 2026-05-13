@@ -3,10 +3,8 @@
 import { useState, useMemo, useCallback } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Slider } from '@/components/ui/slider'
 import {
   ResponsiveContainer,
@@ -76,7 +74,7 @@ export function KeynesianCross() {
   }
 
   const mpcSimple = useMemo(() => mpc * (1 - taxRate), [mpc, taxRate])
-  const savingsRate = useMemo(() => 1 - mpcSimple, [mpcSimple])
+  const _savingsRate = useMemo(() => 1 - mpcSimple, [mpcSimple])
   const taxRevenue = useMemo(() => taxRate * equilibriumY, [taxRate, equilibriumY])
 
   return (

@@ -1,10 +1,7 @@
 'use client'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { Button } from '@/components/ui/button'
 import { useEconomicsStore } from '@/store/economics-store'
 import { ExportProgressButton } from '@/components/economics/export-progress'
 import { useI18n } from '@/lib/i18n-provider'
@@ -22,7 +19,7 @@ import {
   LineChart,
   Line,
 } from 'recharts'
-import { Trophy, Target, Flame, BarChart3, Gauge, Download } from 'lucide-react'
+import { Trophy, Target, Flame, BarChart3, Gauge } from 'lucide-react'
 
 const COLORS = ['#22c55e', '#ef4444']
 

@@ -3,10 +3,8 @@
 import { useState, useMemo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Slider } from '@/components/ui/slider'
 import {
   ResponsiveContainer,
@@ -20,8 +18,7 @@ import {
   Legend,
   ReferenceLine,
 } from 'recharts'
-import { PieChart, Pie, Cell } from 'recharts'
-import { Target, RotateCcw, Info, TrendingUp, TrendingDown } from 'lucide-react'
+import { Target, RotateCcw, Info, TrendingDown } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
 
@@ -82,16 +79,6 @@ export function BreakEvenAnalysis() {
     return data
   }, [fixedCosts, variableCostPerUnit, pricePerUnit, maxUnits])
 
-  const pieData = useMemo(() => {
-    if (breakEvenUnits >= Infinity) return []
-    const totalVarCosts = variableCostPerUnit * breakEvenUnits
-    return [
-      { name: 'Постоянные затраты', value: fixedCosts },
-      { name: 'Переменные затраты', value: totalVarCosts },
-      { name: 'Прибыль', value: 0 },
-    ]
-  }, [fixedCosts, variableCostPerUnit, breakEvenUnits])
-
   // At max capacity
   const profitAtMax = pricePerUnit * maxUnits - (fixedCosts + variableCostPerUnit * maxUnits)
 
@@ -104,7 +91,6 @@ export function BreakEvenAnalysis() {
   }
 
   const isViable = pricePerUnit > variableCostPerUnit
-  const PIE_COLORS = ['#ef4444', '#f59e0b', '#22c55e']
 
   return (
     <div className="space-y-6">

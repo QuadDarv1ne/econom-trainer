@@ -4,16 +4,13 @@ import { useState, useMemo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Slider } from '@/components/ui/slider'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Separator } from '@/components/ui/separator'
 import {
   ResponsiveContainer,
   ComposedChart,
   Line,
-  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -23,7 +20,6 @@ import {
   ReferenceDot,
 } from 'recharts'
 import { BarChart3, TrendingUp, TrendingDown, Info, Users, Building2, Store, ShieldAlert } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
 
 type MarketType = 'perfect' | 'monopoly' | 'monopolistic' | 'oligopoly'
@@ -53,8 +49,6 @@ export function MarketStructures() {
       addModuleInteraction({ moduleId: 'market-structures', action: 'explore', xpEarned: MODULE_XP['market-structures'] ?? 20 })
     }
   }
-
-  const { toast } = useToast()
 
   // Generate data based on market type
   const chartData = useMemo((): MarketData[] => {
@@ -108,7 +102,7 @@ export function MarketStructures() {
   const equilibrium = useMemo(() => {
     let q: number
     let p: number
-    const profit: number
+    let profit = 0
 
     if (marketType === 'perfect') {
       // P = MC
@@ -225,7 +219,7 @@ export function MarketStructures() {
   }
 
   const currentMarket = marketInfo[marketType]
-  const MarketIcon = currentMarket.icon
+  const _MarketIcon = currentMarket.icon
 
   return (
     <div className="space-y-6">
