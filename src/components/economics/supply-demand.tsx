@@ -50,12 +50,6 @@ export function SupplyDemand() {
     }
   }
 
-  // Practice problem state
-  const [practiceAnswer, setPracticeAnswer] = useState('')
-  const [practiceResult, setPracticeResult] = useState<'correct' | 'incorrect' | null>(null)
-  const [practiceStreak, setPracticeStreak] = useState(0)
-  const [practiceProblem, setPracticeProblem] = useState(() => generatePracticeProblem())
-
   function generatePracticeProblem() {
     const types = ['equilibrium', 'elasticity', 'shift'] as const
     const type = types[Math.floor(Math.random() * types.length)]
@@ -89,6 +83,12 @@ export function SupplyDemand() {
 
     return { type, question, answer, tolerance: Math.max(0.1, Math.abs(answer) * 0.02) }
   }
+
+  // Practice problem state
+  const [practiceAnswer, setPracticeAnswer] = useState('')
+  const [practiceResult, setPracticeResult] = useState<'correct' | 'incorrect' | null>(null)
+  const [practiceStreak, setPracticeStreak] = useState(0)
+  const [practiceProblem, setPracticeProblem] = useState(() => generatePracticeProblem())
 
   const checkPracticeAnswer = () => {
     const parsed = parseFloat(practiceAnswer)

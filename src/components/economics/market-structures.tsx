@@ -108,7 +108,7 @@ export function MarketStructures() {
   const equilibrium = useMemo(() => {
     let q: number
     let p: number
-    let profit: number
+    const profit: number
 
     if (marketType === 'perfect') {
       // P = MC

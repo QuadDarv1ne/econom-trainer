@@ -96,7 +96,7 @@ export function PriceIndices() {
   const cpiHistory = useMemo(() => {
     type CPIYear = { year: number; cpi: number }
     const years: CPIYear[] = []
-    let baseCPI = 100
+    const baseCPI = 100
     for (let year = baseYear; year <= currentYear; year++) {
       const progress = (year - baseYear) / (currentYear - baseYear)
       const cpiValue = baseCPI + inflationRate * progress

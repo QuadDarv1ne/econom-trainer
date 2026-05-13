@@ -1,5 +1,6 @@
 "use client";
 
+import type React from "react";
 import { ThemeProvider } from "next-themes";
 import { OnlineStatusIndicator } from "@/components/economics/online-status";
 import { Toaster } from "@/components/ui/toaster";

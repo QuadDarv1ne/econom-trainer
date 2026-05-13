@@ -1,5 +1,6 @@
 'use client';
 
+import type React from 'react';
 import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -13,20 +14,11 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
   GraduationCap,
   User,
   Mail,
   Phone,
   Shield,
-  KeyRound,
   QrCode,
   Copy,
   Check,
@@ -54,7 +46,7 @@ interface UserProfile {
 }
 
 export default function DashboardPage() {
-  const { data: session, status, update } = useSession();
+  const { data: _session, status, update } = useSession();
   const { t } = useI18n();
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);

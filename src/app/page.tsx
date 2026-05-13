@@ -1,5 +1,6 @@
 'use client'
 
+import type React from 'react'
 import { useState, useMemo } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
@@ -46,7 +47,7 @@ import {
   Swords,
   Receipt,
   Zap,
-  Download,
+  Download as _Download,
   CheckCircle2,
   LayoutGrid,
   Building2,
@@ -87,7 +88,7 @@ const ADASModel = nextDynamic(() => import('@/components/economics/adas-model').
 const ThemeToggle = nextDynamic(() => import('@/components/economics/theme-toggle').then(m => ({ default: m.ThemeToggle })), { ssr: false })
 
 // Module definitions with categories for grouped navigation
-const moduleCategoryIds = ['macro', 'micro', 'finance', 'tools'] as const
+const _moduleCategoryIds = ['macro', 'micro', 'finance', 'tools'] as const
 
 const modules = [
   { id: 'gdp', titleKey: 'module.gdp.title', descriptionKey: 'module.gdp.description', icon: Calculator, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 15 },
@@ -195,7 +196,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('home')
   const { data: session } = useSession()
   const router = useRouter()
-  const { locale, t } = useI18n()
+  const { locale: _locale, t } = useI18n()
   const totalXP = useEconomicsStore((s) => s.totalXP)
   const moduleInteractions = useEconomicsStore((s) => s.moduleInteractions)
   const xpState = getLevelFromXP(totalXP)

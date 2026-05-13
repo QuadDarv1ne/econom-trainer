@@ -95,13 +95,21 @@ export function CurrencyCalculator() {
     let currentRate = baseRate
     const window: number[] = []
 
+    // Seeded pseudo-random for deterministic rendering
+    const seed = fromCurrency.charCodeAt(0) * 1000 + toCurrency.charCodeAt(0) * 100 + Math.round(volatility * 10)
+    let rngState = seed
+    const seededRandom = () => {
+      rngState = (rngState * 1664525 + 1013904223) | 0
+      return (rngState >>> 0) / 4294967296
+    }
+
     for (let i = days; i >= 0; i--) {
       const date = new Date()
       date.setDate(date.getDate() - i)
       const dayStr = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
 
       // Random walk with mean reversion
-      const change = (Math.random() - 0.5) * (volatility / 100) * baseRate
+      const change = (seededRandom() - 0.5) * (volatility / 100) * baseRate
       currentRate = Math.max(baseRate * 0.8, Math.min(baseRate * 1.2, currentRate + change))
 
       window.push(currentRate)

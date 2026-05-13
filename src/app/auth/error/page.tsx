@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, GraduationCap, Home } from 'lucide-react';
+import { AlertCircle, GraduationCap as _GraduationCap, Home } from 'lucide-react';
 import { useI18n } from '@/lib/i18n-provider';
 
 export default function AuthErrorPage() {

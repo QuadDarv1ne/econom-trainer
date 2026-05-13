@@ -1,5 +1,6 @@
 'use client';
 
+import type React from 'react';
 import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { GraduationCap, AlertCircle, Loader2, Mail, CheckCircle2 } from 'lucide-react';
+import { GraduationCap as _GraduationCap, AlertCircle, Loader2, Mail, CheckCircle2 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n-provider';
 
 export default function ForgotPasswordPage() {
