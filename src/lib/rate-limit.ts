@@ -22,7 +22,7 @@ function ensureCleanup() {
   if (cleanupTimer) return;
   cleanupTimer = setInterval(() => {
     const now = Date.now();
-    const maxWindow = Math.max(...configs.values())?.windowMs ?? 60000;
+    const maxWindow = Math.max(...Array.from(configs.values()).map((c) => c.windowMs));
     for (const [key, entry] of store.entries()) {
       const oldestRelevant = now - maxWindow;
       entry.timestamps = entry.timestamps.filter((t) => t > oldestRelevant);

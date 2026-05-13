@@ -18,7 +18,7 @@ test.describe('Quiz Module', () => {
     await page.getByRole('radio').first().click();
 
     // Submit answer
-    await page.getByRole('button', { name: 'Ответить' }).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Ответить' })).toBeVisible();
   });
 
   test('should show quiz results after completion', async ({ page }) => {

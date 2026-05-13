@@ -125,6 +125,7 @@ describe("Store actions", () => {
     
     store.addQuizResult({
       id: 'test-1',
+      topic: 'test-topic',
       score: 8,
       total: 10,
       date: new Date().toISOString(),
@@ -173,6 +174,7 @@ describe("Store actions", () => {
     // Add some data
     store.addQuizResult({
       id: 'test-1',
+      topic: 'test-topic',
       score: 5,
       total: 10,
       date: new Date().toISOString(),
@@ -205,12 +207,14 @@ describe("Store actions", () => {
     
     store.addQuizResult({
       id: 'test-1',
+      topic: 'test-topic',
       score: 7,
       total: 10,
       date: new Date().toISOString(),
     })
     store.addQuizResult({
       id: 'test-2',
+      topic: 'test-topic-2',
       score: 8,
       total: 10,
       date: new Date().toISOString(),

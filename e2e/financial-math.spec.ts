@@ -9,8 +9,9 @@ test.describe('Financial Math Module', () => {
     await expect(page.getByText('Финансовая математика')).toBeVisible();
 
     // Check that calculation options are available
-    await expect(page.getByText('Сложные проценты')).toBeVisible()
-      .or(page.getByText('Расчёт')).toBeVisible();
+    const compoundText = page.getByText('Сложные проценты');
+    const calcText = page.getByText('Расчёт');
+    await expect(compoundText.or(calcText)).toBeVisible();
   });
 
   test('should calculate compound interest', async ({ page }) => {

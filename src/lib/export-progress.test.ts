@@ -120,6 +120,7 @@ describe('exportToJSON', () => {
     // Simulate some quiz results by directly modifying state
     state.quizResults.push({
       id: '1',
+      topic: 'test-topic',
       score: 8,
       total: 10,
       date: new Date().toISOString(),

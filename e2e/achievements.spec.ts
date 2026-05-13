@@ -22,8 +22,10 @@ test.describe('Achievements', () => {
     await page.getByRole('tab', { name: 'Бейджи' }).click();
 
     // Check that badge icons or titles are visible
-    await expect(page.locator('[class*="badge"], [class*="achievement"]')).first()
-      .toBeVisible()
-      .catch(() => expect(page.getByText('Достижения')).toBeVisible());
+    const badgeLocator = page.locator('[class*="badge"], [class*="achievement"]');
+    const firstBadge = badgeLocator.first();
+    await expect(firstBadge).toBeVisible({ timeout: 3000 }).catch(() =>
+      expect(page.getByText('Достижения')).toBeVisible()
+    );
   });
 });
