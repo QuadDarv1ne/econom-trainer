@@ -186,12 +186,14 @@ export interface EconomicsState {
   financeResults: FinanceResult[]
   elasticityResults: ElasticityResult[]
   moduleInteractions: ModuleInteraction[]
+  unlockedAchievements: string[]
   totalXP: number
   addQuizResult: (result: QuizResult) => void
   addGDPResult: (result: GDPResult) => void
   addFinanceResult: (result: FinanceResult) => void
   addElasticityResult: (result: ElasticityResult) => void
   addModuleInteraction: (interaction: Omit<ModuleInteraction, 'id' | 'date'>) => void
+  unlockAchievement: (id: string) => void
   addXP: (amount: number) => void
   getTotalScore: () => { quizzes: number; gdp: number; finance: number; elasticity: number }
   getStreak: () => number
@@ -218,6 +220,7 @@ export const useEconomicsStore = create<EconomicsState>()(
       financeResults: [],
       elasticityResults: [],
       moduleInteractions: [],
+      unlockedAchievements: [],
       totalXP: 0,
 
       addQuizResult: (result) => {
@@ -269,6 +272,13 @@ export const useEconomicsStore = create<EconomicsState>()(
         set((state) => ({ totalXP: state.totalXP + amount }))
       },
 
+      unlockAchievement: (id) => {
+        set((state) => {
+          if (state.unlockedAchievements.includes(id)) return state
+          return { unlockedAchievements: [...state.unlockedAchievements, id] }
+        })
+      },
+
       getTotalScore: () => {
         const state = get()
         const quizCorrect = state.quizResults.reduce((sum, r) => sum + r.score, 0)
@@ -313,6 +323,7 @@ export const useEconomicsStore = create<EconomicsState>()(
           financeResults: [],
           elasticityResults: [],
           moduleInteractions: [],
+          unlockedAchievements: [],
           totalXP: 0,
         }
         set(newState)
@@ -364,6 +375,7 @@ export const useEconomicsStore = create<EconomicsState>()(
         financeResults: state.financeResults,
         elasticityResults: state.elasticityResults,
         moduleInteractions: state.moduleInteractions,
+        unlockedAchievements: state.unlockedAchievements,
         totalXP: state.totalXP,
       }),
     },

@@ -215,6 +215,7 @@ export default function DashboardPage() {
           totalXP: store.totalXP,
           quizResults: store.quizResults,
           moduleHistory: store.moduleInteractions,
+          achievements: store.unlockedAchievements,
         }),
       });
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
@@ -59,6 +59,8 @@ export function Achievements() {
   const financeResults = useEconomicsStore((s) => s.financeResults)
   const elasticityResults = useEconomicsStore((s) => s.elasticityResults)
   const totalXP = useEconomicsStore((s) => s.totalXP)
+  const unlockedAchievements = useEconomicsStore((s) => s.unlockedAchievements)
+  const addXP = useEconomicsStore((s) => s.addXP)
   const resetProgress = useEconomicsStore((s) => s.resetProgress)
 
   const xpState = getLevelFromXP(totalXP)
@@ -298,6 +300,15 @@ export function Achievements() {
 
   const unlockedCount = achievements.filter((a) => a.unlocked).length
   const totalBadgeXP = achievements.filter((a) => a.unlocked).reduce((sum, a) => sum + a.xpReward, 0)
+
+  // Award XP for newly unlocked achievements
+  useEffect(() => {
+    for (const ach of achievements) {
+      if (ach.unlocked && !unlockedAchievements.includes(ach.id)) {
+        addXP(ach.xpReward)
+      }
+    }
+  }, [achievements, unlockedAchievements, addXP])
 
   return (
     <div className="space-y-6">
