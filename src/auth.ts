@@ -4,6 +4,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { authenticator } from "otplib";
+import { checkRateLimit, getClientIP } from "@/lib/rate-limit";
 
 export const authConfig: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
@@ -15,7 +16,14 @@ export const authConfig: NextAuthConfig = {
         password: { label: "Password", type: "password" },
         twoFactorCode: { label: "2FA Code", type: "text", optional: true },
       },
-      async authorize(credentials) {
+      async authorize(credentials, ctx) {
+        // Rate limiting: check before any DB work
+        const ip = ctx?.request ? getClientIP(ctx.request) : null;
+        const limit = checkRateLimit('login', ip);
+        if (!limit.ok) {
+          throw new Error("RateLimitExceeded");
+        }
+
         if (!credentials?.email || !credentials?.password) {
           return null;
         }

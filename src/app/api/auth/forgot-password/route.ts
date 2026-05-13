@@ -2,9 +2,16 @@ import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { sendEmail, getPasswordResetEmailHtml } from '@/lib/email';
+import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 
 export async function POST(req: Request) {
   try {
+    const ip = getClientIP(req);
+    const limit = checkRateLimit('forgotPass', ip);
+    if (!limit.ok) {
+      return rateLimitResponse('forgotPass', ip);
+    }
+
     const { email } = await req.json();
 
     if (!email) {
@@ -30,6 +37,16 @@ export async function POST(req: Request) {
     // Delete existing tokens for this user
     await prisma.passwordResetToken.deleteMany({
       where: { email: email.toLowerCase() },
+    });
+
+    // Clean up expired tokens globally (background maintenance)
+    await prisma.passwordResetToken.deleteMany({
+      where: {
+        OR: [
+          { expires: { lt: new Date() } },
+          { used: true },
+        ],
+      },
     });
 
     // Create new token

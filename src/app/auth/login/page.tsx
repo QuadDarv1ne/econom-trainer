@@ -41,6 +41,8 @@ export default function LoginPage() {
           setError('Введите код из приложения аутентификации');
         } else if (result.error === 'CredentialsSignin') {
           setError(show2FA ? 'Неверный код' : 'Неверный email или пароль');
+        } else if (result.error === 'RateLimitExceeded' || result.error === 'Error: RateLimitExceeded') {
+          setError('Слишком много попыток. Попробуйте через 15 минут.');
         } else {
           setError('Ошибка входа. Попробуйте ещё раз.');
         }
