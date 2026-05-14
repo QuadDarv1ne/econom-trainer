@@ -39,7 +39,9 @@ export function BreakEvenAnalysis() {
   }
 
   const { toast } = useToast()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
+
+  const formatNum = (n: number) => n.toLocaleString(locale)
 
   const breakEvenUnits = useMemo(() => {
     const contribution = pricePerUnit - variableCostPerUnit
@@ -48,6 +50,7 @@ export function BreakEvenAnalysis() {
   }, [fixedCosts, variableCostPerUnit, pricePerUnit])
 
   const breakEvenRevenue = useMemo(() => {
+    if (!isFinite(breakEvenUnits)) return NaN
     return breakEvenUnits * pricePerUnit
   }, [breakEvenUnits, pricePerUnit])
 
@@ -109,7 +112,7 @@ export function BreakEvenAnalysis() {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <Label>{t('breakeven.fixedCosts')}</Label>
-                <span className="font-mono text-muted-foreground">{fixedCosts.toLocaleString('ru-RU')} руб.</span>
+                <span className="font-mono text-muted-foreground">{formatNum(fixedCosts)} {t('breakeven.rub')}</span>
               </div>
               <Slider
                 value={[fixedCosts]}
@@ -123,7 +126,7 @@ export function BreakEvenAnalysis() {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <Label>{t('breakeven.variableCosts')}</Label>
-                <span className="font-mono text-muted-foreground">{variableCostPerUnit.toLocaleString('ru-RU')} руб.</span>
+                <span className="font-mono text-muted-foreground">{formatNum(variableCostPerUnit)} {t('breakeven.rub')}</span>
               </div>
               <Slider
                 value={[variableCostPerUnit]}
@@ -137,7 +140,7 @@ export function BreakEvenAnalysis() {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <Label>{t('breakeven.pricePerUnit')}</Label>
-                <span className="font-mono text-muted-foreground">{pricePerUnit.toLocaleString('ru-RU')} руб.</span>
+                <span className="font-mono text-muted-foreground">{formatNum(pricePerUnit)} {t('breakeven.rub')}</span>
               </div>
               <Slider
                 value={[pricePerUnit]}
@@ -150,8 +153,8 @@ export function BreakEvenAnalysis() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <Label>Макс. объём</Label>
-                <span className="font-mono text-muted-foreground">{maxUnits} ед.</span>
+                <Label>{t('breakeven.maxUnits')}</Label>
+                <span className="font-mono text-muted-foreground">{maxUnits} {t('breakeven.units')}</span>
               </div>
               <Slider
                 value={[maxUnits]}
@@ -178,8 +181,8 @@ export function BreakEvenAnalysis() {
               <div className="font-semibold text-red-600">{t('breakeven.notViable.title')}</div>
               <div className="text-sm text-muted-foreground">
                 {t('breakeven.notViable.description')
-                  .replace('{price}', pricePerUnit.toLocaleString('ru-RU'))
-                  .replace('{variableCost}', variableCostPerUnit.toLocaleString('ru-RU'))}
+                  .replace('{price}', formatNum(pricePerUnit))
+                  .replace('{variableCost}', formatNum(variableCostPerUnit))}
               </div>
             </div>
           </CardContent>
@@ -191,25 +194,29 @@ export function BreakEvenAnalysis() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <Card className="border-2 border-primary/20">
               <CardContent className="p-3 text-center">
-                <div className="text-xs text-muted-foreground">Точка безубыточности</div>
-                <div className="text-xl font-mono font-bold">{breakEvenUnits.toLocaleString('ru-RU')} ед.</div>
+                <div className="text-xs text-muted-foreground">{t('breakeven.breakEvenUnits')}</div>
+                <div className="text-xl font-mono font-bold">
+                  {isFinite(breakEvenUnits) ? `${formatNum(breakEvenUnits)} ${t('breakeven.units')}` : '—'}
+                </div>
               </CardContent>
             </Card>
             <Card className="border-2 border-primary/20">
               <CardContent className="p-3 text-center">
-                <div className="text-xs text-muted-foreground">Выручка в BEP</div>
-                <div className="text-xl font-mono font-bold">{breakEvenRevenue.toLocaleString('ru-RU')}</div>
+                <div className="text-xs text-muted-foreground">{t('breakeven.breakEvenRevenue')}</div>
+                <div className="text-xl font-mono font-bold">
+                  {isFinite(breakEvenRevenue) ? formatNum(breakEvenRevenue) : '—'}
+                </div>
               </CardContent>
             </Card>
             <Card className="border-2 border-primary/20">
               <CardContent className="p-3 text-center">
-                <div className="text-xs text-muted-foreground">Маржинальность</div>
+                <div className="text-xs text-muted-foreground">{t('breakeven.contributionMargin')}</div>
                 <div className="text-xl font-mono font-bold">{contributionMargin.toFixed(1)}%</div>
               </CardContent>
             </Card>
             <Card className="border-2 border-primary/20">
               <CardContent className="p-3 text-center">
-                <div className="text-xs text-muted-foreground">Запас прочности</div>
+                <div className="text-xs text-muted-foreground">{t('breakeven.marginOfSafety')}</div>
                 <div className={`text-xl font-mono font-bold ${marginOfSafety < 20 ? 'text-red-500' : marginOfSafety < 40 ? 'text-yellow-500' : 'text-green-500'}`}>
                   {marginOfSafety.toFixed(1)}%
                 </div>
@@ -219,15 +226,15 @@ export function BreakEvenAnalysis() {
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">График безубыточности</CardTitle>
+              <CardTitle className="text-lg">{t('breakeven.chartTitle')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[320px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={chartData} margin={{ top: 10, right: 20, left: 10, bottom: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                    <XAxis dataKey="quantity" label={{ value: 'Объём (Q)', position: 'insideBottom', offset: -5 }} fontSize={11} />
-                    <YAxis label={{ value: 'Руб.', angle: -90, position: 'insideLeft' }} fontSize={11} />
+                    <XAxis dataKey="quantity" label={{ value: t('chart.quantityLabel'), position: 'insideBottom', offset: -5 }} fontSize={11} />
+                    <YAxis label={{ value: t('chart.amountLabel'), angle: -90, position: 'insideLeft' }} fontSize={11} />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: 'hsl(var(--card))',
@@ -236,7 +243,7 @@ export function BreakEvenAnalysis() {
                         fontSize: '12px',
                       }}
                       formatter={(value: number, name: string) => [
-                        value.toLocaleString('ru-RU') + ' руб.',
+                        formatNum(value) + ' ' + t('breakeven.rub'),
                         name,
                       ]}
                     />
@@ -255,7 +262,7 @@ export function BreakEvenAnalysis() {
                       fillOpacity={0.1}
                       strokeWidth={1}
                       strokeDasharray="3 3"
-                      name="Постоянные затраты"
+                      name={t('legend.fixedCosts')}
                     />
                     <Line
                       type="monotone"
@@ -263,7 +270,7 @@ export function BreakEvenAnalysis() {
                       stroke="#ef4444"
                       strokeWidth={2}
                       dot={false}
-                      name="Общие затраты"
+                      name={t('legend.totalCost')}
                     />
                     <Line
                       type="monotone"
@@ -271,7 +278,7 @@ export function BreakEvenAnalysis() {
                       stroke="#22c55e"
                       strokeWidth={2}
                       dot={false}
-                      name="Выручка"
+                      name={t('legend.revenue')}
                     />
                   </ComposedChart>
                 </ResponsiveContainer>
@@ -282,15 +289,17 @@ export function BreakEvenAnalysis() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Прибыль при макс. загрузке</CardTitle>
+                <CardTitle className="text-lg">{t('breakeven.profitAtMax')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-center p-4">
                   <div className={`text-3xl font-mono font-bold ${profitAtMax > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {profitAtMax > 0 ? '+' : ''}{profitAtMax.toLocaleString('ru-RU')} руб.
+                    {profitAtMax > 0 ? '+' : ''}{formatNum(profitAtMax)} {t('breakeven.rub')}
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">
-                    При продаже {maxUnits} ед. по {pricePerUnit} руб.
+                    {t('card.profitAtMaxDescription')
+                      .replace('{maxUnits}', String(maxUnits))
+                      .replace('{pricePerUnit}', formatNum(pricePerUnit))}
                   </div>
                 </div>
               </CardContent>
@@ -300,18 +309,18 @@ export function BreakEvenAnalysis() {
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Info className="h-4 w-4" />
-                  Анализ
+                  {t('breakeven.analysis')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-sm space-y-2">
                 <div className="p-2 bg-muted/50 rounded">
-                  <strong>Маржинальная прибыль на ед.:</strong> {(pricePerUnit - variableCostPerUnit).toLocaleString('ru-RU')} руб.
+                  <strong>{t('breakeven.profitPerUnit')}</strong> {formatNum(pricePerUnit - variableCostPerUnit)} {t('breakeven.rub')}
                 </div>
                 <div className="p-2 bg-muted/50 rounded">
-                  <strong>Запас прочности:</strong> {marginOfSafety.toFixed(1)}% — {marginOfSafety < 20 ? 'низкий, высокий риск' : marginOfSafety < 40 ? 'умеренный' : 'высокий, бизнес устойчив'}
+                  <strong>{t('breakeven.marginOfSafetyLabel')}</strong> {marginOfSafety.toFixed(1)}% — {marginOfSafety < 20 ? t('analysis.marginOfSafetyLow') : marginOfSafety < 40 ? t('analysis.marginOfSafetyMedium') : t('analysis.marginOfSafetyHigh')}
                 </div>
                 <div className="p-2 bg-primary/5 rounded">
-                  <strong>Окупаемость:</strong> нужно продать {breakEvenUnits} ед. до выхода в прибыль
+                  <strong>{t('breakeven.payoff')}</strong> {t('analysis.payoffDescription').replace('{breakEvenUnits}', isFinite(breakEvenUnits) ? String(breakEvenUnits) : '—')}
                 </div>
               </CardContent>
             </Card>
