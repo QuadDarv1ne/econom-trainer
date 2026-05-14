@@ -274,7 +274,7 @@ export default function Home() {
                     <UserCircle className="mr-2 h-4 w-4" />
                     {t('dashboard.title')}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+                  <DropdownMenuItem onClick={() => router.push('/profile')}>
                     <Shield className="mr-2 h-4 w-4" />
                     {t('dashboard.tab.security')}
                   </DropdownMenuItem>

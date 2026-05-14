@@ -81,11 +81,28 @@ export async function POST(req: Request) {
     const verificationHtml = getEmailVerificationEmailHtml(user.name || 'Пользователь', verificationUrl);
 
     const { sendEmail } = await import('@/lib/email');
-    await sendEmail({
+    const emailSent = await sendEmail({
       to: user.email!,
       subject: 'Подтвердите email — Экономический тренажёр',
       html: verificationHtml,
     });
+
+    if (!emailSent) {
+      // Rollback: delete user, verification token, and progress
+      await prisma.verificationToken.deleteMany({
+        where: { identifier: user.email! },
+      });
+      await prisma.userProgress.deleteMany({
+        where: { userId: user.id },
+      });
+      await prisma.user.delete({
+        where: { id: user.id },
+      });
+      return NextResponse.json(
+        { error: 'Не удалось отправить письмо подтверждения. Попробуйте позже.' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
       {
