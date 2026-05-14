@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import { randomBytes } from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 
@@ -39,13 +40,14 @@ export async function POST(req: Request) {
       );
     }
 
-    // Hash new password
+    // Hash new password and generate new session hash to invalidate all existing sessions
     const passwordHash = await bcrypt.hash(password, 12);
+    const newSessionHash = randomBytes(32).toString('hex');
 
-    // Update user password
+    // Update user password and revoke all existing sessions
     await prisma.user.update({
       where: { email: resetToken.email },
-      data: { passwordHash },
+      data: { passwordHash, sessionHash: newSessionHash },
     });
 
     // Mark token as used
