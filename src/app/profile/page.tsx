@@ -35,12 +35,8 @@ import {
   Camera,
   Trash2,
   KeyRound,
-  _ChevronRight,
   Clock,
   Monitor,
-  _Smartphone,
-  _Tablet,
-  _X,
   AlertTriangle,
 } from 'lucide-react';
 import { useEconomicsStore } from '@/store/economics-store';
@@ -521,7 +517,7 @@ export default function ProfilePage() {
                   <div className="relative group">
                     <Avatar className="h-24 w-24">
                       <AvatarImage src={profile?.image || ''} />
-                      <AvatarFallback className="text-2xl">{getInitials(profile?.name)}</AvatarFallback>
+                      <AvatarFallback className="text-2xl">{getInitials(profile?.name ?? null)}</AvatarFallback>
                     </Avatar>
                     <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer" onClick={() => fileInputRef.current?.click()}>
                       <Camera className="h-6 w-6 text-white" />
@@ -635,7 +631,7 @@ export default function ProfilePage() {
 
                   <div className="space-y-2">
                     <Label>{t('profile.memberSince')}</Label>
-                    <p className="text-muted-foreground">{formatDate(profile?.createdAt)}</p>
+                    <p className="text-muted-foreground">{formatDate(profile?.createdAt ?? null)}</p>
                   </div>
 
                   <Button type="submit" disabled={saving}>

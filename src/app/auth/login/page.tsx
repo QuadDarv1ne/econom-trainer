@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
@@ -17,7 +17,7 @@ import { useI18n } from '@/lib/i18n-provider';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { PasswordInput } from '@/components/ui/password-input';
 
-export default function LoginPage() {
+function LoginForm() {
   const { t } = useI18n();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -238,5 +238,13 @@ export default function LoginPage() {
           </div>
         </CardContent>
       </Card>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="w-full max-w-md mx-auto p-8 text-center">Загрузка...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }
