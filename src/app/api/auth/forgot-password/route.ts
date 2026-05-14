@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { sendEmail, getPasswordResetEmailHtml, getLocaleFromRequest } from '@/lib/email';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
+import { safeJson, isErrorResponse } from '@/lib/safe-json';
 
 export async function POST(req: Request) {
   try {
@@ -12,7 +13,9 @@ export async function POST(req: Request) {
       return rateLimitResponse('forgotPass', ip);
     }
 
-    const { email } = await req.json();
+    const parsed = await safeJson(req);
+    if (isErrorResponse(parsed)) return parsed;
+    const { email } = parsed;
 
     if (!email) {
       return NextResponse.json(
@@ -71,10 +74,17 @@ export async function POST(req: Request) {
       html,
     });
 
-    // Always return success to prevent email enumeration, even if email fails
-    // The user won't receive the email but no information is leaked
+    // Always return success to prevent email enumeration
+    // If email sending fails, still return success to the client to avoid leaking
+    // whether an email exists, but log the error for admin investigation
     if (!emailSent) {
-      console.error('Failed to send password reset email to:', user.email);
+      console.error('[Forgot Password] Email service unavailable for:', user.email);
+      // Return 500 to indicate the operation could not be completed
+      // The generic message still prevents email enumeration
+      return NextResponse.json(
+        { error: 'Сервис временно недоступен. Попробуйте позже.' },
+        { status: 503 }
+      );
     }
 
     return NextResponse.json({

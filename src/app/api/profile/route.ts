@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { safeJson, isErrorResponse } from '@/lib/safe-json';
 
 // GET - Get user profile
 export async function GET() {
@@ -44,7 +45,9 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
     }
 
-    const { name, phone, image } = await req.json();
+    const parsed = await safeJson(req);
+    if (isErrorResponse(parsed)) return parsed;
+    const { name, phone, image } = parsed;
 
     // Validate name
     if (name !== undefined) {

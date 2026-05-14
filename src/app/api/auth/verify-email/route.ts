@@ -30,16 +30,16 @@ export async function GET(req: Request) {
       return NextResponse.redirect(redirectUrl);
     }
 
-    // Verify email
-    await prisma.user.updateMany({
-      where: { email },
-      data: { emailVerified: new Date() },
-    });
-
-    // Delete used token
-    await prisma.verificationToken.delete({
-      where: { identifier_token: { identifier: email, token } },
-    });
+    // Verify email and delete token in a transaction
+    await prisma.$transaction([
+      prisma.user.updateMany({
+        where: { email },
+        data: { emailVerified: new Date() },
+      }),
+      prisma.verificationToken.delete({
+        where: { identifier_token: { identifier: email, token } },
+      }),
+    ]);
 
     const redirectUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/auth/verify-email?status=success`;
     return NextResponse.redirect(redirectUrl);

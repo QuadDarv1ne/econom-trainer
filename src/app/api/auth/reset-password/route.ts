@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
+import { safeJson, isErrorResponse } from '@/lib/safe-json';
 
 export async function POST(req: Request) {
   try {
@@ -12,7 +13,9 @@ export async function POST(req: Request) {
       return rateLimitResponse('resetPass', ip);
     }
 
-    const { token, password } = await req.json();
+    const parsed = await safeJson(req);
+    if (isErrorResponse(parsed)) return parsed;
+    const { token, password } = parsed;
 
     if (!token || !password) {
       return NextResponse.json(

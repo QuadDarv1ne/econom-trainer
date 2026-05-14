@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
+import { safeJson, isErrorResponse } from '@/lib/safe-json';
 
 // POST - Change password
 export async function POST(req: Request) {
@@ -12,7 +13,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
     }
 
-    const { currentPassword, newPassword } = await req.json();
+    const parsed = await safeJson(req);
+    if (isErrorResponse(parsed)) return parsed;
+    const { currentPassword, newPassword } = parsed;
 
     if (!currentPassword || !newPassword) {
       return NextResponse.json(

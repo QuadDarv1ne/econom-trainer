@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { randomBytes } from 'crypto';
 import { getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email';
+import { safeJson, isErrorResponse } from '@/lib/safe-json';
 
 export async function POST(req: Request) {
   try {
@@ -13,7 +14,9 @@ export async function POST(req: Request) {
       return rateLimitResponse('register', ip);
     }
 
-    const { name, email, password, phone } = await req.json();
+    const parsed = await safeJson(req);
+    if (isErrorResponse(parsed)) return parsed;
+    const { name, email, password, phone } = parsed;
 
     // Validation
     if (!name || !email || !password) {

@@ -4,6 +4,7 @@ import { authenticator } from 'otplib';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
+import { safeJson, isErrorResponse } from '@/lib/safe-json';
 
 export async function POST(req: Request) {
   try {
@@ -18,7 +19,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
     }
 
-    const { code } = await req.json();
+    const parsed = await safeJson(req);
+    if (isErrorResponse(parsed)) return parsed;
+    const { code } = parsed;
 
     if (!code) {
       return NextResponse.json({ error: 'Код обязателен' }, { status: 400 });

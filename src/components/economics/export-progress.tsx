@@ -69,7 +69,8 @@ export function exportProgressToPDF() {
     styles: { fontSize: 10 },
   })
 
-  let finalY = (doc as any).lastAutoTable.finalY + 10
+  const firstTable = (doc as any).lastAutoTable
+  let finalY = firstTable ? firstTable.finalY + 10 : 130
 
   // Module breakdown
   doc.setFontSize(12)
@@ -98,7 +99,8 @@ export function exportProgressToPDF() {
     })
   }
 
-  finalY = (doc as any).lastAutoTable.finalY + 15
+  const secondTable = (doc as any).lastAutoTable
+  finalY = secondTable ? secondTable.finalY + 15 : finalY + 40
 
   // Achievements section
   doc.setFontSize(12)

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { safeJson, isErrorResponse } from '@/lib/safe-json';
 
 // DELETE - Delete user account
 export async function DELETE(req: Request) {
@@ -11,7 +12,9 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
     }
 
-    const { password } = await req.json();
+    const parsed = await safeJson(req);
+    if (isErrorResponse(parsed)) return parsed;
+    const { password } = parsed;
 
     if (!password) {
       return NextResponse.json(

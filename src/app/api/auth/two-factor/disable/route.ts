@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import bcrypt from 'bcryptjs';
+import { safeJson, isErrorResponse } from '@/lib/safe-json';
 
 export async function POST(req: Request) {
   try {
@@ -17,7 +18,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
     }
 
-    const { password } = await req.json();
+    const parsed = await safeJson(req);
+    if (isErrorResponse(parsed)) return parsed;
+    const { password } = parsed;
     if (!password) {
       return NextResponse.json({ error: 'Требуется пароль' }, { status: 400 });
     }

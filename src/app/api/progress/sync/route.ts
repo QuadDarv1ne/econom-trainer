@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { safeJson, isErrorResponse } from '@/lib/safe-json';
 
 // GET - Get user progress from server
 export async function GET() {
@@ -41,7 +42,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
     }
 
-    const { totalXP, level, quizResults, moduleHistory, achievements } = await req.json();
+    const parsed = await safeJson(req);
+    if (isErrorResponse(parsed)) return parsed;
+    const { totalXP, level, quizResults, moduleHistory, achievements } = parsed;
 
     const progress = await prisma.userProgress.upsert({
       where: { userId: session.user.id },

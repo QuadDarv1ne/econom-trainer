@@ -126,13 +126,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             select: { sessionHash: true },
           });
           if (!dbUser || dbUser.sessionHash !== token.sessionHash) {
-            // Session has been revoked - clear token
-            return {} as typeof token;
+            // Session has been revoked - invalidate by clearing sensitive fields
+            return { id: null, sessionHash: null, twoFactorEnabled: null };
           }
         } catch (error) {
           // If DB check fails, log error and fail closed for security
           console.error("Session validation failed:", error);
-          return {} as typeof token;
+          return { id: null, sessionHash: null, twoFactorEnabled: null };
         }
       }
 
