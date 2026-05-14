@@ -34,7 +34,7 @@ function getPasswordStrength(password: string): PasswordStrength {
     hasUpper: /[A-ZА-ЯЁ]/.test(password),
     hasLower: /[a-zа-яё]/.test(password),
     hasNumber: /[0-9]/.test(password),
-    hasSpecial: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+    hasSpecial: /[!@#$%^&*()_+\-=[]{};':"\\|,.<>?]/.test(password),
   };
 
   const metCount = Object.values(requirements).filter(Boolean).length;

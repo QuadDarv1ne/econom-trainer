@@ -13,7 +13,7 @@ export function AuthBackground() {
     if (!ctx) return;
 
     let animationFrameId: number;
-    let particles: {
+    const particles: {
       x: number;
       y: number;
       vx: number;
