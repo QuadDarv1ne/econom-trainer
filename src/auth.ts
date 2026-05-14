@@ -61,7 +61,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           if (!isTOTPValid) {
             // Check backup codes
-            const backupCodes = JSON.parse(user.twoFactorConf.backupCodes || "[]") as string[];
+            let backupCodes: string[] = [];
+            try {
+              backupCodes = JSON.parse(user.twoFactorConf.backupCodes || "[]");
+            } catch {
+              backupCodes = [];
+            }
             let backupUsed = false;
 
             for (let i = 0; i < backupCodes.length; i++) {
@@ -124,8 +129,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             // Session has been revoked - clear token
             return {} as typeof token;
           }
-        } catch {
-          // If DB check fails, allow the token to pass gracefully
+        } catch (error) {
+          // If DB check fails, log error and fail closed for security
+          console.error("Session validation failed:", error);
+          return {} as typeof token;
         }
       }
 

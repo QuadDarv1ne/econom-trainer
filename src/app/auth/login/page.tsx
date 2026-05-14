@@ -49,18 +49,18 @@ function LoginForm() {
           setShow2FA(true);
           setError(t('auth.login.twoFactorCode'));
         } else if (result.error === 'CredentialsSignin') {
-          setError(show2FA ? 'Неверный код' : 'Неверный email или пароль');
+          setError(show2FA ? t('auth.error.invalidCode') : t('auth.error.invalidCredentials'));
         } else if (result.error === 'RateLimitExceeded' || result.error === 'Error: RateLimitExceeded') {
-          setError('Слишком много попыток. Попробуйте через 15 минут.');
+          setError(t('auth.error.rateLimitExceeded'));
         } else {
-          setError('Ошибка входа. Попробуйте ещё раз.');
+          setError(t('auth.error.loginError'));
         }
       } else {
         router.push(callbackUrl);
         router.refresh();
       }
     } catch {
-      setError('Произошла ошибка. Попробуйте позже.');
+      setError(t('auth.error.genericError'));
     } finally {
       setLoading(false);
     }

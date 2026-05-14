@@ -66,6 +66,7 @@ export interface XPState {
   totalXP: number
   level: number
   xpToNextLevel: number
+  xpInCurrentLevel: number
 }
 
 const XP_PER_LEVEL = 500
@@ -190,10 +191,10 @@ export function getModuleDisplayName(moduleId: string, locale: string): string {
   return t(key, locale as 'ru' | 'en')
 }
 
-export function getModuleLastInteraction(interactions: ModuleInteraction[], moduleId: string): string | null {
+export function getModuleMostRecentInteraction(interactions: ModuleInteraction[], moduleId: string): string | null {
   const moduleInteractions = interactions.filter((i) => i.moduleId === moduleId)
   if (moduleInteractions.length === 0) return null
-  return moduleInteractions[0].date // Already sorted by date desc
+  return moduleInteractions[0].date // Newest first (prepended on add)
 }
 
 export interface EconomicsState {

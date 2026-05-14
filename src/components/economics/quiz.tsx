@@ -632,6 +632,9 @@ export function EconomicsQuiz() {
     currentQuestionRef.current = currentQuestion
   }, [currentQuestion])
 
+  // Guard to prevent race condition between timer and handleAnswer
+  const hasTransitionedRef = useRef(false)
+
   // Detect when time runs out during active quiz
   const isTimeUp = quizState === 'active' && timeLeft <= 0
 
@@ -649,18 +652,22 @@ export function EconomicsQuiz() {
   // Timer countdown — auto-advances when time runs out
   useEffect(() => {
     if (quizState !== 'active') return
+    hasTransitionedRef.current = false // Reset guard when starting new question
     const timer = setInterval(() => {
       setTimeLeft((t) => {
         if (t <= 1) {
           clearInterval(timer)
-          // Auto-advance: mark answer as null and transition to answered state
-          setAnswers((prev) => {
-            const next = [...prev]
-            next[currentQuestionRef.current] = null
-            return next
-          })
-          setSelectedAnswer(null)
-          setQuizState('answered')
+          if (!hasTransitionedRef.current) {
+            hasTransitionedRef.current = true
+            // Auto-advance: mark answer as null and transition to answered state
+            setAnswers((prev) => {
+              const next = [...prev]
+              next[currentQuestionRef.current] = null
+              return next
+            })
+            setSelectedAnswer(null)
+            setQuizState('answered')
+          }
           return 0
         }
         return t - 1
@@ -672,6 +679,8 @@ export function EconomicsQuiz() {
   const handleAnswer = useCallback(
     (answer: number | null) => {
       if (quizState !== 'active') return
+      if (hasTransitionedRef.current) return // Timer already transitioned
+      hasTransitionedRef.current = true
       setSelectedAnswer(answer)
       const newAnswers = [...answers]
       newAnswers[currentQuestion] = answer
@@ -684,14 +693,6 @@ export function EconomicsQuiz() {
     },
     [quizState, currentQuestion, shuffledQuestions, answers]
   )
-
-  const handleTimeUp = useCallback(() => {
-    const newAnswers = [...answers]
-    newAnswers[currentQuestion] = null
-    setAnswers(newAnswers)
-    setSelectedAnswer(null)
-    setQuizState('answered')
-  }, [answers, currentQuestion])
 
   const nextQuestion = useCallback(() => {
     if (currentQuestion + 1 >= shuffledQuestions.length) {
@@ -853,7 +854,7 @@ export function EconomicsQuiz() {
             <p className="text-sm text-muted-foreground">
               {t('quiz.timeUpDescription')}
             </p>
-            <Button onClick={handleTimeUp} variant="destructive">
+            <Button onClick={nextQuestion} variant="destructive">
               {t('quiz.continue')}
             </Button>
           </CardContent>

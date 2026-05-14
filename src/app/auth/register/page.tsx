@@ -77,7 +77,7 @@ export default function RegisterPage() {
     }
 
     if (password.length < 8) {
-      setError('Пароль должен содержать минимум 8 символов');
+      setError(t('auth.error.minPasswordLength'));
       return;
     }
 
@@ -93,13 +93,13 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Ошибка регистрации');
+        setError(data.error || t('auth.error.registrationError'));
       } else {
         setSuccess(true);
         setTimeout(() => router.push('/auth/login'), 3000);
       }
     } catch {
-      setError('Произошла ошибка. Попробуйте позже.');
+      setError(t('auth.error.genericError'));
     } finally {
       setLoading(false);
     }

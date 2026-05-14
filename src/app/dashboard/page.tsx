@@ -148,7 +148,7 @@ export default function DashboardPage() {
         setError(data.error);
       }
     } catch {
-      setError('Ошибка настройки 2FA');
+      setError(t('auth.error.2faSetupError'));
     } finally {
       setSettingUp2FA(false);
     }
@@ -177,7 +177,7 @@ export default function DashboardPage() {
         setError(data.error);
       }
     } catch {
-      setError('Ошибка верификации');
+      setError(t('auth.error.2faVerifyError'));
     } finally {
       setVerifying2FA(false);
     }
@@ -194,7 +194,7 @@ export default function DashboardPage() {
         update();
       }
     } catch {
-      setError('Ошибка отключения 2FA');
+      setError(t('auth.error.2faDisableError'));
     }
   }
 
