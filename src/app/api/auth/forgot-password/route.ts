@@ -61,11 +61,17 @@ export async function POST(req: Request) {
     // Send email
     const resetUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/auth/reset-password?token=${token}`;
     const html = getPasswordResetEmailHtml(user.name || 'Студент', resetUrl);
-    await sendEmail({
+    const emailSent = await sendEmail({
       to: user.email!,
       subject: 'Сброс пароля — Экономический тренажёр',
       html,
     });
+
+    // Always return success to prevent email enumeration, even if email fails
+    // The user won't receive the email but no information is leaked
+    if (!emailSent) {
+      console.error('Failed to send password reset email to:', user.email);
+    }
 
     return NextResponse.json({
       message: 'Если email зарегистрирован, мы отправим ссылку для сброса пароля',

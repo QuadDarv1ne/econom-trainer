@@ -41,11 +41,18 @@ export async function POST() {
     const html = getEmailVerificationEmailHtml(user.name || 'Пользователь', verificationUrl);
 
     const { sendEmail: send } = await import('@/lib/email');
-    await send({
+    const emailSent = await send({
       to: user.email,
       subject: 'Подтвердите email — Экономический тренажёр',
       html,
     });
+
+    if (!emailSent) {
+      return NextResponse.json(
+        { error: 'Не удалось отправить письмо подтверждения. Попробуйте позже.' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ message: 'Письмо отправлено' });
   } catch (error) {
