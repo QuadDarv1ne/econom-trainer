@@ -72,6 +72,8 @@ export default function DashboardPage() {
 
   // Local progress sync
   const totalXP = useEconomicsStore((s) => s.totalXP);
+  const quizResultsCount = useEconomicsStore((s) => s.quizResults.length);
+  const moduleInteractionsCount = useEconomicsStore((s) => s.moduleInteractions.length);
   const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
@@ -516,14 +518,14 @@ export default function DashboardPage() {
                   <Card>
                     <CardContent className="pt-6 text-center">
                       <CheckCircle2 className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                      <div className="text-3xl font-bold">{useEconomicsStore.getState().quizResults.length}</div>
+                      <div className="text-3xl font-bold">{quizResultsCount}</div>
                       <div className="text-sm text-muted-foreground">{t('dashboard.progress.quizzes')}</div>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="pt-6 text-center">
                       <BarChart3 className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-                      <div className="text-3xl font-bold">{useEconomicsStore.getState().moduleInteractions.length}</div>
+                      <div className="text-3xl font-bold">{moduleInteractionsCount}</div>
                       <div className="text-sm text-muted-foreground">{t('dashboard.progress.sessions')}</div>
                     </CardContent>
                   </Card>

@@ -16,7 +16,6 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions): 
   if (!resendApiKey) {
     console.warn('[Email] RESEND_API_KEY not configured. Email not sent.');
     console.warn('[Email] Would have sent to:', to, 'Subject:', subject);
-    console.warn('[Email] HTML:', html);
     return false;
   }
 
