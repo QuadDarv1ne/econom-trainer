@@ -214,7 +214,7 @@ export interface EconomicsState {
   addModuleInteraction: (interaction: Omit<ModuleInteraction, 'id' | 'date'>) => void
   completeDailyChallenge: (result: DailyChallenge) => void
   recordActivity: () => void
-  unlockAchievement: (id: string) => void
+  unlockAchievement: (id: string, xpReward?: number) => void
   addXP: (amount: number) => void
   getTotalScore: () => { quizzes: number; gdp: number; finance: number; elasticity: number }
   getStreak: () => number
@@ -339,10 +339,13 @@ export const useEconomicsStore = create<EconomicsState>()(
         set((state) => ({ totalXP: state.totalXP + amount }))
       },
 
-      unlockAchievement: (id) => {
+      unlockAchievement: (id, xpReward = 0) => {
         set((state) => {
           if (state.unlockedAchievements.includes(id)) return state
-          return { unlockedAchievements: [...state.unlockedAchievements, id] }
+          return {
+            unlockedAchievements: [...state.unlockedAchievements, id],
+            totalXP: state.totalXP + xpReward,
+          }
         })
       },
 

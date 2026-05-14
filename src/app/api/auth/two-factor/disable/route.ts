@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
+import bcrypt from 'bcryptjs';
 
 export async function POST(req: Request) {
   try {
@@ -14,6 +15,25 @@ export async function POST(req: Request) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+    }
+
+    const { password } = await req.json();
+    if (!password) {
+      return NextResponse.json({ error: 'Требуется пароль' }, { status: 400 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { passwordHash: true },
+    });
+
+    if (!user?.passwordHash) {
+      return NextResponse.json({ error: 'Требуется пароль' }, { status: 400 });
+    }
+
+    const isValid = await bcrypt.compare(password, user.passwordHash);
+    if (!isValid) {
+      return NextResponse.json({ error: 'Неверный пароль' }, { status: 401 });
     }
 
     await prisma.user.update({

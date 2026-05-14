@@ -86,9 +86,6 @@ function getAIChoice(
   }
 }
 
-// ─── XP flag shared across all sub-games (once per session per module) ────────
-let gameTheoryXpEarned = false
-
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export function GameTheory() {
@@ -152,6 +149,7 @@ function PrisonersDilemma() {
     playerPayoff: number
     aiPayoff: number
   } | null>(null)
+  const [xpEarned, setXpEarned] = useState(false)
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
 
   const totalPlayerScore = useMemo(
@@ -179,12 +177,12 @@ function PrisonersDilemma() {
       setPlayerHistory((prev) => [...prev, choice])
       setLastResult({ player: choice, ai: aiChoice, playerPayoff, aiPayoff })
 
-      if (!gameTheoryXpEarned) {
-        gameTheoryXpEarned = true
+      if (!xpEarned) {
+        setXpEarned(true)
         addModuleInteraction({ moduleId: 'game-theory', action: 'play', xpEarned: MODULE_XP['game-theory'] })
       }
     },
-    [aiStrategy, playerHistory, addModuleInteraction]
+    [aiStrategy, playerHistory, addModuleInteraction, xpEarned]
   )
 
   const resetGame = useCallback(() => {
@@ -465,6 +463,7 @@ function BattleOfTheSexes() {
   } | null>(null)
 
   const [rounds, setRounds] = useState<BotSRound[]>([])
+  const [xpEarned, setXpEarned] = useState(false)
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
 
   const totalP1 = useMemo(() => rounds.reduce((s, r) => s + r.player1Payoff, 0), [rounds])
@@ -501,11 +500,11 @@ function BattleOfTheSexes() {
     setRounds((prev) => [...prev, round])
     setResult({ p1: p1Payoff, p2: p2Payoff })
 
-    if (!gameTheoryXpEarned) {
-      gameTheoryXpEarned = true
+    if (!xpEarned) {
+      setXpEarned(true)
       addModuleInteraction({ moduleId: 'game-theory', action: 'play', xpEarned: MODULE_XP['game-theory'] })
     }
-  }, [player1Choice, player2Choice, addModuleInteraction])
+  }, [player1Choice, player2Choice, addModuleInteraction, xpEarned])
 
   const resetGame = useCallback(() => {
     setRounds([])
@@ -821,6 +820,7 @@ function HawksAndDoves() {
   const { t } = useI18n()
   const [V, setV] = useState(50)
   const [C, setC] = useState(100)
+  const [xpEarned, setXpEarned] = useState(false)
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
 
   // ESS: proportion of hawks = V/C (when V < C)
@@ -874,11 +874,11 @@ function HawksAndDoves() {
 
     setPopulationData(data)
 
-    if (!gameTheoryXpEarned) {
-      gameTheoryXpEarned = true
+    if (!xpEarned) {
+      setXpEarned(true)
       addModuleInteraction({ moduleId: 'game-theory', action: 'play', xpEarned: MODULE_XP['game-theory'] })
     }
-  }, [V, C, generations, addModuleInteraction])
+  }, [V, C, generations, addModuleInteraction, xpEarned])
 
   // Payoff matrix values
   const hawkVsHawk = (V - C) / 2

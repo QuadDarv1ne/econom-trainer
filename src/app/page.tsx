@@ -227,9 +227,10 @@ export default function Home() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div
-            className="flex items-center gap-3 cursor-pointer"
+          <button
+            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg px-1"
             onClick={() => setActiveTab('home')}
+            aria-label={t('home.title')}
           >
             <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
               <GraduationCap className="h-5 w-5 text-primary-foreground" />
@@ -240,7 +241,7 @@ export default function Home() {
                 {t('home.header.subtitle')}
               </p>
             </div>
-          </div>
+          </button>
           <div className="flex items-center gap-2">
             {totalXP > 0 && (
               <Badge variant="outline" className="hidden sm:flex items-center gap-1">
@@ -372,6 +373,10 @@ export default function Home() {
                       <Card
                         className="cursor-pointer hover:shadow-lg transition-shadow duration-200 h-full"
                         onClick={() => setActiveTab(mod.id)}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveTab(mod.id); } }}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={t(mod.titleKey)}
                       >
                         <CardHeader className="pb-3">
                           <div className="flex items-start justify-between">

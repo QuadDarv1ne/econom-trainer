@@ -46,12 +46,36 @@ export async function PATCH(req: Request) {
 
     const { name, phone, image } = await req.json();
 
+    // Validate name
+    if (name !== undefined) {
+      if (typeof name !== 'string' || name.length > 100) {
+        return NextResponse.json({ error: 'Имя должно быть строкой до 100 символов' }, { status: 400 });
+      }
+    }
+
+    // Validate phone
+    if (phone !== undefined && phone !== null) {
+      if (typeof phone !== 'string' || phone.length > 20) {
+        return NextResponse.json({ error: 'Номер телефона должен быть строкой до 20 символов' }, { status: 400 });
+      }
+      if (phone !== '' && !/^\+?[0-9\s()-]+$/.test(phone)) {
+        return NextResponse.json({ error: 'Неверный формат номера телефона' }, { status: 400 });
+      }
+    }
+
+    // Validate image (data URL)
+    if (image !== undefined && image !== null) {
+      if (typeof image !== 'string' || image.length > 5 * 1024 * 1024) {
+        return NextResponse.json({ error: 'Изображение не должно превышать 5 МБ' }, { status: 400 });
+      }
+    }
+
     const user = await prisma.user.update({
       where: { id: session.user.id },
       data: {
-        ...(name !== undefined && { name }),
-        ...(phone !== undefined && { phone }),
-        ...(image !== undefined && { image }),
+        ...(name !== undefined && { name: name.trim() }),
+        ...(phone !== undefined && { phone: phone === '' ? null : phone }),
+        ...(image !== undefined && { image: image === '' ? null : image }),
       },
       select: {
         id: true,

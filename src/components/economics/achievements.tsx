@@ -61,7 +61,7 @@ export function Achievements() {
   const elasticityResults = useEconomicsStore((s) => s.elasticityResults)
   const totalXP = useEconomicsStore((s) => s.totalXP)
   const unlockedAchievements = useEconomicsStore((s) => s.unlockedAchievements)
-  const addXP = useEconomicsStore((s) => s.addXP)
+  const unlockAchievement = useEconomicsStore((s) => s.unlockAchievement)
   const resetProgress = useEconomicsStore((s) => s.resetProgress)
 
   const xpState = getLevelFromXP(totalXP)
@@ -302,14 +302,14 @@ export function Achievements() {
   const unlockedCount = achievements.filter((a) => a.unlocked).length
   const totalBadgeXP = achievements.filter((a) => a.unlocked).reduce((sum, a) => sum + a.xpReward, 0)
 
-  // Award XP for newly unlocked achievements
+  // Award XP for newly unlocked achievements using unlockAchievement (idempotent)
   useEffect(() => {
     for (const ach of achievements) {
       if (ach.unlocked && !unlockedAchievements.includes(ach.id)) {
-        addXP(ach.xpReward)
+        unlockAchievement(ach.id, ach.xpReward)
       }
     }
-  }, [achievements, unlockedAchievements, addXP])
+  }, [achievements, unlockedAchievements, unlockAchievement])
 
   return (
     <div className="space-y-6">

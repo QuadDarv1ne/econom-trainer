@@ -682,16 +682,18 @@ export function EconomicsQuiz() {
       if (hasTransitionedRef.current) return // Timer already transitioned
       hasTransitionedRef.current = true
       setSelectedAnswer(answer)
-      const newAnswers = [...answers]
-      newAnswers[currentQuestion] = answer
-      setAnswers(newAnswers)
+      setAnswers((prev) => {
+        const next = [...prev]
+        next[currentQuestion] = answer
+        return next
+      })
 
       const isCorrect = answer === shuffledQuestions[currentQuestion]?.correctAnswer
       if (isCorrect) setScore((s) => s + 1)
 
       setQuizState('answered')
     },
-    [quizState, currentQuestion, shuffledQuestions, answers]
+    [quizState, currentQuestion, shuffledQuestions]
   )
 
   const nextQuestion = useCallback(() => {

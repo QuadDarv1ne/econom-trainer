@@ -69,6 +69,8 @@ export default function DashboardPage() {
   const [showQR, setShowQR] = useState(false);
   const [showBackupCodes, setShowBackupCodes] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
+  const [disablePassword, setDisablePassword] = useState('');
+  const [disabling2FA, setDisabling2FA] = useState(false);
 
   // Local progress sync
   const totalXP = useEconomicsStore((s) => s.totalXP);
@@ -184,17 +186,30 @@ export default function DashboardPage() {
   }
 
   async function disable2FA() {
+    setDisabling2FA(true);
+    setError('');
     try {
-      const res = await fetch('/api/auth/two-factor/disable', { method: 'POST' });
+      const res = await fetch('/api/auth/two-factor/disable', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: disablePassword }),
+      });
+      const data = await res.json();
       if (res.ok) {
         setProfile((p) => (p ? { ...p, twoFactorEnabled: false } : null));
         setQrCode('');
         setSecret('');
         setBackupCodes([]);
+        setDisablePassword('');
+        setSuccess('2FA отключена');
         update();
+      } else {
+        setError(data.error);
       }
     } catch {
       setError(t('auth.error.2faDisableError'));
+    } finally {
+      setDisabling2FA(false);
     }
   }
 
@@ -378,8 +393,19 @@ export default function DashboardPage() {
                       </AlertDescription>
                     </Alert>
 
-                    <Button variant="destructive" onClick={disable2FA}>
-                      {t('dashboard.security.disable')}
+                    <div className="space-y-2">
+                      <Label htmlFor="disable-2fa-password">{t('profile.password')}</Label>
+                      <Input
+                        id="disable-2fa-password"
+                        type="password"
+                        value={disablePassword}
+                        onChange={(e) => setDisablePassword(e.target.value)}
+                        placeholder={t('auth.login.password')}
+                      />
+                    </div>
+
+                    <Button variant="destructive" onClick={disable2FA} disabled={disabling2FA || !disablePassword}>
+                      {disabling2FA ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t('auth.login.loading')}</> : t('dashboard.security.disable')}
                     </Button>
                   </div>
                 ) : (
