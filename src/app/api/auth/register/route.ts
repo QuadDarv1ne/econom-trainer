@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { randomBytes } from 'crypto';
-import { getEmailVerificationEmailHtml } from '@/lib/email';
+import { getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email';
 
 export async function POST(req: Request) {
   try {
@@ -78,12 +78,15 @@ export async function POST(req: Request) {
 
     // Send verification email
     const verificationUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(user.email!)}`;
-    const verificationHtml = getEmailVerificationEmailHtml(user.name || 'Пользователь', verificationUrl);
+    const locale = getLocaleFromRequest(req);
+    const verificationHtml = getEmailVerificationEmailHtml(user.name || (locale === 'en' ? 'User' : 'Пользователь'), verificationUrl, locale);
 
     const { sendEmail } = await import('@/lib/email');
     const emailSent = await sendEmail({
       to: user.email!,
-      subject: 'Подтвердите email — Экономический тренажёр',
+      subject: locale === 'en'
+        ? 'Verify your email — Economic Trainer'
+        : 'Подтвердите email — Экономический тренажёр',
       html: verificationHtml,
     });
 

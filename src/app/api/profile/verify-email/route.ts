@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { randomBytes } from 'crypto';
-import { sendEmail, getEmailVerificationEmailHtml } from '@/lib/email';
+import { sendEmail, getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email';
 
 // POST - Send email verification
-export async function POST() {
+export async function POST(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -38,12 +38,15 @@ export async function POST() {
 
     // Send verification email
     const verificationUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(user.email)}`;
-    const html = getEmailVerificationEmailHtml(user.name || 'Пользователь', verificationUrl);
+    const locale = getLocaleFromRequest(req);
+    const html = getEmailVerificationEmailHtml(user.name || (locale === 'en' ? 'User' : 'Пользователь'), verificationUrl, locale);
 
     const { sendEmail: send } = await import('@/lib/email');
     const emailSent = await send({
       to: user.email,
-      subject: 'Подтвердите email — Экономический тренажёр',
+      subject: locale === 'en'
+        ? 'Verify your email — Economic Trainer'
+        : 'Подтвердите email — Экономический тренажёр',
       html,
     });
 

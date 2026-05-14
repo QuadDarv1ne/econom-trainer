@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
-import { sendEmail, getPasswordResetEmailHtml } from '@/lib/email';
+import { sendEmail, getPasswordResetEmailHtml, getLocaleFromRequest } from '@/lib/email';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 
 export async function POST(req: Request) {
@@ -60,10 +60,14 @@ export async function POST(req: Request) {
 
     // Send email
     const resetUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/auth/reset-password?token=${token}`;
-    const html = getPasswordResetEmailHtml(user.name || 'Студент', resetUrl);
+    const locale = getLocaleFromRequest(req);
+    const html = getPasswordResetEmailHtml(user.name || (locale === 'en' ? 'User' : 'Студент'), resetUrl, locale);
+    const subject = locale === 'en'
+      ? 'Password Reset — Economic Trainer'
+      : 'Сброс пароля — Экономический тренажёр';
     const emailSent = await sendEmail({
       to: user.email!,
-      subject: 'Сброс пароля — Экономический тренажёр',
+      subject,
       html,
     });
 
