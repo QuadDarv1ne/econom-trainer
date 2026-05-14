@@ -14,8 +14,8 @@ export const authConfig: NextAuthConfig = {
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
-        token.twoFactorEnabled = (user as any).twoFactorEnabled;
-        token.sessionHash = (user as any).sessionHash;
+        token.twoFactorEnabled = user.twoFactorEnabled;
+        token.sessionHash = user.sessionHash;
       }
       if (trigger === "update" && session) {
         return { ...token, ...session };
@@ -26,7 +26,7 @@ export const authConfig: NextAuthConfig = {
       if (token) {
         session.user.id = token.id as string;
         session.user.twoFactorEnabled = token.twoFactorEnabled as boolean;
-        (session.user as any).sessionHash = token.sessionHash;
+        session.user.sessionHash = token.sessionHash as string | null | undefined;
       }
       return session;
     },

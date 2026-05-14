@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
-import { useEconomicsStore, getLevelTitle, getLevelColor, getModuleDisplayName } from '@/store/economics-store'
+import { useEconomicsStore, getLevelTitle, getModuleDisplayName } from '@/store/economics-store'
 import { downloadProgressCSV, downloadProgressJSON } from '@/lib/export-progress'
 import { useI18n } from '@/lib/i18n-provider'
 import { getCurrentLocale, t } from '@/lib/i18n'
