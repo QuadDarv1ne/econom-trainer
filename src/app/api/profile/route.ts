@@ -45,7 +45,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
     }
 
-    const parsed = await safeJson(req);
+    const parsed = await safeJson<{ name?: string; phone?: string | null; image?: string | null }>(req);
     if (isErrorResponse(parsed)) return parsed;
     const { name, phone, image } = parsed;
 

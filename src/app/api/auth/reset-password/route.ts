@@ -13,7 +13,7 @@ export async function POST(req: Request) {
       return rateLimitResponse('resetPass', ip);
     }
 
-    const parsed = await safeJson(req);
+    const parsed = await safeJson<{ token: string; password: string }>(req);
     if (isErrorResponse(parsed)) return parsed;
     const { token, password } = parsed;
 

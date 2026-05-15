@@ -18,7 +18,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
     }
 
-    const parsed = await safeJson(req);
+    const parsed = await safeJson<{ password: string }>(req);
     if (isErrorResponse(parsed)) return parsed;
     const { password } = parsed;
     if (!password) {

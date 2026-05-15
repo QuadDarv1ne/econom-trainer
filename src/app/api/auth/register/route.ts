@@ -14,7 +14,7 @@ export async function POST(req: Request) {
       return rateLimitResponse('register', ip);
     }
 
-    const parsed = await safeJson(req);
+    const parsed = await safeJson<{ name: string; email: string; password: string; phone?: string }>(req);
     if (isErrorResponse(parsed)) return parsed;
     const { name, email, password, phone } = parsed;
 

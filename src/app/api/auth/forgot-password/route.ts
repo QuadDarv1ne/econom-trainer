@@ -13,7 +13,7 @@ export async function POST(req: Request) {
       return rateLimitResponse('forgotPass', ip);
     }
 
-    const parsed = await safeJson(req);
+    const parsed = await safeJson<{ email: string }>(req);
     if (isErrorResponse(parsed)) return parsed;
     const { email } = parsed;
 
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     });
 
     // Always return success to prevent email enumeration
-    if (!user) {
+    if (!user || !user.email) {
       return NextResponse.json({ message: 'Если email зарегистрирован, мы отправим ссылку для сброса' });
     }
 
