@@ -52,6 +52,27 @@ export async function POST(req: Request) {
     if (isErrorResponse(parsed)) return parsed;
     const { totalXP, level, quizResults, moduleHistory, achievements } = parsed;
 
+    // Validate totalXP: must be non-negative and reasonable (< 10M)
+    if (totalXP !== undefined && (typeof totalXP !== 'number' || totalXP < 0 || totalXP > 10_000_000)) {
+      return NextResponse.json({ error: 'Недопустимое значение XP' }, { status: 400 });
+    }
+
+    // Validate level: must be between 1 and 200
+    if (level !== undefined && (typeof level !== 'number' || level < 1 || level > 200)) {
+      return NextResponse.json({ error: 'Недопустимый уровень' }, { status: 400 });
+    }
+
+    // Validate JSON payload sizes (max 100KB each)
+    const maxJsonSize = 100 * 1024;
+    for (const [key, value] of Object.entries({ quizResults, moduleHistory, achievements })) {
+      if (value !== undefined && value !== null) {
+        const size = new TextEncoder().encode(JSON.stringify(value)).length;
+        if (size > maxJsonSize) {
+          return NextResponse.json({ error: `Превышен лимит данных для ${key}` }, { status: 400 });
+        }
+      }
+    }
+
     const progress = await prisma.userProgress.upsert({
       where: { userId: session.user.id },
       create: {

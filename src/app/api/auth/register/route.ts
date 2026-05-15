@@ -26,6 +26,13 @@ export async function POST(req: Request) {
       );
     }
 
+    if (typeof name !== 'string' || name.length > 100) {
+      return NextResponse.json(
+        { error: 'Имя должно быть строкой до 100 символов' },
+        { status: 400 }
+      );
+    }
+
     if (password.length < 8) {
       return NextResponse.json(
         { error: 'Пароль должен содержать минимум 8 символов' },

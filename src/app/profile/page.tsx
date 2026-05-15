@@ -531,7 +531,7 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-6">
                   <div className="relative group">
                     <Avatar className="h-24 w-24">
-                      <AvatarImage src={profile?.image || ''} />
+                      {profile?.image ? <AvatarImage src={profile.image} /> : null}
                       <AvatarFallback className="text-2xl">{getInitials(profile?.name ?? null)}</AvatarFallback>
                     </Avatar>
                     <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer" onClick={() => fileInputRef.current?.click()}>

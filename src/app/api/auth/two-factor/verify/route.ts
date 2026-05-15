@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
+import { randomBytes } from 'crypto';
 
 export async function POST(req: Request) {
   try {
@@ -46,9 +47,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Неверный код' }, { status: 400 });
     }
 
-    // Generate backup codes
+    // Generate cryptographically secure backup codes
     const backupCodes = Array.from({ length: 8 }, () =>
-      Math.random().toString(36).substring(2, 10).toUpperCase()
+      randomBytes(4).toString('hex').toUpperCase()
     );
 
     // Hash backup codes

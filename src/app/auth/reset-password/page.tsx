@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
-import { GraduationCap as _GraduationCap, AlertCircle, Loader2, KeyRound, CheckCircle2, Check, X } from 'lucide-react';
+import { AlertCircle, Loader2, KeyRound, CheckCircle2, Check, X } from 'lucide-react';
 import { useI18n } from '@/lib/i18n-provider';
 import { PasswordInput } from '@/components/ui/password-input';
 
@@ -157,6 +157,7 @@ function ResetPasswordForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                autoComplete="new-password"
               />
 
               {password && (
@@ -201,6 +202,7 @@ function ResetPasswordForm() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
+                autoComplete="new-password"
               />
               {confirmPassword && password !== confirmPassword && (
                 <p className="text-xs text-red-500">{t('profile.passwordMismatch')}</p>

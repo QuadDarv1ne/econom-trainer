@@ -28,7 +28,6 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions): 
 
   if (!resendApiKey) {
     console.warn('[Email] RESEND_API_KEY not configured. Email not sent.');
-    console.warn('[Email] Would have sent to:', to, 'Subject:', subject);
     return false;
   }
 
@@ -54,7 +53,7 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions): 
       return false;
     }
 
-    console.log('[Email] Sent successfully to:', to);
+    console.log('[Email] Sent successfully.');
     return true;
   } catch (error) {
     console.error('[Email] Error sending email:', error);

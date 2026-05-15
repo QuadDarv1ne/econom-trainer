@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 const PasswordInput = React.forwardRef<
   HTMLInputElement,
   React.ComponentProps<"input">
->(({ className, ...props }, ref) => {
+>(({ className, autoComplete, ...props }, ref) => {
   const [isVisible, setIsVisible] = React.useState(false)
 
   return (
@@ -18,6 +18,7 @@ const PasswordInput = React.forwardRef<
         type={isVisible ? "text" : "password"}
         className={cn("pr-10", className)}
         ref={ref}
+        autoComplete={autoComplete || "current-password"}
         {...props}
       />
       <Button

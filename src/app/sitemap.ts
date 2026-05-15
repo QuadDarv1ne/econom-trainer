@@ -1,13 +1,13 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://econom-trainer.vercel.app";
+  const baseUrl = process.env.NEXT_PUBLIC_URL || "https://econom-trainer.vercel.app";
 
   const modules = [
     "gdp",
     "supply-demand",
     "elasticity",
-    "keynesian",
+    "keynesian-cross",
     "inflation",
     "phillips",
     "lorenz",
@@ -22,6 +22,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "glossary",
     "achievements",
     "progress",
+    "currency",
+    "is-lm",
+    "price-indices",
   ];
 
   const routes: MetadataRoute.Sitemap = [

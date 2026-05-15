@@ -71,6 +71,13 @@ export async function PATCH(req: Request) {
       if (typeof image !== 'string' || image.length > 5 * 1024 * 1024) {
         return NextResponse.json({ error: 'Изображение не должно превышать 5 МБ' }, { status: 400 });
       }
+      // Validate data URL MIME type is an image
+      if (image.startsWith('data:')) {
+        const match = image.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+)/);
+        if (!match || !match[1].startsWith('image/')) {
+          return NextResponse.json({ error: 'Неподдерживаемый формат изображения' }, { status: 400 });
+        }
+      }
     }
 
     const user = await prisma.user.update({
