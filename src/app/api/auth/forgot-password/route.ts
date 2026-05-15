@@ -75,16 +75,8 @@ export async function POST(req: Request) {
     });
 
     // Always return success to prevent email enumeration
-    // If email sending fails, still return success to the client to avoid leaking
-    // whether an email exists, but log the error for admin investigation
     if (!emailSent) {
-      console.error('[Forgot Password] Email service unavailable for:', user.email);
-      // Return 500 to indicate the operation could not be completed
-      // The generic message still prevents email enumeration
-      return NextResponse.json(
-        { error: 'Сервис временно недоступен. Попробуйте позже.' },
-        { status: 503 }
-      );
+      console.error('[Forgot Password] Email service unavailable');
     }
 
     return NextResponse.json({

@@ -1480,7 +1480,7 @@ export const translations = {
     'home.howto.step5.desc': 'Бейджи, уровень и статистика во вкладке «Достижения».',
 
     // Footer
-    'home.footer.text': 'Экономический тренажёр v7.1 — интерактивная платформа для изучения экономики',
+    'home.footer.text': 'Экономический тренажёр v7.2.0 — интерактивная платформа для изучения экономики',
     'home.footer.author': 'Автор: Дуплей М.И.',
 
     // Auth
@@ -3286,7 +3286,7 @@ export const translations = {
     'home.howto.step5.desc': 'Badges, level, and statistics in the "Achievements" tab.',
 
     // Footer
-    'home.footer.text': 'Economics Trainer v7.1 — interactive platform for learning economics',
+    'home.footer.text': 'Economics Trainer v7.2.0 — interactive platform for learning economics',
     'home.footer.author': 'Author: Dupley M.I.',
 
     // AD-AS Model
