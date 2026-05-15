@@ -94,16 +94,18 @@ export async function POST(req: Request) {
     });
 
     if (!emailSent) {
-      // Rollback: delete user, verification token, and progress
-      await prisma.verificationToken.deleteMany({
-        where: { identifier: user.email! },
-      });
-      await prisma.userProgress.deleteMany({
-        where: { userId: user.id },
-      });
-      await prisma.user.delete({
-        where: { id: user.id },
-      });
+      // Rollback: atomically delete verification token, progress, and user
+      await prisma.$transaction([
+        prisma.verificationToken.deleteMany({
+          where: { identifier: user.email! },
+        }),
+        prisma.userProgress.deleteMany({
+          where: { userId: user.id },
+        }),
+        prisma.user.delete({
+          where: { id: user.id },
+        }),
+      ]);
       return NextResponse.json(
         { error: 'Не удалось отправить письмо подтверждения. Попробуйте позже.' },
         { status: 500 }

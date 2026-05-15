@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { useEconomicsStore } from '@/store/economics-store'
+import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { Calculator, TrendingUp, TrendingDown, AlertCircle, Info } from 'lucide-react'
 import {
@@ -40,7 +40,8 @@ interface Good {
 
 export function PriceIndices() {
   const { locale, t } = useI18n()
-  const addXP = useEconomicsStore((s) => s.addXP)
+  const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
+  const [hasEarnedXP, setHasEarnedXP] = useState(false)
   const [baseYear, setBaseYear] = useState(2020)
   const [currentYear, setCurrentYear] = useState(2024)
   const [goods, setGoods] = useState<Good[]>([
@@ -109,7 +110,10 @@ export function PriceIndices() {
   }, [baseYear, currentYear, inflationRate])
 
   const handleCalculate = () => {
-    addXP(15)
+    if (!hasEarnedXP) {
+      setHasEarnedXP(true)
+      addModuleInteraction({ moduleId: 'price-indices', action: 'calculate', xpEarned: MODULE_XP['price-indices'] })
+    }
   }
 
   return (
@@ -284,7 +288,7 @@ export function PriceIndices() {
               <Separator />
               <div className="flex justify-center">
                 <button
-                  onClick={() => addXP(15)}
+                  onClick={handleCalculate}
                   className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
                 >
                   {t('priceIndices.calculateBtn')}

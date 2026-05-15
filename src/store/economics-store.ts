@@ -175,7 +175,7 @@ export function getModuleDisplayName(moduleId: string, locale: string): string {
     'tax': 'module.tax.title',
     'game-theory': 'module.game-theory.title',
     'market-structures': 'module.market-structures.title',
-    'price-indices': 'price-indices.title',
+    'price-indices': 'module.price-indices.title',
     'economic-crises': 'module.economic-crises.title',
     'monetary-policy': 'module.monetary-policy.title',
     'adas': 'module.adas.title',
