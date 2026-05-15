@@ -18,7 +18,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials, ctx) {
         // Rate limiting: check before any DB work
-        const ip = ctx ? getClientIP((ctx as any).request as Request) : null;
+        const ip = ctx ? getClientIP((ctx as { request?: Request }).request as Request) : null;
         const limit = checkRateLimit('login', ip);
         if (!limit.ok) {
           throw new Error("RateLimitExceeded");

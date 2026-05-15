@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
-import { Calculator, TrendingUp, TrendingDown, AlertCircle, Info } from 'lucide-react'
+import { Calculator, TrendingUp, Info } from 'lucide-react'
 import {
   ChartContainer,
   ChartTooltip,
@@ -39,11 +39,11 @@ interface Good {
 }
 
 export function PriceIndices() {
-  const { locale, t } = useI18n()
+  const { t } = useI18n()
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
   const [hasEarnedXP, setHasEarnedXP] = useState(false)
-  const [baseYear, setBaseYear] = useState(2020)
-  const [currentYear, setCurrentYear] = useState(2024)
+  const [baseYear, _setBaseYear] = useState(2020)
+  const [currentYear, _setCurrentYear] = useState(2024)
   const [goods, setGoods] = useState<Good[]>([
     { id: '1', name: 'Хлеб', basePrice: 30, currentPrice: 35, quantity: 100 },
     { id: '2', name: 'Молоко', basePrice: 60, currentPrice: 75, quantity: 50 },

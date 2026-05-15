@@ -80,7 +80,7 @@ export function GDPCalculator() {
       title: t('gdp.toast.title'),
       description: `${t('gdp.toast.description')} ${def.toFixed(1)}`,
     })
-  }, [components, addGDPResult, toast])
+  }, [components, addGDPResult, toast, t])
 
   const reset = useCallback(() => {
     setComponents(defaultComponents.map((c) => ({ ...c })))

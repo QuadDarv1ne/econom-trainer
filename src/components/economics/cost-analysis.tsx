@@ -719,7 +719,7 @@ export function CostAnalysis() {
                 </tr>
               </thead>
               <tbody>
-                {tableData.map((row, i) => (
+                {tableData.map((row, _i) => (
                   <tr
                     key={row.q}
                     className={`border-b hover:bg-muted/50 transition-colors ${row.q === currentQ ? 'bg-primary/5 font-semibold' : ''}`}

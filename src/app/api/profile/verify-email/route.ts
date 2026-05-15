@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { randomBytes } from 'crypto';
-import { sendEmail, getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email';
+import { getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email';
 
 // POST - Send email verification
 export async function POST(req: Request) {

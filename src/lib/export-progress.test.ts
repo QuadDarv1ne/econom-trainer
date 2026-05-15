@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { exportToCSV, exportToJSON } from './export-progress'
 import { useEconomicsStore } from '@/store/economics-store'
 
@@ -14,18 +14,6 @@ const localStorageMock = (() => {
 })()
 
 Object.defineProperty(global, 'localStorage', { value: localStorageMock })
-
-// Mock store state for tests
-const mockStoreState = {
-  totalXP: 0,
-  quizResults: [],
-  gdpResults: [],
-  financeResults: [],
-  elasticityResults: [],
-  moduleInteractions: [],
-  achievements: [],
-  lastResetDate: new Date().toISOString(),
-}
 
 describe('exportToCSV', () => {
   beforeEach(() => {

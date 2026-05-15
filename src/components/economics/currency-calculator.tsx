@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -26,7 +26,7 @@ import {
   Tooltip,
   ReferenceLine,
 } from 'recharts'
-import { Coins, ArrowRightLeft, TrendingUp, TrendingDown, RotateCcw, Globe, Info } from 'lucide-react'
+import { Coins, ArrowRightLeft, TrendingUp, RotateCcw, Globe, Info } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
 
@@ -73,14 +73,14 @@ export function CurrencyCalculator() {
   const { toast } = useToast()
 
   // Effective rates (custom or default)
-  const getRate = (code: string) => customRates[code] ?? CURRENCIES.find((c) => c.code === code)?.rateToUSD ?? 1
+  const getRate = useCallback((code: string) => customRates[code] ?? CURRENCIES.find((c) => c.code === code)?.rateToUSD ?? 1, [customRates])
 
   // Cross rate
   const crossRate = useMemo(() => {
     const fromRate = getRate(fromCurrency)
     const toRate = getRate(toCurrency)
     return toRate / fromRate
-  }, [fromCurrency, toCurrency, customRates])
+  }, [fromCurrency, toCurrency, getRate])
 
   // Converted amount
   const converted = useMemo(() => {
@@ -144,8 +144,8 @@ export function CurrencyCalculator() {
     awardXP()
   }
 
-  const fromCurr = CURRENCIES.find((c) => c.code === fromCurrency)!
-  const toCurr = CURRENCIES.find((c) => c.code === toCurrency)!
+  const fromCurr = CURRENCIES.find((c) => c.code === fromCurrency) ?? CURRENCIES[0]
+  const toCurr = CURRENCIES.find((c) => c.code === toCurrency) ?? CURRENCIES[0]
 
   return (
     <div className="space-y-6">

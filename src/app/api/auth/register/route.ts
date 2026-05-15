@@ -57,6 +57,7 @@ export async function POST(req: Request) {
         phone: phone || null,
       },
     });
+    const userId = user.id;
 
     // Create empty progress
     await prisma.userProgress.create({
@@ -71,22 +72,24 @@ export async function POST(req: Request) {
     const token = randomBytes(32).toString('hex');
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
+    const userEmail = email.toLowerCase();
+
     await prisma.verificationToken.create({
       data: {
-        identifier: user.email!,
+        identifier: userEmail,
         token,
         expires,
       },
     });
 
     // Send verification email
-    const verificationUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(user.email!)}`;
+    const verificationUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(userEmail)}`;
     const locale = getLocaleFromRequest(req);
     const verificationHtml = getEmailVerificationEmailHtml(user.name || (locale === 'en' ? 'User' : 'Пользователь'), verificationUrl, locale);
 
     const { sendEmail } = await import('@/lib/email');
     const emailSent = await sendEmail({
-      to: user.email!,
+      to: userEmail,
       subject: locale === 'en'
         ? 'Verify your email — Economic Trainer'
         : 'Подтвердите email — Экономический тренажёр',
@@ -97,13 +100,13 @@ export async function POST(req: Request) {
       // Rollback: atomically delete verification token, progress, and user
       await prisma.$transaction([
         prisma.verificationToken.deleteMany({
-          where: { identifier: user.email! },
+          where: { identifier: userEmail },
         }),
         prisma.userProgress.deleteMany({
-          where: { userId: user.id },
+          where: { userId },
         }),
         prisma.user.delete({
-          where: { id: user.id },
+          where: { id: userId },
         }),
       ]);
       return NextResponse.json(

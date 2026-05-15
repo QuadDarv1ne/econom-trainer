@@ -30,7 +30,7 @@ export function ADASModel() {
   const [investment, setInvestment] = useState(300)
   const [govSpending, setGovSpending] = useState(400)
   const [netExports, setNetExports] = useState(50)
-  const [priceLevel, setPriceLevel] = useState(1.0)
+  const [_priceLevel, setPriceLevel] = useState(1.0)
   const [wageLevel, setWageLevel] = useState(1.0)
   const [inputPrices, setInputPrices] = useState(1.0)
   const [productivity, setProductivity] = useState(1.0)

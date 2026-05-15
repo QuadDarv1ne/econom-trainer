@@ -8,8 +8,7 @@ import { downloadProgressCSV, downloadProgressJSON } from '@/lib/export-progress
 import { useI18n } from '@/lib/i18n-provider'
 import { getCurrentLocale, t } from '@/lib/i18n'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Download, Trophy, Calendar, Target, Zap, Copy, Check, Share2 } from 'lucide-react'
+import { Download, Copy, Check, Share2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 export function exportProgressToPDF() {
@@ -59,7 +58,7 @@ export function exportProgressToPDF() {
     [t('module.elasticity.title', locale), '-', `${progress.elasticityCount}`],
   ]
 
-  // @ts-ignore - jspdf-autotable adds this
+  // @ts-expect-error - jspdf-autotable adds this method dynamically
   doc.autoTable({
     startY: 90,
     head: [[t('export.pdf.tableHeaders.module', locale), t('export.pdf.tableHeaders.accuracy', locale), t('export.pdf.tableHeaders.solved', locale)]],
@@ -69,7 +68,8 @@ export function exportProgressToPDF() {
     styles: { fontSize: 10 },
   })
 
-  const firstTable = (doc as any).lastAutoTable
+  interface AutoTableResult { finalY: number }
+  const firstTable = (doc as unknown as { lastAutoTable?: AutoTableResult }).lastAutoTable
   let finalY = firstTable ? firstTable.finalY + 10 : 130
 
   // Module breakdown
@@ -87,7 +87,7 @@ export function exportProgressToPDF() {
     ])
 
   if (moduleData.length > 0) {
-    // @ts-ignore
+    // @ts-expect-error - jspdf-autotable adds this method dynamically
     doc.autoTable({
       startY: finalY + 5,
       head: [[t('export.pdf.tableHeaders.module', locale), t('export.pdf.tableHeaders.interactions', locale)]],
@@ -99,7 +99,7 @@ export function exportProgressToPDF() {
     })
   }
 
-  const secondTable = (doc as any).lastAutoTable
+  const secondTable = (doc as unknown as { lastAutoTable?: AutoTableResult }).lastAutoTable
   finalY = secondTable ? secondTable.finalY + 15 : finalY + 40
 
   // Achievements section

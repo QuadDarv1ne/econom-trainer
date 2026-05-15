@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { t, getCurrentLocale, setLocale, defaultLocale, translations } from './i18n'
 
 // Mock localStorage

@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import {
   ResponsiveContainer,
   BarChart,
@@ -18,7 +17,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ReferenceLine,
 } from 'recharts'
 import { Globe, RotateCcw, Info, ArrowRight } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
@@ -58,8 +56,6 @@ export function ComparativeAdvantage() {
     // Gains from trade (specialization)
     // Assume each country has 24 hours
     const hours = 24
-    const c1_before_A = hours / (country1.goodA + country1.goodB) * 0.5 // split equally
-    const c1_before_B = hours / (country1.goodA + country1.goodB) * 0.5
 
     // Before trade: each produces both
     const c1ProdA_before = Math.floor(hours / 2 / country1.goodA * 10) / 10
@@ -114,7 +110,7 @@ export function ComparativeAdvantage() {
       c1ProdA_after, c1ProdB_after,
       c2ProdA_after, c2ProdB_after,
     }
-  }, [country1, country2])
+  }, [country1, country2, c1Name, c2Name, t])
 
   const reset = () => {
     setCountry1({ name: t('comparative.countryA'), goodA: 2, goodB: 4 })

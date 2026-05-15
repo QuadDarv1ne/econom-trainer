@@ -69,7 +69,7 @@ export async function POST(req: Request) {
       ? 'Password Reset — Economic Trainer'
       : 'Сброс пароля — Экономический тренажёр';
     const emailSent = await sendEmail({
-      to: user.email!,
+      to: user.email,
       subject,
       html,
     });

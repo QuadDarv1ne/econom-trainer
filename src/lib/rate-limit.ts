@@ -115,8 +115,9 @@ export function getClientIP(req: Request): string | null {
 /**
  * Helper to create a rate-limited response.
  */
-export function rateLimitResponse(key: string, ip: string | null) {
-  const config = configs.get(key)!;
+export function rateLimitResponse(key: string, _ip: string | null) {
+  const config = configs.get(key);
+  if (!config) throw new Error(`Unknown rate limit config key: ${key}`);
   const retryAfter = Math.ceil(config.windowMs / 1000);
 
   return NextResponse.json(

@@ -68,7 +68,7 @@ export function Achievements() {
   const levelTitle = getLevelTitle(xpState.level)
   const levelColor = getLevelColor(xpState.level)
 
-  const quizCorrect = quizResults.reduce((sum, r) => sum + r.score, 0)
+  const _quizCorrect = quizResults.reduce((sum, r) => sum + r.score, 0)
   const financeCorrect = financeResults.filter((r) => r.correct).length
   const totalSessions = quizResults.length + gdpResults.length + financeResults.length + elasticityResults.length
 
@@ -297,7 +297,7 @@ export function Achievements() {
       progress: Math.min(100, Math.round((totalSessions / 15) * 100)),
       xpReward: 200,
     },
-  ], [quizResults, gdpResults, financeResults, elasticityResults, quizCorrect, financeCorrect, totalSessions, maxFinanceStreak, maxQuizRatio, hasPerfectQuiz])
+  ], [quizResults, gdpResults, financeResults, elasticityResults, financeCorrect, totalSessions, maxFinanceStreak, maxQuizRatio, hasPerfectQuiz, t])
 
   const unlockedCount = achievements.filter((a) => a.unlocked).length
   const totalBadgeXP = achievements.filter((a) => a.unlocked).reduce((sum, a) => sum + a.xpReward, 0)

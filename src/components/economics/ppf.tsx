@@ -65,7 +65,6 @@ export function PPFCurve() {
     }
     // Ensure the last point is exactly at maxA
     if (data.length > 0 && data[data.length - 1].a !== maxA) {
-      const concaveB = 0
       const linearB = 0
       data.push({ a: maxA, b: 0, linearB })
     }

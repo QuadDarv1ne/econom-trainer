@@ -105,11 +105,11 @@ describe("localStorage persistence", () => {
       totalXP: 150,
     });
 
-    (localStorage.getItem as any).mockReturnValue(mockData);
+    vi.spyOn(localStorage, 'getItem').mockReturnValue(mockData);
 
     const stored = localStorage.getItem("economics-trainer-data");
     expect(stored).toBe(mockData);
-    expect(JSON.parse(stored!).totalXP).toBe(150);
+    expect(stored && JSON.parse(stored).totalXP).toBe(150);
   });
 });
 

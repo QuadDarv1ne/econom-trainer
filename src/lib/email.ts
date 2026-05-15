@@ -63,7 +63,7 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions): 
 }
 
 const escapeHtml = (str: string) =>
-  str.replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]!));
+  str.replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m] ?? m));
 
 const emailTranslations = {
   ru: {

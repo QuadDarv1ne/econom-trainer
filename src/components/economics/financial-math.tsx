@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
 import { useEconomicsStore } from '@/store/economics-store'
@@ -97,7 +96,7 @@ function generateAnnuityProblem(t: (key: string) => string): { question: string;
 }
 
 export function FinancialMath() {
-  const { t, locale } = useI18n()
+  const { t, locale: _locale } = useI18n()
   const [compoundProblem, setCompoundProblem] = useState<CompoundProblem | null>(null)
   const [npvProblem, setNPVProblem] = useState<NPVProblem | null>(null)
   const [annuityProblem, setAnnuityProblem] = useState<{
