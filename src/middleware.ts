@@ -7,14 +7,14 @@ export default auth(async (req) => {
 
   // API routes: return 401 JSON instead of redirect
   if (url.pathname.startsWith('/api/')) {
-    if (!session) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
     }
     return NextResponse.next();
   }
 
   // Page routes: redirect to login
-  if (!session) {
+  if (!session?.user?.id) {
     const loginUrl = new URL('/auth/login', req.url);
     loginUrl.searchParams.set('callbackUrl', url.pathname);
     return NextResponse.redirect(loginUrl);
