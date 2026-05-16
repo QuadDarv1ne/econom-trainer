@@ -7,6 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "gdp",
     "supply-demand",
     "elasticity",
+    "keynesian",
     "keynesian-cross",
     "inflation",
     "phillips",
@@ -17,6 +18,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "breakeven",
     "tax",
     "game-theory",
+    "market-structures",
+    "price-indices",
+    "economic-crises",
+    "monetary-policy",
+    "adas",
     "quiz",
     "finance",
     "glossary",
@@ -24,7 +30,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "progress",
     "currency",
     "is-lm",
-    "price-indices",
   ];
 
   const routes: MetadataRoute.Sitemap = [

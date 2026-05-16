@@ -16,6 +16,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       },
     ],
-    sitemap: "https://econom-trainer.vercel.app/sitemap.xml",
+    sitemap: `${process.env.NEXT_PUBLIC_URL || 'https://econom-trainer.vercel.app'}/sitemap.xml`,
   };
 }

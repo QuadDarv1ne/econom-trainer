@@ -185,13 +185,17 @@ export default function ProfilePage() {
     // Convert to base64 data URL
     const reader = new FileReader();
     reader.onload = async (ev) => {
-      const imageData = ev.target?.result as string;
+      const imageData = ev.target?.result;
+      if (!imageData) {
+        setError(t('auth.error.avatarUploadError'));
+        return;
+      }
 
       try {
         const res = await fetch('/api/profile', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: imageData }),
+          body: JSON.stringify({ image: imageData as string }),
         });
 
         if (res.ok) {

@@ -30,5 +30,5 @@ export async function safeJson<T = unknown>(
 export function isErrorResponse(
   result: unknown
 ): result is NextResponse<{ error: string }> {
-  return result instanceof NextResponse && result.status === 400;
+  return result instanceof NextResponse && result.status >= 400;
 }
