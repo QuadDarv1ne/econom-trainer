@@ -189,11 +189,15 @@ export function ExportProgressButton() {
   }
 
   const handleCopy = async () => {
-    const text = exportProgressToText()
-    await navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-    toast.success(t('export.copied'))
+    try {
+      const text = exportProgressToText()
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+      toast.success(t('export.copied'))
+    } catch {
+      toast.error(t('export.copyFailed') ?? 'Failed to copy to clipboard')
+    }
   }
 
   const handleShare = async () => {
@@ -207,7 +211,9 @@ export function ExportProgressButton() {
         })
         toast.success(t('export.shareSuccess'))
       } catch (err) {
-        if ((err as Error).name !== 'AbortError') {
+        if (err instanceof DOMException && err.name !== 'AbortError') {
+          toast.error(t('export.shareFailed'))
+        } else if (!(err instanceof DOMException)) {
           toast.error(t('export.shareFailed'))
         }
       }

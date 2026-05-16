@@ -17,11 +17,27 @@ import { useI18n } from '@/lib/i18n-provider';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { PasswordInput } from '@/components/ui/password-input';
 
+/**
+ * Validate callbackUrl to prevent open redirect attacks.
+ * Only allows internal paths starting with '/'.
+ */
+function validateCallbackUrl(url: string): string {
+  if (!url.startsWith('/')) return '/dashboard';
+  if (url.startsWith('//')) return '/dashboard';
+  try {
+    const parsed = new URL(url);
+    if (parsed.origin !== window.location.origin) return '/dashboard';
+  } catch {
+    // Relative URL, which is fine
+  }
+  return url;
+}
+
 function LoginForm() {
   const { t } = useI18n();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  const callbackUrl = validateCallbackUrl(searchParams.get('callbackUrl') || '/dashboard');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [twoFactorCode, setTwoFactorCode] = useState('');

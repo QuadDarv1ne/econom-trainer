@@ -74,18 +74,20 @@ export function checkRateLimit(key: string, ip: string | null): { ok: boolean; r
   // Remove timestamps outside the current window
   entry.timestamps = entry.timestamps.filter((t) => t > windowStart);
 
+  // Record this request first
+  entry.timestamps.push(now);
+
   const count = entry.timestamps.length;
-  const remaining = Math.max(0, config.max - count - 1);
+  const remaining = Math.max(0, config.max - count);
   const resetAt = entry.timestamps.length > 0
     ? entry.timestamps[0] + config.windowMs
     : now + config.windowMs;
 
-  if (count >= config.max) {
+  if (count > config.max) {
+    // Remove the request we just added since it exceeds the limit
+    entry.timestamps.pop();
     return { ok: false, remaining: 0, resetAt };
   }
-
-  // Record this request
-  entry.timestamps.push(now);
 
   return { ok: true, remaining, resetAt };
 }
