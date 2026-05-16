@@ -4,6 +4,7 @@ import { randomBytes } from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
+import { validatePasswordStrength } from '@/lib/validate-password';
 
 export async function POST(req: Request) {
   try {
@@ -24,11 +25,9 @@ export async function POST(req: Request) {
       );
     }
 
-    if (password.length < 8) {
-      return NextResponse.json(
-        { error: 'Пароль должен содержать минимум 8 символов' },
-        { status: 400 }
-      );
+    const strength = validatePasswordStrength(password);
+    if (!strength.valid) {
+      return NextResponse.json({ error: strength.error }, { status: 400 });
     }
 
     // Find valid token

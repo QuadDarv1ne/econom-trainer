@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
+import { validatePasswordStrength } from '@/lib/validate-password';
 
 // POST - Change password
 export async function POST(req: Request) {
@@ -24,11 +25,9 @@ export async function POST(req: Request) {
       );
     }
 
-    if (newPassword.length < 8) {
-      return NextResponse.json(
-        { error: 'Пароль должен содержать минимум 8 символов' },
-        { status: 400 }
-      );
+    const strength = validatePasswordStrength(newPassword);
+    if (!strength.valid) {
+      return NextResponse.json({ error: strength.error }, { status: 400 });
     }
 
     const user = await prisma.user.findUnique({

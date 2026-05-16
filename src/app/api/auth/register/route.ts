@@ -5,6 +5,7 @@ import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit
 import { randomBytes } from 'crypto';
 import { getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
+import { validatePasswordStrength } from '@/lib/validate-password';
 
 export async function POST(req: Request) {
   try {
@@ -33,39 +34,9 @@ export async function POST(req: Request) {
       );
     }
 
-    if (password.length < 8) {
-      return NextResponse.json(
-        { error: 'Пароль должен содержать минимум 8 символов' },
-        { status: 400 }
-      );
-    }
-
-    if (!/[A-ZА-ЯЁ]/.test(password)) {
-      return NextResponse.json(
-        { error: 'Пароль должен содержать хотя бы одну заглавную букву' },
-        { status: 400 }
-      );
-    }
-
-    if (!/[a-zа-яё]/.test(password)) {
-      return NextResponse.json(
-        { error: 'Пароль должен содержать хотя бы одну строчную букву' },
-        { status: 400 }
-      );
-    }
-
-    if (!/[0-9]/.test(password)) {
-      return NextResponse.json(
-        { error: 'Пароль должен содержать хотя бы одну цифру' },
-        { status: 400 }
-      );
-    }
-
-    if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>?]/.test(password)) {
-      return NextResponse.json(
-        { error: 'Пароль должен содержать хотя бы один специальный символ' },
-        { status: 400 }
-      );
+    const strength = validatePasswordStrength(password);
+    if (!strength.valid) {
+      return NextResponse.json({ error: strength.error }, { status: 400 });
     }
 
     // Check if user already exists
