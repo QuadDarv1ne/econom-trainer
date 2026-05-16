@@ -709,8 +709,6 @@ export const translations = {
     'costs.decision.priceBelowAVC': 'ниже мин AVC.',
     'costs.decision.continueSR': 'Продолжаем производство в краткосрочном периоде.',
     'costs.decision.shutdown': 'Точка закрытия.',
-    'costs.interp.mcRule': 'MC = ATC — точка безубыточности.',
-    'costs.interp.mcShutdown': 'MC = AVC — точка закрытия.',
     
     // Tax Calculator
     'tax.title': 'Калькулятор налогов',
@@ -2527,8 +2525,6 @@ export const translations = {
     'costs.decision.priceBelowAVC': 'below min AVC.',
     'costs.decision.continueSR': 'Continue production in the short run.',
     'costs.decision.shutdown': 'Shutdown point.',
-    'costs.interp.mcRule': 'MC = ATC — breakeven point.',
-    'costs.interp.mcShutdown': 'MC = AVC — shutdown point.',
     
     // Tax Calculator
     'tax.title': 'Tax Calculator',
