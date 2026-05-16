@@ -47,17 +47,18 @@ export async function POST(req: Request) {
     const passwordHash = await bcrypt.hash(password, 12);
     const newSessionHash = randomBytes(32).toString('hex');
 
-    // Update user password and revoke all existing sessions
-    await prisma.user.update({
-      where: { email: resetToken.email },
-      data: { passwordHash, sessionHash: newSessionHash },
-    });
-
-    // Mark token as used
-    await prisma.passwordResetToken.update({
-      where: { id: resetToken.id },
-      data: { used: true },
-    });
+    // Atomically update password, revoke sessions, and invalidate token
+    // This prevents token reuse if the second operation were to fail
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { email: resetToken.email },
+        data: { passwordHash, sessionHash: newSessionHash },
+      }),
+      prisma.passwordResetToken.update({
+        where: { id: resetToken.id },
+        data: { used: true },
+      }),
+    ]);
 
     return NextResponse.json({ message: 'Пароль успешно изменён' });
   } catch (error) {

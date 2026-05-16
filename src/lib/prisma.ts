@@ -23,4 +23,6 @@ function createPrismaClient(): PrismaClient {
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+// Always cache in global to prevent multiple PrismaClient instances per process
+// Previously this only happened in development, causing connection leaks in production
+globalForPrisma.prisma = prisma;

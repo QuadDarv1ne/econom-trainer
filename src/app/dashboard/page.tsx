@@ -201,7 +201,7 @@ export default function DashboardPage() {
         setSecret('');
         setBackupCodes([]);
         setDisablePassword('');
-        setSuccess('2FA отключена');
+        setSuccess(t('dashboard.security.disabled'));
         update();
       } else {
         setError(data.error);
