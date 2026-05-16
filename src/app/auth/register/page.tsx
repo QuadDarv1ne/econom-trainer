@@ -14,43 +14,10 @@ import { Progress } from '@/components/ui/progress';
 import { GraduationCap, AlertCircle, Loader2, CheckCircle2, Check, X } from 'lucide-react';
 import { useI18n } from '@/lib/i18n-provider';
 import { PasswordInput } from '@/components/ui/password-input';
+import { checkPasswordStrength, type PasswordStrengthResult } from '@/lib/password-strength';
 
-interface PasswordStrength {
-  score: number; // 0-4
-  label: string;
-  color: string;
-  requirements: {
-    minLength: boolean;
-    hasUpper: boolean;
-    hasLower: boolean;
-    hasNumber: boolean;
-    hasSpecial: boolean;
-  };
-}
-
-function getPasswordStrength(password: string): PasswordStrength {
-  const requirements = {
-    minLength: password.length >= 8,
-    hasUpper: /[A-ZА-ЯЁ]/.test(password),
-    hasLower: /[a-zа-яё]/.test(password),
-    hasNumber: /[0-9]/.test(password),
-    hasSpecial: /[!@#$%^&*()_+\-=[]{};':"\\|,.<>?]/.test(password),
-  };
-
-  const metCount = Object.values(requirements).filter(Boolean).length;
-  let score = Math.min(4, metCount - 1);
-  if (password.length >= 12 && metCount >= 4) score = Math.max(score, 3);
-  if (password.length >= 16 && metCount >= 5) score = 4;
-
-  const labels = ['passwordStrength.weak', 'passwordStrength.weak', 'passwordStrength.fair', 'passwordStrength.good', 'passwordStrength.strong'];
-  const colors = ['bg-red-500', 'bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500'];
-
-  return {
-    score,
-    label: labels[score],
-    color: colors[score],
-    requirements,
-  };
+function getPasswordStrength(password: string): PasswordStrengthResult {
+  return checkPasswordStrength(password);
 }
 
 export default function RegisterPage() {

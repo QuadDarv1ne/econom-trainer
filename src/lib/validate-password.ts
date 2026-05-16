@@ -1,6 +1,13 @@
-/** Shared password strength validation rules.
- *  All password-setting endpoints must use this to enforce consistent requirements.
+/** Shared password validation rules.
+ *  Regex patterns match the client-side checker in src/lib/password-strength.ts.
  */
+
+/** These regex patterns MUST match the ones in src/lib/password-strength.ts */
+const SPECIAL_CHAR_REGEX = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>?]/;
+const UPPER_REGEX = /[A-ZА-ЯЁ]/;
+const LOWER_REGEX = /[a-zа-яё]/;
+const NUMBER_REGEX = /[0-9]/;
+
 export function validatePasswordStrength(
   password: string
 ): { valid: true } | { valid: false; error: string } {
@@ -8,19 +15,19 @@ export function validatePasswordStrength(
     return { valid: false, error: 'Пароль должен содержать минимум 8 символов' };
   }
 
-  if (!/[A-ZА-ЯЁ]/.test(password)) {
+  if (!UPPER_REGEX.test(password)) {
     return { valid: false, error: 'Пароль должен содержать хотя бы одну заглавную букву' };
   }
 
-  if (!/[a-zа-яё]/.test(password)) {
+  if (!LOWER_REGEX.test(password)) {
     return { valid: false, error: 'Пароль должен содержать хотя бы одну строчную букву' };
   }
 
-  if (!/[0-9]/.test(password)) {
+  if (!NUMBER_REGEX.test(password)) {
     return { valid: false, error: 'Пароль должен содержать хотя бы одну цифру' };
   }
 
-  if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>?]/.test(password)) {
+  if (!SPECIAL_CHAR_REGEX.test(password)) {
     return { valid: false, error: 'Пароль должен содержать хотя бы один специальный символ' };
   }
 

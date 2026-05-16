@@ -6,11 +6,45 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { useEconomicsStore } from "@/store/economics-store";
 
 export default function OfflinePage() {
   const [isOnline, setIsOnline] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const { toast } = useToast();
+  const storeState = useEconomicsStore((s) => ({
+    totalXP: s.totalXP,
+    quizResults: s.quizResults,
+    moduleInteractions: s.moduleInteractions,
+    unlockedAchievements: s.unlockedAchievements,
+  }));
+
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      const res = await fetch('/api/progress/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          totalXP: storeState.totalXP,
+          quizResults: storeState.quizResults,
+          moduleHistory: storeState.moduleInteractions,
+          achievements: storeState.unlockedAchievements,
+        }),
+      });
+
+      if (res.ok) {
+        toast({ title: "Синхронизация завершена", description: "Прогресс успешно синхронизирован!" });
+      } else {
+        const data = await res.json();
+        toast({ title: "Ошибка синхронизации", description: data.error || "Не удалось синхронизировать прогресс.", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Ошибка синхронизации", description: "Проверьте соединение и попробуйте снова.", variant: "destructive" });
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   useEffect(() => {
     const updateStatus = () => setIsOnline(navigator.onLine);
@@ -34,13 +68,6 @@ export default function OfflinePage() {
 
   const handleReload = () => {
     window.location.reload();
-  };
-
-  const handleSync = async () => {
-    setSyncing(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setSyncing(false);
-    toast({ title: "Синхронизация завершена", description: "Прогресс синхронизирован!" });
   };
 
   return (

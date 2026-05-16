@@ -97,9 +97,12 @@ export default function DashboardPage() {
         setProfile(data);
         setName(data.name || '');
         setPhone(data.phone || '');
+      } else {
+        setError(t('dashboard.profile.saveError'));
       }
     } catch (e) {
       console.error(e);
+      setError(t('dashboard.profile.saveError'));
     } finally {
       setLoading(false);
     }
