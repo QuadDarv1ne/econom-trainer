@@ -225,11 +225,11 @@ econom-trenazher/
 - [x] "Market Structures" Module — from perfect competition to monopoly
 - [x] "Currency Calculator" Module — exchange rates and cross-rates
 - [x] Progress export to PDF report
-- [ ] Full multilingual support (EN/RU)
+- [x] Full multilingual support (EN/RU)
 - [x] PWA manifest and metadata (Web App Manifest, viewport, theme-color)
 - [x] Unit tests (Vitest + React Testing Library)
 - [x] SEO: dynamic sitemap.xml and robots.txt
-- [ ] E2E tests (Playwright)
+- [x] E2E tests (Playwright)
 - [ ] LMS integration (Moodle, Canvas)
 - [x] Service Worker for offline mode
 

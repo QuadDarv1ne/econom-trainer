@@ -662,7 +662,6 @@ export function EconomicsQuiz() {
           if (!hasTransitionedRef.current) {
             hasTransitionedRef.current = true
             setTimeExpired(true)
-            // Auto-advance: mark answer as null and transition to answered state
             setAnswers((prev) => {
               const next = [...prev]
               next[currentQuestionRef.current] = null

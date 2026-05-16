@@ -192,7 +192,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('home')
   const { data: session } = useSession()
   const router = useRouter()
-  const { locale: _locale, t } = useI18n()
+  const { t } = useI18n()
   const totalXP = useEconomicsStore((s) => s.totalXP)
   const moduleInteractions = useEconomicsStore((s) => s.moduleInteractions)
   const xpState = getLevelFromXP(totalXP)
@@ -348,7 +348,7 @@ export default function Home() {
                   </div>
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/5 border border-primary/20">
                     <LayoutGrid className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">{exploredCount}/24 {t('home.hero.modulesExplored')}</span>
+                    <span className="text-sm font-medium">{exploredCount}/25 {t('home.hero.modulesExplored')}</span>
                   </div>
                 </div>
               )}
@@ -484,7 +484,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
           {t('home.footer.text')}
           {totalXP > 0 && (
-            <span className="hidden sm:inline"> • {totalXP.toLocaleString('ru-RU')} {t('home.header.xpLabel')} • {exploredCount}/24 {t('home.hero.modulesExplored')}</span>
+            <span className="hidden sm:inline"> • {totalXP.toLocaleString('ru-RU')} {t('home.header.xpLabel')} • {exploredCount}/25 {t('home.hero.modulesExplored')}</span>
           )}
           <span className="hidden sm:inline"> • {t('home.footer.author')}</span>
         </div>

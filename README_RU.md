@@ -225,11 +225,11 @@ econom-trenazher/
 - [x] Модуль «Рыночные структуры» — от совершенной конкуренции до монополии
 - [x] Модуль «Валютный калькулятор» — курсы и кросс-курсы валют
 - [x] Экспорт прогресса в PDF-отчёт
-- [ ] Мультиязычность (полная поддержка EN/РУ)
+- [x] Мультиязычность (полная поддержка EN/РУ)
 - [x] PWA-манифест и метаданные (Web App Manifest, viewport, theme-color)
 - [x] Unit-тесты (Vitest + React Testing Library)
 - [x] SEO: динамический sitemap.xml и robots.txt
-- [ ] E2E-тесты (Playwright)
+- [x] E2E-тесты (Playwright)
 - [ ] Интеграция с LMS (Moodle, Canvas)
 - [x] Service Worker для офлайн-работы
 

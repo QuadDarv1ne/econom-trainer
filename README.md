@@ -75,11 +75,11 @@ npm run dev
 - [x] Модуль «Рыночные структуры»
 - [x] Модуль «Валютный калькулятор»
 - [x] Экспорт прогресса в PDF
-- [ ] Полная мультиязычность (EN/RU)
+- [x] Полная мультиязычность (EN/RU)
 - [x] PWA-манифест и метаданные
 - [x] Unit-тесты
 - [x] SEO: sitemap.xml и robots.txt
-- [ ] E2E-тесты (Playwright)
+- [x] E2E-тесты (Playwright)
 - [ ] Интеграция с LMS (Moodle, Canvas)
 - [x] Service Worker для офлайн-работы
 
