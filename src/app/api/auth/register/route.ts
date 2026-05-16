@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('register', ip);
     if (!limit.ok) {
-      return rateLimitResponse('register', ip);
+      return rateLimitResponse('register', ip, req);
     }
 
     const parsed = await safeJson<{ name: string; email: string; password: string; phone?: string }>(req);

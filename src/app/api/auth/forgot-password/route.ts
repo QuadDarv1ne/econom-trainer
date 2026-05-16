@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('forgotPass', ip);
     if (!limit.ok) {
-      return rateLimitResponse('forgotPass', ip);
+      return rateLimitResponse('forgotPass', ip, req);
     }
 
     const parsed = await safeJson<{ email: string }>(req);
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 
     // Always return success to prevent email enumeration
     if (!user || !user.email) {
-      return NextResponse.json({ message: 'Если email зарегистрирован, мы отправим ссылку для сброса' });
+      return NextResponse.json({ message: 'If this email is registered, we will send a reset link' });
     }
 
     // Generate reset token
