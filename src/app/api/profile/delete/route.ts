@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
+import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 
 // DELETE - Delete user account
 export async function DELETE(req: Request) {
@@ -10,6 +11,12 @@ export async function DELETE(req: Request) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+    }
+
+    const ip = getClientIP(req);
+    const limit = checkRateLimit('deleteAcc', ip);
+    if (!limit.ok) {
+      return rateLimitResponse('deleteAcc', ip);
     }
 
     const parsed = await safeJson<{ password: string }>(req);

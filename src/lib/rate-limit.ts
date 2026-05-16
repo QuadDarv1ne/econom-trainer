@@ -51,6 +51,8 @@ export const RATE_LIMITS = {
   forgotPass:  { windowMs: 60 * 60 * 1000, max: 3 },    // 3 reset requests per hour
   resetPass:   { windowMs: 60 * 1000, max: 10 },        // 10 attempts per minute
   twoFactor:   { windowMs: 15 * 60 * 1000, max: 10 },   // 10 attempts per 15 min
+  changePass:  { windowMs: 15 * 60 * 1000, max: 10 },   // 10 attempts per 15 min
+  deleteAcc:   { windowMs: 15 * 60 * 1000, max: 5 },    // 5 attempts per 15 min
 } as const;
 
 export function configureRateLimit(key: string, config: RateLimitConfig) {

@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validatePasswordStrength } from '@/lib/validate-password';
+import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 
 // POST - Change password
 export async function POST(req: Request) {
@@ -12,6 +13,12 @@ export async function POST(req: Request) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+    }
+
+    const ip = getClientIP(req);
+    const limit = checkRateLimit('changePass', ip);
+    if (!limit.ok) {
+      return rateLimitResponse('changePass', ip);
     }
 
     const parsed = await safeJson<{ currentPassword: string; newPassword: string }>(req);
