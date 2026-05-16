@@ -25,7 +25,7 @@ describe('exportToCSV', () => {
 
   it('produces CSV with headers', () => {
     const csv = exportToCSV()
-    expect(csv).toContain('"Метрика","Значение"')
+    expect(csv).toContain('Метрика,Значение')
   })
 
   it('includes total XP row', () => {

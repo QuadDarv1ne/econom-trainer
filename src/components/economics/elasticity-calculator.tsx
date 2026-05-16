@@ -70,7 +70,7 @@ export function ElasticityCalculator() {
     else { interpretation = 'Абсолютно неэластичный спрос — объём не меняется при изменении цены'; category = 'Абс. неэластичный' }
 
     setResult({ type: 'price', value: ed, interpretation, category })
-    addElasticityResult({ id: Date.now().toString(), elasticityType: 'price', value: ed, interpretation, category, date: new Date().toISOString() })
+    addElasticityResult({ id: crypto.randomUUID(), elasticityType: 'price', value: ed, interpretation, category, date: new Date().toISOString() })
   }, [q1, q2, p1, p2, addElasticityResult, toast])
 
   const calculateIncomeElasticity = useCallback(() => {
@@ -92,7 +92,7 @@ export function ElasticityCalculator() {
     else { interpretation = 'Низший товар — спрос падает с ростом дохода (E < 0)'; category = 'Низший' }
 
     setResult({ type: 'income', value: ey, interpretation, category })
-    addElasticityResult({ id: Date.now().toString(), elasticityType: 'income', value: ey, interpretation, category, date: new Date().toISOString() })
+    addElasticityResult({ id: crypto.randomUUID(), elasticityType: 'income', value: ey, interpretation, category, date: new Date().toISOString() })
   }, [q1Inc, q2Inc, y1, y2, addElasticityResult, toast])
 
   const calculateCrossElasticity = useCallback(() => {
@@ -113,7 +113,7 @@ export function ElasticityCalculator() {
     else { interpretation = 'Независимые товары — цена товара Y не влияет на спрос товара X'; category = 'Независимые' }
 
     setResult({ type: 'cross', value: exy, interpretation, category })
-    addElasticityResult({ id: Date.now().toString(), elasticityType: 'cross', value: exy, interpretation, category, date: new Date().toISOString() })
+    addElasticityResult({ id: crypto.randomUUID(), elasticityType: 'cross', value: exy, interpretation, category, date: new Date().toISOString() })
   }, [q1Cross, q2Cross, px1, px2, addElasticityResult, toast])
 
   const reset = useCallback(() => {

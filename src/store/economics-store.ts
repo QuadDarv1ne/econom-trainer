@@ -285,7 +285,7 @@ export const useEconomicsStore = create<EconomicsState>()(
         set((state) => {
           const newInteraction: ModuleInteraction = {
             ...interaction,
-            id: Date.now().toString(),
+            id: crypto.randomUUID(),
             date: new Date().toISOString(),
           }
           const newInteractions = [newInteraction, ...state.moduleInteractions].slice(0, 500)

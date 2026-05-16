@@ -68,7 +68,7 @@ export function GDPCalculator() {
     setCalculated(true)
 
     addGDPResult({
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       nominalGDP: nominal,
       realGDP: real,
       deflator: def,

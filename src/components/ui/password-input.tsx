@@ -18,7 +18,7 @@ const PasswordInput = React.forwardRef<
         type={isVisible ? "text" : "password"}
         className={cn("pr-10", className)}
         ref={ref}
-        autoComplete={autoComplete || "current-password"}
+        autoComplete={autoComplete}
         {...props}
       />
       <Button

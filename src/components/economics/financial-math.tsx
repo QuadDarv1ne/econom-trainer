@@ -136,7 +136,7 @@ export function FinancialMath() {
       }
 
       addFinanceResult({
-        id: Date.now().toString(),
+        id: crypto.randomUUID(),
         problemType,
         correct,
         userAnswer: parsed,

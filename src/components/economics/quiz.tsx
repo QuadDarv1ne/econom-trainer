@@ -772,7 +772,7 @@ export function EconomicsQuiz() {
     if (currentQuestion + 1 >= shuffledQuestions.length) {
       const finalScore = score
       addQuizResult({
-        id: Date.now().toString(),
+        id: crypto.randomUUID(),
         topic: t('quiz.topicEconomicTheory'),
         score: finalScore,
         total: shuffledQuestions.length,
