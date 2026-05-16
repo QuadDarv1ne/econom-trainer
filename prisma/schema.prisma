@@ -24,8 +24,6 @@ model User {
 
   // 2FA
   twoFactorEnabled Boolean  @default(false)
-  twoFactorSecret  String?  // TOTP secret (encrypted)
-  backupCodes      String?  // JSON array of hashed backup codes
 
   // Session management
   sessionHash      String?  // Current valid session hash (invalidates old JWTs)

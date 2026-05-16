@@ -30,21 +30,21 @@ export function exportToCSV(): string {
   let csv = `${t('export.csv.metric', locale)},${t('export.csv.value', locale)}\n`
 
   // Basic stats
-  csv += `${t('export.csv.totalXP', locale)},${state.totalXP}\n`
-  csv += `${t('export.csv.level', locale)},${level.level}\n`
-  csv += `${t('export.csv.levelName', locale)},${getLevelTitle(level.level)}\n`
-  csv += `${t('export.csv.interactions', locale)},${state.moduleInteractions.length}\n`
-  csv += `${t('export.csv.created', locale)},${timestamp}\n`
+  csv += `"${t('export.csv.totalXP', locale)}","${state.totalXP}"\n`
+  csv += `"${t('export.csv.level', locale)}","${level.level}"\n`
+  csv += `"${t('export.csv.levelName', locale)}","${getLevelTitle(level.level)}"\n`
+  csv += `"${t('export.csv.interactions', locale)}","${state.moduleInteractions.length}"\n`
+  csv += `"${t('export.csv.created', locale)}","${timestamp}"\n`
   csv += `\n`
 
   // Module interactions
-  csv += `${t('export.csv.module', locale)},${t('export.csv.interactions', locale)}\n`
+  csv += `"${t('export.csv.module', locale)}","${t('export.csv.interactions', locale)}"\n`
   const moduleCounts: Record<string, number> = {}
   state.moduleInteractions.forEach((interaction) => {
     moduleCounts[interaction.moduleId] = (moduleCounts[interaction.moduleId] || 0) + 1
   })
   Object.entries(moduleCounts).forEach(([module, count]) => {
-    csv += `"${getModuleDisplayName(module, locale)}",${count}\n`
+    csv += `"${getModuleDisplayName(module, locale)}","${count}"\n`
   })
   csv += `\n`
 
@@ -54,10 +54,10 @@ export function exportToCSV(): string {
   const financeCorrect = state.financeResults.filter((r) => r.correct).length
   const financeTotal = state.financeResults.length
 
-  csv += `${t('export.csv.quizResults', locale)},${quizCorrect}\n`
-  csv += `${t('export.csv.quizTotalQuestions', locale)},${quizTotal}\n`
-  csv += `${t('export.csv.financeTasksCorrect', locale)},${financeCorrect}\n`
-  csv += `${t('export.csv.financeTasksTotal', locale)},${financeTotal}\n`
+  csv += `"${t('export.csv.quizResults', locale)}","${quizCorrect}"\n`
+  csv += `"${t('export.csv.quizTotalQuestions', locale)}","${quizTotal}"\n`
+  csv += `"${t('export.csv.financeTasksCorrect', locale)}","${financeCorrect}"\n`
+  csv += `"${t('export.csv.financeTasksTotal', locale)}","${financeTotal}"\n`
 
   return csv
 }

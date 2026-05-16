@@ -53,7 +53,6 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions): 
       return false;
     }
 
-    console.log('[Email] Sent successfully.');
     return true;
   } catch (error) {
     console.error('[Email] Error sending email:', error);
