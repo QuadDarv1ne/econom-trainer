@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import type { NextAuthConfig } from "next-auth";
-import { prisma } from "@/lib/prisma";
 
 export const authConfig: NextAuthConfig = {
   providers: [],
@@ -21,22 +20,6 @@ export const authConfig: NextAuthConfig = {
       if (trigger === "update" && session) {
         return { ...token, ...session };
       }
-
-      // Validate sessionHash against database on every request
-      if (token.id && token.sessionHash) {
-        try {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: token.id as string },
-            select: { sessionHash: true },
-          });
-          if (!dbUser || dbUser.sessionHash !== token.sessionHash) {
-            return { id: null, sessionHash: null, twoFactorEnabled: null };
-          }
-        } catch {
-          return { id: null, sessionHash: null, twoFactorEnabled: null };
-        }
-      }
-
       return token;
     },
     async session({ session, token }) {

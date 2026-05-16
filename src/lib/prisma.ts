@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import path from "path";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
@@ -11,6 +10,8 @@ function createPrismaClient(): PrismaClient {
   // Dynamic import for adapter to avoid Edge runtime issues
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3");
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const path = require("path");
 
   const dbPath = path.resolve(process.cwd(), "prisma", "dev.db");
   const adapter = new PrismaBetterSqlite3({ url: `file:${dbPath}` });
