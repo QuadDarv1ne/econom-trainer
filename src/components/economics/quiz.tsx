@@ -622,6 +622,7 @@ export function EconomicsQuiz() {
   const [timeLeft, setTimeLeft] = useState(QUIZ_TIME)
   const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>([])
   const [answers, setAnswers] = useState<(number | null)[]>([])
+  const [timeExpired, setTimeExpired] = useState(false)
   const addQuizResult = useEconomicsStore((s) => s.addQuizResult)
   const { toast } = useToast()
   const { t } = useI18n()
@@ -635,8 +636,8 @@ export function EconomicsQuiz() {
   // Guard to prevent race condition between timer and handleAnswer
   const hasTransitionedRef = useRef(false)
 
-  // Detect when time runs out during active quiz
-  const isTimeUp = quizState === 'active' && timeLeft <= 0
+  // Detect when time ran out (set by timer effect, reset when starting next question)
+  const isTimeUp = timeExpired && timeLeft === 0
 
   const startQuiz = useCallback(() => {
     const shuffled = [...questions].sort(() => Math.random() - 0.5).slice(0, 10)
@@ -646,6 +647,7 @@ export function EconomicsQuiz() {
     setSelectedAnswer(null)
     setAnswers(new Array(shuffled.length).fill(null))
     setTimeLeft(QUIZ_TIME)
+    setTimeExpired(false)
     setQuizState('active')
   }, [])
 
@@ -659,6 +661,7 @@ export function EconomicsQuiz() {
           clearInterval(timer)
           if (!hasTransitionedRef.current) {
             hasTransitionedRef.current = true
+            setTimeExpired(true)
             // Auto-advance: mark answer as null and transition to answered state
             setAnswers((prev) => {
               const next = [...prev]
@@ -716,6 +719,7 @@ export function EconomicsQuiz() {
     setCurrentQuestion((q) => q + 1)
     setSelectedAnswer(null)
     setTimeLeft(QUIZ_TIME)
+    setTimeExpired(false)
     setQuizState('active')
   }, [currentQuestion, shuffledQuestions, score, addQuizResult, toast, t])
 
