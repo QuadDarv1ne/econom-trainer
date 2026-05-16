@@ -1,6 +1,12 @@
 import NextAuth from "next-auth";
 import type { NextAuthConfig } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import {
+  getCachedSessionHash,
+  setCachedSessionHash,
+  invalidateSessionCache,
+  scheduleCacheCleanup,
+} from "@/lib/session-cache";
 
 export const authConfig: NextAuthConfig = {
   providers: [],
@@ -22,18 +28,26 @@ export const authConfig: NextAuthConfig = {
         return { ...token, ...session };
       }
 
-      // Validate sessionHash against database on every request
+      // Validate sessionHash against database with caching
       if (token.id && token.sessionHash) {
-        try {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: token.id as string },
-            select: { sessionHash: true },
-          });
-          if (!dbUser || dbUser.sessionHash !== token.sessionHash) {
+        const cachedHash = getCachedSessionHash(token.id as string);
+        if (cachedHash !== null && cachedHash === token.sessionHash) {
+          // Cache hit — session is valid, skip DB query
+        } else {
+          scheduleCacheCleanup();
+          try {
+            const dbUser = await prisma.user.findUnique({
+              where: { id: token.id as string },
+              select: { sessionHash: true },
+            });
+            if (!dbUser || dbUser.sessionHash !== token.sessionHash) {
+              invalidateSessionCache(token.id as string);
+              return { id: null, sessionHash: null, twoFactorEnabled: null };
+            }
+            setCachedSessionHash(token.id as string, dbUser.sessionHash!);
+          } catch {
             return { id: null, sessionHash: null, twoFactorEnabled: null };
           }
-        } catch {
-          return { id: null, sessionHash: null, twoFactorEnabled: null };
         }
       }
 

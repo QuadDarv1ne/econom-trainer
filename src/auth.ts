@@ -5,39 +5,12 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { authenticator } from "otplib";
 import { checkRateLimit, getClientIP } from "@/lib/rate-limit";
-
-// Cache sessionHash validation to avoid N+1 DB queries on every request.
-// Keyed by userId, stores { hash, expiresAt }. TTL of 30s balances security and performance.
-const sessionCache = new Map<string, { hash: string; expiresAt: number }>();
-const SESSION_CACHE_TTL = 30 * 1000; // 30 seconds
-
-function getCachedSessionHash(userId: string): string | null {
-  const cached = sessionCache.get(userId);
-  if (cached && cached.expiresAt > Date.now()) {
-    return cached.hash;
-  }
-  sessionCache.delete(userId);
-  return null;
-}
-
-function setCachedSessionHash(userId: string, hash: string): void {
-  sessionCache.set(userId, { hash, expiresAt: Date.now() + SESSION_CACHE_TTL });
-}
-
-// Periodic cleanup of expired cache entries
-let cleanupScheduled = false;
-function scheduleCacheCleanup(): void {
-  if (cleanupScheduled) return;
-  cleanupScheduled = true;
-  setTimeout(() => {
-    cleanupScheduled = false;
-    const now = Date.now();
-    for (const [key, entry] of sessionCache.entries()) {
-      if (entry.expiresAt <= now) sessionCache.delete(key);
-    }
-    scheduleCacheCleanup();
-  }, SESSION_CACHE_TTL).unref?.();
-}
+import {
+  getCachedSessionHash,
+  setCachedSessionHash,
+  invalidateSessionCache,
+  scheduleCacheCleanup,
+} from "@/lib/session-cache";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -165,7 +138,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             });
             if (!dbUser || dbUser.sessionHash !== token.sessionHash) {
               // Session has been revoked - invalidate by clearing sensitive fields
-              sessionCache.delete(token.id as string);
+              invalidateSessionCache(token.id as string);
               return { id: null, sessionHash: null, twoFactorEnabled: null };
             }
             // Cache the valid session hash
