@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -78,18 +78,7 @@ export default function DashboardPage() {
   const moduleInteractionsCount = useEconomicsStore((s) => s.moduleInteractions.length);
   const [syncing, setSyncing] = useState(false);
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/login');
-      return;
-    }
-
-    if (status === 'authenticated') {
-      fetchProfile();
-    }
-  }, [status, router]);
-
-  async function fetchProfile() {
+  const fetchProfile = useCallback(async () => {
     try {
       const res = await fetch('/api/profile');
       if (res.ok) {
@@ -106,7 +95,18 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [t]);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/login');
+      return;
+    }
+
+    if (status === 'authenticated') {
+      fetchProfile();
+    }
+  }, [status, router, fetchProfile]);
 
   async function updateProfile(e: React.FormEvent) {
     e.preventDefault();

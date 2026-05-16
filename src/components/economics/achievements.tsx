@@ -71,7 +71,6 @@ export function Achievements() {
 
   const achievements: Achievement[] = useMemo(() => {
     // Compute intermediate values inside useMemo to avoid invalidating on every store change
-    const quizCorrect = quizResults.reduce((sum, r) => sum + r.score, 0)
     const finCorrect = financeResults.filter((r) => r.correct).length
     const sessions = quizResults.length + gdpResults.length + financeResults.length + elasticityResults.length
 

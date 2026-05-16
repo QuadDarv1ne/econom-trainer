@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -101,29 +101,7 @@ export default function ProfilePage() {
   const totalXP = useEconomicsStore((s) => s.totalXP);
   const [syncing, setSyncing] = useState(false);
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/login');
-      return;
-    }
-
-    if (status === 'authenticated') {
-      fetchProfile();
-    }
-  }, [status, router]);
-
-  // Cooldown timer
-  useEffect(() => {
-    if (resendCooldown <= 0) return;
-
-    const timer = setTimeout(() => {
-      setResendCooldown((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [resendCooldown]);
-
-  async function fetchProfile() {
+  const fetchProfile = useCallback(async () => {
     try {
       const res = await fetch('/api/profile');
       if (res.ok) {
@@ -140,7 +118,29 @@ export default function ProfilePage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [t]);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/login');
+      return;
+    }
+
+    if (status === 'authenticated') {
+      fetchProfile();
+    }
+  }, [status, router, fetchProfile]);
+
+  // Cooldown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+
+    const timer = setTimeout(() => {
+      setResendCooldown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
 
   async function updateProfile(e: React.FormEvent) {
     e.preventDefault();

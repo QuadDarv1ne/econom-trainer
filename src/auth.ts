@@ -142,7 +142,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               return { id: null, sessionHash: null, twoFactorEnabled: null };
             }
             // Cache the valid session hash
-            setCachedSessionHash(token.id as string, dbUser.sessionHash!);
+            if (dbUser.sessionHash) {
+              setCachedSessionHash(token.id as string, dbUser.sessionHash);
+            }
           } catch (error) {
             // If DB check fails, log error and fail closed for security
             console.error("Session validation failed:", error);

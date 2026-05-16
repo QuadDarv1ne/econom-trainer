@@ -44,7 +44,9 @@ export const authConfig: NextAuthConfig = {
               invalidateSessionCache(token.id as string);
               return { id: null, sessionHash: null, twoFactorEnabled: null };
             }
-            setCachedSessionHash(token.id as string, dbUser.sessionHash!);
+            if (dbUser.sessionHash) {
+              setCachedSessionHash(token.id as string, dbUser.sessionHash);
+            }
           } catch {
             return { id: null, sessionHash: null, twoFactorEnabled: null };
           }
