@@ -52,7 +52,7 @@ export function ElasticityCalculator() {
     const Q1 = parseFloat(q1), Q2 = parseFloat(q2)
     const P1 = parseFloat(p1), P2 = parseFloat(p2)
     if ([Q1, Q2, P1, P2].some((v) => isNaN(v)) || P1 === P2) {
-      toast({ title: 'Ошибка', description: 'Заполните все поля корректно (P1 ≠ P2)', variant: 'destructive' })
+      toast({ title: t('common.error'), description: 'Заполните все поля корректно (P1 ≠ P2)', variant: 'destructive' })
       return
     }
     const midQ = (Q1 + Q2) / 2
@@ -77,7 +77,7 @@ export function ElasticityCalculator() {
     const Q1 = parseFloat(q1Inc), Q2 = parseFloat(q2Inc)
     const Y1 = parseFloat(y1), Y2 = parseFloat(y2)
     if ([Q1, Q2, Y1, Y2].some((v) => isNaN(v)) || Y1 === Y2) {
-      toast({ title: 'Ошибка', description: 'Заполните все поля корректно (Y1 ≠ Y2)', variant: 'destructive' })
+      toast({ title: t('common.error'), description: 'Заполните все поля корректно (Y1 ≠ Y2)', variant: 'destructive' })
       return
     }
     const midQ = (Q1 + Q2) / 2
@@ -99,7 +99,7 @@ export function ElasticityCalculator() {
     const Q1 = parseFloat(q1Cross), Q2 = parseFloat(q2Cross)
     const PX1 = parseFloat(px1), PX2 = parseFloat(px2)
     if ([Q1, Q2, PX1, PX2].some((v) => isNaN(v)) || PX1 === PX2) {
-      toast({ title: 'Ошибка', description: 'Заполните все поля корректно (Px1 ≠ Px2)', variant: 'destructive' })
+      toast({ title: t('common.error'), description: 'Заполните все поля корректно (Px1 ≠ Px2)', variant: 'destructive' })
       return
     }
     const midQ = (Q1 + Q2) / 2

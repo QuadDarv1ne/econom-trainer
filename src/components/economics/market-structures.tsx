@@ -449,7 +449,7 @@ export function MarketStructures() {
                   </div>
                   {type === 'perfect' && (
                     <p className="text-xs mt-2 text-green-600">
-                      {t('market.psPerfectCompetiton')}
+                      {t('market.psPerfectCompetition')}
                     </p>
                   )}
                 </CardContent>
@@ -471,7 +471,7 @@ export function MarketStructures() {
                   </div>
                   {type === 'perfect' && (
                     <p className="text-xs mt-2 text-green-600">
-                      {t('market.dwlPerfectCompetiton')}
+                      {t('market.dwlPerfectCompetition')}
                     </p>
                   )}
                 </CardContent>

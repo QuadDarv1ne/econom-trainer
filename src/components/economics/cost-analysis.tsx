@@ -53,20 +53,20 @@ function CostTooltip({ active, payload, label }: { active?: boolean; payload?: A
 }
 
 // Custom legend — defined outside render
-function CostLegend({ price }: { price: number }) {
+function CostLegend({ price, t }: { price: number; t: (key: string) => string }) {
   return (
     <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-2 text-xs">
       <span className="flex items-center gap-1">
-        <span className="inline-block w-4 h-0.5" style={{ backgroundColor: COLORS.atc }} /> ATC (средние общие)
+        <span className="inline-block w-4 h-0.5" style={{ backgroundColor: COLORS.atc }} /> {t('costs.legend.atc')}
       </span>
       <span className="flex items-center gap-1">
-        <span className="inline-block w-4 h-0.5" style={{ backgroundColor: COLORS.avc }} /> AVC (средние переменные)
+        <span className="inline-block w-4 h-0.5" style={{ backgroundColor: COLORS.avc }} /> {t('costs.legend.avc')}
       </span>
       <span className="flex items-center gap-1">
-        <span className="inline-block w-4 h-0.5" style={{ backgroundColor: COLORS.mc }} /> MC (предельные)
+        <span className="inline-block w-4 h-0.5" style={{ backgroundColor: COLORS.mc }} /> {t('costs.legend.mc')}
       </span>
       <span className="flex items-center gap-1">
-        <span className="inline-block w-4 h-0.5 border-t border-dashed" style={{ borderColor: COLORS.afc }} /> AFC (средние постоянные)
+        <span className="inline-block w-4 h-0.5 border-t border-dashed" style={{ borderColor: COLORS.afc }} /> {t('costs.legend.afc')}
       </span>
       {price > 0 && (
         <span className="flex items-center gap-1">
@@ -357,7 +357,7 @@ export function CostAnalysis() {
                   domain={[0, 'auto']}
                 />
                 <Tooltip content={<CostTooltip />} />
-                <Legend content={<CostLegend price={price} />} />
+                <Legend content={<CostLegend price={price} t={t} />} />
 
                 {/* Price line */}
                 {price > 0 && (
@@ -519,10 +519,10 @@ export function CostAnalysis() {
               </div>
               <div className="text-xs text-muted-foreground">
                 {price >= (breakevenPrice ?? Infinity)
-                  ? `${t('costs.interp.positive')} P=${price} ≥ min ATC.`
+                  ? `${t('costs.decision.priceCovers')} P=${price} ≥ min ATC.`
                   : price >= shutdownPrice
-                    ? `P=${price} не покрывает ATC, но покрывает AVC. ${t('costs.interp.negative')} ${t('costs.shortRunLabel')}.`
-                    : `P=${price} < min AVC. ${t('costs.interp.negative')} ${t('costs.shutdownPoint')}.`
+                    ? `P=${price} ${t('costs.decision.notCoverATC')} ${t('costs.decision.continueSR')}`
+                    : `P=${price} ${t('costs.decision.priceBelowAVC')} ${t('costs.decision.shutdown')}`
                 }
               </div>
             </div>
