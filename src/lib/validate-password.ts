@@ -15,6 +15,10 @@ export function validatePasswordStrength(
     return { valid: false, error: 'Пароль должен содержать минимум 8 символов' };
   }
 
+  if (password.length > 128) {
+    return { valid: false, error: 'Пароль не должен превышать 128 символов' };
+  }
+
   if (!UPPER_REGEX.test(password)) {
     return { valid: false, error: 'Пароль должен содержать хотя бы одну заглавную букву' };
   }

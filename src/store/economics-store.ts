@@ -217,6 +217,7 @@ export interface EconomicsState {
   unlockAchievement: (id: string, xpReward?: number) => void
   addXP: (amount: number) => void
   getTotalScore: () => { quizzes: number; gdp: number; finance: number; elasticity: number }
+  computeStats: () => { quizCorrect: number; quizTotal: number; financeCorrect: number; financeTotal: number }
   getStreak: () => number
   getXPState: () => XPState
   resetProgress: () => void
@@ -363,6 +364,15 @@ export const useEconomicsStore = create<EconomicsState>()(
           finance: financeTotal > 0 ? Math.round((financeCorrect / financeTotal) * 100) : 0,
           elasticity: elasticityTotal,
         }
+      },
+
+      computeStats: () => {
+        const state = get()
+        const quizCorrect = state.quizResults.reduce((sum, r) => sum + r.score, 0)
+        const quizTotal = state.quizResults.reduce((sum, r) => sum + r.total, 0)
+        const financeCorrect = state.financeResults.filter((r) => r.correct).length
+        const financeTotal = state.financeResults.length
+        return { quizCorrect, quizTotal, financeCorrect, financeTotal }
       },
 
       getStreak: () => {

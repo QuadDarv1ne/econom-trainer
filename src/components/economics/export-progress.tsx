@@ -129,7 +129,7 @@ export function exportProgressToPDF() {
   // Footer
   doc.setFontSize(8)
   doc.setTextColor(128, 128, 128)
-  doc.text(t('export.pdf.title', locale) + ' v7.0', 105, 290, { align: 'center' })
+  doc.text(t('export.pdf.title', locale), 105, 290, { align: 'center' })
   doc.text(`${t('export.pdf.generatedDate', locale)}: ${now}`, 105, 295, { align: 'center' })
 
   // Save

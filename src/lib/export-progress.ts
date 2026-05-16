@@ -18,6 +18,17 @@ export interface ExportData {
 }
 
 /**
+ * Escape a value for CSV output. Wraps in quotes and doubles any internal quotes.
+ */
+function escapeCsvValue(value: string | number): string {
+  const str = String(value);
+  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return `"${str}"`;
+}
+
+/**
  * Export progress data to CSV format
  */
 export function exportToCSV(): string {
@@ -27,24 +38,24 @@ export function exportToCSV(): string {
   const locale = getCurrentLocale()
 
   // Header
-  let csv = `${t('export.csv.metric', locale)},${t('export.csv.value', locale)}\n`
+  let csv = `${escapeCsvValue(t('export.csv.metric', locale))},${escapeCsvValue(t('export.csv.value', locale))}\n`
 
   // Basic stats
-  csv += `"${t('export.csv.totalXP', locale)}","${state.totalXP}"\n`
-  csv += `"${t('export.csv.level', locale)}","${level.level}"\n`
-  csv += `"${t('export.csv.levelName', locale)}","${getLevelTitle(level.level)}"\n`
-  csv += `"${t('export.csv.interactions', locale)}","${state.moduleInteractions.length}"\n`
-  csv += `"${t('export.csv.created', locale)}","${timestamp}"\n`
+  csv += `${escapeCsvValue(t('export.csv.totalXP', locale))},${escapeCsvValue(state.totalXP)}\n`
+  csv += `${escapeCsvValue(t('export.csv.level', locale))},${escapeCsvValue(level.level)}\n`
+  csv += `${escapeCsvValue(t('export.csv.levelName', locale))},${escapeCsvValue(getLevelTitle(level.level))}\n`
+  csv += `${escapeCsvValue(t('export.csv.interactions', locale))},${escapeCsvValue(state.moduleInteractions.length)}\n`
+  csv += `${escapeCsvValue(t('export.csv.created', locale))},${escapeCsvValue(timestamp)}\n`
   csv += `\n`
 
   // Module interactions
-  csv += `"${t('export.csv.module', locale)}","${t('export.csv.interactions', locale)}"\n`
+  csv += `${escapeCsvValue(t('export.csv.module', locale))},${escapeCsvValue(t('export.csv.interactions', locale))}\n`
   const moduleCounts: Record<string, number> = {}
   state.moduleInteractions.forEach((interaction) => {
     moduleCounts[interaction.moduleId] = (moduleCounts[interaction.moduleId] || 0) + 1
   })
   Object.entries(moduleCounts).forEach(([module, count]) => {
-    csv += `"${getModuleDisplayName(module, locale)}","${count}"\n`
+    csv += `${escapeCsvValue(getModuleDisplayName(module, locale))},${escapeCsvValue(count)}\n`
   })
   csv += `\n`
 
@@ -54,10 +65,10 @@ export function exportToCSV(): string {
   const financeCorrect = state.financeResults.filter((r) => r.correct).length
   const financeTotal = state.financeResults.length
 
-  csv += `"${t('export.csv.quizResults', locale)}","${quizCorrect}"\n`
-  csv += `"${t('export.csv.quizTotalQuestions', locale)}","${quizTotal}"\n`
-  csv += `"${t('export.csv.financeTasksCorrect', locale)}","${financeCorrect}"\n`
-  csv += `"${t('export.csv.financeTasksTotal', locale)}","${financeTotal}"\n`
+  csv += `${escapeCsvValue(t('export.csv.quizResults', locale))},${escapeCsvValue(quizCorrect)}\n`
+  csv += `${escapeCsvValue(t('export.csv.quizTotalQuestions', locale))},${escapeCsvValue(quizTotal)}\n`
+  csv += `${escapeCsvValue(t('export.csv.financeTasksCorrect', locale))},${escapeCsvValue(financeCorrect)}\n`
+  csv += `${escapeCsvValue(t('export.csv.financeTasksTotal', locale))},${escapeCsvValue(financeTotal)}\n`
 
   return csv
 }
@@ -113,6 +124,7 @@ export function downloadFile(content: string, filename: string, mimeType: string
   const link = document.createElement('a')
   link.href = url
   link.download = filename
+  link.style.display = 'none'
   document.body.appendChild(link)
   try {
     link.click()
