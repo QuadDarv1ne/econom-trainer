@@ -10,7 +10,7 @@ export async function DELETE(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const ip = getClientIP(req);
@@ -25,7 +25,7 @@ export async function DELETE(req: Request) {
 
     if (!password) {
       return NextResponse.json(
-        { error: 'Введите пароль для подтверждения' },
+        { error: 'Password required to confirm deletion' },
         { status: 400 }
       );
     }
@@ -37,7 +37,7 @@ export async function DELETE(req: Request) {
 
     if (!user?.passwordHash) {
       return NextResponse.json(
-        { error: 'Невозможно удалить аккаунт' },
+        { error: 'Cannot delete this account' },
         { status: 400 }
       );
     }
@@ -45,7 +45,7 @@ export async function DELETE(req: Request) {
     const isValid = await bcrypt.compare(password, user.passwordHash);
     if (!isValid) {
       return NextResponse.json(
-        { error: 'Неверный пароль' },
+        { error: 'Incorrect password' },
         { status: 400 }
       );
     }
@@ -55,9 +55,9 @@ export async function DELETE(req: Request) {
       where: { id: session.user.id },
     });
 
-    return NextResponse.json({ message: 'Аккаунт удалён' });
+    return NextResponse.json({ message: 'Account deleted' });
   } catch (error) {
     console.error('Delete account error:', error);
-    return NextResponse.json({ error: 'Ошибка сервера' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

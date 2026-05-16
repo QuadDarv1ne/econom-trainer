@@ -19,7 +19,7 @@ export async function POST(req: Request) {
 
     if (!email) {
       return NextResponse.json(
-        { error: 'Email обязателен' },
+        { error: 'Email is required' },
         { status: 400 }
       );
     }
@@ -80,12 +80,12 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({
-      message: 'Если email зарегистрирован, мы отправим ссылку для сброса пароля',
+      message: 'If this email is registered, we will send a password reset link',
     });
   } catch (error) {
     console.error('Forgot password error:', error);
     return NextResponse.json(
-      { error: 'Ошибка сервера' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

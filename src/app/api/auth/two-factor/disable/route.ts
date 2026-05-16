@@ -15,14 +15,14 @@ export async function POST(req: Request) {
 
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const parsed = await safeJson<{ password: string }>(req);
     if (isErrorResponse(parsed)) return parsed;
     const { password } = parsed;
     if (!password) {
-      return NextResponse.json({ error: 'Требуется пароль' }, { status: 400 });
+      return NextResponse.json({ error: 'Password required' }, { status: 400 });
     }
 
     const user = await prisma.user.findUnique({
@@ -31,12 +31,12 @@ export async function POST(req: Request) {
     });
 
     if (!user?.passwordHash) {
-      return NextResponse.json({ error: 'Требуется пароль' }, { status: 400 });
+      return NextResponse.json({ error: 'Password required' }, { status: 400 });
     }
 
     const isValid = await bcrypt.compare(password, user.passwordHash);
     if (!isValid) {
-      return NextResponse.json({ error: 'Неверный пароль' }, { status: 401 });
+      return NextResponse.json({ error: 'Incorrect password' }, { status: 401 });
     }
 
     await prisma.user.update({
@@ -48,9 +48,9 @@ export async function POST(req: Request) {
       where: { userId: session.user.id },
     });
 
-    return NextResponse.json({ message: '2FA отключена' });
+    return NextResponse.json({ message: '2FA disabled' });
   } catch (error) {
     console.error('2FA disable error:', error);
-    return NextResponse.json({ error: 'Ошибка сервера' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

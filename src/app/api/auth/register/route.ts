@@ -22,14 +22,14 @@ export async function POST(req: Request) {
     // Validation
     if (!name || !email || !password) {
       return NextResponse.json(
-        { error: 'Все обязательные поля должны быть заполнены' },
+        { error: 'All required fields must be filled' },
         { status: 400 }
       );
     }
 
     if (typeof name !== 'string' || name.length > 100) {
       return NextResponse.json(
-        { error: 'Имя должно быть строкой до 100 символов' },
+        { error: 'Name must be a string up to 100 characters' },
         { status: 400 }
       );
     }
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Пользователь с таким email уже существует' },
+        { error: 'User with this email already exists' },
         { status: 409 }
       );
     }
@@ -116,14 +116,14 @@ export async function POST(req: Request) {
         }),
       ]);
       return NextResponse.json(
-        { error: 'Не удалось отправить письмо подтверждения. Попробуйте позже.' },
+        { error: 'Failed to send verification email. Please try again later.' },
         { status: 500 }
       );
     }
 
     return NextResponse.json(
       {
-        message: 'Регистрация успешна',
+        message: 'Registration successful',
         userId: user.id,
       },
       { status: 201 }
@@ -131,7 +131,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(
-      { error: 'Ошибка сервера' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

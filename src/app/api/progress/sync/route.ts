@@ -8,7 +8,7 @@ export async function GET() {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const progress = await prisma.userProgress.findUnique({
@@ -30,7 +30,7 @@ export async function GET() {
     return NextResponse.json(progress);
   } catch (error) {
     console.error('Progress GET error:', error);
-    return NextResponse.json({ error: 'Ошибка сервера' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const parsed = await safeJson<{
@@ -54,12 +54,12 @@ export async function POST(req: Request) {
 
     // Validate totalXP: must be non-negative and reasonable (< 10M)
     if (totalXP !== undefined && (typeof totalXP !== 'number' || totalXP < 0 || totalXP > 10_000_000)) {
-      return NextResponse.json({ error: 'Недопустимое значение XP' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid XP value' }, { status: 400 });
     }
 
     // Validate level: must be between 1 and 200
     if (level !== undefined && (typeof level !== 'number' || level < 1 || level > 200)) {
-      return NextResponse.json({ error: 'Недопустимый уровень' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid level' }, { status: 400 });
     }
 
     // Validate JSON payload sizes (max 100KB each)
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
       if (value !== undefined && value !== null) {
         const size = new TextEncoder().encode(JSON.stringify(value)).length;
         if (size > maxJsonSize) {
-          return NextResponse.json({ error: `Превышен лимит данных для ${key}` }, { status: 400 });
+          return NextResponse.json({ error: `Data limit exceeded for ${key}` }, { status: 400 });
         }
       }
     }
@@ -95,6 +95,6 @@ export async function POST(req: Request) {
     return NextResponse.json(progress);
   } catch (error) {
     console.error('Progress sync error:', error);
-    return NextResponse.json({ error: 'Ошибка сервера' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

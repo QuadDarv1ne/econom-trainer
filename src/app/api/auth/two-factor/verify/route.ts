@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const parsed = await safeJson<{ code: string }>(req);
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     const { code } = parsed;
 
     if (!code) {
-      return NextResponse.json({ error: 'Код обязателен' }, { status: 400 });
+      return NextResponse.json({ error: 'Code is required' }, { status: 400 });
     }
 
     const user = await prisma.user.findUnique({
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     });
 
     if (!user || !user.twoFactorConf) {
-      return NextResponse.json({ error: '2FA не настроена' }, { status: 400 });
+      return NextResponse.json({ error: '2FA not set up' }, { status: 400 });
     }
 
     // Verify TOTP code
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     });
 
     if (!isValid) {
-      return NextResponse.json({ error: 'Неверный код' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid code' }, { status: 400 });
     }
 
     // Generate cryptographically secure backup codes
@@ -69,11 +69,11 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({
-      message: '2FA успешно включена',
+      message: '2FA enabled successfully',
       backupCodes,
     });
   } catch (error) {
     console.error('2FA verify error:', error);
-    return NextResponse.json({ error: 'Ошибка сервера' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

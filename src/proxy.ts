@@ -8,7 +8,7 @@ export default auth(async (req) => {
   // API routes: return 401 JSON instead of redirect
   if (url.pathname.startsWith('/api/')) {
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     return NextResponse.next();
   }

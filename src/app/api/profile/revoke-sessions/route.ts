@@ -8,7 +8,7 @@ export async function POST() {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Generate a new session hash to invalidate all other JWTs
@@ -19,9 +19,9 @@ export async function POST() {
       data: { sessionHash: newSessionHash },
     });
 
-    return NextResponse.json({ message: 'Все другие сессии завершены' });
+    return NextResponse.json({ message: 'All other sessions revoked' });
   } catch (error) {
     console.error('Revoke sessions error:', error);
-    return NextResponse.json({ error: 'Ошибка сервера' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

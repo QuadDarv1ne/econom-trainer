@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
     if (!token || !password) {
       return NextResponse.json(
-        { error: 'Токен и пароль обязательны' },
+        { error: 'Token and password are required' },
         { status: 400 }
       );
     }
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
 
     if (!resetToken || resetToken.expires < new Date() || resetToken.used) {
       return NextResponse.json(
-        { error: 'Недействительный или истёкший токен' },
+        { error: 'Invalid or expired token' },
         { status: 400 }
       );
     }
@@ -59,11 +59,11 @@ export async function POST(req: Request) {
       }),
     ]);
 
-    return NextResponse.json({ message: 'Пароль успешно изменён' });
+    return NextResponse.json({ message: 'Password successfully changed' });
   } catch (error) {
     console.error('Reset password error:', error);
     return NextResponse.json(
-      { error: 'Ошибка сервера' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

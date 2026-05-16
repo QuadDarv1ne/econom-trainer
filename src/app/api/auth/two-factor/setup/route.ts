@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
@@ -24,11 +24,11 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'Пользователь не найден' }, { status: 404 });
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     if (user.twoFactorEnabled) {
-      return NextResponse.json({ error: '2FA уже включена' }, { status: 400 });
+      return NextResponse.json({ error: '2FA is already enabled' }, { status: 400 });
     }
 
     // Generate secret
@@ -50,6 +50,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ secret, qrCode });
   } catch (error) {
     console.error('2FA setup error:', error);
-    return NextResponse.json({ error: 'Ошибка сервера' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
