@@ -81,6 +81,11 @@ export default function RegisterPage() {
       return;
     }
 
+    if (passwordStrength.score < 2) {
+      setError(t('passwordStrength.weak'));
+      return;
+    }
+
     setLoading(true);
 
     try {

@@ -40,6 +40,34 @@ export async function POST(req: Request) {
       );
     }
 
+    if (!/[A-ZА-ЯЁ]/.test(password)) {
+      return NextResponse.json(
+        { error: 'Пароль должен содержать хотя бы одну заглавную букву' },
+        { status: 400 }
+      );
+    }
+
+    if (!/[a-zа-яё]/.test(password)) {
+      return NextResponse.json(
+        { error: 'Пароль должен содержать хотя бы одну строчную букву' },
+        { status: 400 }
+      );
+    }
+
+    if (!/[0-9]/.test(password)) {
+      return NextResponse.json(
+        { error: 'Пароль должен содержать хотя бы одну цифру' },
+        { status: 400 }
+      );
+    }
+
+    if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>?]/.test(password)) {
+      return NextResponse.json(
+        { error: 'Пароль должен содержать хотя бы один специальный символ' },
+        { status: 400 }
+      );
+    }
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
