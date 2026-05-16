@@ -541,9 +541,15 @@ export default function ProfilePage() {
                       {profile?.image ? <AvatarImage src={profile.image} /> : null}
                       <AvatarFallback className="text-2xl">{getInitials(profile?.name ?? null)}</AvatarFallback>
                     </Avatar>
-                    <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                    <button
+                      type="button"
+                      className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
+                      onClick={() => fileInputRef.current?.click()}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
+                      aria-label={t('profile.changeAvatar') || 'Change avatar'}
+                    >
                       <Camera className="h-6 w-6 text-white" />
-                    </div>
+                    </button>
                     <input
                       ref={fileInputRef}
                       type="file"

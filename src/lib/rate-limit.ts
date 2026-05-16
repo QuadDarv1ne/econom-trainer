@@ -22,7 +22,10 @@ function ensureCleanup() {
   if (cleanupTimer) return;
   cleanupTimer = setInterval(() => {
     const now = Date.now();
-    const maxWindow = Math.max(...Array.from(configs.values()).map((c) => c.windowMs));
+    const configValues = Array.from(configs.values());
+    const maxWindow = configValues.length > 0
+      ? Math.max(...configValues.map((c) => c.windowMs))
+      : CLEANUP_INTERVAL * 2;
     for (const [key, entry] of store.entries()) {
       const oldestRelevant = now - maxWindow;
       entry.timestamps = entry.timestamps.filter((t) => t > oldestRelevant);
@@ -120,14 +123,20 @@ export function getClientIP(req: Request): string | null {
 export function rateLimitResponse(key: string, _ip: string | null) {
   const config = configs.get(key);
   if (!config) throw new Error(`Unknown rate limit config key: ${key}`);
-  const retryAfter = Math.ceil(config.windowMs / 1000);
+
+  // Calculate actual time until the oldest request in the window expires
+  const identifier = `${_ip ?? 'unknown'}:${key}`;
+  const entry = store.get(identifier);
+  const retryAfter = entry && entry.timestamps.length > 0
+    ? Math.ceil((entry.timestamps[0] + config.windowMs - Date.now()) / 1000)
+    : Math.ceil(config.windowMs / 1000);
 
   return NextResponse.json(
     { error: 'Слишком много запросов. Попробуйте позже.' },
     {
       status: 429,
       headers: {
-        'Retry-After': String(retryAfter),
+        'Retry-After': String(Math.max(1, retryAfter)),
         'X-RateLimit-Limit': String(config.max),
         'X-RateLimit-Remaining': '0',
       },

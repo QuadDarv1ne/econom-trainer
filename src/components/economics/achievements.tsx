@@ -33,6 +33,7 @@ import {
 } from 'lucide-react'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -68,26 +69,28 @@ export function Achievements() {
   const levelTitle = getLevelTitle(xpState.level)
   const levelColor = getLevelColor(xpState.level)
 
-  const _quizCorrect = quizResults.reduce((sum, r) => sum + r.score, 0)
-  const financeCorrect = financeResults.filter((r) => r.correct).length
-  const totalSessions = quizResults.length + gdpResults.length + financeResults.length + elasticityResults.length
+  const achievements: Achievement[] = useMemo(() => {
+    // Compute intermediate values inside useMemo to avoid invalidating on every store change
+    const quizCorrect = quizResults.reduce((sum, r) => sum + r.score, 0)
+    const finCorrect = financeResults.filter((r) => r.correct).length
+    const sessions = quizResults.length + gdpResults.length + financeResults.length + elasticityResults.length
 
-  // Compute streak
-  let maxFinanceStreak = 0
-  let currentStreak = 0
-  for (const r of financeResults) {
-    if (r.correct) { currentStreak++; maxFinanceStreak = Math.max(maxFinanceStreak, currentStreak) }
-    else { currentStreak = 0 }
-  }
+    // Compute streak
+    let maxFinStreak = 0
+    let currentStreak = 0
+    for (const r of financeResults) {
+      if (r.correct) { currentStreak++; maxFinStreak = Math.max(maxFinStreak, currentStreak) }
+      else { currentStreak = 0 }
+    }
 
-  // Compute max quiz score ratio
-  let maxQuizRatio = 0
-  for (const r of quizResults) {
-    if (r.total > 0) maxQuizRatio = Math.max(maxQuizRatio, r.score / r.total)
-  }
-  const hasPerfectQuiz = quizResults.some((r) => r.score === r.total && r.total > 0)
+    // Compute max quiz score ratio
+    let maxQRatio = 0
+    for (const r of quizResults) {
+      if (r.total > 0) maxQRatio = Math.max(maxQRatio, r.score / r.total)
+    }
+    const perfectQuiz = quizResults.some((r) => r.score === r.total && r.total > 0)
 
-  const achievements: Achievement[] = useMemo(() => [
+    return [
     {
       id: 'first-quiz',
       title: t('achievement.firstQuiz.title'),
@@ -106,8 +109,8 @@ export function Achievements() {
       icon: Crown,
       color: 'text-yellow-600',
       bg: 'bg-yellow-50 dark:bg-yellow-950/30',
-      unlocked: maxQuizRatio >= 0.8,
-      progress: Math.min(100, Math.round(maxQuizRatio * 100)),
+      unlocked: maxQRatio >= 0.8,
+      progress: Math.min(100, Math.round(maxQRatio * 100)),
       xpReward: 200,
     },
     {
@@ -128,8 +131,8 @@ export function Achievements() {
       icon: Target,
       color: 'text-amber-600',
       bg: 'bg-amber-50 dark:bg-amber-950/30',
-      unlocked: financeCorrect >= 5,
-      progress: Math.min(100, Math.round((financeCorrect / 5) * 100)),
+      unlocked: finCorrect >= 5,
+      progress: Math.min(100, Math.round((finCorrect / 5) * 100)),
       xpReward: 150,
     },
     {
@@ -139,8 +142,8 @@ export function Achievements() {
       icon: Flame,
       color: 'text-orange-600',
       bg: 'bg-orange-50 dark:bg-orange-950/30',
-      unlocked: maxFinanceStreak >= 3,
-      progress: Math.min(100, Math.round((maxFinanceStreak / 3) * 100)),
+      unlocked: maxFinStreak >= 3,
+      progress: Math.min(100, Math.round((maxFinStreak / 3) * 100)),
       xpReward: 100,
     },
     {
@@ -150,8 +153,8 @@ export function Achievements() {
       icon: Zap,
       color: 'text-blue-600',
       bg: 'bg-blue-50 dark:bg-blue-950/30',
-      unlocked: totalSessions >= 10,
-      progress: Math.min(100, Math.round((totalSessions / 10) * 100)),
+      unlocked: sessions >= 10,
+      progress: Math.min(100, Math.round((sessions / 10) * 100)),
       xpReward: 150,
     },
     {
@@ -161,8 +164,8 @@ export function Achievements() {
       icon: Star,
       color: 'text-pink-600',
       bg: 'bg-pink-50 dark:bg-pink-950/30',
-      unlocked: hasPerfectQuiz,
-      progress: Math.min(100, Math.round(maxQuizRatio * 100)),
+      unlocked: perfectQuiz,
+      progress: Math.min(100, Math.round(maxQRatio * 100)),
       xpReward: 300,
     },
     {
@@ -216,8 +219,8 @@ export function Achievements() {
       icon: Flame,
       color: 'text-red-600',
       bg: 'bg-red-50 dark:bg-red-950/30',
-      unlocked: maxFinanceStreak >= 7,
-      progress: Math.min(100, Math.round((maxFinanceStreak / 7) * 100)),
+      unlocked: maxFinStreak >= 7,
+      progress: Math.min(100, Math.round((maxFinStreak / 7) * 100)),
       xpReward: 200,
     },
     {
@@ -227,8 +230,8 @@ export function Achievements() {
       icon: TrendingDown,
       color: 'text-rose-600',
       bg: 'bg-rose-50 dark:bg-rose-950/30',
-      unlocked: totalSessions >= 3,
-      progress: Math.min(100, Math.round((totalSessions / 3) * 100)),
+      unlocked: sessions >= 3,
+      progress: Math.min(100, Math.round((sessions / 3) * 100)),
       xpReward: 100,
     },
     {
@@ -238,8 +241,8 @@ export function Achievements() {
       icon: Swords,
       color: 'text-indigo-600',
       bg: 'bg-indigo-50 dark:bg-indigo-950/30',
-      unlocked: totalSessions >= 5,
-      progress: Math.min(100, Math.round((totalSessions / 5) * 100)),
+      unlocked: sessions >= 5,
+      progress: Math.min(100, Math.round((sessions / 5) * 100)),
       xpReward: 150,
     },
     {
@@ -249,8 +252,8 @@ export function Achievements() {
       icon: Rocket,
       color: 'text-fuchsia-600',
       bg: 'bg-fuchsia-50 dark:bg-fuchsia-950/30',
-      unlocked: totalSessions >= 25,
-      progress: Math.min(100, Math.round((totalSessions / 25) * 100)),
+      unlocked: sessions >= 25,
+      progress: Math.min(100, Math.round((sessions / 25) * 100)),
       xpReward: 300,
     },
     {
@@ -260,8 +263,8 @@ export function Achievements() {
       icon: GraduationCap,
       color: 'text-sky-600',
       bg: 'bg-sky-50 dark:bg-sky-950/30',
-      unlocked: maxQuizRatio >= 0.9,
-      progress: Math.min(100, Math.round(maxQuizRatio * 100)),
+      unlocked: maxQRatio >= 0.9,
+      progress: Math.min(100, Math.round(maxQRatio * 100)),
       xpReward: 400,
     },
     {
@@ -271,8 +274,8 @@ export function Achievements() {
       icon: Receipt,
       color: 'text-lime-600',
       bg: 'bg-lime-50 dark:bg-lime-950/30',
-      unlocked: totalSessions >= 8,
-      progress: Math.min(100, Math.round((totalSessions / 8) * 100)),
+      unlocked: sessions >= 8,
+      progress: Math.min(100, Math.round((sessions / 8) * 100)),
       xpReward: 150,
     },
     {
@@ -282,8 +285,8 @@ export function Achievements() {
       icon: ArrowLeftRight,
       color: 'text-green-600',
       bg: 'bg-green-50 dark:bg-green-950/30',
-      unlocked: totalSessions >= 12,
-      progress: Math.min(100, Math.round((totalSessions / 12) * 100)),
+      unlocked: sessions >= 12,
+      progress: Math.min(100, Math.round((sessions / 12) * 100)),
       xpReward: 200,
     },
     {
@@ -293,11 +296,12 @@ export function Achievements() {
       icon: BarChart3,
       color: 'text-blue-600',
       bg: 'bg-blue-50 dark:bg-blue-950/30',
-      unlocked: totalSessions >= 15,
-      progress: Math.min(100, Math.round((totalSessions / 15) * 100)),
+      unlocked: sessions >= 15,
+      progress: Math.min(100, Math.round((sessions / 15) * 100)),
       xpReward: 200,
     },
-  ], [quizResults, gdpResults, financeResults, elasticityResults, financeCorrect, totalSessions, maxFinanceStreak, maxQuizRatio, hasPerfectQuiz, t])
+  ]
+  }, [quizResults, gdpResults, financeResults, elasticityResults, t])
 
   const unlockedCount = achievements.filter((a) => a.unlocked).length
   const totalBadgeXP = achievements.filter((a) => a.unlocked).reduce((sum, a) => sum + a.xpReward, 0)
@@ -455,9 +459,11 @@ export function Achievements() {
             </ul>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => {}}>
-              {t('achievements.cancel')}
-            </Button>
+            <DialogClose asChild>
+              <Button variant="outline">
+                {t('achievements.cancel')}
+              </Button>
+            </DialogClose>
             <Button
               variant="destructive"
               onClick={() => {

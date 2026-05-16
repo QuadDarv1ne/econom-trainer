@@ -6,6 +6,39 @@ import bcrypt from "bcryptjs";
 import { authenticator } from "otplib";
 import { checkRateLimit, getClientIP } from "@/lib/rate-limit";
 
+// Cache sessionHash validation to avoid N+1 DB queries on every request.
+// Keyed by userId, stores { hash, expiresAt }. TTL of 30s balances security and performance.
+const sessionCache = new Map<string, { hash: string; expiresAt: number }>();
+const SESSION_CACHE_TTL = 30 * 1000; // 30 seconds
+
+function getCachedSessionHash(userId: string): string | null {
+  const cached = sessionCache.get(userId);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.hash;
+  }
+  sessionCache.delete(userId);
+  return null;
+}
+
+function setCachedSessionHash(userId: string, hash: string): void {
+  sessionCache.set(userId, { hash, expiresAt: Date.now() + SESSION_CACHE_TTL });
+}
+
+// Periodic cleanup of expired cache entries
+let cleanupScheduled = false;
+function scheduleCacheCleanup(): void {
+  if (cleanupScheduled) return;
+  cleanupScheduled = true;
+  setTimeout(() => {
+    cleanupScheduled = false;
+    const now = Date.now();
+    for (const [key, entry] of sessionCache.entries()) {
+      if (entry.expiresAt <= now) sessionCache.delete(key);
+    }
+    scheduleCacheCleanup();
+  }, SESSION_CACHE_TTL).unref?.();
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -118,21 +151,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return { ...token, ...session };
       }
 
-      // Validate sessionHash against database on every request
+      // Validate sessionHash against database with caching to avoid N+1 queries
       if (token.id && token.sessionHash) {
-        try {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: token.id as string },
-            select: { sessionHash: true },
-          });
-          if (!dbUser || dbUser.sessionHash !== token.sessionHash) {
-            // Session has been revoked - invalidate by clearing sensitive fields
+        const cachedHash = getCachedSessionHash(token.id as string);
+        if (cachedHash !== null && cachedHash === token.sessionHash) {
+          // Cache hit — session is valid, skip DB query
+        } else {
+          scheduleCacheCleanup();
+          try {
+            const dbUser = await prisma.user.findUnique({
+              where: { id: token.id as string },
+              select: { sessionHash: true },
+            });
+            if (!dbUser || dbUser.sessionHash !== token.sessionHash) {
+              // Session has been revoked - invalidate by clearing sensitive fields
+              sessionCache.delete(token.id as string);
+              return { id: null, sessionHash: null, twoFactorEnabled: null };
+            }
+            // Cache the valid session hash
+            setCachedSessionHash(token.id as string, dbUser.sessionHash!);
+          } catch (error) {
+            // If DB check fails, log error and fail closed for security
+            console.error("Session validation failed:", error);
             return { id: null, sessionHash: null, twoFactorEnabled: null };
           }
-        } catch (error) {
-          // If DB check fails, log error and fail closed for security
-          console.error("Session validation failed:", error);
-          return { id: null, sessionHash: null, twoFactorEnabled: null };
         }
       }
 

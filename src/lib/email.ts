@@ -48,7 +48,12 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions): 
     });
 
     if (!res.ok) {
-      const error = await res.json();
+      let error: unknown;
+      try {
+        error = await res.json();
+      } catch {
+        error = { message: res.statusText || `HTTP ${res.status}` };
+      }
       console.error('[Email] Failed to send:', error);
       return false;
     }

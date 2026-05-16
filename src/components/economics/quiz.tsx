@@ -723,7 +723,7 @@ export function EconomicsQuiz() {
     setQuizState('active')
   }, [currentQuestion, shuffledQuestions, score, addQuizResult, toast, t])
 
-  const getDifficultyColor = (d: string) => {
+  const getDifficultyColor = (d: string): "secondary" | "default" | "destructive" => {
     if (d === 'easy') return 'secondary'
     if (d === 'medium') return 'default'
     return 'destructive'
@@ -835,7 +835,7 @@ export function EconomicsQuiz() {
           <Badge variant="outline">
             {t('quiz.questionOf').replace('{current}', String(currentQuestion + 1)).replace('{total}', String(shuffledQuestions.length))}
           </Badge>
-          <Badge variant={getDifficultyColor(question.difficulty) as "secondary" | "default" | "destructive"}>
+          <Badge variant={getDifficultyColor(question.difficulty)}>
             {question.difficulty === 'easy' ? t('quiz.difficultyEasy') : question.difficulty === 'medium' ? t('quiz.difficultyMedium') : t('quiz.difficultyHard')}
           </Badge>
           <Badge variant="outline">{question.topic}</Badge>
