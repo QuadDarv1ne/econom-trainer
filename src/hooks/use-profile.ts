@@ -30,18 +30,6 @@ export function useProfile() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/login');
-      return;
-    }
-
-    if (status === 'authenticated') {
-      fetchProfile();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, router]);
-
   const fetchProfile = useCallback(async () => {
     try {
       const res = await fetch('/api/profile');
@@ -58,6 +46,17 @@ export function useProfile() {
       setLoading(false);
     }
   }, [t]);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/login');
+      return;
+    }
+
+    if (status === 'authenticated') {
+      fetchProfile();
+    }
+  }, [status, router, fetchProfile]);
 
   const updateProfile = useCallback(async (name: string, phone: string) => {
     setSaving(true);

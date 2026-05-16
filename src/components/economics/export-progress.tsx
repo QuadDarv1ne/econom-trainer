@@ -202,11 +202,12 @@ export function ExportProgressButton() {
 
   const handleShare = async () => {
     const text = exportProgressToText()
-    
+    const locale = getCurrentLocale()
+
     if (navigator.share) {
       try {
         await navigator.share({
-          title: t('progress.title') + ' — ' + t('export.pdf.title'),
+          title: t('progress.title', locale) + ' — ' + t('export.pdf.title', locale),
           text: text,
         })
         toast.success(t('export.shareSuccess'))
