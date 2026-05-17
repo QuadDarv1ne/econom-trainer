@@ -634,7 +634,7 @@ export default function ProfilePage() {
                           )}
                           <span className="ml-2">
                             {resendCooldown > 0
-                              ? `${resendCooldown}с`
+                              ? `${resendCooldown}${t('quiz.secondsSuffix')}`
                               : sendingVerification
                                 ? '...'
                                 : t('profile.verifyEmail')}
