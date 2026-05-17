@@ -7,11 +7,13 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { useEconomicsStore } from "@/store/economics-store";
+import { useI18n } from "@/lib/i18n-provider";
 
 export default function OfflinePage() {
   const [isOnline, setIsOnline] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const { toast } = useToast();
+  const { t } = useI18n();
   const storeState = useEconomicsStore((s) => ({
     totalXP: s.totalXP,
     quizResults: s.quizResults,
@@ -34,13 +36,13 @@ export default function OfflinePage() {
       });
 
       if (res.ok) {
-        toast({ title: "Синхронизация завершена", description: "Прогресс успешно синхронизирован!" });
+        toast({ title: t('offline.syncCompleted'), description: t('offline.syncSuccess') });
       } else {
         const data = await res.json();
-        toast({ title: "Ошибка синхронизации", description: data.error || "Не удалось синхронизировать прогресс.", variant: "destructive" });
+        toast({ title: t('offline.syncErrorTitle'), description: data.error || t('offline.syncError'), variant: "destructive" });
       }
     } catch {
-      toast({ title: "Ошибка синхронизации", description: "Проверьте соединение и попробуйте снова.", variant: "destructive" });
+      toast({ title: t('offline.syncErrorTitle'), description: t('offline.syncCheckConnection'), variant: "destructive" });
     } finally {
       setSyncing(false);
     }
@@ -48,12 +50,12 @@ export default function OfflinePage() {
 
   useEffect(() => {
     const updateStatus = () => setIsOnline(navigator.onLine);
-    
+
     updateStatus();
 
     const handleOnline = () => {
       setIsOnline(true);
-      toast({ title: "Соединение восстановлено" });
+      toast({ title: t('offline.connectionRestored') });
     };
     const handleOffline = () => setIsOnline(false);
 
@@ -64,7 +66,7 @@ export default function OfflinePage() {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
-  }, [toast]);
+  }, [toast, t]);
 
   const handleReload = () => {
     window.location.reload();
@@ -90,26 +92,26 @@ export default function OfflinePage() {
 
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">
-            {isOnline ? "Вы онлайн" : "Вы офлайн"}
+            {isOnline ? t('offline.youAreOnline') : t('offline.youAreOffline')}
           </h1>
           <p className="text-muted-foreground">
             {isOnline
-              ? "Соединение восстановлено! Вы можете синхронизировать свой прогресс."
-              : "Похоже, соединение с интернетом потеряно. Но не переживайте — вы можете продолжать работать с кэшированным контентом."}
+              ? t('offline.onlineDesc')
+              : t('offline.offlineDesc')}
           </p>
         </div>
 
         <div className="space-y-4">
           <div className="p-4 rounded-lg bg-card border">
             <h3 className="font-semibold mb-2">
-              {isOnline ? "Доступно онлайн:" : "Доступно офлайн:"}
+              {isOnline ? t('offline.onlineAvailable') : t('offline.offlineAvailable')}
             </h3>
             <ul className="text-sm text-muted-foreground space-y-1 text-left">
-              <li>✓ Все учебные модули</li>
-              <li>✓ Ваши сохранения и прогресс</li>
-              <li>✓ Калькуляторы и инструменты</li>
-              {isOnline && <li>✓ Синхронизация с сервером</li>}
-              {!isOnline && <li>✗ Синхронизация с сервером</li>}
+              <li>✓ {t('offline.modules')}</li>
+              <li>✓ {t('offline.saves')}</li>
+              <li>✓ {t('offline.tools')}</li>
+              {isOnline && <li>✓ {t('offline.syncAvailable')}</li>}
+              {!isOnline && <li>✗ {t('offline.syncUnavailable')}</li>}
             </ul>
           </div>
 
@@ -117,17 +119,17 @@ export default function OfflinePage() {
             {isOnline && (
               <Button onClick={handleSync} disabled={syncing} className="gap-2">
                 <CheckCircle className="w-4 h-4" />
-                {syncing ? "Синхронизация..." : "Синхронизировать"}
+                {syncing ? t('offline.syncing') : t('offline.syncBtn')}
               </Button>
             )}
             <Button onClick={handleReload} className="gap-2">
               <RefreshCw className="w-4 h-4" />
-              Обновить страницу
+              {t('offline.reload')}
             </Button>
             <Button variant="outline" asChild className="gap-2">
               <Link href="/">
                 <Home className="w-4 h-4" />
-                На главную
+                {t('offline.backToHome')}
               </Link>
             </Button>
           </div>
@@ -135,8 +137,8 @@ export default function OfflinePage() {
 
         <p className="text-xs text-muted-foreground">
           {isOnline
-            ? "Ваш прогресс синхронизирован с сервером."
-            : "Как только соединение восстановится, ваш прогресс автоматически синхронизируется."}
+            ? t('offline.syncSuccessFooter')
+            : t('offline.autoSyncFooter')}
         </p>
       </div>
       <Toaster />
