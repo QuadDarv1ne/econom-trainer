@@ -33,12 +33,12 @@ export default function ForgotPasswordPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Ошибка отправки');
+        setError(data.error || t('auth.error.saveError'));
       } else {
         setSuccess(true);
       }
     } catch {
-      setError('Произошла ошибка. Попробуйте позже.');
+      setError(t('auth.error.genericError'));
     } finally {
       setLoading(false);
     }

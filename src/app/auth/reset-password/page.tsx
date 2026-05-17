@@ -63,13 +63,13 @@ function ResetPasswordForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Ошибка сброса пароля');
+        setError(data.error || t('auth.error.resetError'));
       } else {
         setSuccess(true);
         setTimeout(() => router.push('/auth/login'), 3000);
       }
     } catch {
-      setError('Произошла ошибка. Попробуйте позже.');
+      setError(t('auth.error.genericError'));
     } finally {
       setLoading(false);
     }

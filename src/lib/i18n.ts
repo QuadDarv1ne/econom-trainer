@@ -1932,6 +1932,9 @@ export const translations = {
     'auth.error.userNotFound': 'Пользователь не найден',
     'auth.register.socialComingSoon': 'Скоро',
     'auth.login.socialComingSoon': 'Скоро',
+    'notFound.title': 'Страница не найдена',
+    'notFound.description': 'Запрашиваемая страница не существует или была перемещена',
+    'notFound.backHome': 'Вернуться на главную',
   },
 
   en: {
@@ -3876,6 +3879,9 @@ export const translations = {
     'auth.error.userNotFound': 'User not found',
     'auth.register.socialComingSoon': 'Coming soon',
     'auth.login.socialComingSoon': 'Coming soon',
+    'notFound.title': 'Page not found',
+    'notFound.description': 'The page you are looking for does not exist or has been moved',
+    'notFound.backHome': 'Back to home',
   },
 } as const;
 
