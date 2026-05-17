@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -16,6 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { PasswordInput } from '@/components/ui/password-input';
+import { Progress } from '@/components/ui/progress';
 import {
   GraduationCap,
   User,
@@ -38,10 +39,12 @@ import {
   Clock,
   Monitor,
   AlertTriangle,
+  X,
 } from 'lucide-react';
 import { useEconomicsStore } from '@/store/economics-store';
 import { useI18n } from '@/lib/i18n-provider';
 import { formatDate as formatLocaleDate } from '@/lib/i18n';
+import { checkPasswordStrength } from '@/lib/password-strength';
 
 interface UserProfile {
   id: string;
@@ -100,7 +103,13 @@ export default function ProfilePage() {
 
   // Local progress sync
   const totalXP = useEconomicsStore((s) => s.totalXP);
+  const quizResultsCount = useEconomicsStore((s) => s.quizResults.length);
+  const moduleInteractionsCount = useEconomicsStore((s) => s.moduleInteractions.length);
   const [syncing, setSyncing] = useState(false);
+
+  // Password strength
+  const passwordStrength = useMemo(() => checkPasswordStrength(newPassword), [newPassword]);
+  const allPasswordRequirementsMet = Object.values(passwordStrength.requirements).every(Boolean);
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -142,6 +151,19 @@ export default function ProfilePage() {
 
     return () => clearTimeout(timer);
   }, [resendCooldown]);
+
+  // Auto-dismiss alerts
+  useEffect(() => {
+    if (!error) return;
+    const timer = setTimeout(() => setError(''), 5000);
+    return () => clearTimeout(timer);
+  }, [error]);
+
+  useEffect(() => {
+    if (!success) return;
+    const timer = setTimeout(() => setSuccess(''), 5000);
+    return () => clearTimeout(timer);
+  }, [success]);
 
   async function updateProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -505,13 +527,23 @@ export default function ProfilePage() {
         {error && (
           <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
+            <AlertDescription className="flex items-center justify-between gap-2">
+              <span>{error}</span>
+              <button onClick={() => setError('')} className="shrink-0" aria-label={t('auth.error.close') || 'Close'}>
+                <X className="h-4 w-4" />
+              </button>
+            </AlertDescription>
           </Alert>
         )}
         {success && (
           <Alert className="mb-4 border-green-500 bg-green-50 dark:bg-green-950/20">
             <CheckCircle2 className="h-4 w-4 text-green-500" />
-            <AlertDescription className="text-green-700 dark:text-green-400">{success}</AlertDescription>
+            <AlertDescription className="flex items-center justify-between gap-2 text-green-700 dark:text-green-400">
+              <span>{success}</span>
+              <button onClick={() => setSuccess('')} className="shrink-0" aria-label={t('auth.error.close') || 'Close'}>
+                <X className="h-4 w-4" />
+              </button>
+            </AlertDescription>
           </Alert>
         )}
 
@@ -702,6 +734,13 @@ export default function ProfilePage() {
                       onChange={(e) => setNewPassword(e.target.value)}
                       required
                     />
+
+                    {/* Password Strength Meter */}
+                    {newPassword && (
+                      <div className="space-y-2 pt-2">
+                        <PasswordStrengthMeter password={newPassword} t={t} />
+                      </div>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confirmNewPassword">{t('profile.confirmNewPassword')}</Label>
@@ -711,8 +750,11 @@ export default function ProfilePage() {
                       onChange={(e) => setConfirmNewPassword(e.target.value)}
                       required
                     />
+                    {confirmNewPassword && newPassword !== confirmNewPassword && (
+                      <p className="text-xs text-red-500">{t('profile.passwordMismatch')}</p>
+                    )}
                   </div>
-                  <Button type="submit" disabled={changingPassword}>
+                  <Button type="submit" disabled={changingPassword || !allPasswordRequirementsMet}>
                     {changingPassword ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     {t('profile.changePassword')}
                   </Button>
@@ -781,7 +823,7 @@ export default function ProfilePage() {
                         <div className="text-center space-y-2">
                           <h4 className="font-semibold">{t('dashboard.security.scanQr')}</h4>
                           <div className="inline-block p-4 bg-white rounded-lg">
-                            <img src={qrCode} alt="2FA QR Code" className="w-48 h-48" />
+                            <img src={qrCode} alt={t('dashboard.security.qrCodeAlt') || 'QR Code'} className="w-48 h-48" />
                           </div>
                         </div>
 
@@ -969,7 +1011,7 @@ export default function ProfilePage() {
                 <CardDescription>{t('dashboard.progress.desc')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Card>
                     <CardContent className="pt-6 text-center">
                       <Zap className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
@@ -982,6 +1024,20 @@ export default function ProfilePage() {
                       <User className="h-8 w-8 text-primary mx-auto mb-2" />
                       <div className="text-3xl font-bold">{profile?.name || t('dashboard.progress.student')}</div>
                       <div className="text-sm text-muted-foreground">{t('dashboard.progress.account')}</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6 text-center">
+                      <CheckCircle2 className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                      <div className="text-3xl font-bold">{quizResultsCount}</div>
+                      <div className="text-sm text-muted-foreground">{t('dashboard.progress.quizzes')}</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6 text-center">
+                      <BarChart3 className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                      <div className="text-3xl font-bold">{moduleInteractionsCount}</div>
+                      <div className="text-sm text-muted-foreground">{t('dashboard.progress.sessions')}</div>
                     </CardContent>
                   </Card>
                 </div>
@@ -1001,6 +1057,44 @@ export default function ProfilePage() {
           </TabsContent>
         </Tabs>
       </main>
+    </div>
+  );
+}
+
+function PasswordStrengthMeter({ password, t }: { password: string; t: (key: string) => string }) {
+  const strength = checkPasswordStrength(password);
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-muted-foreground">{t('passwordStrength.label')}</span>
+        <span className="text-xs font-medium">{t(strength.label)}</span>
+      </div>
+      <Progress
+        value={(strength.score / 4) * 100}
+        className={`h-1 ${strength.color}`}
+      />
+
+      <div className="grid grid-cols-2 gap-1 pt-1">
+        {[
+          { key: 'passwordStrength.minLength', met: strength.requirements.minLength },
+          { key: 'passwordStrength.hasUpper', met: strength.requirements.hasUpper },
+          { key: 'passwordStrength.hasLower', met: strength.requirements.hasLower },
+          { key: 'passwordStrength.hasNumber', met: strength.requirements.hasNumber },
+          { key: 'passwordStrength.hasSpecial', met: strength.requirements.hasSpecial },
+        ].map(({ key, met }) => (
+          <div key={key} className="flex items-center gap-1 text-xs">
+            {met ? (
+              <Check className="h-3 w-3 text-green-500" />
+            ) : (
+              <X className="h-3 w-3 text-muted-foreground" />
+            )}
+            <span className={met ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'}>
+              {t(key)}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
+import { PasswordInput } from '@/components/ui/password-input';
 import {
   GraduationCap,
   User,
@@ -398,9 +399,8 @@ export default function DashboardPage() {
 
                     <div className="space-y-2">
                       <Label htmlFor="disable-2fa-password">{t('profile.password')}</Label>
-                      <Input
+                      <PasswordInput
                         id="disable-2fa-password"
-                        type="password"
                         value={disablePassword}
                         onChange={(e) => setDisablePassword(e.target.value)}
                         placeholder={t('auth.login.password')}
