@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { useEconomicsStore } from '@/store/economics-store'
 import { ExportProgressButton } from '@/components/economics/export-progress'
 import { useI18n } from '@/lib/i18n-provider'
+import { formatDate, formatNumber } from '@/lib/i18n'
 import {
   BarChart,
   Bar,
@@ -24,7 +25,7 @@ import { Trophy, Target, Flame, BarChart3, Gauge } from 'lucide-react'
 const COLORS = ['#22c55e', '#ef4444']
 
 export function ProgressTracker() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const quizResults = useEconomicsStore((s) => s.quizResults)
   const gdpResults = useEconomicsStore((s) => s.gdpResults)
   const financeResults = useEconomicsStore((s) => s.financeResults)
@@ -248,12 +249,12 @@ export function ProgressTracker() {
                       <div className="flex items-center gap-3">
                         <Badge variant="outline">#{i + 1}</Badge>
                         <span className="text-muted-foreground">
-                          {new Date(r.date).toLocaleDateString('ru-RU')}
+                          {formatDate(r.date, locale)}
                         </span>
                       </div>
                       <div className="flex items-center gap-4 font-mono text-xs">
-                        <span>{t('progress.nominalGdp')} {r.nominalGDP.toLocaleString('ru-RU', { maximumFractionDigits: 0 })}</span>
-                        <span>{t('progress.realGdp')} {r.realGDP.toLocaleString('ru-RU', { maximumFractionDigits: 0 })}</span>
+                        <span>{t('progress.nominalGdp')} {formatNumber(r.nominalGDP, locale, { maximumFractionDigits: 0 })}</span>
+                        <span>{t('progress.realGdp')} {formatNumber(r.realGDP, locale, { maximumFractionDigits: 0 })}</span>
                         <Badge variant={r.inflationRate > 5 ? 'destructive' : 'secondary'}>
                           {t('progress.deflator')}: {r.deflator.toFixed(1)}%
                         </Badge>

@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator'
 import { useEconomicsStore } from '@/store/economics-store'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
+import { formatNumber } from '@/lib/i18n'
 import { DollarSign, Percent, TrendingUp, Calculator, CheckCircle2, XCircle, RotateCcw } from 'lucide-react'
 
 interface CompoundProblem {
@@ -29,7 +30,9 @@ interface NPVProblem {
   question: string
 }
 
-function generateCompoundProblem(t: (key: string) => string): CompoundProblem {
+type Locale = 'ru' | 'en'
+
+function generateCompoundProblem(t: (key: string) => string, locale: Locale): CompoundProblem {
   const principal = (Math.floor(Math.random() * 90) + 10) * 1000
   const rate = (Math.floor(Math.random() * 15) + 3)
   const years = Math.floor(Math.random() * 8) + 2
@@ -45,14 +48,14 @@ function generateCompoundProblem(t: (key: string) => string): CompoundProblem {
     compounding,
     answer,
     question: t('finance.problem.compound')
-      .replace('{principal}', principal.toLocaleString('ru-RU'))
+      .replace('{principal}', formatNumber(principal, locale))
       .replace('{rate}', String(rate))
       .replace('{years}', String(years))
       .replace('{compounding}', compLabel),
   }
 }
 
-function generateNPVProblem(t: (key: string) => string): NPVProblem {
+function generateNPVProblem(t: (key: string) => string, locale: Locale): NPVProblem {
   const initialInvestment = (Math.floor(Math.random() * 40) + 10) * 1000
   const rate = Math.floor(Math.random() * 12) + 5
   const numYears = Math.floor(Math.random() * 3) + 3
@@ -62,7 +65,7 @@ function generateNPVProblem(t: (key: string) => string): NPVProblem {
   const npv =
     cashFlows.reduce((sum, cf, i) => sum + cf / Math.pow(1 + rate / 100, i + 1), 0) - initialInvestment
 
-  const cashFlowsStr = cashFlows.map((cf, i) => t('finance.npvCashFlow.year').replace('{year}', String(i + 1)) + ' ' + cf.toLocaleString('ru-RU')).join(', ')
+  const cashFlowsStr = cashFlows.map((cf, i) => t('finance.npvCashFlow.year').replace('{year}', String(i + 1)) + ' ' + formatNumber(cf, locale)).join(', ')
 
   return {
     initialInvestment,
@@ -70,13 +73,13 @@ function generateNPVProblem(t: (key: string) => string): NPVProblem {
     rate,
     answer: npv,
     question: t('finance.problem.npv')
-      .replace('{investment}', initialInvestment.toLocaleString('ru-RU'))
+      .replace('{investment}', formatNumber(initialInvestment, locale))
       .replace('{rate}', String(rate))
       .replace('{cashFlows}', cashFlowsStr),
   }
 }
 
-function generateAnnuityProblem(t: (key: string) => string): { question: string; answer: number; pmf: number; rate: number; years: number } {
+function generateAnnuityProblem(t: (key: string) => string, locale: Locale): { question: string; answer: number; pmf: number; rate: number; years: number } {
   const rate = Math.floor(Math.random() * 10) + 3
   const years = Math.floor(Math.random() * 10) + 5
   const futureValue = (Math.floor(Math.random() * 50) + 10) * 10000
@@ -86,7 +89,7 @@ function generateAnnuityProblem(t: (key: string) => string): { question: string;
   return {
     question: t('finance.problem.annuity')
       .replace('{years}', String(years))
-      .replace('{futureValue}', futureValue.toLocaleString('ru-RU'))
+      .replace('{futureValue}', formatNumber(futureValue, locale))
       .replace('{rate}', String(rate)),
     answer: pmf,
     pmf,
@@ -96,7 +99,7 @@ function generateAnnuityProblem(t: (key: string) => string): { question: string;
 }
 
 export function FinancialMath() {
-  const { t, locale: _locale } = useI18n()
+  const { t, locale } = useI18n()
   const [compoundProblem, setCompoundProblem] = useState<CompoundProblem | null>(null)
   const [npvProblem, setNPVProblem] = useState<NPVProblem | null>(null)
   const [annuityProblem, setAnnuityProblem] = useState<{
@@ -148,22 +151,22 @@ export function FinancialMath() {
   )
 
   const newCompoundProblem = useCallback(() => {
-    setCompoundProblem(generateCompoundProblem(t))
+    setCompoundProblem(generateCompoundProblem(t, locale))
     setUserAnswer('')
     setShowResult(false)
-  }, [t])
+  }, [t, locale])
 
   const newNPVProblem = useCallback(() => {
-    setNPVProblem(generateNPVProblem(t))
+    setNPVProblem(generateNPVProblem(t, locale))
     setUserAnswer('')
     setShowResult(false)
-  }, [t])
+  }, [t, locale])
 
   const newAnnuityProblem = useCallback(() => {
-    setAnnuityProblem(generateAnnuityProblem(t))
+    setAnnuityProblem(generateAnnuityProblem(t, locale))
     setUserAnswer('')
     setShowResult(false)
-  }, [t])
+  }, [t, locale])
 
   return (
     <div className="space-y-6">
@@ -261,10 +264,10 @@ export function FinancialMath() {
                         </span>
                       </div>
                       <div className="text-sm">
-                        {t('finance.correctAnswer')} <strong>{compoundProblem.answer.toLocaleString('ru-RU', { maximumFractionDigits: 0 })} {t('finance.rub')}</strong>
+                        {t('finance.correctAnswer')} <strong>{formatNumber(compoundProblem.answer, locale, { maximumFractionDigits: 0 })} {t('finance.rub')}</strong>
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
-                        FV = {compoundProblem.principal.toLocaleString('ru-RU')} × (1 + {compoundProblem.rate}/{compoundProblem.compounding * 100})
+                        FV = {formatNumber(compoundProblem.principal, locale)} × (1 + {compoundProblem.rate}/{compoundProblem.compounding * 100})
                         ^({compoundProblem.compounding}×{compoundProblem.years})
                       </div>
                     </div>
@@ -333,7 +336,7 @@ export function FinancialMath() {
                         </span>
                       </div>
                       <div className="text-sm">
-                        {t('finance.correctAnswer')} <strong>{npvProblem.answer.toLocaleString('ru-RU', { maximumFractionDigits: 0 })} {t('finance.rub')}</strong>
+                        {t('finance.correctAnswer')} <strong>{formatNumber(npvProblem.answer, locale, { maximumFractionDigits: 0 })} {t('finance.rub')}</strong>
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
                         {npvProblem.answer > 0
@@ -406,7 +409,7 @@ export function FinancialMath() {
                         </span>
                       </div>
                       <div className="text-sm">
-                        {t('finance.correctAnswer')} <strong>{annuityProblem.answer.toLocaleString('ru-RU', { maximumFractionDigits: 0 })} {t('finance.rubPerYear')}</strong>
+                        {t('finance.correctAnswer')} <strong>{formatNumber(annuityProblem.answer, locale, { maximumFractionDigits: 0 })} {t('finance.rubPerYear')}</strong>
                       </div>
                     </div>
                   )}

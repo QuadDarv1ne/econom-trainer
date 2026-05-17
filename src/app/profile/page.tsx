@@ -41,6 +41,7 @@ import {
 } from 'lucide-react';
 import { useEconomicsStore } from '@/store/economics-store';
 import { useI18n } from '@/lib/i18n-provider';
+import { formatDate as formatLocaleDate } from '@/lib/i18n';
 
 interface UserProfile {
   id: string;
@@ -56,7 +57,7 @@ interface UserProfile {
 
 export default function ProfilePage() {
   const { status, update } = useSession();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -436,7 +437,7 @@ export default function ProfilePage() {
 
   function formatDate(date: Date | null) {
     if (!date) return '';
-    return new Date(date).toLocaleDateString('ru-RU', {
+    return formatLocaleDate(date, locale, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -885,7 +886,7 @@ export default function ProfilePage() {
                     <div>
                       <p className="font-medium">{t('profile.currentSession')}</p>
                       <p className="text-sm text-muted-foreground">
-                        {t('profile.lastActive')}: {new Date().toLocaleString('ru-RU')}
+                        {t('profile.lastActive')}: {formatLocaleDate(new Date(), locale)}
                       </p>
                     </div>
                   </div>

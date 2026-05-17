@@ -24,6 +24,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { useEconomicsStore, getLevelFromXP, getLevelTitle, getLevelColor, getModuleInteractionCount } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
+import { formatNumber } from '@/lib/i18n'
 import { LanguageToggle } from '@/components/economics/language-toggle'
 import {
   Calculator,
@@ -192,7 +193,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('home')
   const { data: session } = useSession()
   const router = useRouter()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const totalXP = useEconomicsStore((s) => s.totalXP)
   const moduleInteractions = useEconomicsStore((s) => s.moduleInteractions)
   const xpState = getLevelFromXP(totalXP)
@@ -247,7 +248,7 @@ export default function Home() {
               <Badge variant="outline" className="hidden sm:flex items-center gap-1">
                 <Zap className="h-3 w-3 text-yellow-500" />
                 <span className={levelColor}>{t('home.header.levelAbbr')}{xpState.level}</span>
-                <span className="text-muted-foreground">{totalXP.toLocaleString('ru-RU')} {t('home.header.xpLabel')}</span>
+                <span className="text-muted-foreground">{formatNumber(totalXP, locale)} {t('home.header.xpLabel')}</span>
               </Badge>
             )}
             <LanguageToggle />
@@ -344,7 +345,7 @@ export default function Home() {
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800">
                     <Zap className="h-5 w-5 text-yellow-500" />
                     <span className={`font-bold text-lg ${levelColor}`}>{t('home.hero.level')} {xpState.level} — {levelTitle}</span>
-                    <span className="text-muted-foreground text-sm">({totalXP.toLocaleString('ru-RU')} {t('home.header.xpLabel')})</span>
+                    <span className="text-muted-foreground text-sm">({formatNumber(totalXP, locale)} {t('home.header.xpLabel')})</span>
                   </div>
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/5 border border-primary/20">
                     <LayoutGrid className="h-4 w-4 text-primary" />
@@ -484,7 +485,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
           {t('home.footer.text')}
           {totalXP > 0 && (
-            <span className="hidden sm:inline"> • {totalXP.toLocaleString('ru-RU')} {t('home.header.xpLabel')} • {exploredCount}/{modules.length} {t('home.hero.modulesExplored')}</span>
+            <span className="hidden sm:inline"> • {formatNumber(totalXP, locale)} {t('home.header.xpLabel')} • {exploredCount}/{modules.length} {t('home.hero.modulesExplored')}</span>
           )}
           <span className="hidden sm:inline"> • {t('home.footer.author')}</span>
         </div>

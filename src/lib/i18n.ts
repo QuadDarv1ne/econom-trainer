@@ -3921,3 +3921,19 @@ export function setLocale(locale: Locale): void {
   localStorage.setItem('locale', locale);
   document.documentElement.lang = locale;
 }
+
+// Intl locale identifier for date/number formatting
+export function getLocaleForFormatting(locale: Locale): string {
+  return locale === 'ru' ? 'ru-RU' : 'en-US';
+}
+
+// Format a number according to the current locale
+export function formatNumber(value: number, locale: Locale, options?: Intl.NumberFormatOptions): string {
+  return new Intl.NumberFormat(getLocaleForFormatting(locale), options).format(value);
+}
+
+// Format a date according to the current locale
+export function formatDate(date: Date | string, locale: Locale, options?: Intl.DateTimeFormatOptions): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return new Intl.DateTimeFormat(getLocaleForFormatting(locale), options).format(d);
+}

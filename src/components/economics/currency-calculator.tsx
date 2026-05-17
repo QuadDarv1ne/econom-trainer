@@ -29,6 +29,7 @@ import {
 import { Coins, ArrowRightLeft, TrendingUp, RotateCcw, Globe, Info } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
+import { formatDate, formatNumber } from '@/lib/i18n'
 
 interface Currency {
   code: string
@@ -54,7 +55,7 @@ const CURRENCIES: Currency[] = [
 ]
 
 export function CurrencyCalculator() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [amount, setAmount] = useState(100)
   const [fromCurrency, setFromCurrency] = useState('USD')
   const [toCurrency, setToCurrency] = useState('RUB')
@@ -106,7 +107,7 @@ export function CurrencyCalculator() {
     for (let i = days; i >= 0; i--) {
       const date = new Date()
       date.setDate(date.getDate() - i)
-      const dayStr = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
+      const dayStr = formatDate(date, locale, { day: 'numeric', month: 'short' })
 
       // Random walk with mean reversion
       const change = (seededRandom() - 0.5) * (volatility / 100) * baseRate
@@ -229,10 +230,10 @@ export function CurrencyCalculator() {
             {/* Result */}
             <div className="text-center space-y-2">
               <div className="text-sm text-muted-foreground">
-                {amount.toLocaleString('ru-RU')} {fromCurr.symbol} ({fromCurr.code}) =
+                {formatNumber(amount, locale)} {fromCurr.symbol} ({fromCurr.code}) =
               </div>
               <div className="text-4xl font-bold font-mono text-primary">
-                {converted.toLocaleString('ru-RU', { maximumFractionDigits: 2 })} {toCurr.symbol}
+                {formatNumber(converted, locale, { maximumFractionDigits: 2 })} {toCurr.symbol}
               </div>
               <div className="text-sm text-muted-foreground">
                 1 {fromCurr.code} = {crossRate.toFixed(4)} {toCurr.code}
