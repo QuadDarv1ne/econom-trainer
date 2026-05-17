@@ -139,7 +139,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             if (!dbUser || dbUser.sessionHash !== token.sessionHash) {
               // Session has been revoked - invalidate by clearing sensitive fields
               invalidateSessionCache(token.id as string);
-              return { id: null, sessionHash: null, twoFactorEnabled: null };
+              token.id = null;
+              token.sessionHash = null;
+              token.twoFactorEnabled = false;
+              return token;
             }
             // Cache the valid session hash
             if (dbUser.sessionHash) {
@@ -148,7 +151,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           } catch (error) {
             // If DB check fails, log error and fail closed for security
             console.error("Session validation failed:", error);
-            return { id: null, sessionHash: null, twoFactorEnabled: null };
+            token.id = null;
+            token.sessionHash = null;
+            token.twoFactorEnabled = false;
+            return token;
           }
         }
       }
@@ -156,9 +162,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      if (token) {
+      if (token.id) {
         session.user.id = token.id as string;
-        session.user.twoFactorEnabled = token.twoFactorEnabled as boolean;
+        session.user.twoFactorEnabled = !!token.twoFactorEnabled;
         session.user.sessionHash = token.sessionHash as string | null | undefined;
       }
       return session;

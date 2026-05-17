@@ -42,13 +42,19 @@ export const authConfig: NextAuthConfig = {
             });
             if (!dbUser || dbUser.sessionHash !== token.sessionHash) {
               invalidateSessionCache(token.id as string);
-              return { id: null, sessionHash: null, twoFactorEnabled: null };
+              token.id = null;
+              token.sessionHash = null;
+              token.twoFactorEnabled = false;
+              return token;
             }
             if (dbUser.sessionHash) {
               setCachedSessionHash(token.id as string, dbUser.sessionHash);
             }
           } catch {
-            return { id: null, sessionHash: null, twoFactorEnabled: null };
+            token.id = null;
+            token.sessionHash = null;
+            token.twoFactorEnabled = false;
+            return token;
           }
         }
       }
@@ -56,9 +62,9 @@ export const authConfig: NextAuthConfig = {
       return token;
     },
     async session({ session, token }) {
-      if (token) {
+      if (token.id) {
         session.user.id = token.id as string;
-        session.user.twoFactorEnabled = token.twoFactorEnabled as boolean;
+        session.user.twoFactorEnabled = !!token.twoFactorEnabled;
         session.user.sessionHash = token.sessionHash as string | null | undefined;
       }
       return session;
