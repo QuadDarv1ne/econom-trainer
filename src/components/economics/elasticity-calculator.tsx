@@ -71,7 +71,7 @@ export function ElasticityCalculator() {
 
     setResult({ type: 'price', value: ed, interpretation, category })
     addElasticityResult({ id: crypto.randomUUID(), elasticityType: 'price', value: ed, interpretation, category, date: new Date().toISOString() })
-  }, [q1, q2, p1, p2, addElasticityResult, toast])
+  }, [q1, q2, p1, p2, addElasticityResult, toast, t])
 
   const calculateIncomeElasticity = useCallback(() => {
     const Q1 = parseFloat(q1Inc), Q2 = parseFloat(q2Inc)
@@ -93,7 +93,7 @@ export function ElasticityCalculator() {
 
     setResult({ type: 'income', value: ey, interpretation, category })
     addElasticityResult({ id: crypto.randomUUID(), elasticityType: 'income', value: ey, interpretation, category, date: new Date().toISOString() })
-  }, [q1Inc, q2Inc, y1, y2, addElasticityResult, toast])
+  }, [q1Inc, q2Inc, y1, y2, addElasticityResult, toast, t])
 
   const calculateCrossElasticity = useCallback(() => {
     const Q1 = parseFloat(q1Cross), Q2 = parseFloat(q2Cross)
@@ -114,7 +114,7 @@ export function ElasticityCalculator() {
 
     setResult({ type: 'cross', value: exy, interpretation, category })
     addElasticityResult({ id: crypto.randomUUID(), elasticityType: 'cross', value: exy, interpretation, category, date: new Date().toISOString() })
-  }, [q1Cross, q2Cross, px1, px2, addElasticityResult, toast])
+  }, [q1Cross, q2Cross, px1, px2, addElasticityResult, toast, t])
 
   const reset = useCallback(() => {
     setQ1(''); setQ2(''); setP1(''); setP2('')
