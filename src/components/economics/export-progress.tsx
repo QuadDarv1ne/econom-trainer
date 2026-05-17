@@ -6,7 +6,7 @@ import 'jspdf-autotable'
 import { useEconomicsStore, getLevelTitle, getModuleDisplayName } from '@/store/economics-store'
 import { downloadProgressCSV, downloadProgressJSON } from '@/lib/export-progress'
 import { useI18n } from '@/lib/i18n-provider'
-import { getCurrentLocale, t } from '@/lib/i18n'
+import { getCurrentLocale, t, toLocale } from '@/lib/i18n'
 import { Button } from '@/components/ui/button'
 import { Download, Copy, Check, Share2 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -15,7 +15,7 @@ export function exportProgressToPDF() {
   const doc = new jsPDF()
   const progress = useEconomicsStore.getState().getFullProgress()
   const locale = getCurrentLocale()
-  const now = new Date().toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US')
+  const now = new Date().toLocaleString(toLocale(locale))
 
   // Header
   doc.setFillColor(34, 197, 94)
@@ -43,7 +43,7 @@ export function exportProgressToPDF() {
   
   doc.setFontSize(11)
   doc.setFont('helvetica', 'normal')
-  doc.text(`${t('export.csv.totalXP', locale)}: ${progress.totalXP.toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US')} XP`, 14, 65)
+  doc.text(`${t('export.csv.totalXP', locale)}: ${progress.totalXP.toLocaleString(toLocale(locale))} XP`, 14, 65)
   doc.text(`${t('progress.sessions', locale)}: ${progress.totalSessions}`, 14, 71)
 
   // Statistics table
@@ -112,7 +112,7 @@ export function exportProgressToPDF() {
   
   const achievementsText = [
     `• ${t('progress.title', locale)}: ${levelTitle}`,
-    `• ${t('export.csv.totalXP', locale)}: ${progress.totalXP.toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US')} XP`,
+    `• ${t('export.csv.totalXP', locale)}: ${progress.totalXP.toLocaleString(toLocale(locale))} XP`,
     `• ${t('progress.sessions', locale)}: ${progress.totalSessions}`,
     `• ${t('export.csv.quizAccuracy', locale)}: ${progress.quizStats.accuracy}%`,
     `• ${t('finance.accuracy', locale)}: ${progress.financeStats.accuracy}%`,
@@ -139,7 +139,7 @@ export function exportProgressToPDF() {
 export function exportProgressToText(): string {
   const progress = useEconomicsStore.getState().getFullProgress()
   const locale = getCurrentLocale()
-  const now = new Date().toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US')
+  const now = new Date().toLocaleString(toLocale(locale))
   const levelTitle = getLevelTitle(progress.level)
 
   const activeModules = Object.entries(progress.moduleCounts)
@@ -160,7 +160,7 @@ export function exportProgressToText(): string {
     `📅 ${now}`,
     '',
     `🏆 ${levelLabel} ${progress.level}: ${levelTitle}`,
-    `⭐ ${xpLabel}: ${progress.totalXP.toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US')} XP`,
+    `⭐ ${xpLabel}: ${progress.totalXP.toLocaleString(toLocale(locale))} XP`,
     `📈 ${sessionsLabel}: ${progress.totalSessions}`,
     '',
     `📋 ${statsLabel}:`,

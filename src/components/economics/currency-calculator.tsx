@@ -124,7 +124,7 @@ export function CurrencyCalculator() {
       })
     }
     return data
-  }, [crossRate, volatility, fromCurrency, toCurrency])
+  }, [crossRate, volatility, fromCurrency, toCurrency, locale])
 
   // Cross rates matrix for selected currencies
   const selectedCodes = ['USD', 'EUR', 'GBP', 'CNY', 'JPY', 'RUB']
