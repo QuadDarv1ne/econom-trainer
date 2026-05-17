@@ -93,7 +93,10 @@ export async function PATCH(req: Request) {
         email: true,
         phone: true,
         image: true,
+        role: true,
         twoFactorEnabled: true,
+        emailVerified: true,
+        createdAt: true,
       },
     });
 

@@ -547,7 +547,7 @@ export default function ProfilePage() {
           </Alert>
         )}
 
-        <Tabs defaultValue="personal" className="space-y-6">
+        <Tabs defaultValue="personal" className="space-y-6" onValueChange={() => { setError(''); setSuccess(''); }}>
           <TabsList>
             <TabsTrigger value="personal">
               <User className="h-4 w-4 mr-2" />
@@ -578,7 +578,7 @@ export default function ProfilePage() {
                       type="button"
                       className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
                       onClick={() => fileInputRef.current?.click()}
-                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { fileInputRef.current?.click(); } }}
                       aria-label={t('profile.changeAvatar') || 'Change avatar'}
                     >
                       <Camera className="h-6 w-6 text-white" />

@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { PasswordInput } from '@/components/ui/password-input';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import {
   GraduationCap,
   User,
@@ -30,6 +31,7 @@ import {
   Zap,
   AlertCircle,
   CheckCircle2,
+  X,
 } from 'lucide-react';
 import { useEconomicsStore } from '@/store/economics-store';
 import { useI18n } from '@/lib/i18n-provider';
@@ -108,6 +110,19 @@ export default function DashboardPage() {
       fetchProfile();
     }
   }, [status, router, fetchProfile]);
+
+  // Auto-dismiss alerts
+  useEffect(() => {
+    if (!error) return;
+    const timer = setTimeout(() => setError(''), 5000);
+    return () => clearTimeout(timer);
+  }, [error]);
+
+  useEffect(() => {
+    if (!success) return;
+    const timer = setTimeout(() => setSuccess(''), 5000);
+    return () => clearTimeout(timer);
+  }, [success]);
 
   async function updateProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -288,17 +303,27 @@ export default function DashboardPage() {
         {error && (
           <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
+            <AlertDescription className="flex items-center justify-between gap-2">
+              <span>{error}</span>
+              <button onClick={() => setError('')} className="shrink-0" aria-label="Close">
+                <X className="h-4 w-4" />
+              </button>
+            </AlertDescription>
           </Alert>
         )}
         {success && (
           <Alert className="mb-4 border-green-500 bg-green-50 dark:bg-green-950/20">
             <CheckCircle2 className="h-4 w-4 text-green-500" />
-            <AlertDescription className="text-green-700 dark:text-green-400">{success}</AlertDescription>
+            <AlertDescription className="flex items-center justify-between gap-2 text-green-700 dark:text-green-400">
+              <span>{success}</span>
+              <button onClick={() => setSuccess('')} className="shrink-0" aria-label="Close">
+                <X className="h-4 w-4" />
+              </button>
+            </AlertDescription>
           </Alert>
         )}
 
-        <Tabs defaultValue="profile" className="space-y-6">
+        <Tabs defaultValue="profile" className="space-y-6" onValueChange={() => { setError(''); setSuccess(''); }}>
           <TabsList>
             <TabsTrigger value="profile">
               <User className="h-4 w-4 mr-2" />
@@ -461,15 +486,24 @@ export default function DashboardPage() {
 
                         <div className="space-y-2">
                           <h4 className="font-semibold">{t('dashboard.security.enterCode')}</h4>
-                          <div className="flex gap-2">
-                            <Input
-                              value={twoFactorCode}
-                              onChange={(e) => setTwoFactorCode(e.target.value)}
-                              placeholder="000000"
+                          <div className="flex flex-col gap-2">
+                            <InputOTP
                               maxLength={6}
-                              className="text-center text-2xl tracking-widest max-w-[200px]"
-                            />
-                            <Button onClick={verify2FA} disabled={verifying2FA}>
+                              value={twoFactorCode}
+                              onChange={setTwoFactorCode}
+                            >
+                              <InputOTPGroup>
+                                <InputOTPSlot index={0} />
+                                <InputOTPSlot index={1} />
+                                <InputOTPSlot index={2} />
+                              </InputOTPGroup>
+                              <InputOTPGroup>
+                                <InputOTPSlot index={3} />
+                                <InputOTPSlot index={4} />
+                                <InputOTPSlot index={5} />
+                              </InputOTPGroup>
+                            </InputOTP>
+                            <Button onClick={verify2FA} disabled={verifying2FA} className="self-start">
                               {verifying2FA ? <Loader2 className="h-4 w-4 animate-spin" /> : t('dashboard.security.verify')}
                             </Button>
                           </div>
