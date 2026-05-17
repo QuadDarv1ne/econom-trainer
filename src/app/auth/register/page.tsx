@@ -48,7 +48,9 @@ export default function RegisterPage() {
       return;
     }
 
-    if (passwordStrength.score < 2) {
+    const { requirements } = passwordStrength;
+    const allRequirementsMet = Object.values(requirements).every(Boolean);
+    if (!allRequirementsMet) {
       setError(t('passwordStrength.weak'));
       return;
     }
