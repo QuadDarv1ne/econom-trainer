@@ -37,11 +37,11 @@ export function useProfile() {
         const data = await res.json();
         setProfile(data);
       } else {
-        setError(t('dashboard.profile.saveError'));
+        setError(t('dashboard.profile.fetchError'));
       }
     } catch (e) {
       console.error(e);
-      setError(t('dashboard.profile.saveError'));
+      setError(t('dashboard.profile.fetchError'));
     } finally {
       setLoading(false);
     }

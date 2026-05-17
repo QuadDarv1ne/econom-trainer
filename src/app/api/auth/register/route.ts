@@ -34,6 +34,14 @@ export async function POST(req: Request) {
       );
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (typeof email !== 'string' || !emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: 'Invalid email format' },
+        { status: 400 }
+      );
+    }
+
     const strength = validatePasswordStrength(password);
     if (!strength.valid) {
       return NextResponse.json({ error: strength.error }, { status: 400 });

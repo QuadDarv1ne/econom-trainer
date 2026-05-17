@@ -18,16 +18,18 @@ interface GDPComponent {
   baseValue: number
 }
 
-const defaultComponents: GDPComponent[] = [
-  { name: 'gdp.component.consumption', currentValue: 0, baseValue: 0 },
-  { name: 'gdp.component.investment', currentValue: 0, baseValue: 0 },
-  { name: 'gdp.component.government', currentValue: 0, baseValue: 0 },
-  { name: 'gdp.component.export', currentValue: 0, baseValue: 0 },
-  { name: 'gdp.component.import', currentValue: 0, baseValue: 0 },
-]
+function createDefaultComponents(): GDPComponent[] {
+  return [
+    { name: 'gdp.component.consumption', currentValue: 0, baseValue: 0 },
+    { name: 'gdp.component.investment', currentValue: 0, baseValue: 0 },
+    { name: 'gdp.component.government', currentValue: 0, baseValue: 0 },
+    { name: 'gdp.component.export', currentValue: 0, baseValue: 0 },
+    { name: 'gdp.component.import', currentValue: 0, baseValue: 0 },
+  ]
+}
 
 export function GDPCalculator() {
-  const [components, setComponents] = useState<GDPComponent[]>(defaultComponents)
+  const [components, setComponents] = useState<GDPComponent[]>(createDefaultComponents)
   const [calculated, setCalculated] = useState(false)
   const [nominalGDP, setNominalGDP] = useState(0)
   const [realGDP, setRealGDP] = useState(0)
@@ -35,7 +37,7 @@ export function GDPCalculator() {
   const [inflationRate, setInflationRate] = useState(0)
   const addGDPResult = useEconomicsStore((s) => s.addGDPResult)
   const { toast } = useToast()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
 
   const updateComponent = useCallback(
     (index: number, field: 'currentValue' | 'baseValue', value: string) => {
@@ -83,7 +85,7 @@ export function GDPCalculator() {
   }, [components, addGDPResult, toast, t])
 
   const reset = useCallback(() => {
-    setComponents(defaultComponents.map((c) => ({ ...c })))
+    setComponents(createDefaultComponents())
     setCalculated(false)
     setNominalGDP(0)
     setRealGDP(0)
@@ -166,7 +168,7 @@ export function GDPCalculator() {
             <CardHeader className="pb-2">
               <CardDescription>{t('gdp.nominal')}</CardDescription>
               <CardTitle className="text-2xl font-mono">
-                {nominalGDP.toLocaleString('ru-RU', { maximumFractionDigits: 1 })}
+                {nominalGDP.toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US', { maximumFractionDigits: 1 })}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -180,7 +182,7 @@ export function GDPCalculator() {
             <CardHeader className="pb-2">
               <CardDescription>{t('gdp.real')}</CardDescription>
               <CardTitle className="text-2xl font-mono">
-                {realGDP.toLocaleString('ru-RU', { maximumFractionDigits: 1 })}
+                {realGDP.toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US', { maximumFractionDigits: 1 })}
               </CardTitle>
             </CardHeader>
             <CardContent>
