@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
 import { useEconomicsStore, getLevelFromXP, getLevelTitle, getLevelColor } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
+import { formatNumberLocale } from '@/lib/i18n'
 import {
   Trophy,
   Flame,
@@ -55,7 +56,7 @@ interface Achievement {
 }
 
 export function Achievements() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const quizResults = useEconomicsStore((s) => s.quizResults)
   const gdpResults = useEconomicsStore((s) => s.gdpResults)
   const financeResults = useEconomicsStore((s) => s.financeResults)
@@ -328,17 +329,17 @@ export function Achievements() {
                 {levelTitle}
               </div>
               <div className="text-sm text-muted-foreground mt-1">
-                {totalXP.toLocaleString('ru-RU')} {t('achievements.totalXP')}
+                {formatNumberLocale(locale, totalXP)} {t('achievements.totalXP')}
               </div>
             </div>
             <div className="flex-1 w-full">
               <div className="flex justify-between text-sm mb-2">
                 <span className="text-muted-foreground">{t('achievements.progressToLevel')} {xpState.level + 1}</span>
-                <span className="font-medium">{xpState.xpInCurrentLevel.toLocaleString('ru-RU')} / {xpState.xpToNextLevel.toLocaleString('ru-RU')} XP</span>
+                <span className="font-medium">{formatNumberLocale(locale, xpState.xpInCurrentLevel)} / {formatNumberLocale(locale, xpState.xpToNextLevel)} XP</span>
               </div>
               <Progress value={(xpState.xpInCurrentLevel / xpState.xpToNextLevel) * 100} className="h-3" />
               <div className="text-xs text-muted-foreground mt-2">
-                {t('achievements.remaining')} {(xpState.xpToNextLevel - xpState.xpInCurrentLevel).toLocaleString('ru-RU')} {t('achievements.toNextLevel')}
+                {t('achievements.remaining')} {formatNumberLocale(locale, xpState.xpToNextLevel - xpState.xpInCurrentLevel)} {t('achievements.toNextLevel')}
               </div>
             </div>
           </div>
@@ -357,7 +358,7 @@ export function Achievements() {
         <Card className="border-2 border-primary/20">
           <CardContent className="p-4 text-center">
             <Star className="h-6 w-6 mx-auto mb-1 text-primary" />
-            <div className="text-2xl font-bold">{totalBadgeXP.toLocaleString('ru-RU')}</div>
+            <div className="text-2xl font-bold">{formatNumberLocale(locale, totalBadgeXP)}</div>
             <div className="text-xs text-muted-foreground">{t('achievements.badgeXP')}</div>
           </CardContent>
         </Card>

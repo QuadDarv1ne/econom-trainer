@@ -23,9 +23,10 @@ import {
 import { TrendingUp, TrendingDown, RotateCcw, Landmark, Banknote, Info, ArrowRight } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
+import { formatNumberLocale } from '@/lib/i18n'
 
 export function ISLMModel() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   // IS curve parameters
   const [autonomousInvestment, setAutonomousInvestment] = useState(200)
   const [govSpending, setGovSpending] = useState(150)
@@ -381,7 +382,7 @@ export function ISLMModel() {
         <Card className="border-2 border-blue-200 dark:border-blue-900">
           <CardContent className="p-3 text-center">
             <div className="text-xs text-muted-foreground">{t('islm.equilibriumY')}</div>
-            <div className="text-xl font-mono font-bold text-blue-600">{Math.round(equilibriumY).toLocaleString('ru-RU')}</div>
+            <div className="text-xl font-mono font-bold text-blue-600">{formatNumberLocale(locale, Math.round(equilibriumY))}</div>
           </CardContent>
         </Card>
         <Card className="border-2 border-blue-200 dark:border-blue-900">
@@ -425,7 +426,7 @@ export function ISLMModel() {
             <Separator />
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('islm.crowdingOut')}</span>
-              <span className={`font-mono font-bold ${crowdingOut > 0 ? 'text-orange-600' : ''}`}>{Math.round(crowdingOut).toLocaleString('ru-RU')}</span>
+              <span className={`font-mono font-bold ${crowdingOut > 0 ? 'text-orange-600' : ''}`}>{formatNumberLocale(locale, Math.round(crowdingOut))}</span>
             </div>
           </CardContent>
         </Card>
@@ -445,7 +446,7 @@ export function ISLMModel() {
               <span className="text-green-600 font-bold">LM:</span> r = −(M/P)/h + (k/h) · Y
             </div>
             <div className="p-2 bg-blue-50 dark:bg-blue-950/30 rounded">
-              <span className="text-blue-600 font-bold">Y* =</span> {(equilibriumY > 0 ? Math.round(equilibriumY) : 0).toLocaleString('ru-RU')}
+              <span className="text-blue-600 font-bold">Y* =</span> {formatNumberLocale(locale, equilibriumY > 0 ? Math.round(equilibriumY) : 0)}
             </div>
           </CardContent>
         </Card>

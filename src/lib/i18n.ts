@@ -4,6 +4,16 @@ export const locales: Locale[] = ['ru', 'en'];
 
 export const defaultLocale: Locale = 'ru';
 
+/** Convert app Locale to BCP 47 locale string for Intl APIs */
+export function toLocale(locale: Locale): string {
+  return locale === 'ru' ? 'ru-RU' : 'en-US'
+}
+
+/** Format a number using the app's locale */
+export function formatNumberLocale(locale: Locale, value: number, options?: Intl.NumberFormatOptions): string {
+  return value.toLocaleString(toLocale(locale), options)
+}
+
 // UI translations
 export const translations = {
   ru: {

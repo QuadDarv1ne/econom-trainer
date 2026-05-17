@@ -29,11 +29,14 @@ export async function POST(req: Request) {
     const token = randomBytes(32).toString('hex');
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-    // Upsert verification token
-    await prisma.verificationToken.upsert({
-      where: { identifier_token: { identifier: user.email, token } },
-      create: { identifier: user.email, token, expires },
-      update: { token, expires },
+    // Remove any existing verification tokens for this email
+    await prisma.verificationToken.deleteMany({
+      where: { identifier: user.email },
+    });
+
+    // Create new verification token
+    await prisma.verificationToken.create({
+      data: { identifier: user.email, token, expires },
     });
 
     // Send verification email

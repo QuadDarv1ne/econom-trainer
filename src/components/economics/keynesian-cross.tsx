@@ -21,9 +21,10 @@ import {
 import { Crosshair, RotateCcw, Info } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
+import { formatNumberLocale } from '@/lib/i18n'
 
 export function KeynesianCross() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [autonomousSpending, setAutonomousSpending] = useState(200)
   const [mpc, setMpc] = useState(0.75)
   const [taxRate, setTaxRate] = useState(0.2)
@@ -111,8 +112,8 @@ export function KeynesianCross() {
                     fontSize: '12px',
                   }}
                   formatter={(value: number, name: string) => {
-                    if (name === 'aggregateDemand') return [value.toLocaleString('ru-RU'), t('keynesian.aggregateDemand')]
-                    if (name === 'fortyFive') return [value.toLocaleString('ru-RU'), t('keynesian.fortyFiveLine')]
+                    if (name === 'aggregateDemand') return [formatNumberLocale(locale, value), t('keynesian.aggregateDemand')]
+                    if (name === 'fortyFive') return [formatNumberLocale(locale, value), t('keynesian.fortyFiveLine')]
                     return [value, name]
                   }}
                   labelFormatter={(label) => `${t('keynesian.incomeLabel')}: ${label}`}
@@ -251,7 +252,7 @@ export function KeynesianCross() {
             <div className="grid grid-cols-2 gap-3">
               <div className="p-3 bg-muted/50 rounded-lg text-center">
                 <div className="text-sm text-muted-foreground">{t('keynesian.equilibriumY')}</div>
-                <div className="text-xl font-mono font-bold">{Math.round(equilibriumY).toLocaleString('ru-RU')}</div>
+                <div className="text-xl font-mono font-bold">{formatNumberLocale(locale, Math.round(equilibriumY))}</div>
               </div>
               <div className="p-3 bg-muted/50 rounded-lg text-center">
                 <div className="text-sm text-muted-foreground">{t('keynesian.multiplier')}</div>
@@ -263,7 +264,7 @@ export function KeynesianCross() {
               </div>
               <div className="p-3 bg-muted/50 rounded-lg text-center">
                 <div className="text-sm text-muted-foreground">{t('keynesian.taxRevenue')}</div>
-                <div className="text-xl font-mono font-bold">{Math.round(taxRevenue).toLocaleString('ru-RU')}</div>
+                <div className="text-xl font-mono font-bold">{formatNumberLocale(locale, Math.round(taxRevenue))}</div>
               </div>
             </div>
 

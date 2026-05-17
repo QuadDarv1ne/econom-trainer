@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
+import { formatNumberLocale } from '@/lib/i18n'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -23,7 +24,7 @@ import {
 import { Calculator, Receipt, Building2, Percent, Info } from 'lucide-react'
 
 // ─── Formatting helpers ───────────────────────────────────────────────
-const fmt = (n: number) => Math.round(n).toLocaleString('ru-RU')
+const fmtRaw = (n: number) => Math.round(n).toLocaleString('en-US')
 const fmtDec = (n: number, d = 2) => n.toFixed(d)
 
 // ─── НДФЛ progressive brackets (Russia 2025) ─────────────────────────
@@ -84,7 +85,7 @@ function ChartTooltipContent({ active, payload, formatter }: {
       {payload.map((p, i) => (
         <div key={i} className="flex items-center gap-2">
           <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: p.color }} />
-          <span className="text-muted-foreground">{formatter ? formatter(p.value, p.name) : `${p.name}: ${fmt(p.value)}`}</span>
+          <span className="text-muted-foreground">{formatter ? formatter(p.value, p.name) : `${p.name}: ${fmtRaw(p.value)}`}</span>
         </div>
       ))}
     </div>
@@ -95,7 +96,8 @@ function ChartTooltipContent({ active, payload, formatter }: {
 // Main component
 // ═══════════════════════════════════════════════════════════════════════
 export function TaxCalculator() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
+  const fmt = useCallback((n: number) => formatNumberLocale(locale, Math.round(n)), [locale])
   // ── НДФЛ state ──────────────────────────────────────────────────────
   const [ndflIncome, setNdflIncome] = useState('600000')
   const [ndflDeduction, setNdflDeduction] = useState('0')

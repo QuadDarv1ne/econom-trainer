@@ -21,6 +21,7 @@ import {
 } from 'recharts'
 import { BarChart3, TrendingUp, TrendingDown, Info, Users, Building2, Store, ShieldAlert } from 'lucide-react'
 import { useI18n } from '@/lib/i18n-provider'
+import { formatNumberLocale } from '@/lib/i18n'
 
 type MarketType = 'perfect' | 'monopoly' | 'monopolistic' | 'oligopoly'
 
@@ -33,7 +34,7 @@ interface MarketData {
 }
 
 export function MarketStructures() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [marketType, setMarketType] = useState<MarketType>('perfect')
   const [demandIntercept, setDemandIntercept] = useState(100)
   const [demandSlope, setDemandSlope] = useState(1)
@@ -402,14 +403,14 @@ export function MarketStructures() {
                 <CardContent className="p-3 text-center">
                   <div className="text-xs text-muted-foreground">{t('market.profit')}</div>
                   <div className={`text-xl font-mono font-bold ${equilibrium.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {equilibrium.profit > 0 ? '+' : ''}{Math.round(equilibrium.profit).toLocaleString('ru-RU')}
+                    {equilibrium.profit > 0 ? '+' : ''}{formatNumberLocale(locale, Math.round(equilibrium.profit))}
                   </div>
                 </CardContent>
               </Card>
               <Card className="border-2 border-orange-200 dark:border-orange-900">
                 <CardContent className="p-3 text-center">
                   <div className="text-xs text-muted-foreground">{t('market.consumerSurplus')}</div>
-                  <div className="text-xl font-mono font-bold text-orange-600">{surpluses.cs.toLocaleString('ru-RU')}</div>
+                  <div className="text-xl font-mono font-bold text-orange-600">{formatNumberLocale(locale, surpluses.cs)}</div>
                 </CardContent>
               </Card>
             </div>
@@ -428,7 +429,7 @@ export function MarketStructures() {
                     {t('market.csDescription')}
                   </p>
                   <div className="p-2 bg-green-50 dark:bg-green-950/30 rounded font-mono text-center">
-                    CS = ½ × (P<sub>max</sub> − P*) × Q* = {surpluses.cs.toLocaleString('ru-RU')}
+                    CS = ½ × (P<sub>max</sub> − P*) × Q* = {formatNumberLocale(locale, surpluses.cs)}
                   </div>
                 </CardContent>
               </Card>
@@ -445,7 +446,7 @@ export function MarketStructures() {
                     {t('market.psDescription')}
                   </p>
                   <div className="p-2 bg-blue-50 dark:bg-blue-950/30 rounded font-mono text-center">
-                    PS = (P* − MC) × Q* = {surpluses.ps.toLocaleString('ru-RU')}
+                    PS = (P* − MC) × Q* = {formatNumberLocale(locale, surpluses.ps)}
                   </div>
                   {type === 'perfect' && (
                     <p className="text-xs mt-2 text-green-600">
@@ -467,7 +468,7 @@ export function MarketStructures() {
                     {t('market.dwlDescription')}
                   </p>
                   <div className={`p-2 rounded font-mono text-center ${surpluses.dwl > 0 ? 'bg-red-50 dark:bg-red-950/30' : 'bg-green-50 dark:bg-green-950/30'}`}>
-                    DWL = {surpluses.dwl.toLocaleString('ru-RU')}
+                    DWL = {formatNumberLocale(locale, surpluses.dwl)}
                   </div>
                   {type === 'perfect' && (
                     <p className="text-xs mt-2 text-green-600">

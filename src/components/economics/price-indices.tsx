@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
+import { formatNumberLocale } from '@/lib/i18n'
 import { Calculator, TrendingUp, Info } from 'lucide-react'
 import {
   ChartContainer,
@@ -39,7 +40,7 @@ interface Good {
 }
 
 export function PriceIndices() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
   const [hasEarnedXP, setHasEarnedXP] = useState(false)
   const [baseYear, _setBaseYear] = useState(2020)
@@ -207,7 +208,7 @@ export function PriceIndices() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-emerald-600">
-                  {baseBasketCost.toLocaleString('ru-RU')} ₽
+                  {formatNumberLocale(locale, baseBasketCost)} ₽
                 </div>
               </CardContent>
             </Card>
@@ -217,7 +218,7 @@ export function PriceIndices() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-red-600">
-                  {currentBasketCost.toLocaleString('ru-RU')} ₽
+                  {formatNumberLocale(locale, currentBasketCost)} ₽
                 </div>
               </CardContent>
             </Card>

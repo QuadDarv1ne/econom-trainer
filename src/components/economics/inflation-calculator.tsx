@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
+import { formatNumberLocale } from '@/lib/i18n'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -19,7 +20,7 @@ import {
 import { Landmark, TrendingDown, TrendingUp, AlertTriangle } from 'lucide-react'
 
 export function InflationCalculator() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [initialAmount, setInitialAmount] = useState('100000')
   const [initialYear, setInitialYear] = useState('2020')
   const [finalYear, setFinalYear] = useState('2025')
@@ -151,12 +152,12 @@ export function InflationCalculator() {
               <CardHeader className="pb-2">
                 <CardDescription>{t('inflation.realValue')}</CardDescription>
                 <CardTitle className="text-2xl font-mono">
-                  {Math.round(result.realValue).toLocaleString('ru-RU')} руб.
+                  {formatNumberLocale(locale, Math.round(result.realValue))} руб.
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  {t('inflation.purchasingPowerDesc').replace('{amount}', parseFloat(initialAmount).toLocaleString('ru-RU')).replace('{years}', result.years.toString())}
+                  {t('inflation.purchasingPowerDesc').replace('{amount}', formatNumberLocale(locale, parseFloat(initialAmount))).replace('{years}', result.years.toString())}
                 </p>
               </CardContent>
             </Card>
@@ -212,8 +213,8 @@ export function InflationCalculator() {
                         fontSize: '12px',
                       }}
                       formatter={(value: number, name: string) => {
-                        if (name === 'realValue') return [value.toLocaleString('ru-RU') + ' руб.', t('inflation.tooltip.realValue')]
-                        if (name === 'lostValue') return [value.toLocaleString('ru-RU') + ' руб.', t('inflation.tooltip.lost')]
+                        if (name === 'realValue') return [formatNumberLocale(locale, value) + ' руб.', t('inflation.tooltip.realValue')]
+                        if (name === 'lostValue') return [formatNumberLocale(locale, value) + ' руб.', t('inflation.tooltip.lost')]
                         return [value, name]
                       }}
                     />
@@ -260,8 +261,8 @@ export function InflationCalculator() {
                     {result.yearlyData.map((row) => (
                       <tr key={row.year} className="border-b hover:bg-muted/50">
                         <td className="p-2 font-medium">{row.year}</td>
-                        <td className="p-2 text-right font-mono">{row.realValue.toLocaleString('ru-RU')} руб.</td>
-                        <td className="p-2 text-right font-mono text-red-600">-{row.lostValue.toLocaleString('ru-RU')} руб.</td>
+                        <td className="p-2 text-right font-mono">{formatNumberLocale(locale, row.realValue)} руб.</td>
+                        <td className="p-2 text-right font-mono text-red-600">-{formatNumberLocale(locale, row.lostValue)} руб.</td>
                         <td className="p-2 text-right font-mono">{row.purchasingPower}%</td>
                       </tr>
                     ))}
