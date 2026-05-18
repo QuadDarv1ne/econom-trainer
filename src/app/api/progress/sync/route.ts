@@ -77,11 +77,11 @@ export async function POST(req: Request) {
       where: { userId: session.user.id },
       create: {
         userId: session.user.id,
-        totalXP: totalXP || 0,
-        level: level || 1,
-        quizResults: quizResults ? JSON.stringify(quizResults) : null,
-        moduleHistory: moduleHistory ? JSON.stringify(moduleHistory) : null,
-        achievements: achievements ? JSON.stringify(achievements) : null,
+        totalXP: totalXP ?? 0,
+        level: level ?? 1,
+        quizResults: quizResults !== undefined ? JSON.stringify(quizResults) : null,
+        moduleHistory: moduleHistory !== undefined ? JSON.stringify(moduleHistory) : null,
+        achievements: achievements !== undefined ? JSON.stringify(achievements) : null,
       },
       update: {
         totalXP: totalXP ?? undefined,
