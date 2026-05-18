@@ -6,9 +6,13 @@ import { GDPCalculator, calculateGDP } from './gdp-calculator'
 const mockAddGDPResult = vi.fn()
 const mockToast = vi.fn()
 
+interface GDPStore {
+  addGDPResult: typeof mockAddGDPResult
+}
+
 vi.mock('@/store/economics-store', () => ({
-  useEconomicsStore: (selector?: (s: any) => any) => {
-    const state = {
+  useEconomicsStore: <T,>(selector?: (s: GDPStore) => T) => {
+    const state: GDPStore = {
       addGDPResult: mockAddGDPResult,
     }
     return selector ? selector(state) : state

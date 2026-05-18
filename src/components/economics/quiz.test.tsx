@@ -1,14 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { EconomicsQuiz } from './quiz'
 
 const mockAddQuizResult = vi.fn()
 const mockToast = vi.fn()
 
+interface QuizStore {
+  addQuizResult: typeof mockAddQuizResult
+}
+
 vi.mock('@/store/economics-store', () => ({
-  useEconomicsStore: (selector?: (s: any) => any) => {
-    const state = {
+  useEconomicsStore: <T,>(selector?: (s: QuizStore) => T) => {
+    const state: QuizStore = {
       addQuizResult: mockAddQuizResult,
     }
     return selector ? selector(state) : state
@@ -69,7 +73,7 @@ describe('Quiz question bank', () => {
     const countElements = screen.getAllByText(/\d+/)
     const bankSize = countElements.find((el) => parseInt(el.textContent || '0') >= 45)
     expect(bankSize).toBeDefined()
-    expect(parseInt(bankSize!.textContent || '0')).toBeGreaterThanOrEqual(95)
+    expect(parseInt(bankSize?.textContent ?? '0')).toBeGreaterThanOrEqual(95)
   })
 
   it('shows 10 questions per quiz', () => {
