@@ -69,7 +69,7 @@ describe('Quiz question bank', () => {
     const countElements = screen.getAllByText(/\d+/)
     const bankSize = countElements.find((el) => parseInt(el.textContent || '0') >= 45)
     expect(bankSize).toBeDefined()
-    expect(parseInt(bankSize!.textContent || '0')).toBeGreaterThanOrEqual(45)
+    expect(parseInt(bankSize!.textContent || '0')).toBeGreaterThanOrEqual(95)
   })
 
   it('shows 10 questions per quiz', () => {
