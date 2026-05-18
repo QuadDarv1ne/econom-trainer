@@ -5,13 +5,12 @@ import { WifiOff, Wifi } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/lib/i18n-provider";
 
-export function OnlineStatusIndicator() {
-  const { t } = useI18n();
+function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
     const updateStatus = () => setIsOnline(navigator.onLine);
-    
+
     updateStatus();
 
     window.addEventListener("online", updateStatus);
@@ -22,6 +21,13 @@ export function OnlineStatusIndicator() {
       window.removeEventListener("offline", updateStatus);
     };
   }, []);
+
+  return isOnline
+}
+
+export function OnlineStatusIndicator() {
+  const { t } = useI18n();
+  const isOnline = useOnlineStatus()
 
   if (isOnline) return null;
 
@@ -40,21 +46,7 @@ export function OnlineStatusIndicator() {
 
 export function NetworkStatus() {
   const { t } = useI18n();
-  const [isOnline, setIsOnline] = useState(true);
-
-  useEffect(() => {
-    const updateStatus = () => setIsOnline(navigator.onLine);
-    
-    updateStatus();
-
-    window.addEventListener("online", updateStatus);
-    window.addEventListener("offline", updateStatus);
-
-    return () => {
-      window.removeEventListener("online", updateStatus);
-      window.removeEventListener("offline", updateStatus);
-    };
-  }, []);
+  const isOnline = useOnlineStatus()
 
   return (
     <div className="flex items-center gap-2">
