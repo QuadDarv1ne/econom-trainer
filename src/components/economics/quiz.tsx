@@ -943,7 +943,7 @@ export function EconomicsQuiz() {
         </CardHeader>
         <CardContent className="space-y-3">
           <RadioGroup
-            value={selectedAnswer?.toString()}
+            value={selectedAnswer !== null ? selectedAnswer.toString() : ''}
             onValueChange={(v) => {
               if (quizState === 'active') handleAnswer(parseInt(v))
             }}

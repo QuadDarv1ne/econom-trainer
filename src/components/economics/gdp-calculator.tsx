@@ -28,6 +28,21 @@ function createDefaultComponents(): GDPComponent[] {
   ]
 }
 
+export function calculateGDP(components: GDPComponent[]) {
+  const c = components[0],
+    i = components[1],
+    g = components[2],
+    x = components[3],
+    m = components[4]
+
+  const nominal = c.currentValue + i.currentValue + g.currentValue + x.currentValue - m.currentValue
+  const real = c.baseValue + i.baseValue + g.baseValue + x.baseValue - m.baseValue
+  const deflator = real > 0 ? (nominal / real) * 100 : 0
+  const inflationRate = nominal > 0 ? ((nominal - real) / real) * 100 : 0
+
+  return { nominalGDP: nominal, realGDP: real, deflator, inflationRate }
+}
+
 export function GDPCalculator() {
   const [components, setComponents] = useState<GDPComponent[]>(createDefaultComponents)
   const [calculated, setCalculated] = useState(false)
@@ -52,16 +67,7 @@ export function GDPCalculator() {
   )
 
   const calculate = useCallback(() => {
-    const c = components[0],
-      i = components[1],
-      g = components[2],
-      x = components[3],
-      m = components[4]
-
-    const nominal = c.currentValue + i.currentValue + g.currentValue + x.currentValue - m.currentValue
-    const real = c.baseValue + i.baseValue + g.baseValue + x.baseValue - m.baseValue
-    const def = real > 0 ? (nominal / real) * 100 : 0
-    const infRate = nominal > 0 ? ((nominal - real) / real) * 100 : 0
+    const { nominalGDP: nominal, realGDP: real, deflator: def, inflationRate: infRate } = calculateGDP(components)
 
     setNominalGDP(nominal)
     setRealGDP(real)
