@@ -1,7 +1,7 @@
 'use client'
 
 import type React from 'react'
-import { useMemo, useEffect } from 'react'
+import { useMemo, useEffect, useRef } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
@@ -62,7 +62,6 @@ export function Achievements() {
   const financeResults = useEconomicsStore((s) => s.financeResults)
   const elasticityResults = useEconomicsStore((s) => s.elasticityResults)
   const totalXP = useEconomicsStore((s) => s.totalXP)
-  const unlockedAchievements = useEconomicsStore((s) => s.unlockedAchievements)
   const unlockAchievement = useEconomicsStore((s) => s.unlockAchievement)
   const resetProgress = useEconomicsStore((s) => s.resetProgress)
 
@@ -306,14 +305,16 @@ export function Achievements() {
   const unlockedCount = achievements.filter((a) => a.unlocked).length
   const totalBadgeXP = achievements.filter((a) => a.unlocked).reduce((sum, a) => sum + a.xpReward, 0)
 
-  // Award XP for newly unlocked achievements using unlockAchievement (idempotent)
+  // Award XP for newly unlocked achievements (idempotent via processedRef)
+  const processedRef = useRef<Set<string>>(new Set())
   useEffect(() => {
     for (const ach of achievements) {
-      if (ach.unlocked && !unlockedAchievements.includes(ach.id)) {
+      if (ach.unlocked && !processedRef.current.has(ach.id)) {
+        processedRef.current.add(ach.id)
         unlockAchievement(ach.id, ach.xpReward)
       }
     }
-  }, [achievements, unlockedAchievements, unlockAchievement])
+  }, [achievements, unlockAchievement])
 
   return (
     <div className="space-y-6">
