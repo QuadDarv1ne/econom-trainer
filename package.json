@@ -1,7 +1,7 @@
 {
   "name": "economic-trainer",
   "version": "7.2.0",
-  "private": false,
+  "private": true,
   "description": "Интерактивный тренажёр для экономистов — 18 модулей, квизы, XP-система | Interactive Economics Trainer — 18 modules, quizzes, XP system",
   "author": "Дуплей Максим Игоревич / Dupley Maxim Igorevich",
   "license": "SEE LICENSE IN LICENSE",
