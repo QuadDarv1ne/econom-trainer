@@ -93,13 +93,13 @@ self.addEventListener('fetch', (event) => {
   ) {
     event.respondWith(
       caches.match(request).then((cached) => {
-        const fetchPromise = fetch(request).then((response) => {
+        if (cached) return cached;
+        return fetch(request).then((response) => {
           if (response.ok) {
             caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, response.clone()));
           }
           return response;
-        });
-        return cached || fetchPromise;
+        }).catch(() => caches.match('/offline'));
       })
     );
     return;
