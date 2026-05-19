@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useRef } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { formatNumberLocale } from '@/lib/i18n'
@@ -25,16 +25,15 @@ export function InflationCalculator() {
   const [initialYear, setInitialYear] = useState('2020')
   const [finalYear, setFinalYear] = useState('2025')
   const [inflationRate, setInflationRate] = useState('7')
-  const [xpAwarded, setXpAwarded] = useState(false)
-
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
+  const xpAwardedRef = useRef(false)
 
   const awardXp = useCallback(() => {
-    if (!xpAwarded) {
-      setXpAwarded(true)
+    if (!xpAwardedRef.current) {
+      xpAwardedRef.current = true
       addModuleInteraction({ moduleId: 'inflation', action: 'calculate', xpEarned: MODULE_XP['inflation'] })
     }
-  }, [xpAwarded, addModuleInteraction])
+  }, [addModuleInteraction])
 
   const result = useMemo(() => {
     const amount = parseFloat(initialAmount)

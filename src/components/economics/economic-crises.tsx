@@ -153,18 +153,22 @@ export function EconomicCrises() {
 
   const peakImpact = useMemo(() => {
     if (!results) return null
-    let maxUnemployment = 0
-    let minGDP = 100
-    let maxInflation = 0
+    let maxUnemployment = -Infinity
+    let minGDP = Infinity
+    let maxInflation = -Infinity
     for (const row of results) {
-      const u = row.unemployment as number
-      const g = row.gdpGrowth as number
-      const i = row.inflation as number
-      if (u > maxUnemployment) maxUnemployment = u
-      if (g < minGDP) minGDP = g
-      if (i > maxInflation) maxInflation = i
+      const u = typeof row.unemployment === 'number' ? row.unemployment : parseFloat(String(row.unemployment))
+      const g = typeof row.gdpGrowth === 'number' ? row.gdpGrowth : parseFloat(String(row.gdpGrowth))
+      const i = typeof row.inflation === 'number' ? row.inflation : parseFloat(String(row.inflation))
+      if (!isNaN(u) && u > maxUnemployment) maxUnemployment = u
+      if (!isNaN(g) && g < minGDP) minGDP = g
+      if (!isNaN(i) && i > maxInflation) maxInflation = i
     }
-    return { maxUnemployment, minGDP, maxInflation }
+    return {
+      maxUnemployment: isFinite(maxUnemployment) ? maxUnemployment : 0,
+      minGDP: isFinite(minGDP) ? minGDP : 0,
+      maxInflation: isFinite(maxInflation) ? maxInflation : 0,
+    }
   }, [results])
 
   return (
