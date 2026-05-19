@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useRef } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -34,18 +34,18 @@ export function ADASModel() {
   const [inputPrices, setInputPrices] = useState(1.0)
   const [productivity, setProductivity] = useState(1.0)
   const [potentialGDP, setPotentialGDP] = useState(2000)
-  const [xpAwarded, setXpAwarded] = useState(false)
   const [activeTab, setActiveTab] = useState('explore')
 
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
   const { toast } = useToast()
+  const xpAwardedRef = useRef(false)
 
   const awardXp = useCallback(() => {
-    if (!xpAwarded) {
-      setXpAwarded(true)
+    if (!xpAwardedRef.current) {
+      xpAwardedRef.current = true
       addModuleInteraction({ moduleId: 'adas', action: 'explore', xpEarned: MODULE_XP['adas'] })
     }
-  }, [xpAwarded, addModuleInteraction])
+  }, [addModuleInteraction])
 
   // AD curve: Y = (C + I + G + NX) / P — simplified quantity theory approach
   // Higher price level reduces real spending
@@ -205,15 +205,14 @@ export function ADASModel() {
                   <ComposedChart data={finalData}>
                     <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                     <XAxis
-                      dataKey="output"
-                      label={{ value: t('adas.chart.outputAxis'), position: 'insideBottom', offset: -5, fontSize: 12 }}
+                      dataKey="price"
+                      label={{ value: t('adas.chart.priceAxis'), position: 'insideBottom', offset: -5, fontSize: 12 }}
                       fontSize={12}
-                      tickFormatter={(v: number) => v.toLocaleString()}
+                      tickFormatter={(v: number) => v.toFixed(1)}
                     />
                     <YAxis
-                      dataKey="price"
                       domain={['auto', 'auto']}
-                      label={{ value: t('adas.chart.priceAxis'), angle: -90, position: 'insideLeft', offset: 5, fontSize: 12 }}
+                      label={{ value: t('adas.chart.outputAxis'), angle: -90, position: 'insideLeft', offset: 5, fontSize: 12 }}
                       fontSize={12}
                     />
                     <Tooltip
@@ -242,8 +241,8 @@ export function ADASModel() {
                     <Line type="monotone" dataKey="sras" stroke="#ef4444" strokeWidth={2.5} dot={false} />
                     <Line type="monotone" dataKey="lras" stroke="#22c55e" strokeWidth={2} dot={false} strokeDasharray="5 5" />
                     <ReferenceDot
-                      x={equilibrium.output}
-                      y={equilibrium.price}
+                      x={equilibrium.price}
+                      y={equilibrium.output}
                       r={5}
                       fill="#f59e0b"
                       stroke="#d97706"
@@ -251,10 +250,10 @@ export function ADASModel() {
                       label={{ value: 'E', position: 'top', fill: '#f59e0b', fontSize: 14, fontWeight: 'bold' }}
                     />
                     <ReferenceLine
-                      x={potentialGDP}
+                      y={potentialGDP}
                       stroke="#22c55e"
                       strokeDasharray="3 3"
-                      label={{ value: t('adas.chart.potentialGDP'), position: 'top', fill: '#22c55e', fontSize: 11 }}
+                      label={{ value: t('adas.chart.potentialGDP'), position: 'right', fill: '#22c55e', fontSize: 11 }}
                     />
                   </ComposedChart>
                 </ResponsiveContainer>
