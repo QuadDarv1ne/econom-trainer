@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useI18n } from '@/lib/i18n-provider'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -74,7 +74,7 @@ export function Glossary() {
   const [activeCategory, setActiveCategory] = useState<string>('glossary.all')
 
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
-  const [hasEarnedXP, setHasEarnedXP] = useState(false)
+  const hasEarnedXPRef = useRef(false)
 
   const glossaryData = useMemo(
     () =>
@@ -158,13 +158,13 @@ export function Glossary() {
       </Card>
 
       <Accordion type="multiple" className="w-full" onValueChange={(value) => {
-        if (value.length > 0 && !hasEarnedXP) {
-          setHasEarnedXP(true)
+        if (value.length > 0 && !hasEarnedXPRef.current) {
+          hasEarnedXPRef.current = true
           addModuleInteraction({ moduleId: 'glossary', action: 'view', xpEarned: MODULE_XP['glossary'] })
         }
       }}>
-        {filteredTerms.map((item, index) => (
-          <AccordionItem key={item.id} value={`term-${index}`}>
+        {filteredTerms.map((item) => (
+          <AccordionItem key={item.id} value={`term-${item.id}`}>
             <AccordionTrigger className="hover:no-underline">
               <div className="flex items-center gap-3 text-left">
                 <Badge variant={getCategoryColor(item.category) as "default" | "secondary" | "outline" | "destructive"} className="shrink-0 text-xs">

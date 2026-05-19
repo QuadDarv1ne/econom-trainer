@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { Locale, getCurrentLocale, setLocale, t as translate } from '@/lib/i18n';
 
 interface I18nContextType {
@@ -29,7 +29,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const t = (key: string) => translate(key, locale);
+  const t = useCallback((key: string) => translate(key, locale), [locale]);
 
   return (
     <I18nContext.Provider value={{ locale, setLocale: changeLocale, t }}>

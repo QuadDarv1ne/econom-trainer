@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -42,11 +42,11 @@ export function MarketStructures() {
   const [fixedCost, setFixedCost] = useState(500)
   const [oligopolyKink, setOligopolyKink] = useState(50)
 
-  const [hasEarnedXP, setHasEarnedXP] = useState(false)
+  const hasEarnedXPRef = useRef(false)
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
   const awardXP = () => {
-    if (!hasEarnedXP) {
-      setHasEarnedXP(true)
+    if (!hasEarnedXPRef.current) {
+      hasEarnedXPRef.current = true
       addModuleInteraction({ moduleId: 'market-structures', action: 'explore', xpEarned: MODULE_XP['market-structures'] ?? 20 })
     }
   }

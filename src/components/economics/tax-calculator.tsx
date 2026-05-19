@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { formatNumberLocale } from '@/lib/i18n'
@@ -114,11 +114,11 @@ export function TaxCalculator() {
   const [profitRegionalRate, setProfitRegionalRate] = useState('17')
 
   // XP tracking — award once per session on first interaction
-  const [hasEarnedXP, setHasEarnedXP] = useState(false)
+  const hasEarnedXPRef = useRef(false)
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
   const awardXP = () => {
-    if (!hasEarnedXP) {
-      setHasEarnedXP(true)
+    if (!hasEarnedXPRef.current) {
+      hasEarnedXPRef.current = true
       addModuleInteraction({ moduleId: 'tax', action: 'calculate', xpEarned: MODULE_XP['tax'] })
     }
   }

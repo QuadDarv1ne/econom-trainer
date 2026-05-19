@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useRef } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -62,11 +62,11 @@ export function CurrencyCalculator() {
   const [customRates, setCustomRates] = useState<Record<string, number>>({})
   const [volatility, setVolatility] = useState(5)
 
-  const [hasEarnedXP, setHasEarnedXP] = useState(false)
+  const hasEarnedXPRef = useRef(false)
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
   const awardXP = () => {
-    if (!hasEarnedXP) {
-      setHasEarnedXP(true)
+    if (!hasEarnedXPRef.current) {
+      hasEarnedXPRef.current = true
       addModuleInteraction({ moduleId: 'currency', action: 'convert', xpEarned: MODULE_XP['currency'] ?? 15 })
     }
   }

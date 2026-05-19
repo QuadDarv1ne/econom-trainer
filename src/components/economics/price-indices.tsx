@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -42,7 +42,7 @@ interface Good {
 export function PriceIndices() {
   const { t, locale } = useI18n()
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
-  const [hasEarnedXP, setHasEarnedXP] = useState(false)
+  const hasEarnedXPRef = useRef(false)
   const [baseYear, _setBaseYear] = useState(2020)
   const [currentYear, _setCurrentYear] = useState(2024)
   const [goods, setGoods] = useState<Good[]>([
@@ -111,8 +111,8 @@ export function PriceIndices() {
   }, [baseYear, currentYear, inflationRate])
 
   const handleCalculate = () => {
-    if (!hasEarnedXP) {
-      setHasEarnedXP(true)
+    if (!hasEarnedXPRef.current) {
+      hasEarnedXPRef.current = true
       addModuleInteraction({ moduleId: 'price-indices', action: 'calculate', xpEarned: MODULE_XP['price-indices'] })
     }
   }

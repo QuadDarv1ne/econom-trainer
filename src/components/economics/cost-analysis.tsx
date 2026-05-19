@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -92,11 +92,11 @@ export function CostAnalysis() {
   const [price, setPrice] = useState(20)
 
   // XP tracking — award once per session on first interaction
-  const [hasEarnedXP, setHasEarnedXP] = useState(false)
+  const hasEarnedXPRef = useRef(false)
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
   const awardXP = () => {
-    if (!hasEarnedXP) {
-      setHasEarnedXP(true)
+    if (!hasEarnedXPRef.current) {
+      hasEarnedXPRef.current = true
       addModuleInteraction({ moduleId: 'costs', action: 'calculate', xpEarned: MODULE_XP['costs'] })
     }
   }

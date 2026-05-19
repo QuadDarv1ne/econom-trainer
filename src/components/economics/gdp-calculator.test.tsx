@@ -94,20 +94,20 @@ describe('calculateGDP (pure function)', () => {
     expect(result.inflationRate).toBe(100)
   })
 
-  it('handles real GDP = 0 (deflator=0, inflation=Infinity)', () => {
+  it('handles real GDP = 0 (deflator=0, inflation=0)', () => {
     const components = makeComponents([100, 0, 0, 0, 0], [0, 0, 0, 0, 0])
     const result = calculateGDP(components)
     expect(result.deflator).toBe(0)
-    expect(result.inflationRate).toBe(Infinity)
+    expect(result.inflationRate).toBe(0)
   })
 
-  it('handles nominal GDP = 0 (deflator=0, inflation=0)', () => {
+  it('handles nominal GDP = 0 with real > 0 (deflator=0, inflation=-100)', () => {
     const components = makeComponents([0, 0, 0, 0, 0], [100, 0, 0, 0, 0])
     const result = calculateGDP(components)
     expect(result.nominalGDP).toBe(0)
     expect(result.realGDP).toBe(100)
     expect(result.deflator).toBe(0)
-    expect(result.inflationRate).toBe(0)
+    expect(result.inflationRate).toBe(-100)
   })
 
   it('handles all zeros gracefully', () => {

@@ -31,7 +31,7 @@ export function checkPasswordStrength(password: string): PasswordStrengthResult 
   };
 
   const metCount = Object.values(requirements).filter(Boolean).length;
-  let score = Math.min(4, metCount - 1);
+  let score = Math.max(0, Math.min(4, metCount - 1));
   if (password.length >= 12 && metCount >= 4) score = Math.max(score, 3);
   if (password.length >= 16 && metCount >= 5) score = 4;
 
