@@ -74,11 +74,14 @@ export async function POST(req: Request) {
       html,
     });
 
-    // Always return success to prevent email enumeration
+    // Rollback token if email fails — prevents orphaned tokens
     if (!emailSent) {
-      console.error('[Forgot Password] Email service unavailable');
+      await prisma.passwordResetToken.deleteMany({
+        where: { token },
+      });
     }
 
+    // Always return success to prevent email enumeration
     return NextResponse.json({
       message: 'If this email is registered, we will send a password reset link',
     });
