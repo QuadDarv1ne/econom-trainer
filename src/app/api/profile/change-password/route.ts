@@ -6,6 +6,7 @@ import { randomBytes } from 'crypto';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validatePasswordStrength } from '@/lib/validate-password';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
+import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 
 // POST - Change password
 export async function POST(req: Request) {
@@ -13,6 +14,10 @@ export async function POST(req: Request) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!validateOrigin(req)) {
+      return csrfErrorResponse();
     }
 
     const ip = getClientIP(req);

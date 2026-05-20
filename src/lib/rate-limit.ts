@@ -52,6 +52,7 @@ export const RATE_LIMITS = {
   resetPass:   { windowMs: 60 * 1000, max: 10 },        // 10 attempts per minute
   twoFactorVerify: { windowMs: 15 * 60 * 1000, max: 10 },   // 10 attempts per 15 min
   twoFactorSetup:  { windowMs: 60 * 60 * 1000, max: 5 },    // 5 setup attempts per hour
+  twoFactorDisable: { windowMs: 15 * 60 * 1000, max: 5 },  // 5 attempts per 15 min
   changePass:  { windowMs: 15 * 60 * 1000, max: 10 },   // 10 attempts per 15 min
   deleteAcc:   { windowMs: 15 * 60 * 1000, max: 5 },    // 5 attempts per 15 min
 } as const;

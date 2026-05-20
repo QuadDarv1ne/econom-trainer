@@ -4,18 +4,23 @@ import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import bcrypt from 'bcryptjs';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
+import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 
 export async function POST(req: Request) {
   try {
-    const ip = getClientIP(req);
-    const limit = checkRateLimit('changePass', ip);
-    if (!limit.ok) {
-      return rateLimitResponse('changePass', ip, req);
-    }
-
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!validateOrigin(req)) {
+      return csrfErrorResponse();
+    }
+
+    const ip = getClientIP(req);
+    const limit = checkRateLimit('disable2FA', ip);
+    if (!limit.ok) {
+      return rateLimitResponse('disable2FA', ip, req);
     }
 
     const parsed = await safeJson<{ password: string }>(req);
