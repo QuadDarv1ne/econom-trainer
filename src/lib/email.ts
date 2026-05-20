@@ -68,6 +68,8 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions): 
 const escapeHtml = (str: string) =>
   str.replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m] ?? m));
 
+const escapeUrl = (url: string) => escapeHtml(url).replace(/ /g, '%20');
+
 const emailTranslations = {
   ru: {
     siteName: 'Экономический тренажёр',
@@ -114,7 +116,7 @@ export function getPasswordResetEmailHtml(
       <h2 style="color: #2563eb;">${t.siteName}</h2>
       <p>${t.greeting}, ${escapeHtml(name)}!</p>
       <p>${t.resetPassword.body}</p>
-      <a href="${resetUrl}"
+      <a href="${escapeUrl(resetUrl)}"
          style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px;
                 text-decoration: none; border-radius: 6px; margin: 16px 0;">
         ${t.resetPassword.button}
@@ -144,7 +146,7 @@ export function getEmailVerificationEmailHtml(
       <h2 style="color: #2563eb;">${t.siteName}</h2>
       <p>${t.greeting}, ${escapeHtml(name)}!</p>
       <p>${t.verifyEmail.body}</p>
-      <a href="${verificationUrl}"
+      <a href="${escapeUrl(verificationUrl)}"
          style="display: inline-block; background: #10b981; color: white; padding: 12px 24px;
                 text-decoration: none; border-radius: 6px; margin: 16px 0;">
         ${t.verifyEmail.button}
