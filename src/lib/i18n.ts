@@ -1682,6 +1682,10 @@ export const translations = {
     'auth.verifyEmail.backToLogin': 'Войти',
     'auth.verifyEmail.pending': 'Проверьте вашу почту и перейдите по ссылке для подтверждения.',
     'auth.verifyEmail.backToHome': 'На главную',
+    'auth.verifyEmail.invalid': 'Недействительная ссылка подтверждения.',
+    'auth.verifyEmail.expired': 'Срок действия ссылки истёк. Запросите новую.',
+    'auth.verifyEmail.error': 'Произошла ошибка при подтверждении email.',
+    'auth.verifyEmail.verifying': 'Проверка вашего email...',
 
     'auth.error.title': 'Ошибка аутентификации',
     'auth.error.subtitle': 'Что-то пошло не так при входе',
@@ -3745,6 +3749,10 @@ export const translations = {
     'auth.verifyEmail.backToLogin': 'Sign In',
     'auth.verifyEmail.pending': 'Check your email and click the verification link.',
     'auth.verifyEmail.backToHome': 'Back to Home',
+    'auth.verifyEmail.invalid': 'Invalid verification link.',
+    'auth.verifyEmail.expired': 'Verification link has expired. Request a new one.',
+    'auth.verifyEmail.error': 'An error occurred while verifying your email.',
+    'auth.verifyEmail.verifying': 'Verifying your email...',
 
     'auth.error.title': 'Authentication Error',
     'auth.error.subtitle': 'Something went wrong during sign in',

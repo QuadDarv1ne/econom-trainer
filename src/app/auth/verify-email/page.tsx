@@ -1,7 +1,7 @@
 'use client';
 
-import { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -11,7 +11,41 @@ import { useI18n } from '@/lib/i18n-provider';
 function VerifyEmailContent() {
   const { t } = useI18n();
   const searchParams = useSearchParams();
-  const status = searchParams.get('status');
+  const router = useRouter();
+  const [status, setStatus] = useState<string | null>(searchParams.get('status'));
+  const submittedRef = useRef(false);
+
+  const token = searchParams.get('token');
+  const email = searchParams.get('email');
+
+  // Auto-submit verification when token and email are present in URL
+  useEffect(() => {
+    if (!token || !email || status || submittedRef.current) return;
+    submittedRef.current = true;
+
+    (async () => {
+      try {
+        const res = await fetch('/api/auth/verify-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, email }),
+        });
+
+        // The endpoint redirects, but if it fails without redirect, handle it
+        if (res.ok) {
+          // Redirect happened via Response.redirect, but in case it didn't:
+          const data = await res.json().catch(() => null);
+          if (data?.error) {
+            setStatus('error');
+          }
+        } else {
+          setStatus('error');
+        }
+      } catch {
+        setStatus('error');
+      }
+    })();
+  }, [token, email, status, router]);
 
   if (status === 'success') {
     return (
@@ -80,10 +114,19 @@ function VerifyEmailContent() {
       </CardHeader>
       <CardContent className="text-center">
         <div className="space-y-4">
-          <AlertCircle className="h-16 w-16 text-yellow-500 mx-auto" />
-          <Alert variant="default">
-            <AlertDescription>{t('auth.verifyEmail.pending')}</AlertDescription>
-          </Alert>
+          {token && email ? (
+            <>
+              <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+              <CardDescription>{t('auth.verifyEmail.verifying') || 'Verifying your email...'}</CardDescription>
+            </>
+          ) : (
+            <>
+              <AlertCircle className="h-16 w-16 text-yellow-500 mx-auto" />
+              <Alert variant="default">
+                <AlertDescription>{t('auth.verifyEmail.pending')}</AlertDescription>
+              </Alert>
+            </>
+          )}
           <Link href="/" className="text-primary hover:underline">
             {t('auth.verifyEmail.backToHome')}
           </Link>

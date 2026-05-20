@@ -1,15 +1,32 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 
-// GET - Verify email via token
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const token = searchParams.get('token');
-  const email = (searchParams.get('email') || '').toLowerCase();
+// POST - Verify email via token (protected against CSRF and prefetch attacks)
+export async function POST(req: Request) {
+  if (!validateOrigin(req)) {
+    return csrfErrorResponse();
+  }
+
+  let body: { token?: string; email?: string } = {};
+  try {
+    body = await req.json();
+  } catch {
+    // Try form data
+    const formData = await req.formData();
+    body = {
+      token: formData.get('token') as string,
+      email: formData.get('email') as string,
+    };
+  }
+
+  const token = body.token;
+  const email = (body.email || '').toLowerCase();
+
+  const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
 
   if (!token || !email) {
-    const redirectUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/auth/verify-email?status=invalid`;
-    return NextResponse.redirect(redirectUrl);
+    return NextResponse.redirect(baseUrl + '/auth/verify-email?status=invalid');
   }
 
   try {
@@ -18,16 +35,14 @@ export async function GET(req: Request) {
     });
 
     if (!verificationToken) {
-      const redirectUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/auth/verify-email?status=invalid`;
-      return NextResponse.redirect(redirectUrl);
+      return NextResponse.redirect(baseUrl + '/auth/verify-email?status=invalid');
     }
 
     if (verificationToken.expires < new Date()) {
       await prisma.verificationToken.delete({
         where: { identifier_token: { identifier: email, token } },
       });
-      const redirectUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/auth/verify-email?status=expired`;
-      return NextResponse.redirect(redirectUrl);
+      return NextResponse.redirect(baseUrl + '/auth/verify-email?status=expired');
     }
 
     // Verify email and delete token in a transaction
@@ -41,10 +56,8 @@ export async function GET(req: Request) {
       }),
     ]);
 
-    const redirectUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/auth/verify-email?status=success`;
-    return NextResponse.redirect(redirectUrl);
+    return NextResponse.redirect(baseUrl + '/auth/verify-email?status=success');
   } catch {
-    const redirectUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/auth/verify-email?status=error`;
-    return NextResponse.redirect(redirectUrl);
+    return NextResponse.redirect(baseUrl + '/auth/verify-email?status=error');
   }
 }
