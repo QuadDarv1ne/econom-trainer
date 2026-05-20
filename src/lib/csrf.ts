@@ -5,6 +5,8 @@
 
 const ALLOWED_ORIGINS = [
   process.env.NEXT_PUBLIC_APP_URL,
+  process.env.NEXT_PUBLIC_URL,
+  process.env.NEXTAUTH_URL,
   process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
 ].filter(Boolean) as string[];
 
