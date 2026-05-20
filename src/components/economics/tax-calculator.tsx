@@ -27,6 +27,43 @@ import { Calculator, Receipt, Building2, Percent, Info } from 'lucide-react'
 const fmtRaw = (n: number) => Math.round(n).toLocaleString('en-US')
 const fmtDec = (n: number, d = 2) => n.toFixed(d)
 
+// ─── Types ────────────────────────────────────────────────────────────
+
+export interface NDFLBracket {
+  min: number
+  max: number
+  rate: number
+  label: string
+  taxableInBracket: number
+  tax: number
+  width: number
+}
+
+export interface NDFLResult {
+  brackets: NDFLBracket[]
+  totalTax: number
+  effectiveRate: number
+  marginalRate: number
+  netIncome: number
+  taxable: number
+}
+
+export interface NDSResult {
+  base: number
+  vatAmount: number
+  total: number
+}
+
+export interface ProfitTaxResult {
+  profit: number
+  tax: number
+  federalTax: number
+  regionalTax: number
+  netProfit: number
+  effectiveRate: number
+  totalRate: number
+}
+
 // ─── НДФЛ progressive brackets (Russia 2025) ─────────────────────────
 const NDFL_BRACKETS = [
   { min: 0, max: 2_400_000, rate: 0.13, label: '0 – 2,4 млн' },
@@ -36,7 +73,7 @@ const NDFL_BRACKETS = [
   { min: 50_000_000, max: Infinity, rate: 0.22, label: '50 млн +' },
 ]
 
-function calcNDFL(income: number, deduction: number) {
+export function calcNDFL(income: number, deduction: number): NDFLResult {
   const taxable = Math.max(0, income - deduction)
   let remaining = taxable
   const brackets = NDFL_BRACKETS.map((b) => {
@@ -55,14 +92,14 @@ function calcNDFL(income: number, deduction: number) {
 }
 
 // ─── НДС calculations ────────────────────────────────────────────────
-function calcNDS(priceWithVAT: number, vatRate: number) {
+export function calcNDS(priceWithVAT: number, vatRate: number): NDSResult {
   const base = priceWithVAT / (1 + vatRate)
   const vatAmount = priceWithVAT - base
   return { base, vatAmount, total: priceWithVAT }
 }
 
 // ─── Налог на прибыль ────────────────────────────────────────────────
-function calcProfitTax(revenue: number, expenses: number, federalRate: number, regionalRate: number) {
+export function calcProfitTax(revenue: number, expenses: number, federalRate: number, regionalRate: number): ProfitTaxResult {
   const profit = revenue - expenses
   const totalRate = federalRate + regionalRate
   const tax = Math.max(0, profit) * totalRate
@@ -116,12 +153,12 @@ export function TaxCalculator() {
   // XP tracking — award once per session on first interaction
   const hasEarnedXPRef = useRef(false)
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
-  const awardXP = () => {
+  const awardXP = useCallback(() => {
     if (!hasEarnedXPRef.current) {
       hasEarnedXPRef.current = true
       addModuleInteraction({ moduleId: 'tax', action: 'calculate', xpEarned: MODULE_XP['tax'] })
     }
-  }
+  }, [addModuleInteraction])
 
   // ── НДФЛ computations ───────────────────────────────────────────────
   const ndflResult = useMemo(() => {
