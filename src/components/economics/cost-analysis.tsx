@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, useCallback } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -77,6 +77,151 @@ function CostLegend({ price, t }: { price: number; t: (key: string) => string })
   )
 }
 
+// ─── Pure calculation functions ──────────────────────────────────────
+
+export interface CostDataPoint {
+  quantity: number
+  atc: number
+  avc: number
+  mc: number
+  afc: number
+}
+
+export interface TotalCostDataPoint extends CostDataPoint {
+  tc: number
+  vc: number
+  fc: number
+}
+
+export interface CostsAtQ {
+  fc: number
+  vc: number
+  tc: number
+  atc: number
+  avc: number
+  mc: number
+  afc: number
+  revenue: number
+  profit: number
+}
+
+export interface TableCostRow {
+  q: number
+  fc: number
+  vc: number
+  tc: number
+  atc: number
+  avc: number
+  mc: number
+}
+
+export type DecisionKind = 'profitable' | 'lossContinue' | 'shutdown'
+
+export interface DecisionStatus {
+  kind: DecisionKind
+  label: string
+  color: string
+  bg: string
+}
+
+export function calcCostData(
+  fixedCosts: number,
+  varCost: number,
+  quadCoef: number,
+  maxQ: number
+): CostDataPoint[] {
+  const data: CostDataPoint[] = []
+  for (let q = 1; q <= maxQ; q++) {
+    const fc = fixedCosts
+    const vc = varCost * q + quadCoef * q * q
+    const tc = fc + vc
+    data.push({
+      quantity: q,
+      atc: Math.round((tc / q) * 100) / 100,
+      avc: Math.round((vc / q) * 100) / 100,
+      mc: Math.round((varCost + 2 * quadCoef * q) * 100) / 100,
+      afc: Math.round((fc / q) * 100) / 100,
+    })
+  }
+  return data
+}
+
+export function calcMinATC(fixedCosts: number, quadCoef: number): number | null {
+  if (quadCoef <= 0) return null
+  return Math.round(Math.sqrt(fixedCosts / quadCoef) * 100) / 100
+}
+
+export function calcCostsAtQ(
+  q: number,
+  fixedCosts: number,
+  varCost: number,
+  quadCoef: number,
+  price: number
+): CostsAtQ {
+  const fc = fixedCosts
+  const vc = varCost * q + quadCoef * q * q
+  const tc = fc + vc
+  const atc = q > 0 ? tc / q : 0
+  const avc = q > 0 ? vc / q : 0
+  const mc = varCost + 2 * quadCoef * q
+  const afc = q > 0 ? fc / q : 0
+  const revenue = price * q
+  const profit = revenue - tc
+  return {
+    fc: Math.round(fc * 100) / 100,
+    vc: Math.round(vc * 100) / 100,
+    tc: Math.round(tc * 100) / 100,
+    atc: Math.round(atc * 100) / 100,
+    avc: Math.round(avc * 100) / 100,
+    mc: Math.round(mc * 100) / 100,
+    afc: Math.round(afc * 100) / 100,
+    revenue: Math.round(revenue * 100) / 100,
+    profit: Math.round(profit * 100) / 100,
+  }
+}
+
+export function calcTableData(
+  fixedCosts: number,
+  varCost: number,
+  quadCoef: number,
+  maxQ: number
+): TableCostRow[] {
+  const quantities = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50].filter(q => q <= maxQ)
+  return quantities.map(q => {
+    const fc = fixedCosts
+    const vc = varCost * q + quadCoef * q * q
+    const tc = fc + vc
+    return {
+      q,
+      fc: Math.round(fc * 100) / 100,
+      vc: Math.round(vc * 100) / 100,
+      tc: Math.round(tc * 100) / 100,
+      atc: Math.round((tc / q) * 100) / 100,
+      avc: Math.round((vc / q) * 100) / 100,
+      mc: Math.round((varCost + 2 * quadCoef * q) * 100) / 100,
+    }
+  })
+}
+
+export function calcDecisionStatus(
+  price: number,
+  breakevenPrice: number | null,
+  shutdownPrice: number,
+  labels: { profitable: string; lossContinue: string; shutdown: string }
+): DecisionStatus {
+  if (price >= (breakevenPrice ?? Infinity)) {
+    return { kind: 'profitable', label: labels.profitable, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-950/30' }
+  } else if (price >= shutdownPrice) {
+    return { kind: 'lossContinue', label: labels.lossContinue, color: 'text-yellow-600', bg: 'bg-yellow-50 dark:bg-yellow-950/30' }
+  } else {
+    return { kind: 'shutdown', label: labels.shutdown, color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-950/30' }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Main component
+// ═══════════════════════════════════════════════════════════════════════
+
 export function CostAnalysis() {
   const { t } = useI18n()
   // Firm parameters
@@ -94,41 +239,18 @@ export function CostAnalysis() {
   // XP tracking — award once per session on first interaction
   const hasEarnedXPRef = useRef(false)
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
-  const awardXP = () => {
+  const awardXP = useCallback(() => {
     if (!hasEarnedXPRef.current) {
       hasEarnedXPRef.current = true
       addModuleInteraction({ moduleId: 'costs', action: 'calculate', xpEarned: MODULE_XP['costs'] })
     }
-  }
+  }, [addModuleInteraction])
 
-  // Generate chart data
-  const chartData = useMemo(() => {
-    const data: Array<{ quantity: number; atc: number; avc: number; mc: number; afc: number }> = []
-    for (let q = 1; q <= maxQ; q++) {
-      const fc = fixedCosts
-      const vc = varCost * q + quadCoef * q * q
-      const tc = fc + vc
-      const atc = tc / q
-      const avc = vc / q
-      const mc = varCost + 2 * quadCoef * q
-      data.push({
-        quantity: q,
-        atc: Math.round(atc * 100) / 100,
-        avc: Math.round(avc * 100) / 100,
-        mc: Math.round(mc * 100) / 100,
-        afc: Math.round((fc / q) * 100) / 100,
-      })
-    }
-    return data
-  }, [fixedCosts, varCost, quadCoef, maxQ])
+  const chartData = useMemo(() =>
+    calcCostData(fixedCosts, varCost, quadCoef, maxQ),
+    [fixedCosts, varCost, quadCoef, maxQ])
 
-  // Find minimum ATC: ATC = FC/Q + v + q_coef*Q
-  // dATC/dQ = -FC/Q² + q_coef = 0 => Q = sqrt(FC / q_coef)
-  const minATC_Q = useMemo(() => {
-    if (quadCoef <= 0) return null
-    const q = Math.sqrt(fixedCosts / quadCoef)
-    return Math.round(q * 100) / 100
-  }, [fixedCosts, quadCoef])
+  const minATC_Q = useMemo(() => calcMinATC(fixedCosts, quadCoef), [fixedCosts, quadCoef])
 
   const minATC_value = useMemo(() => {
     if (!minATC_Q || minATC_Q <= 0) return null
@@ -161,60 +283,21 @@ export function CostAnalysis() {
   // Breakeven price = min ATC
   const breakevenPrice = minATC_value
 
-  // Current cost calculations at selected Q
-  const currentCosts = useMemo(() => {
-    const q = currentQ
-    const fc = fixedCosts
-    const vc = varCost * q + quadCoef * q * q
-    const tc = fc + vc
-    const atc = q > 0 ? tc / q : 0
-    const avc = q > 0 ? vc / q : 0
-    const mc = varCost + 2 * quadCoef * q
-    const afc = q > 0 ? fc / q : 0
-    const revenue = price * q
-    const profit = revenue - tc
+  const currentCosts = useMemo(() =>
+    calcCostsAtQ(currentQ, fixedCosts, varCost, quadCoef, price),
+    [currentQ, fixedCosts, varCost, quadCoef, price])
 
-    return {
-      fc: Math.round(fc * 100) / 100,
-      vc: Math.round(vc * 100) / 100,
-      tc: Math.round(tc * 100) / 100,
-      atc: Math.round(atc * 100) / 100,
-      avc: Math.round(avc * 100) / 100,
-      mc: Math.round(mc * 100) / 100,
-      afc: Math.round(afc * 100) / 100,
-      revenue: Math.round(revenue * 100) / 100,
-      profit: Math.round(profit * 100) / 100,
-    }
-  }, [currentQ, fixedCosts, varCost, quadCoef, price])
+  const tableData = useMemo(() =>
+    calcTableData(fixedCosts, varCost, quadCoef, maxQ),
+    [fixedCosts, varCost, quadCoef, maxQ])
 
-  // Table data for key quantities
-  const tableData = useMemo(() => {
-    const quantities = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50].filter(q => q <= maxQ)
-    return quantities.map(q => {
-      const fc = fixedCosts
-      const vc = varCost * q + quadCoef * q * q
-      const tc = fc + vc
-      return {
-        q,
-        fc: Math.round(fc * 100) / 100,
-        vc: Math.round(vc * 100) / 100,
-        tc: Math.round(tc * 100) / 100,
-        atc: Math.round((tc / q) * 100) / 100,
-        avc: Math.round((vc / q) * 100) / 100,
-        mc: Math.round((varCost + 2 * quadCoef * q) * 100) / 100,
-      }
-    })
-  }, [fixedCosts, varCost, quadCoef, maxQ])
-
-  // Decision status based on price
   const decisionStatus = useMemo(() => {
-    if (price >= (breakevenPrice ?? Infinity)) {
-      return { label: t('costs.profitable'), color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-950/30', icon: CheckCircle2 }
-    } else if (price >= shutdownPrice) {
-      return { label: t('costs.lossContinue'), color: 'text-yellow-600', bg: 'bg-yellow-50 dark:bg-yellow-950/30', icon: AlertTriangle }
-    } else {
-      return { label: t('costs.shutdown'), color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-950/30', icon: AlertTriangle }
-    }
+    const ds = calcDecisionStatus(price, breakevenPrice, shutdownPrice, {
+      profitable: t('costs.profitable'),
+      lossContinue: t('costs.lossContinue'),
+      shutdown: t('costs.shutdown'),
+    })
+    return { ...ds, icon: ds.kind === 'profitable' ? CheckCircle2 : AlertTriangle }
   }, [price, breakevenPrice, shutdownPrice, t])
 
   const DecisionIcon = decisionStatus.icon
