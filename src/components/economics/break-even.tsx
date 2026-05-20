@@ -22,6 +22,61 @@ import { Target, RotateCcw, Info, TrendingDown } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
 
+// ─── Pure calculation functions ──────────────────────────────────────
+
+export function calcBreakEvenUnits(fixedCosts: number, variableCostPerUnit: number, pricePerUnit: number): number {
+  const contribution = pricePerUnit - variableCostPerUnit
+  if (contribution <= 0) return Infinity
+  return Math.ceil(fixedCosts / contribution)
+}
+
+export function calcBreakEvenRevenue(breakEvenUnits: number, pricePerUnit: number): number {
+  if (!isFinite(breakEvenUnits)) return NaN
+  return breakEvenUnits * pricePerUnit
+}
+
+export function calcContributionMargin(pricePerUnit: number, variableCostPerUnit: number): number {
+  if (pricePerUnit <= 0) return 0
+  return ((pricePerUnit - variableCostPerUnit) / pricePerUnit) * 100
+}
+
+export function calcMarginOfSafety(maxUnits: number, breakEvenUnits: number): number {
+  if (maxUnits <= 0) return 0
+  return ((maxUnits - breakEvenUnits) / maxUnits) * 100
+}
+
+export interface ChartDataPoint {
+  quantity: number
+  revenue: number
+  totalCost: number
+  profit: number
+  fixedCost: number
+}
+
+export function calcChartData(
+  fixedCosts: number, variableCostPerUnit: number, pricePerUnit: number, maxUnits: number
+): ChartDataPoint[] {
+  const data: ChartDataPoint[] = []
+  const step = Math.max(1, Math.floor(maxUnits / 50))
+  for (let q = 0; q <= maxUnits; q += step) {
+    const revenue = pricePerUnit * q
+    const totalCost = fixedCosts + variableCostPerUnit * q
+    const profit = revenue - totalCost
+    data.push({ quantity: q, revenue, totalCost, profit, fixedCost: fixedCosts })
+  }
+  return data
+}
+
+export function calcProfitAtMax(fixedCosts: number, variableCostPerUnit: number, pricePerUnit: number, maxUnits: number): number {
+  return pricePerUnit * maxUnits - (fixedCosts + variableCostPerUnit * maxUnits)
+}
+
+export function isViable(pricePerUnit: number, variableCostPerUnit: number): boolean {
+  return pricePerUnit > variableCostPerUnit
+}
+
+// ─── Component ────────────────────────────────────────────────────────
+
 export function BreakEvenAnalysis() {
   const [fixedCosts, setFixedCosts] = useState(100000)
   const [variableCostPerUnit, setVariableCostPerUnit] = useState(300)
@@ -43,47 +98,12 @@ export function BreakEvenAnalysis() {
 
   const formatNum = (n: number) => n.toLocaleString(locale)
 
-  const breakEvenUnits = useMemo(() => {
-    const contribution = pricePerUnit - variableCostPerUnit
-    if (contribution <= 0) return Infinity
-    return Math.ceil(fixedCosts / contribution)
-  }, [fixedCosts, variableCostPerUnit, pricePerUnit])
-
-  const breakEvenRevenue = useMemo(() => {
-    if (!isFinite(breakEvenUnits)) return NaN
-    return breakEvenUnits * pricePerUnit
-  }, [breakEvenUnits, pricePerUnit])
-
-  const contributionMargin = useMemo(() => {
-    if (pricePerUnit <= 0) return 0
-    return ((pricePerUnit - variableCostPerUnit) / pricePerUnit) * 100
-  }, [pricePerUnit, variableCostPerUnit])
-
-  const marginOfSafety = useMemo(() => {
-    if (maxUnits <= 0) return 0
-    return ((maxUnits - breakEvenUnits) / maxUnits) * 100
-  }, [maxUnits, breakEvenUnits])
-
-  const chartData = useMemo(() => {
-    const data: Array<{ quantity: number; revenue: number; totalCost: number; profit: number; fixedCost: number }> = []
-    const step = Math.max(1, Math.floor(maxUnits / 50))
-    for (let q = 0; q <= maxUnits; q += step) {
-      const revenue = pricePerUnit * q
-      const totalCost = fixedCosts + variableCostPerUnit * q
-      const profit = revenue - totalCost
-      data.push({
-        quantity: q,
-        revenue,
-        totalCost,
-        profit,
-        fixedCost: fixedCosts,
-      })
-    }
-    return data
-  }, [fixedCosts, variableCostPerUnit, pricePerUnit, maxUnits])
-
-  // At max capacity
-  const profitAtMax = pricePerUnit * maxUnits - (fixedCosts + variableCostPerUnit * maxUnits)
+  const breakEvenUnits = useMemo(() => calcBreakEvenUnits(fixedCosts, variableCostPerUnit, pricePerUnit), [fixedCosts, variableCostPerUnit, pricePerUnit])
+  const breakEvenRevenue = useMemo(() => calcBreakEvenRevenue(breakEvenUnits, pricePerUnit), [breakEvenUnits, pricePerUnit])
+  const contributionMargin = useMemo(() => calcContributionMargin(pricePerUnit, variableCostPerUnit), [pricePerUnit, variableCostPerUnit])
+  const marginOfSafety = useMemo(() => calcMarginOfSafety(maxUnits, breakEvenUnits), [maxUnits, breakEvenUnits])
+  const chartData = useMemo(() => calcChartData(fixedCosts, variableCostPerUnit, pricePerUnit, maxUnits), [fixedCosts, variableCostPerUnit, pricePerUnit, maxUnits])
+  const profitAtMax = calcProfitAtMax(fixedCosts, variableCostPerUnit, pricePerUnit, maxUnits)
 
   const reset = () => {
     setFixedCosts(100000)
@@ -93,7 +113,7 @@ export function BreakEvenAnalysis() {
     toast({ title: t('common.reset'), description: t('breakeven.resetToastDescription') })
   }
 
-  const isViable = pricePerUnit > variableCostPerUnit
+  const viable = isViable(pricePerUnit, variableCostPerUnit)
 
   return (
     <div className="space-y-6">
@@ -173,7 +193,7 @@ export function BreakEvenAnalysis() {
         </CardContent>
       </Card>
 
-      {!isViable && (
+      {!viable && (
         <Card className="border-red-500 bg-red-50 dark:bg-red-950/30">
           <CardContent className="p-4 flex items-center gap-3">
             <TrendingDown className="h-5 w-5 text-red-600 shrink-0" />
@@ -189,7 +209,7 @@ export function BreakEvenAnalysis() {
         </Card>
       )}
 
-      {isViable && (
+      {viable && (
         <>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <Card className="border-2 border-primary/20">
