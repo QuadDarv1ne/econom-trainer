@@ -23,28 +23,48 @@ import { useI18n } from '@/lib/i18n-provider'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type PDChoice = 'cooperate' | 'defect'
-type PDStrategy = 'random' | 'always-defect' | 'tit-for-tat'
+export type PDChoice = 'cooperate' | 'defect'
+export type PDStrategy = 'random' | 'always-defect' | 'tit-for-tat'
 
-interface PDRound {
+export interface PDRound {
   playerChoice: PDChoice
   aiChoice: PDChoice
   playerPayoff: number
   aiPayoff: number
 }
 
-type BotSChoice = 'opera' | 'football'
+export type BotSChoice = 'opera' | 'football'
 
-interface BotSRound {
+export interface BotSRound {
   player1Choice: BotSChoice
   player2Choice: BotSChoice
   player1Payoff: number
   player2Payoff: number
 }
 
+export interface HawkDovePayoffs {
+  hawkVsHawk: number
+  hawkVsDove: number
+  doveVsHawk: number
+  doveVsDove: number
+}
+
+export interface HawkDoveSimulationPoint {
+  generation: number
+  hawks: number
+  doves: number
+}
+
+export interface MixedESSResult {
+  hawkProportion: number
+  doveProportion: number
+  p1Expected: number
+  p2Expected: number
+}
+
 // ─── Prisoner's Dilemma Payoff ───────────────────────────────────────────────
 
-const PD_PAYOFF: Record<PDChoice, Record<PDChoice, [number, number]>> = {
+export const PD_PAYOFF: Record<PDChoice, Record<PDChoice, [number, number]>> = {
   cooperate: {
     cooperate: [-1, -1],
     defect: [-10, 0],
@@ -57,7 +77,7 @@ const PD_PAYOFF: Record<PDChoice, Record<PDChoice, [number, number]>> = {
 
 // ─── Battle of the Sexes Payoff ──────────────────────────────────────────────
 
-const BOTS_PAYOFF: Record<BotSChoice, Record<BotSChoice, [number, number]>> = {
+export const BOTS_PAYOFF: Record<BotSChoice, Record<BotSChoice, [number, number]>> = {
   opera: {
     opera: [3, 2],
     football: [0, 0],
@@ -70,7 +90,7 @@ const BOTS_PAYOFF: Record<BotSChoice, Record<BotSChoice, [number, number]>> = {
 
 // ─── Helper: AI choice for Prisoner's Dilemma ────────────────────────────────
 
-function getAIChoice(
+export function getAIChoice(
   strategy: PDStrategy,
   playerHistory: PDChoice[]
 ): PDChoice {
@@ -84,6 +104,69 @@ function getAIChoice(
     default:
       return Math.random() < 0.5 ? 'cooperate' : 'defect'
   }
+}
+
+// ─── Hawk-Dove payoff matrix ────────────────────────────────────────────────
+
+export function calcHawkDovePayoffs(V: number, C: number): HawkDovePayoffs {
+  return {
+    hawkVsHawk: (V - C) / 2,
+    hawkVsDove: V,
+    doveVsHawk: 0,
+    doveVsDove: V / 2,
+  }
+}
+
+// ─── Mixed strategy ESS for Battle of the Sexes ──────────────────────────────
+
+export function calcMixedESS(): MixedESSResult {
+  const p = 3 / 5 // Player 1 plays Opera with prob 0.6
+  const q = 2 / 5 // Player 2 plays Opera with prob 0.4
+  return {
+    hawkProportion: p,
+    doveProportion: q,
+    p1Expected: 3 * q,
+    p2Expected: 2 * p,
+  }
+}
+
+// ─── Hawk-Dove population simulation ────────────────────────────────────────
+
+export function runHawkDoveSimulation(
+  V: number,
+  C: number,
+  generations: number,
+  initialHawkProp: number = 0.5
+): HawkDoveSimulationPoint[] {
+  const data: HawkDoveSimulationPoint[] = []
+  let hawkProp = initialHawkProp
+
+  for (let gen = 0; gen < generations; gen++) {
+    const doveProp = 1 - hawkProp
+
+    const hawkFitness = hawkProp * (V - C) / 2 + doveProp * V
+    const doveFitness = doveProp * V / 2
+
+    const totalFitness = hawkProp * hawkFitness + doveProp * doveFitness
+
+    if (totalFitness > 0) {
+      hawkProp = (hawkProp * hawkFitness) / totalFitness
+    } else if (hawkFitness < doveFitness) {
+      hawkProp = Math.max(0, hawkProp - 0.05)
+    } else if (hawkFitness > doveFitness) {
+      hawkProp = Math.min(1, hawkProp + 0.05)
+    }
+
+    hawkProp = Math.max(0, Math.min(1, hawkProp))
+
+    data.push({
+      generation: gen + 1,
+      hawks: Math.round(hawkProp * 1000) / 10,
+      doves: Math.round((1 - hawkProp) * 1000) / 10,
+    })
+  }
+
+  return data
 }
 
 // ─── Main Component ──────────────────────────────────────────────────────────
@@ -469,22 +552,11 @@ function BattleOfTheSexes() {
   const totalP1 = useMemo(() => rounds.reduce((s, r) => s + r.player1Payoff, 0), [rounds])
   const totalP2 = useMemo(() => rounds.reduce((s, r) => s + r.player2Payoff, 0), [rounds])
 
-  // Mixed strategy calculations
-  // Player 1 chooses Opera with prob p, Football with prob (1-p)
-  // Player 2's expected payoff from Opera:  2p + 0(1-p) = 2p
-  // Player 2's expected payoff from Football: 0p + 3(1-p) = 3 - 3p
-  // Indifference: 2p = 3 - 3p => 5p = 3 => p = 3/5
-  //
-  // Player 2 chooses Opera with prob q, Football with prob (1-q)
-  // Player 1's expected payoff from Opera:  3q + 0(1-q) = 3q
-  // Player 1's expected payoff from Football: 0q + 2(1-q) = 2 - 2q
-  // Indifference: 3q = 2 - 2q => 5q = 2 => q = 2/5
-  const mixedP1Opera = 3 / 5 // Player 1 plays Opera with prob 0.6
-  const mixedP2Opera = 2 / 5 // Player 2 plays Opera with prob 0.4
-
-  // Expected payoffs in mixed NE
-  const mixedP1Expected = 3 * mixedP2Opera // = 1.2
-  const mixedP2Expected = 2 * mixedP1Opera // = 1.2
+  const mixed = calcMixedESS()
+  const mixedP1Opera = mixed.hawkProportion
+  const mixedP2Opera = mixed.doveProportion
+  const mixedP1Expected = mixed.p1Expected
+  const mixedP2Expected = mixed.p2Expected
 
   const playRound = useCallback(() => {
     if (!player1Choice || !player2Choice) return
@@ -828,50 +900,10 @@ function HawksAndDoves() {
 
   // Population simulation
   const [generations, setGenerations] = useState(20)
-  const [populationData, setPopulationData] = useState<
-    { generation: number; hawks: number; doves: number }[]
-  >([])
+  const [populationData, setPopulationData] = useState<HawkDoveSimulationPoint[]>([])
 
   const runSimulation = useCallback(() => {
-    const data: { generation: number; hawks: number; doves: number }[] = []
-    let hawkProp = 0.5 // start with 50% hawks
-
-    for (let gen = 0; gen < generations; gen++) {
-      const doveProp = 1 - hawkProp
-
-      // Fitness calculations:
-      // Hawk meets Dove: Hawk gets V, Dove gets 0
-      // Hawk meets Hawk: Each gets (V-C)/2
-      // Dove meets Dove: Each gets V/2
-      // Dove meets Hawk: Dove gets 0
-      //
-      // Fitness(Hawk) = hawkProp * (V-C)/2 + doveProp * V
-      // Fitness(Dove) = doveProp * V/2
-
-      const hawkFitness = hawkProp * (V - C) / 2 + doveProp * V
-      const doveFitness = doveProp * V / 2
-
-      const totalFitness = hawkProp * hawkFitness + doveProp * doveFitness
-
-      // Replicator dynamics
-      if (totalFitness > 0) {
-        hawkProp = (hawkProp * hawkFitness) / totalFitness
-      } else if (hawkFitness < doveFitness) {
-        hawkProp = Math.max(0, hawkProp - 0.05)
-      } else if (hawkFitness > doveFitness) {
-        hawkProp = Math.min(1, hawkProp + 0.05)
-      }
-
-      // Clamp between 0 and 1
-      hawkProp = Math.max(0, Math.min(1, hawkProp))
-
-      data.push({
-        generation: gen + 1,
-        hawks: Math.round(hawkProp * 1000) / 10,
-        doves: Math.round((1 - hawkProp) * 1000) / 10,
-      })
-    }
-
+    const data = runHawkDoveSimulation(V, C, generations)
     setPopulationData(data)
 
     if (!xpEarned) {
@@ -880,11 +912,7 @@ function HawksAndDoves() {
     }
   }, [V, C, generations, addModuleInteraction, xpEarned])
 
-  // Payoff matrix values
-  const hawkVsHawk = (V - C) / 2
-  const hawkVsDove = V
-  const doveVsHawk = 0
-  const doveVsDove = V / 2
+  const payoffs = calcHawkDovePayoffs(V, C)
 
   const isESSValid = V < C
 
@@ -982,11 +1010,11 @@ function HawksAndDoves() {
                     {t('gameTheory.dove')}
                   </td>
                   <td className="border border-border p-2 sm:p-3 text-center">
-                    <div className="font-mono font-semibold">({doveVsDove.toFixed(1)}, {doveVsDove.toFixed(1)})</div>
+                    <div className="font-mono font-semibold">({payoffs.doveVsDove.toFixed(1)}, {payoffs.doveVsDove.toFixed(1)})</div>
                     <div className="text-xs text-muted-foreground mt-1">{t('gameTheory.shareResource')}</div>
                   </td>
                   <td className="border border-border p-2 sm:p-3 text-center">
-                    <div className="font-mono font-semibold">({doveVsHawk.toFixed(1)}, {hawkVsDove.toFixed(1)})</div>
+                    <div className="font-mono font-semibold">({payoffs.doveVsHawk.toFixed(1)}, {payoffs.hawkVsDove.toFixed(1)})</div>
                     <div className="text-xs text-muted-foreground mt-1">{t('gameTheory.hawkTakesAll')}</div>
                   </td>
                 </tr>
@@ -995,14 +1023,14 @@ function HawksAndDoves() {
                     {t('gameTheory.hawk')}
                   </td>
                   <td className="border border-border p-2 sm:p-3 text-center">
-                    <div className="font-mono font-semibold">({hawkVsDove.toFixed(1)}, {doveVsHawk.toFixed(1)})</div>
+                    <div className="font-mono font-semibold">({payoffs.hawkVsDove.toFixed(1)}, {payoffs.doveVsHawk.toFixed(1)})</div>
                     <div className="text-xs text-muted-foreground mt-1">{t('gameTheory.hawkTakesAll')}</div>
                   </td>
                   <td className={`border border-border p-2 sm:p-3 text-center ${
                     isESSValid ? 'bg-amber-500/10 border-2 border-amber-500/30' : 'bg-red-500/10 border-2 border-red-500/30'
                   }`}>
                     <div className="font-mono font-semibold">
-                      ({hawkVsHawk.toFixed(1)}, {hawkVsHawk.toFixed(1)})
+                      ({payoffs.hawkVsHawk.toFixed(1)}, {payoffs.hawkVsHawk.toFixed(1)})
                     </div>
                     <div className="text-xs text-muted-foreground mt-1">
                       {isESSValid ? t('gameTheory.fightNegative') : t('gameTheory.fightButVC')}
