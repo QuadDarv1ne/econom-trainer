@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, useCallback } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -25,6 +25,116 @@ import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
 import { formatNumberLocale } from '@/lib/i18n'
 
+// ─── Types and pure calculation functions ────────────────────────────
+
+export interface ISLMDataPoint {
+  income: number
+  isRate: number | null
+  lmRate: number | null
+}
+
+export interface ISLMEquilibrium {
+  y: number
+  r: number
+}
+
+export interface ISLMMultipliers {
+  fiscalMultiplier: number
+  monetaryMultiplier: number
+  crowdingOut: number
+}
+
+export function calcISSlope(mpc: number, taxRate: number, investmentSensitivity: number): number {
+  return -(1 - mpc * (1 - taxRate)) / investmentSensitivity
+}
+
+export function calcISIntercept(autonomousInvestment: number, govSpending: number, investmentSensitivity: number): number {
+  return (autonomousInvestment + govSpending) / investmentSensitivity
+}
+
+export function calcLMSlope(moneyDemandSensitivity: number, interestSensitivity: number): number {
+  return moneyDemandSensitivity / interestSensitivity
+}
+
+export function calcLMIntercept(moneySupply: number, interestSensitivity: number): number {
+  return -moneySupply / interestSensitivity
+}
+
+export function calcISLMEquilibrium(
+  isIntercept: number,
+  isSlope: number,
+  lmIntercept: number,
+  lmSlope: number
+): ISLMEquilibrium {
+  const denominator = lmSlope - isSlope
+  if (Math.abs(denominator) < 0.0001) return { y: 0, r: 0 }
+  const y = (isIntercept - lmIntercept) / denominator
+  const r = isIntercept + isSlope * y
+  return { y, r }
+}
+
+export function calcISLMData(
+  isIntercept: number,
+  isSlope: number,
+  lmIntercept: number,
+  lmSlope: number,
+  equilibriumY: number
+): ISLMDataPoint[] {
+  const data: ISLMDataPoint[] = []
+  const maxY = Math.max(equilibriumY * 1.5, 2000)
+  const step = maxY / 60
+
+  for (let y = 0; y <= maxY; y += step) {
+    const isR = isIntercept + isSlope * y
+    const lmR = lmIntercept + lmSlope * y
+
+    data.push({
+      income: Math.round(y),
+      isRate: isR >= 0 && isR <= 20 ? Math.round(isR * 100) / 100 : null,
+      lmRate: lmR >= 0 && lmR <= 20 ? Math.round(lmR * 100) / 100 : null,
+    })
+  }
+  return data
+}
+
+export function calcCrowdingOut(
+  mpc: number,
+  taxRate: number,
+  autonomousInvestment: number,
+  govSpending: number,
+  equilibriumY: number
+): number {
+  const simpleMultiplier = 1 / (1 - mpc * (1 - taxRate))
+  const yGoodsOnly = simpleMultiplier * (autonomousInvestment + govSpending)
+  return Math.max(0, yGoodsOnly - equilibriumY)
+}
+
+export function calcFiscalMultiplier(
+  mpc: number,
+  taxRate: number,
+  investmentSensitivity: number,
+  moneyDemandSensitivity: number,
+  interestSensitivity: number,
+  equilibriumY: number
+): number {
+  if (equilibriumY <= 0) return 0
+  const denominator = (1 - mpc * (1 - taxRate)) / investmentSensitivity + moneyDemandSensitivity / interestSensitivity
+  return (1 / investmentSensitivity) / denominator
+}
+
+export function calcMonetaryMultiplier(
+  mpc: number,
+  taxRate: number,
+  investmentSensitivity: number,
+  moneyDemandSensitivity: number,
+  interestSensitivity: number,
+  equilibriumY: number
+): number {
+  if (equilibriumY <= 0) return 0
+  const denominator = (1 - mpc * (1 - taxRate)) / investmentSensitivity + moneyDemandSensitivity / interestSensitivity
+  return (1 / interestSensitivity) / denominator
+}
+
 export function ISLMModel() {
   const { t, locale } = useI18n()
   // IS curve parameters
@@ -42,82 +152,49 @@ export function ISLMModel() {
   // XP tracking
   const hasEarnedXPRef = useRef(false)
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
-  const awardXP = () => {
+  const awardXP = useCallback(() => {
     if (!hasEarnedXPRef.current) {
       hasEarnedXPRef.current = true
       addModuleInteraction({ moduleId: 'is-lm', action: 'calculate', xpEarned: MODULE_XP['is-lm'] ?? 20 })
     }
-  }
+  }, [addModuleInteraction])
 
   const { toast } = useToast()
 
   // IS curve: r = (A + G - (1-MPC(1-t))Y) / d
-  // where A = autonomous investment, d = investment sensitivity
-  // Slope of IS: dr/dY = -(1-MPC(1-t))/d
-  const isSlope = useMemo(() => -(1 - mpc * (1 - taxRate)) / investmentSensitivity, [mpc, taxRate, investmentSensitivity])
-  const isIntercept = useMemo(() => (autonomousInvestment + govSpending) / investmentSensitivity, [autonomousInvestment, govSpending, investmentSensitivity])
+  const isSlope = useMemo(() => calcISSlope(mpc, taxRate, investmentSensitivity), [mpc, taxRate, investmentSensitivity])
+  const isIntercept = useMemo(() => calcISIntercept(autonomousInvestment, govSpending, investmentSensitivity), [autonomousInvestment, govSpending, investmentSensitivity])
 
   // LM curve: r = (kY - M/P) / h
-  // where k = money demand sensitivity to income, h = interest sensitivity
-  // Slope of LM: dr/dY = k/h
-  const lmSlope = useMemo(() => moneyDemandSensitivity / interestSensitivity, [moneyDemandSensitivity, interestSensitivity])
-  const lmIntercept = useMemo(() => -moneySupply / interestSensitivity, [moneySupply, interestSensitivity])
+  const lmSlope = useMemo(() => calcLMSlope(moneyDemandSensitivity, interestSensitivity), [moneyDemandSensitivity, interestSensitivity])
+  const lmIntercept = useMemo(() => calcLMIntercept(moneySupply, interestSensitivity), [moneySupply, interestSensitivity])
 
   // Equilibrium: IS = LM
-  // isIntercept + isSlope * Y = lmIntercept + lmSlope * Y
-  // Y* = (isIntercept - lmIntercept) / (lmSlope - isSlope)
-  const equilibriumY = useMemo(() => {
-    const denominator = lmSlope - isSlope
-    if (Math.abs(denominator) < 0.0001) return 0
-    return (isIntercept - lmIntercept) / denominator
-  }, [isIntercept, isSlope, lmIntercept, lmSlope])
-
-  const equilibriumR = useMemo(() => {
-    return isIntercept + isSlope * equilibriumY
-  }, [isIntercept, isSlope, equilibriumY])
+  const equilibrium = useMemo(() =>
+    calcISLMEquilibrium(isIntercept, isSlope, lmIntercept, lmSlope),
+    [isIntercept, isSlope, lmIntercept, lmSlope])
+  const equilibriumY = equilibrium.y
+  const equilibriumR = equilibrium.r
 
   // Generate chart data
-  const chartData = useMemo(() => {
-    const data: Array<{ income: number; isRate: number | null; lmRate: number | null }> = []
-    const maxY = Math.max(equilibriumY * 1.5, 2000)
-    const step = maxY / 60
-
-    for (let y = 0; y <= maxY; y += step) {
-      const isR = isIntercept + isSlope * y
-      const lmR = lmIntercept + lmSlope * y
-
-      data.push({
-        income: Math.round(y),
-        isRate: isR >= 0 && isR <= 20 ? Math.round(isR * 100) / 100 : null,
-        lmRate: lmR >= 0 && lmR <= 20 ? Math.round(lmR * 100) / 100 : null,
-      })
-    }
-    return data
-  }, [isIntercept, isSlope, lmIntercept, lmSlope, equilibriumY])
+  const chartData = useMemo(() =>
+    calcISLMData(isIntercept, isSlope, lmIntercept, lmSlope, equilibriumY),
+    [isIntercept, isSlope, lmIntercept, lmSlope, equilibriumY])
 
   // Crowding out effect
-  const crowdingOut = useMemo(() => {
-    // Without LM constraint (goods market only), fiscal multiplier would be:
-    const simpleMultiplier = 1 / (1 - mpc * (1 - taxRate))
-    const yGoodsOnly = simpleMultiplier * (autonomousInvestment + govSpending)
-    // Difference is crowding out
-    return Math.max(0, yGoodsOnly - equilibriumY)
-  }, [mpc, taxRate, autonomousInvestment, govSpending, equilibriumY])
+  const crowdingOut = useMemo(() =>
+    calcCrowdingOut(mpc, taxRate, autonomousInvestment, govSpending, equilibriumY),
+    [mpc, taxRate, autonomousInvestment, govSpending, equilibriumY])
 
   // Fiscal policy multiplier (with monetary constraint)
-  const fiscalMultiplier = useMemo(() => {
-    if (equilibriumY <= 0) return 0
-    // dY/dG in IS-LM
-    const denominator = (1 - mpc * (1 - taxRate)) / investmentSensitivity + moneyDemandSensitivity / interestSensitivity
-    return (1 / investmentSensitivity) / denominator
-  }, [mpc, taxRate, investmentSensitivity, moneyDemandSensitivity, interestSensitivity, equilibriumY])
+  const fiscalMultiplier = useMemo(() =>
+    calcFiscalMultiplier(mpc, taxRate, investmentSensitivity, moneyDemandSensitivity, interestSensitivity, equilibriumY),
+    [mpc, taxRate, investmentSensitivity, moneyDemandSensitivity, interestSensitivity, equilibriumY])
 
   // Monetary policy multiplier
-  const monetaryMultiplier = useMemo(() => {
-    if (equilibriumY <= 0) return 0
-    const denominator = (1 - mpc * (1 - taxRate)) / investmentSensitivity + moneyDemandSensitivity / interestSensitivity
-    return (1 / interestSensitivity) / denominator
-  }, [mpc, taxRate, investmentSensitivity, moneyDemandSensitivity, interestSensitivity, equilibriumY])
+  const monetaryMultiplier = useMemo(() =>
+    calcMonetaryMultiplier(mpc, taxRate, investmentSensitivity, moneyDemandSensitivity, interestSensitivity, equilibriumY),
+    [mpc, taxRate, investmentSensitivity, moneyDemandSensitivity, interestSensitivity, equilibriumY])
 
   const reset = () => {
     setAutonomousInvestment(200)
