@@ -8,9 +8,9 @@ import { safeJson, isErrorResponse } from '@/lib/safe-json';
 export async function POST(req: Request) {
   try {
     const ip = getClientIP(req);
-    const limit = checkRateLimit('twoFactor', ip);
+    const limit = checkRateLimit('changePass', ip);
     if (!limit.ok) {
-      return rateLimitResponse('twoFactor', ip, req);
+      return rateLimitResponse('changePass', ip, req);
     }
 
     const session = await auth();

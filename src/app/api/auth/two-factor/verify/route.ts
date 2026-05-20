@@ -10,9 +10,9 @@ import { randomBytes } from 'crypto';
 export async function POST(req: Request) {
   try {
     const ip = getClientIP(req);
-    const limit = checkRateLimit('twoFactor', ip);
+    const limit = checkRateLimit('twoFactorVerify', ip);
     if (!limit.ok) {
-      return rateLimitResponse('twoFactor', ip, req);
+      return rateLimitResponse('twoFactorVerify', ip, req);
     }
 
     const session = await auth();

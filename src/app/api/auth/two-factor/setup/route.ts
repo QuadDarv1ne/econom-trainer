@@ -9,9 +9,9 @@ import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit
 export async function POST(req: Request) {
   try {
     const ip = getClientIP(req);
-    const limit = checkRateLimit('twoFactor', ip);
+    const limit = checkRateLimit('twoFactorSetup', ip);
     if (!limit.ok) {
-      return rateLimitResponse('twoFactor', ip, req);
+      return rateLimitResponse('twoFactorSetup', ip, req);
     }
 
     const session = await auth();
@@ -33,7 +33,8 @@ export async function POST(req: Request) {
 
     // Generate secret
     const secret = authenticator.generateSecret();
-    const uri = authenticator.keyuri(user.email || session.user.email || 'user', 'Экономический тренажёр', secret);
+    const issuer = 'Econom Trainer';
+    const uri = authenticator.keyuri(user.email || session.user.email || 'user', issuer, secret);
     const qrCode = await qrcode.toDataURL(uri);
 
     // Store secret temporarily (will be confirmed on verification)
