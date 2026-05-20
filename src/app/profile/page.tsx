@@ -120,11 +120,11 @@ export default function ProfilePage() {
         setName(data.name || '');
         setPhone(data.phone || '');
       } else {
-        setError(t('dashboard.profile.saveError'));
+        setError(t('dashboard.profile.fetchError'));
       }
     } catch (e) {
       console.error(e);
-      setError(t('dashboard.profile.saveError'));
+      setError(t('dashboard.profile.fetchError'));
     } finally {
       setLoading(false);
     }
@@ -667,9 +667,7 @@ export default function ProfilePage() {
                           <span className="ml-2">
                             {resendCooldown > 0
                               ? `${resendCooldown}${t('quiz.secondsSuffix')}`
-                              : sendingVerification
-                                ? '...'
-                                : t('profile.verifyEmail')}
+                              : t('profile.verifyEmail')}
                           </span>
                         </Button>
                       )}
