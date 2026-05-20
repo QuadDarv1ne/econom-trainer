@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
+import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 
 // GET - Get user profile
 export async function GET() {
@@ -43,6 +44,10 @@ export async function PATCH(req: Request) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!validateOrigin(req)) {
+      return csrfErrorResponse();
     }
 
     const parsed = await safeJson<{ name?: string; phone?: string | null; image?: string | null }>(req);

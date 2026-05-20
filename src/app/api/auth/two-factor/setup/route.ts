@@ -4,6 +4,7 @@ import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
+import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 
 // Generate TOTP secret and QR code
 export async function POST(req: Request) {
@@ -17,6 +18,10 @@ export async function POST(req: Request) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!validateOrigin(req)) {
+      return csrfErrorResponse();
     }
 
     const user = await prisma.user.findUnique({

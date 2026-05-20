@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { randomBytes } from 'crypto';
+import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 
 export async function POST(req: Request) {
   try {
@@ -18,6 +19,10 @@ export async function POST(req: Request) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!validateOrigin(req)) {
+      return csrfErrorResponse();
     }
 
     const parsed = await safeJson<{ code: string }>(req);

@@ -2,13 +2,18 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { randomBytes } from 'crypto';
+import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 
 // POST - Sign out from all other sessions by updating user's sessionHash
-export async function POST() {
+export async function POST(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!validateOrigin(req)) {
+      return csrfErrorResponse();
     }
 
     // Generate a new session hash to invalidate all other JWTs
