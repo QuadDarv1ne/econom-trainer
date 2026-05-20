@@ -104,24 +104,60 @@ export function checkRateLimit(key: string, ip: string | null): { ok: boolean; r
 
 /**
  * Extract client IP from request headers.
- * Only trusts X-Forwarded-For when behind a verified reverse proxy
- * (nginx, Vercel, Cloudflare, etc.) with TRUST_PROXY=true.
- * Otherwise falls back to X-Real-IP or null.
+ * Checks proxy headers in priority order: Cloudflare -> Vercel -> generic forwarded-for -> X-Real-IP.
+ * Auto-detects when running behind a known hosting provider if TRUST_PROXY is unset.
+ * Falls back to null only when no proxy headers are present (direct connection).
  */
 export function getClientIP(req: Request): string | null {
-  const trustProxy = process.env.TRUST_PROXY === 'true';
+  // Determine if we should trust proxy headers
+  const trustProxyEnv = process.env.TRUST_PROXY;
+  let trustProxy = trustProxyEnv === 'true';
 
-  if (trustProxy) {
-    const forwardedFor = req.headers.get('x-forwarded-for');
-    if (forwardedFor) {
-      return forwardedFor.split(',')[0].trim();
+  // Auto-detect known hosting providers when TRUST_PROXY is not explicitly set
+  if (trustProxyEnv !== 'false' && !trustProxy) {
+    const vercel = process.env.VERCEL || process.env.NOW_REGION;
+    const fly = process.env.FLY_APP_NAME;
+    const railway = process.env.RAILWAY_ENVIRONMENT;
+    const render = process.env.RENDER;
+    if (vercel || fly || railway || render) {
+      trustProxy = true;
     }
   }
 
+  if (!trustProxy) {
+    // No proxy trust — only use headers that reverse proxies set directly
+    const realIP = req.headers.get('x-real-ip');
+    if (realIP) return sanitizeIP(realIP);
+    return null;
+  }
+
+  // Priority 1: Cloudflare (most reliable — single IP, no spoofing risk)
+  const cfIP = req.headers.get('cf-connecting-ip');
+  if (cfIP) return sanitizeIP(cfIP);
+
+  // Priority 2: Vercel / Fly.io / Render single-IP headers
   const realIP = req.headers.get('x-real-ip');
-  if (realIP) return realIP;
+  if (realIP) return sanitizeIP(realIP);
+
+  // Priority 3: X-Forwarded-For (first IP = original client)
+  const forwardedFor = req.headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    const first = forwardedFor.split(',')[0].trim();
+    if (first && first !== 'unknown') return sanitizeIP(first);
+  }
 
   return null;
+}
+
+/**
+ * Strip whitespace and validate basic IP format.
+ * Returns the IP or empty string if clearly invalid.
+ */
+function sanitizeIP(ip: string): string {
+  const trimmed = ip.trim();
+  // Reject obviously invalid values
+  if (!trimmed || trimmed === 'unknown' || trimmed === 'null') return '';
+  return trimmed;
 }
 
 /**
