@@ -27,6 +27,54 @@ import {
 import { TrendingDown, AlertTriangle, Info } from 'lucide-react'
 import { useI18n } from '@/lib/i18n-provider'
 
+// ─── Types and pure calculation functions ────────────────────────────
+
+export interface SRPCDataPoint {
+  unemployment: number
+  srpcInflation: number
+}
+
+export function calcSRPCData(
+  expectedInflation: number,
+  alpha: number,
+  naturalRate: number,
+  supplyShock: number
+): SRPCDataPoint[] {
+  const data: SRPCDataPoint[] = []
+  for (let u = 0; u <= 12; u += 0.5) {
+    const srpcInflation = expectedInflation - alpha * (u - naturalRate) + supplyShock
+    data.push({
+      unemployment: u,
+      srpcInflation: Math.round(srpcInflation * 100) / 100,
+    })
+  }
+  return data
+}
+
+export function calcEquilibriumInflation(
+  expectedInflation: number,
+  alpha: number,
+  actualUnemployment: number,
+  naturalRate: number,
+  supplyShock: number
+): number {
+  return expectedInflation - alpha * (actualUnemployment - naturalRate) + supplyShock
+}
+
+export function calcSacrificeRatio(alpha: number): number | null {
+  return alpha > 0 ? Math.round((1 / alpha) * 100) / 100 : null
+}
+
+export function isStagflation(
+  equilibriumInflation: number,
+  expectedInflation: number,
+  unemploymentGap: number
+): boolean {
+  return equilibriumInflation > expectedInflation && unemploymentGap > 0
+}
+
+// ─── Component ────────────────────────────────────────────────────────
+
 export function PhillipsCurve() {
   const { t } = useI18n()
   const [expectedInflation, setExpectedInflation] = useState(5)
@@ -46,46 +94,29 @@ export function PhillipsCurve() {
   }, [xpAwarded, addModuleInteraction])
 
   // Generate chart data dynamically
-  const chartData = useMemo(() => {
-    const data: Array<{ unemployment: number; srpcInflation: number }> = []
-    for (let u = 0; u <= 12; u += 0.5) {
-      const srpcInflation =
-        expectedInflation - alpha * (u - naturalRate) + supplyShock
-      data.push({
-        unemployment: u,
-        srpcInflation: Math.round(srpcInflation * 100) / 100,
-      })
-    }
-    return data
-  }, [expectedInflation, naturalRate, alpha, supplyShock])
+  const chartData = useMemo(() =>
+    calcSRPCData(expectedInflation, alpha, naturalRate, supplyShock),
+    [expectedInflation, alpha, naturalRate, supplyShock])
 
   // Equilibrium point
-  const equilibriumInflation = useMemo(() => {
-    return (
-      expectedInflation -
-      alpha * (actualUnemployment - naturalRate) +
-      supplyShock
-    )
-  }, [expectedInflation, alpha, actualUnemployment, naturalRate, supplyShock])
+  const equilibriumInflation = useMemo(() =>
+    calcEquilibriumInflation(expectedInflation, alpha, actualUnemployment, naturalRate, supplyShock),
+    [expectedInflation, alpha, actualUnemployment, naturalRate, supplyShock])
 
   // Equilibrium scatter data
-  const equilibriumPoint = useMemo(() => {
-    return [
-      {
-        unemployment: actualUnemployment,
-        inflation: Math.round(equilibriumInflation * 100) / 100,
-      },
-    ]
-  }, [actualUnemployment, equilibriumInflation])
+  const equilibriumPoint = useMemo(() => [
+    {
+      unemployment: actualUnemployment,
+      inflation: Math.round(equilibriumInflation * 100) / 100,
+    },
+  ], [actualUnemployment, equilibriumInflation])
 
-  // Sacrifice ratio: how much unemployment must rise to reduce inflation by 1%
-  const sacrificeRatio = useMemo(() => {
-    return alpha > 0 ? Math.round((1 / alpha) * 100) / 100 : Infinity
-  }, [alpha])
+  // Sacrifice ratio
+  const sacrificeRatio = useMemo(() => calcSacrificeRatio(alpha), [alpha])
 
   // Gap between actual and natural unemployment
   const unemploymentGap = actualUnemployment - naturalRate
-  const isStagflation = equilibriumInflation > expectedInflation && unemploymentGap > 0
+  const stagflation = isStagflation(equilibriumInflation, expectedInflation, unemploymentGap)
 
   // Compute y-axis domain
   const yMin = useMemo(() => {
@@ -429,12 +460,12 @@ export function PhillipsCurve() {
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">{t('phillips.sacrificeRatio')}</span>
                   <span className="font-semibold text-orange-600 dark:text-orange-400">
-                    {sacrificeRatio === Infinity ? '∞' : sacrificeRatio.toFixed(2)}
+                    {sacrificeRatio === null ? '∞' : sacrificeRatio.toFixed(2)}
                   </span>
                 </div>
               </div>
 
-              {isStagflation && (
+              {stagflation && (
                 <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/30">
                   <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
                   <span className="text-sm text-red-700 dark:text-red-400">
@@ -558,7 +589,7 @@ export function PhillipsCurve() {
             <p>
               <strong className="text-foreground">{t('phillips.sacrificeRatio')}</strong> = 1/α ={' '}
               <span className="text-orange-600 dark:text-orange-400 font-semibold">
-                {sacrificeRatio === Infinity ? '∞' : sacrificeRatio.toFixed(2)}
+                {sacrificeRatio === null ? '∞' : sacrificeRatio.toFixed(2)}
               </span>
             </p>
           </CardContent>
@@ -580,8 +611,8 @@ export function PhillipsCurve() {
             </p>
             <Separator />
             <div className="flex items-center gap-2">
-              <Badge variant={isStagflation ? 'destructive' : 'secondary'}>
-                {isStagflation ? t('phillips.stagflation') + '!' : t('phillips.stagflation') + ' —'}
+              <Badge variant={stagflation ? 'destructive' : 'secondary'}>
+                {stagflation ? t('phillips.stagflation') + '!' : t('phillips.stagflation') + ' —'}
               </Badge>
               <span className="text-xs">
                 {t('phillips.params')}
@@ -606,7 +637,7 @@ export function PhillipsCurve() {
                 <p className="font-mono text-center text-lg font-semibold">
                   SR = 1 / α = 1 / {alpha.toFixed(2)} ={' '}
                   <span className="text-orange-600 dark:text-orange-400">
-                    {sacrificeRatio === Infinity ? '∞' : sacrificeRatio.toFixed(2)}
+                    {sacrificeRatio === null ? '∞' : sacrificeRatio.toFixed(2)}
                   </span>
                 </p>
               </div>
@@ -625,7 +656,7 @@ export function PhillipsCurve() {
                 <p>
                   {t('phillips.sacrificeRatio')}:{' '}
                   <strong className="text-orange-600 dark:text-orange-400">
-                    {sacrificeRatio === Infinity ? '∞' : sacrificeRatio.toFixed(2)}
+                    {sacrificeRatio === null ? '∞' : sacrificeRatio.toFixed(2)}
                   </strong>
                 </p>
                 <Separator />
