@@ -5,6 +5,7 @@ import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit
 import bcrypt from 'bcryptjs';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
+import { randomBytes } from 'crypto';
 
 export async function POST(req: Request) {
   try {
@@ -18,9 +19,9 @@ export async function POST(req: Request) {
     }
 
     const ip = getClientIP(req);
-    const limit = checkRateLimit('disable2FA', ip);
+    const limit = checkRateLimit('twoFactorDisable', ip);
     if (!limit.ok) {
-      return rateLimitResponse('disable2FA', ip, req);
+      return rateLimitResponse('twoFactorDisable', ip, req);
     }
 
     const parsed = await safeJson<{ password: string }>(req);
@@ -44,9 +45,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Incorrect password' }, { status: 401 });
     }
 
+    const newSessionHash = await bcrypt.hash(randomBytes(32).toString('hex'), 10);
+
     await prisma.user.update({
       where: { id: session.user.id },
-      data: { twoFactorEnabled: false },
+      data: { twoFactorEnabled: false, sessionHash: newSessionHash },
     });
 
     await prisma.twoFactorConfirmation.deleteMany({
