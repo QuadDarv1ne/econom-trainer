@@ -17,7 +17,12 @@ const ALLOWED_ORIGINS = [
  */
 export function validateOrigin(req: Request): boolean {
   if (ALLOWED_ORIGINS.length === 0) {
-    // If no origins are configured, skip validation (development mode)
+    // If no origins are configured, only skip validation in development.
+    // In production, fail-closed to prevent CSRF bypass from misconfiguration.
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[CSRF] No allowed origins configured in production — rejecting request');
+      return false;
+    }
     return true;
   }
 

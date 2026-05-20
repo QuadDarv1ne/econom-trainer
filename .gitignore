@@ -51,7 +51,7 @@ Desktop.ini
 # Custom / dev environment
 dev.log
 server.log
-dev.db
+*.db
 db/
 examples/
 skills/
