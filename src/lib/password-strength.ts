@@ -15,19 +15,15 @@ export interface PasswordStrengthResult {
   };
 }
 
-/** These regex patterns MUST match the ones in src/lib/validate-password.ts */
-const SPECIAL_CHAR_REGEX = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>?]/;
-const UPPER_REGEX = /[A-ZА-ЯЁ]/;
-const LOWER_REGEX = /[a-zа-яё]/;
-const NUMBER_REGEX = /[0-9]/;
+import { PASSWORD_REGEX } from './validate-password';
 
 export function checkPasswordStrength(password: string): PasswordStrengthResult {
   const requirements = {
     minLength: password.length >= 8,
-    hasUpper: UPPER_REGEX.test(password),
-    hasLower: LOWER_REGEX.test(password),
-    hasNumber: NUMBER_REGEX.test(password),
-    hasSpecial: SPECIAL_CHAR_REGEX.test(password),
+    hasUpper: PASSWORD_REGEX.UPPER.test(password),
+    hasLower: PASSWORD_REGEX.LOWER.test(password),
+    hasNumber: PASSWORD_REGEX.NUMBER.test(password),
+    hasSpecial: PASSWORD_REGEX.SPECIAL_CHAR.test(password),
   };
 
   const metCount = Object.values(requirements).filter(Boolean).length;

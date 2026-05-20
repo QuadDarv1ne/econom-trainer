@@ -2,11 +2,12 @@
  *  Regex patterns match the client-side checker in src/lib/password-strength.ts.
  */
 
-/** These regex patterns MUST match the ones in src/lib/password-strength.ts */
-const SPECIAL_CHAR_REGEX = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>?]/;
-const UPPER_REGEX = /[A-ZА-ЯЁ]/;
-const LOWER_REGEX = /[a-zа-яё]/;
-const NUMBER_REGEX = /[0-9]/;
+export const PASSWORD_REGEX = {
+  SPECIAL_CHAR: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>?]/,
+  UPPER: /[A-ZА-ЯЁ]/,
+  LOWER: /[a-zа-яё]/,
+  NUMBER: /[0-9]/,
+} as const;
 
 const PASSWORD_ERRORS_RU = {
   minLength: 'Пароль должен содержать минимум 8 символов',
@@ -46,19 +47,19 @@ export function validatePasswordStrength(
     return { valid: false, error: errors.maxLength };
   }
 
-  if (!UPPER_REGEX.test(password)) {
+  if (!PASSWORD_REGEX.UPPER.test(password)) {
     return { valid: false, error: errors.upper };
   }
 
-  if (!LOWER_REGEX.test(password)) {
+  if (!PASSWORD_REGEX.LOWER.test(password)) {
     return { valid: false, error: errors.lower };
   }
 
-  if (!NUMBER_REGEX.test(password)) {
+  if (!PASSWORD_REGEX.NUMBER.test(password)) {
     return { valid: false, error: errors.number };
   }
 
-  if (!SPECIAL_CHAR_REGEX.test(password)) {
+  if (!PASSWORD_REGEX.SPECIAL_CHAR.test(password)) {
     return { valid: false, error: errors.special };
   }
 

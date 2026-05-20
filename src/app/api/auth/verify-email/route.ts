@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const token = searchParams.get('token');
-  const email = searchParams.get('email');
+  const email = (searchParams.get('email') || '').toLowerCase();
 
   if (!token || !email) {
     const redirectUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/auth/verify-email?status=invalid`;

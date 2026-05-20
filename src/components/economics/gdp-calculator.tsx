@@ -11,6 +11,7 @@ import { useEconomicsStore } from '@/store/economics-store'
 import { Calculator, RotateCcw, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
+import { generateId } from '@/lib/utils'
 
 interface GDPComponent {
   name: string
@@ -76,7 +77,7 @@ export function GDPCalculator() {
     setCalculated(true)
 
     addGDPResult({
-      id: crypto.randomUUID(),
+      id: generateId(),
       nominalGDP: nominal,
       realGDP: real,
       deflator: def,

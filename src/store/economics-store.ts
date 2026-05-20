@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { t, getCurrentLocale } from '@/lib/i18n'
+import { generateId } from '@/lib/utils'
 
 export interface QuizResult {
   id: string
@@ -285,7 +286,7 @@ export const useEconomicsStore = create<EconomicsState>()(
         set((state) => {
           const newInteraction: ModuleInteraction = {
             ...interaction,
-            id: crypto.randomUUID(),
+            id: generateId(),
             date: new Date().toISOString(),
           }
           const newInteractions = [newInteraction, ...state.moduleInteractions].slice(0, 500)

@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator'
 import { useEconomicsStore } from '@/store/economics-store'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
+import { generateId } from '@/lib/utils'
 import { formatNumber } from '@/lib/i18n'
 import { DollarSign, Percent, TrendingUp, Calculator, CheckCircle2, XCircle, RotateCcw } from 'lucide-react'
 
@@ -139,7 +140,7 @@ export function FinancialMath() {
       }
 
       addFinanceResult({
-        id: crypto.randomUUID(),
+        id: generateId(),
         problemType,
         correct,
         userAnswer: parsed,

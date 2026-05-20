@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { useEconomicsStore } from '@/store/economics-store'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
+import { generateId } from '@/lib/utils'
 import { Brain, CheckCircle2, XCircle, Clock, ArrowRight, RotateCcw } from 'lucide-react'
 
 interface Question {
@@ -1467,7 +1468,7 @@ export function EconomicsQuiz() {
     if (currentQuestion + 1 >= shuffledQuestions.length) {
       const finalScore = score
       addQuizResult({
-        id: crypto.randomUUID(),
+        id: generateId(),
         topic: t('quiz.topicEconomicTheory'),
         score: finalScore,
         total: shuffledQuestions.length,

@@ -12,6 +12,7 @@ import { useEconomicsStore } from '@/store/economics-store'
 import { Gauge, RotateCcw, Info } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
+import { generateId } from '@/lib/utils'
 
 export type ElasticityType = 'price' | 'income' | 'cross'
 
@@ -100,7 +101,7 @@ export function ElasticityCalculator() {
       return
     }
     setResult(res)
-    addElasticityResult({ id: crypto.randomUUID(), elasticityType: 'price', value: res.value, interpretation: res.interpretation, category: res.category, date: new Date().toISOString() })
+    addElasticityResult({ id: generateId(), elasticityType: 'price', value: res.value, interpretation: res.interpretation, category: res.category, date: new Date().toISOString() })
   }, [q1, q2, p1, p2, addElasticityResult, toast, t])
 
   const calculateIncomeElasticity = useCallback(() => {
@@ -116,7 +117,7 @@ export function ElasticityCalculator() {
       return
     }
     setResult(res)
-    addElasticityResult({ id: crypto.randomUUID(), elasticityType: 'income', value: res.value, interpretation: res.interpretation, category: res.category, date: new Date().toISOString() })
+    addElasticityResult({ id: generateId(), elasticityType: 'income', value: res.value, interpretation: res.interpretation, category: res.category, date: new Date().toISOString() })
   }, [q1Inc, q2Inc, y1, y2, addElasticityResult, toast, t])
 
   const calculateCrossElasticity = useCallback(() => {
@@ -132,7 +133,7 @@ export function ElasticityCalculator() {
       return
     }
     setResult(res)
-    addElasticityResult({ id: crypto.randomUUID(), elasticityType: 'cross', value: res.value, interpretation: res.interpretation, category: res.category, date: new Date().toISOString() })
+    addElasticityResult({ id: generateId(), elasticityType: 'cross', value: res.value, interpretation: res.interpretation, category: res.category, date: new Date().toISOString() })
   }, [q1Cross, q2Cross, px1, px2, addElasticityResult, toast, t])
 
   const reset = useCallback(() => {
