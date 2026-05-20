@@ -6,6 +6,7 @@ import {
   runHawkDoveSimulation,
   PD_PAYOFF,
   BOTS_PAYOFF,
+  type PDChoice,
 } from './game-theory'
 
 describe('getAIChoice', () => {
