@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { randomBytes } from 'crypto';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
+import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 
 // POST - Sign out from all other sessions by updating user's sessionHash
 export async function POST(req: Request) {
@@ -14,6 +15,12 @@ export async function POST(req: Request) {
 
     if (!validateOrigin(req)) {
       return csrfErrorResponse();
+    }
+
+    const ip = getClientIP(req);
+    const limit = checkRateLimit('revokeSessions', ip);
+    if (!limit.ok) {
+      return rateLimitResponse('revokeSessions', ip, req);
     }
 
     // Generate a new session hash to invalidate all other JWTs

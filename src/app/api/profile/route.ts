@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
+import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 
 // GET - Get user profile
 export async function GET() {
@@ -48,6 +49,12 @@ export async function PATCH(req: Request) {
 
     if (!validateOrigin(req)) {
       return csrfErrorResponse();
+    }
+
+    const ip = getClientIP(req);
+    const limit = checkRateLimit('profileUpdate', ip);
+    if (!limit.ok) {
+      return rateLimitResponse('profileUpdate', ip, req);
     }
 
     const parsed = await safeJson<{ name?: string; phone?: string | null; image?: string | null }>(req);

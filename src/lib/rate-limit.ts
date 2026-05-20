@@ -55,6 +55,9 @@ export const RATE_LIMITS = {
   twoFactorDisable: { windowMs: 15 * 60 * 1000, max: 5 },  // 5 attempts per 15 min
   changePass:  { windowMs: 15 * 60 * 1000, max: 10 },   // 10 attempts per 15 min
   deleteAcc:   { windowMs: 15 * 60 * 1000, max: 5 },    // 5 attempts per 15 min
+  revokeSessions: { windowMs: 15 * 60 * 1000, max: 5 }, // 5 revocations per 15 min
+  profileUpdate:  { windowMs: 60 * 1000, max: 20 },     // 20 profile updates per min
+  progressSync:   { windowMs: 60 * 1000, max: 30 },     // 30 syncs per min
 } as const;
 
 export function configureRateLimit(key: string, config: RateLimitConfig) {

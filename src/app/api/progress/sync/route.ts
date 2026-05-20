@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
+import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 
 const XP_PER_LEVEL = 500;
 const LEVEL_MULTIPLIER = 1.2;
@@ -65,6 +66,12 @@ export async function POST(req: Request) {
 
     if (!validateOrigin(req)) {
       return csrfErrorResponse();
+    }
+
+    const ip = getClientIP(req);
+    const limit = checkRateLimit('progressSync', ip);
+    if (!limit.ok) {
+      return rateLimitResponse('progressSync', ip, req);
     }
 
     const parsed = await safeJson<{
