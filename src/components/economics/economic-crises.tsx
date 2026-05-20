@@ -127,7 +127,7 @@ export function EconomicCrises() {
     const timeline: Array<Record<string, number | string>> = []
     for (let year = 0; year < scenario.duration; year++) {
       timeline.push({
-        year: `${t('crises.year')} ${year}`,
+        year: `${t('crises.year')} ${year + 1}`,
         gdpGrowth: parseFloat((indicators.gdpGrowth + scenario.gdpGrowthImpact[year]).toFixed(2)),
         unemployment: parseFloat((indicators.unemployment + scenario.unemploymentImpact[year]).toFixed(2)),
         inflation: parseFloat((indicators.inflation + scenario.inflationImpact[year]).toFixed(2)),

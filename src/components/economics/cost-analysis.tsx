@@ -302,7 +302,7 @@ export function CostAnalysis() {
               </div>
               <Slider
                 value={[maxQ]}
-                onValueChange={([v]) => { awardXP(); setMaxQ(v) }}
+                onValueChange={([v]) => { awardXP(); setMaxQ(v); setCurrentQ(prev => Math.min(prev, v)) }}
                 min={20}
                 max={100}
                 step={5}

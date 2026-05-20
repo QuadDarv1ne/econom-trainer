@@ -91,7 +91,7 @@ export function ADASModel() {
       // Check if AD and SRAS cross between these points
       const prevDiff = prev.ad - prev.sras
       const currDiff = curr.ad - curr.sras
-      if ((prevDiff > 0 && currDiff <= 0) || (prevDiff < 0 && currDiff >= 0)) {
+      if ((prevDiff >= 0 && currDiff <= 0) || (prevDiff <= 0 && currDiff >= 0)) {
         // Linear interpolation
         const t2 = Math.abs(prevDiff) / (Math.abs(prevDiff) + Math.abs(currDiff))
         const eqPrice = prev.price + t2 * (curr.price - prev.price)
