@@ -28,8 +28,11 @@ export async function POST(req: Request) {
       where: { email: email.toLowerCase() },
     });
 
-    // Always return success to prevent email enumeration
     if (!user || !user.email) {
+      // Constant-time delay to prevent timing-based email enumeration.
+      // Wait the same duration as a real email send operation (~1-2s)
+      // so attackers cannot distinguish registered vs unregistered emails.
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       return NextResponse.json({ message: 'If this email is registered, we will send a reset link' });
     }
 
