@@ -75,7 +75,6 @@ export function KeynesianCross() {
   }
 
   const mpcSimple = useMemo(() => mpc * (1 - taxRate), [mpc, taxRate])
-  const _savingsRate = useMemo(() => 1 - mpcSimple, [mpcSimple])
   const taxRevenue = useMemo(() => taxRate * equilibriumY, [taxRate, equilibriumY])
 
   return (

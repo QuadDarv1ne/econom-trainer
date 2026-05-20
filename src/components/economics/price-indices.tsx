@@ -43,8 +43,8 @@ export function PriceIndices() {
   const { t, locale } = useI18n()
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
   const hasEarnedXPRef = useRef(false)
-  const [baseYear, _setBaseYear] = useState(2020)
-  const [currentYear, _setCurrentYear] = useState(2024)
+  const [baseYear] = useState(2020)
+  const [currentYear] = useState(2024)
   const [goods, setGoods] = useState<Good[]>([
     { id: '1', name: 'Хлеб', basePrice: 30, currentPrice: 35, quantity: 100 },
     { id: '2', name: 'Молоко', basePrice: 60, currentPrice: 75, quantity: 50 },

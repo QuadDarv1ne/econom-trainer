@@ -116,7 +116,7 @@ export function LorenzCurve() {
     const labels: Record<string, string> = {
       lorenz: t('lorenz.graph'),
       equality: t('lorenz.lineOfEquality'),
-      inequalityGap: t('lorenz.interpretation'),
+      inequalityGap: t('lorenz.inequalityGap'),
     }
     return [`${value.toFixed(1)}%`, labels[name] || name]
   }
@@ -125,7 +125,7 @@ export function LorenzCurve() {
     const labels: Record<string, string> = {
       lorenz: t('lorenz.graph'),
       equality: t('lorenz.lineOfEquality'),
-      inequalityGap: `${t('lorenz.interpretation')} (A)`,
+      inequalityGap: `${t('lorenz.inequalityGap')} (A)`,
     }
     return labels[value] || value
   }

@@ -50,7 +50,8 @@ export const authConfig: NextAuthConfig = {
             if (dbUser.sessionHash) {
               setCachedSessionHash(token.id as string, dbUser.sessionHash);
             }
-          } catch {
+          } catch (error) {
+            console.error('Session validation error:', error);
             token.id = null;
             token.sessionHash = null;
             token.twoFactorEnabled = false;

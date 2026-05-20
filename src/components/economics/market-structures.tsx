@@ -323,7 +323,7 @@ export function MarketStructures() {
                           fontSize: '12px',
                         }}
                         formatter={(value: number, name: string) => {
-                          if (name === 'demand') return [value.toFixed(1), t('market.demand')]
+                          if (name === 'demand') return [value?.toFixed(1), t('market.demand')]
                           if (name === 'mr') return [value?.toFixed(1), t('market.mr')]
                           if (name === 'mc') return [value?.toFixed(1), t('market.mc')]
                           if (name === 'atc') return [value?.toFixed(1), t('market.atc')]

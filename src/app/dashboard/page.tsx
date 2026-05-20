@@ -90,11 +90,11 @@ export default function DashboardPage() {
         setName(data.name || '');
         setPhone(data.phone || '');
       } else {
-        setError(t('dashboard.profile.saveError'));
+        setError(t('dashboard.profile.fetchError'));
       }
     } catch (e) {
       console.error(e);
-      setError(t('dashboard.profile.saveError'));
+      setError(t('dashboard.profile.fetchError'));
     } finally {
       setLoading(false);
     }
