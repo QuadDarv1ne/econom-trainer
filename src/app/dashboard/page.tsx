@@ -1,9 +1,8 @@
 'use client';
 
 import type React from 'react';
-import { useState, useEffect, useCallback } from 'react';
-import { useSession, signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -35,32 +34,28 @@ import {
 } from 'lucide-react';
 import { useEconomicsStore } from '@/store/economics-store';
 import { useI18n } from '@/lib/i18n-provider';
-
-interface UserProfile {
-  id: string;
-  name: string | null;
-  email: string | null;
-  phone: string | null;
-  image: string | null;
-  role: string;
-  twoFactorEnabled: boolean;
-  emailVerified: Date | null;
-  createdAt: Date;
-}
+import { useProfile, useProgressSync } from '@/hooks/use-profile';
 
 export default function DashboardPage() {
-  const { status, update } = useSession();
   const { t } = useI18n();
-  const router = useRouter();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  // Profile edit
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const {
+    status,
+    profile,
+    loading,
+    saving,
+    error,
+    success,
+    setError,
+    setSuccess,
+    setProfile,
+    update,
+    name,
+    setName,
+    phone,
+    setPhone,
+    updateProfile,
+  } = useProfile();
+  const { syncing, syncProgress } = useProgressSync();
 
   // 2FA
   const [qrCode, setQrCode] = useState('');
@@ -79,79 +74,19 @@ export default function DashboardPage() {
   const totalXP = useEconomicsStore((s) => s.totalXP);
   const quizResultsCount = useEconomicsStore((s) => s.quizResults.length);
   const moduleInteractionsCount = useEconomicsStore((s) => s.moduleInteractions.length);
-  const [syncing, setSyncing] = useState(false);
-
-  const fetchProfile = useCallback(async () => {
-    try {
-      const res = await fetch('/api/profile');
-      if (res.ok) {
-        const data = await res.json();
-        setProfile(data);
-        setName(data.name || '');
-        setPhone(data.phone || '');
-      } else {
-        setError(t('dashboard.profile.fetchError'));
-      }
-    } catch (e) {
-      console.error(e);
-      setError(t('dashboard.profile.fetchError'));
-    } finally {
-      setLoading(false);
-    }
-  }, [t]);
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/login');
-      return;
-    }
-
-    if (status === 'authenticated') {
-      fetchProfile();
-    }
-  }, [status, router, fetchProfile]);
 
   // Auto-dismiss alerts
   useEffect(() => {
     if (!error) return;
     const timer = setTimeout(() => setError(''), 5000);
     return () => clearTimeout(timer);
-  }, [error]);
+  }, [error, setError]);
 
   useEffect(() => {
     if (!success) return;
     const timer = setTimeout(() => setSuccess(''), 5000);
     return () => clearTimeout(timer);
-  }, [success]);
-
-  async function updateProfile(e: React.FormEvent) {
-    e.preventDefault();
-    setSaving(true);
-    setError('');
-    setSuccess('');
-
-    try {
-      const res = await fetch('/api/profile', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setProfile(data);
-        setSuccess(t('dashboard.profile.updated'));
-        update();
-      } else {
-        const data = await res.json();
-        setError(data.error);
-      }
-    } catch {
-      setError(t('dashboard.profile.saveError'));
-    } finally {
-      setSaving(false);
-    }
-  }
+  }, [success, setSuccess]);
 
   async function setup2FA() {
     setSettingUp2FA(true);
@@ -229,31 +164,6 @@ export default function DashboardPage() {
       setError(t('auth.error.2faDisableError'));
     } finally {
       setDisabling2FA(false);
-    }
-  }
-
-  async function syncProgress() {
-    setSyncing(true);
-    try {
-      const store = useEconomicsStore.getState();
-      const res = await fetch('/api/progress/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          totalXP: store.totalXP,
-          quizResults: store.quizResults,
-          moduleHistory: store.moduleInteractions,
-          achievements: store.unlockedAchievements,
-        }),
-      });
-
-      if (res.ok) {
-        setSuccess(t('dashboard.progress.synced'));
-      }
-    } catch {
-      setError(t('dashboard.progress.syncError'));
-    } finally {
-      setSyncing(false);
     }
   }
 
@@ -347,7 +257,7 @@ export default function DashboardPage() {
                 <CardDescription>{t('dashboard.profile.desc')}</CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={updateProfile} className="space-y-4">
+                <form onSubmit={(e) => { e.preventDefault(); updateProfile(); }} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">{t('dashboard.profile.name')}</Label>
                     <div className="flex items-center gap-2">

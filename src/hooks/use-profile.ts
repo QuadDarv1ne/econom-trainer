@@ -29,6 +29,8 @@ export function useProfile() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -36,6 +38,8 @@ export function useProfile() {
       if (res.ok) {
         const data = await res.json();
         setProfile(data);
+        setName(data.name || '');
+        setPhone(data.phone || '');
       } else {
         setError(t('dashboard.profile.fetchError'));
       }
@@ -58,21 +62,26 @@ export function useProfile() {
     }
   }, [status, router, fetchProfile]);
 
-  const updateProfile = useCallback(async (name: string, phone: string) => {
+  const updateProfile = useCallback(async (updateName?: string, updatePhone?: string) => {
     setSaving(true);
     setError('');
     setSuccess('');
+
+    const bodyName = updateName !== undefined ? updateName : name;
+    const bodyPhone = updatePhone !== undefined ? updatePhone : phone;
 
     try {
       const res = await fetch('/api/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone }),
+        body: JSON.stringify({ name: bodyName, phone: bodyPhone }),
       });
 
       if (res.ok) {
         const data = await res.json();
         setProfile(data);
+        setName(data.name || '');
+        setPhone(data.phone || '');
         setSuccess(t('dashboard.profile.updated'));
         await update();
       } else {
@@ -84,7 +93,7 @@ export function useProfile() {
     } finally {
       setSaving(false);
     }
-  }, [t, update]);
+  }, [t, update, name, phone]);
 
   return {
     status,
@@ -99,6 +108,10 @@ export function useProfile() {
     fetchProfile,
     updateProfile,
     update,
+    name,
+    setName,
+    phone,
+    setPhone,
   };
 }
 
