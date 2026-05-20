@@ -19,6 +19,69 @@ import {
 } from 'recharts'
 import { Landmark, TrendingDown, TrendingUp, AlertTriangle } from 'lucide-react'
 
+// ─── Pure calculation functions ──────────────────────────────────────
+
+export interface YearlyDataPoint {
+  year: number
+  realValue: number
+  lostValue: number
+  purchasingPower: number
+}
+
+export interface InflationResult {
+  realValue: number
+  totalInflation: number
+  purchasingPower: number
+  years: number
+  yearlyData: YearlyDataPoint[]
+}
+
+export function calcInflationResult(
+  initialAmount: number,
+  inflationRate: number,
+  startYear: number,
+  endYear: number
+): InflationResult | null {
+  const rate = inflationRate / 100
+  if (isNaN(initialAmount) || isNaN(rate) || isNaN(startYear) || isNaN(endYear) || endYear <= startYear) {
+    return null
+  }
+
+  const years = endYear - startYear
+  const realValue = initialAmount / Math.pow(1 + rate, years)
+  const totalInflation = Math.pow(1 + rate, years) - 1
+  const purchasingPower = (1 / Math.pow(1 + rate, years)) * 100
+
+  const yearlyData: YearlyDataPoint[] = []
+  for (let y = 0; y <= years; y++) {
+    const currentValue = initialAmount / Math.pow(1 + rate, y)
+    yearlyData.push({
+      year: startYear + y,
+      realValue: Math.round(currentValue),
+      lostValue: Math.round(initialAmount - currentValue),
+      purchasingPower: Math.round((1 / Math.pow(1 + rate, y)) * 100),
+    })
+  }
+
+  return { realValue, totalInflation, purchasingPower, years, yearlyData }
+}
+
+export type InflationLevel = 'low' | 'moderate' | 'high' | 'hyper'
+
+export function getInflationLevelKey(rate: number): InflationLevel {
+  if (rate < 3) return 'low'
+  if (rate < 10) return 'moderate'
+  if (rate < 50) return 'high'
+  return 'hyper'
+}
+
+export function calcRuleOf70Years(rate: number): number | null {
+  if (rate <= 0) return null
+  return Math.round(70 / rate)
+}
+
+// ─── Component ────────────────────────────────────────────────────────
+
 export function InflationCalculator() {
   const { t, locale } = useI18n()
   const [initialAmount, setInitialAmount] = useState('100000')
@@ -37,49 +100,21 @@ export function InflationCalculator() {
 
   const result = useMemo(() => {
     const amount = parseFloat(initialAmount)
-    const rate = parseFloat(inflationRate) / 100
+    const rate = parseFloat(inflationRate)
     const startYear = parseInt(initialYear)
     const endYear = parseInt(finalYear)
-
-    if (isNaN(amount) || isNaN(rate) || isNaN(startYear) || isNaN(endYear) || endYear <= startYear) {
-      return null
-    }
-
-    const years = endYear - startYear
-    const realValue = amount / Math.pow(1 + rate, years)
-    const totalInflation = Math.pow(1 + rate, years) - 1
-    const purchasingPower = (1 / Math.pow(1 + rate, years)) * 100
-
-    const yearlyData: Array<{ year: number; realValue: number; lostValue: number; purchasingPower: number }> = []
-    for (let y = 0; y <= years; y++) {
-      const currentValue = amount / Math.pow(1 + rate, y)
-      const lostValue = amount - currentValue
-      yearlyData.push({
-        year: startYear + y,
-        realValue: Math.round(currentValue),
-        lostValue: Math.round(lostValue),
-        purchasingPower: Math.round((1 / Math.pow(1 + rate, y)) * 100),
-      })
-    }
-
-    return {
-      realValue,
-      totalInflation,
-      purchasingPower,
-      years,
-      yearlyData,
-    }
+    return calcInflationResult(amount, rate, startYear, endYear)
   }, [initialAmount, initialYear, finalYear, inflationRate])
 
-  const getInflationLevel = (rate: number) => {
-    if (rate < 3) return { text: t('inflation.level.low'), variant: 'secondary' as const, color: 'text-green-600' }
-    if (rate < 10) return { text: t('inflation.level.moderate'), variant: 'default' as const, color: 'text-yellow-600' }
-    if (rate < 50) return { text: t('inflation.level.high'), variant: 'destructive' as const, color: 'text-orange-600' }
-    return { text: t('inflation.level.hyper'), variant: 'destructive' as const, color: 'text-red-600' }
-  }
-
   const rate = parseFloat(inflationRate) || 0
-  const level = getInflationLevel(rate)
+  const levelKey = getInflationLevelKey(rate)
+  const ruleOf70Years = useMemo(() => calcRuleOf70Years(rate), [rate])
+  const level = {
+    low: { text: t('inflation.level.low'), variant: 'secondary' as const, color: 'text-green-600' },
+    moderate: { text: t('inflation.level.moderate'), variant: 'default' as const, color: 'text-yellow-600' },
+    high: { text: t('inflation.level.high'), variant: 'destructive' as const, color: 'text-orange-600' },
+    hyper: { text: t('inflation.level.hyper'), variant: 'destructive' as const, color: 'text-red-600' },
+  }[levelKey]
 
   return (
     <div className="space-y-6">
@@ -284,9 +319,9 @@ export function InflationCalculator() {
           <div className="p-3 bg-muted/50 rounded-lg">
             <strong>{t('inflation.rule70.description')}</strong>
           </div>
-          {rate > 0 && (
+          {ruleOf70Years !== null && (
             <div className="p-3 bg-primary/5 rounded-lg">
-              {t('inflation.rule70.result').replace('{rate}', rate.toString()).replace('{years}', Math.round(70 / rate).toString())}
+              {t('inflation.rule70.result').replace('{rate}', rate.toString()).replace('{years}', ruleOf70Years.toString())}
             </div>
           )}
         </CardContent>
