@@ -130,11 +130,13 @@ export function useProgressSync() {
     setSyncSuccess('');
     try {
       const store = useEconomicsStore.getState();
+      const { level } = store.getXPState();
       const res = await fetch('/api/progress/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           totalXP: store.totalXP,
+          level,
           quizResults: store.quizResults,
           moduleHistory: store.moduleInteractions,
           achievements: store.unlockedAchievements,

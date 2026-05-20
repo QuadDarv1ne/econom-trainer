@@ -4,6 +4,26 @@ import { prisma } from '@/lib/prisma';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 
+const XP_PER_LEVEL = 500;
+const LEVEL_MULTIPLIER = 1.2;
+
+/**
+ * Compute level from total XP using the same algorithm as the client.
+ */
+function computeLevelFromXP(totalXP: number): number {
+  let level = 1;
+  let xpNeeded = XP_PER_LEVEL;
+  let remaining = totalXP;
+
+  while (remaining >= xpNeeded) {
+    remaining -= xpNeeded;
+    level++;
+    xpNeeded = Math.round(XP_PER_LEVEL * Math.pow(LEVEL_MULTIPLIER, level - 1));
+  }
+
+  return level;
+}
+
 // GET - Get user progress from server
 export async function GET() {
   try {
@@ -78,19 +98,36 @@ export async function POST(req: Request) {
       }
     }
 
+    // Fetch existing progress for merge strategy (keep max XP/level to prevent data loss)
+    const existingProgress = await prisma.userProgress.findUnique({
+      where: { userId: session.user.id },
+    });
+
+    // Compute level from XP if not provided by client
+    const resolvedTotalXP = totalXP ?? existingProgress?.totalXP ?? 0;
+    const resolvedLevel = level ?? computeLevelFromXP(resolvedTotalXP);
+
+    // Merge strategy: keep the higher value between client and server
+    const mergedXP = existingProgress
+      ? Math.max(resolvedTotalXP, existingProgress.totalXP)
+      : resolvedTotalXP;
+    const mergedLevel = existingProgress
+      ? Math.max(resolvedLevel, existingProgress.level)
+      : resolvedLevel;
+
     const progress = await prisma.userProgress.upsert({
       where: { userId: session.user.id },
       create: {
         userId: session.user.id,
-        totalXP: totalXP ?? 0,
-        level: level ?? 1,
+        totalXP: mergedXP,
+        level: mergedLevel,
         quizResults: quizResults !== undefined ? JSON.stringify(quizResults) : null,
         moduleHistory: moduleHistory !== undefined ? JSON.stringify(moduleHistory) : null,
         achievements: achievements !== undefined ? JSON.stringify(achievements) : null,
       },
       update: {
-        totalXP: totalXP !== undefined ? totalXP : undefined,
-        level: level !== undefined ? level : undefined,
+        totalXP: mergedXP,
+        level: mergedLevel,
         quizResults: quizResults !== undefined ? JSON.stringify(quizResults) : undefined,
         moduleHistory: moduleHistory !== undefined ? JSON.stringify(moduleHistory) : undefined,
         achievements: achievements !== undefined ? JSON.stringify(achievements) : undefined,
