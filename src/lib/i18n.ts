@@ -3942,10 +3942,8 @@ export function setLocale(locale: Locale): void {
   document.documentElement.lang = locale;
 }
 
-// Intl locale identifier for date/number formatting
-export function getLocaleForFormatting(locale: Locale): string {
-  return locale === 'ru' ? 'ru-RU' : 'en-US';
-}
+/** @deprecated Use toLocale() instead — identical function */
+export const getLocaleForFormatting = toLocale;
 
 // Format a number according to the current locale
 export function formatNumber(value: number, locale: Locale, options?: Intl.NumberFormatOptions): string {

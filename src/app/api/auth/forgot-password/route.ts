@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
+import { randomBytes } from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { sendEmail, getPasswordResetEmailHtml, getLocaleFromRequest } from '@/lib/email';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     }
 
     // Generate reset token
-    const token = crypto.randomBytes(32).toString('hex');
+    const token = randomBytes(32).toString('hex');
     const expires = new Date(Date.now() + 3600000); // 1 hour
 
     // Delete existing tokens for this user
