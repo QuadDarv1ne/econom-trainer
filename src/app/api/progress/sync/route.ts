@@ -84,8 +84,8 @@ export async function POST(req: Request) {
         achievements: achievements !== undefined ? JSON.stringify(achievements) : null,
       },
       update: {
-        totalXP: totalXP ?? undefined,
-        level: level ?? undefined,
+        totalXP: totalXP !== undefined ? totalXP : undefined,
+        level: level !== undefined ? level : undefined,
         quizResults: quizResults !== undefined ? JSON.stringify(quizResults) : undefined,
         moduleHistory: moduleHistory !== undefined ? JSON.stringify(moduleHistory) : undefined,
         achievements: achievements !== undefined ? JSON.stringify(achievements) : undefined,
