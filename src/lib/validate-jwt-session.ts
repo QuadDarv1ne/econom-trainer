@@ -11,6 +11,7 @@ import {
   scheduleCacheCleanup,
   getPendingValidation,
 } from "@/lib/session-cache";
+import { logError } from "@/lib/log-error";
 
 /**
  * Validate the sessionHash in a JWT token against the database.
@@ -58,7 +59,7 @@ export async function validateJwtSession(token: JWT): Promise<JWT> {
     }
   } catch (error) {
     // Fail closed on DB error for security
-    console.error("Session validation failed:", error);
+    logError("session-validation", error);
     (token as Record<string, unknown>).id = undefined;
     (token as Record<string, unknown>).sessionHash = undefined;
     (token as Record<string, unknown>).twoFactorEnabled = false;

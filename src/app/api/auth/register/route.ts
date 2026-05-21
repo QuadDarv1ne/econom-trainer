@@ -7,6 +7,7 @@ import { getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validatePasswordStrength } from '@/lib/validate-password';
 import { logError } from '@/lib/log-error';
+import { BCRYPT_SALT_ROUNDS, VERIFICATION_TOKEN_EXPIRY_MS, BASE_URL } from '@/lib/constants';
 
 export async function POST(req: Request) {
   try {
@@ -61,11 +62,11 @@ export async function POST(req: Request) {
     }
 
     // Hash password
-    const passwordHash = await bcrypt.hash(password, 12);
+    const passwordHash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
 
     // Generate email verification token
     const token = randomBytes(32).toString('hex');
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    const expires = new Date(Date.now() + VERIFICATION_TOKEN_EXPIRY_MS);
     const userEmail = email.toLowerCase();
 
     // Create user, progress, and verification token atomically
@@ -91,7 +92,7 @@ export async function POST(req: Request) {
     });
 
     // Send verification email (outside transaction — if this fails, clean up)
-    const verificationUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(userEmail)}`;
+    const verificationUrl = `${BASE_URL}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(userEmail)}`;
     const locale = getLocaleFromRequest(req);
     const verificationHtml = getEmailVerificationEmailHtml(user.name || (locale === 'en' ? 'User' : 'Пользователь'), verificationUrl, locale);
 

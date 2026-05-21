@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { logError } from '@/lib/log-error';
+import { BASE_URL } from '@/lib/constants';
 
 // POST - Verify email via token
 // CSRF protection is provided by the cryptographically random, single-use token
@@ -12,16 +14,18 @@ export async function POST(req: Request) {
   } catch {
     // Try form data
     const formData = await req.formData();
+    const tokenVal = formData.get('token');
+    const emailVal = formData.get('email');
     body = {
-      token: formData.get('token') as string,
-      email: formData.get('email') as string,
+      token: typeof tokenVal === 'string' ? tokenVal : undefined,
+      email: typeof emailVal === 'string' ? emailVal : undefined,
     };
   }
 
   const token = body.token;
   const email = (body.email || '').toLowerCase();
 
-  const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+  const baseUrl = BASE_URL;
 
   if (!token || !email) {
     return NextResponse.redirect(baseUrl + '/auth/verify-email?status=invalid');
@@ -55,7 +59,8 @@ export async function POST(req: Request) {
     ]);
 
     return NextResponse.redirect(baseUrl + '/auth/verify-email?status=success');
-  } catch {
+  } catch (error) {
+    logError('verify-email', error);
     return NextResponse.redirect(baseUrl + '/auth/verify-email?status=error');
   }
 }

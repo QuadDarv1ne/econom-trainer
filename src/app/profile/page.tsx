@@ -149,7 +149,7 @@ export default function ProfilePage() {
     const reader = new FileReader();
     reader.onload = async (ev) => {
       const imageData = ev.target?.result;
-      if (!imageData) {
+      if (!imageData || typeof imageData !== 'string') {
         setError(t('auth.error.avatarUploadError'));
         return;
       }
@@ -158,7 +158,7 @@ export default function ProfilePage() {
         const res = await fetch('/api/profile', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: imageData as string }),
+          body: JSON.stringify({ image: imageData }),
         });
 
         if (res.ok) {

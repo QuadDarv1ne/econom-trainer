@@ -6,6 +6,7 @@ import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validatePasswordStrength } from '@/lib/validate-password';
 import { logError } from '@/lib/log-error';
+import { BCRYPT_SALT_ROUNDS, BASE_URL } from '@/lib/constants';
 
 export async function POST(req: Request) {
   try {
@@ -44,7 +45,7 @@ export async function POST(req: Request) {
     }
 
     // Hash new password and generate new session hash to invalidate all existing sessions
-    const passwordHash = await bcrypt.hash(password, 12);
+    const passwordHash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
     const newSessionHash = randomBytes(32).toString('hex');
 
     // Atomically update password, revoke sessions, and invalidate token

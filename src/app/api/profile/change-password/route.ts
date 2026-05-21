@@ -8,6 +8,7 @@ import { validatePasswordStrength } from '@/lib/validate-password';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
+import { BCRYPT_SALT_ROUNDS } from '@/lib/constants';
 
 // POST - Change password
 export async function POST(req: Request) {
@@ -63,7 +64,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const newHash = await bcrypt.hash(newPassword, 12);
+    const newHash = await bcrypt.hash(newPassword, BCRYPT_SALT_ROUNDS);
     const newSessionHash = randomBytes(32).toString('hex');
 
     await prisma.user.update({

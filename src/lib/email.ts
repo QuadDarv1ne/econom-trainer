@@ -4,6 +4,7 @@
  */
 
 import type { Locale } from '@/lib/i18n';
+import { logError } from '@/lib/log-error';
 
 /**
  * Detect user locale from the Accept-Language header.
@@ -54,13 +55,13 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions): 
       } catch {
         error = { message: res.statusText || `HTTP ${res.status}` };
       }
-      console.error('[Email] Failed to send:', error);
+      logError('email-send', error);
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error('[Email] Error sending email:', error);
+    logError('email-error', error);
     return false;
   }
 }

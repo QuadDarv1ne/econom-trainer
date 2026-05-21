@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEconomicsStore } from '@/store/economics-store';
 import { useI18n } from '@/lib/i18n-provider';
+import { logError } from '@/lib/log-error';
 
 interface UserProfile {
   id: string;
@@ -72,7 +73,7 @@ export function useProfile(): UseProfileReturn {
         setError(t('dashboard.profile.fetchError'));
       }
     } catch (e) {
-      console.error(e);
+      logError('fetch-profile', e);
       setError(t('dashboard.profile.fetchError'));
     } finally {
       setLoading(false);

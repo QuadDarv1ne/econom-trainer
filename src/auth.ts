@@ -30,8 +30,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
+        const email = credentials.email;
+        const password = credentials.password;
+        const twoFactorCode = credentials.twoFactorCode;
+
+        if (typeof email !== "string" || typeof password !== "string") {
+          return null;
+        }
+
         const user = await prisma.user.findUnique({
-          where: { email: (credentials.email as string).toLowerCase() },
+          where: { email: email.toLowerCase() },
           include: { twoFactorConf: true },
         });
 
@@ -39,10 +47,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
-        const isValid = await bcrypt.compare(
-          credentials.password as string,
-          user.passwordHash
-        );
+        const isValid = await bcrypt.compare(password, user.passwordHash);
 
         if (!isValid) {
           return null;
@@ -50,14 +55,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         // If 2FA is enabled, verify second factor
         if (user.twoFactorEnabled && user.twoFactorConf) {
-          const code = credentials.twoFactorCode as string;
-          if (!code) {
+          if (!twoFactorCode || typeof twoFactorCode !== "string") {
             throw new Error("TwoFactorRequired");
           }
 
           // Verify TOTP code
           const isTOTPValid = authenticator.verify({
-            token: code,
+            token: twoFactorCode,
             secret: user.twoFactorConf.secret,
           });
 
@@ -72,7 +76,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             let backupUsed = false;
 
             for (let i = 0; i < backupCodes.length; i++) {
-              const matches = await bcrypt.compare(code, backupCodes[i]);
+              const matches = await bcrypt.compare(twoFactorCode, backupCodes[i]);
               if (matches) {
                 // Remove used code
                 backupCodes.splice(i, 1);

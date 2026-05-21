@@ -5,6 +5,7 @@ import { randomBytes } from 'crypto';
 import { getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
+import { BASE_URL, VERIFICATION_TOKEN_EXPIRY_MS } from '@/lib/constants';
 
 // POST - Send email verification
 export async function POST(req: Request) {
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
 
     // Generate verification token
     const token = randomBytes(32).toString('hex');
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    const expires = new Date(Date.now() + VERIFICATION_TOKEN_EXPIRY_MS); // 24 hours
 
     // Remove any existing verification tokens for this email
     await prisma.verificationToken.deleteMany({
@@ -46,7 +47,7 @@ export async function POST(req: Request) {
     });
 
     // Send verification email
-    const verificationUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(user.email)}`;
+    const verificationUrl = `${BASE_URL}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(user.email)}`;
     const locale = getLocaleFromRequest(req);
     const html = getEmailVerificationEmailHtml(user.name || (locale === 'en' ? 'User' : 'Пользователь'), verificationUrl, locale);
 

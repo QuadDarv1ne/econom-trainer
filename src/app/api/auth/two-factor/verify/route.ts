@@ -8,6 +8,7 @@ import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { randomBytes } from 'crypto';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
+import { BCRYPT_SALT_ROUNDS_BACKUP } from '@/lib/constants';
 
 export async function POST(req: Request) {
   try {
@@ -65,7 +66,7 @@ export async function POST(req: Request) {
 
     // Hash backup codes
     const hashedBackupCodes = await Promise.all(
-      backupCodes.map((c) => bcrypt.hash(c, 10))
+      backupCodes.map((c) => bcrypt.hash(c, BCRYPT_SALT_ROUNDS_BACKUP))
     );
 
     // Enable 2FA
