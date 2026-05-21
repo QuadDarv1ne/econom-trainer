@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   try {
     body = await req.json();
   } catch {
-    // Try form data
+    // JSON parse failed — try form data instead
     const formData = await req.formData();
     const tokenVal = formData.get('token');
     const emailVal = formData.get('email');

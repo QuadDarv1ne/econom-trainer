@@ -40,7 +40,11 @@ export async function POST(req: Request) {
     // Generate secret
     const secret = authenticator.generateSecret();
     const issuer = 'Econom Trainer';
-    const uri = authenticator.keyuri(user.email || session.user.email || 'user', issuer, secret);
+    // Sanitize email for TOTP URI: strip special characters, limit length
+    const safeEmail = (user.email || session.user.email || 'user')
+      .replace(/[^\w@.\-]/g, '')
+      .slice(0, 64);
+    const uri = authenticator.keyuri(safeEmail, issuer, secret);
     const qrCode = await qrcode.toDataURL(uri);
 
     // Store secret temporarily (will be confirmed on verification)

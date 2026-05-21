@@ -6,6 +6,19 @@ import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { logError } from '@/lib/log-error';
 
+// Shared select clause for user profile queries — avoid duplication between GET and PATCH
+const USER_PROFILE_SELECT = {
+  id: true,
+  name: true,
+  email: true,
+  phone: true,
+  image: true,
+  role: true,
+  twoFactorEnabled: true,
+  emailVerified: true,
+  createdAt: true,
+} as const;
+
 // GET - Get user profile
 export async function GET() {
   try {
@@ -22,17 +35,7 @@ export async function GET() {
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        image: true,
-        role: true,
-        twoFactorEnabled: true,
-        emailVerified: true,
-        createdAt: true,
-      },
+      select: USER_PROFILE_SELECT,
     });
 
     if (!user) {
@@ -106,17 +109,7 @@ export async function PATCH(req: Request) {
         ...(phone !== undefined && { phone: phone === '' ? null : phone }),
         ...(image !== undefined && { image: image === '' ? null : image }),
       },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        image: true,
-        role: true,
-        twoFactorEnabled: true,
-        emailVerified: true,
-        createdAt: true,
-      },
+      select: USER_PROFILE_SELECT,
     });
 
     return NextResponse.json(user);
