@@ -40,7 +40,7 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions): 
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: process.env.EMAIL_FROM || 'noreply@econom-trainer.com',
+        from: process.env.EMAIL_FROM || 'onboarding@resend.dev', // Resend allows this default; configure EMAIL_FROM for production
         to,
         subject,
         html,

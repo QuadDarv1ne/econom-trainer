@@ -1,7 +1,10 @@
 import type { MetadataRoute } from "next";
+import { BASE_URL } from "@/lib/constants";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_URL || "https://econom-trainer.vercel.app";
+  const baseUrl = BASE_URL.startsWith("http://localhost")
+    ? "https://econom-trainer.vercel.app"
+    : BASE_URL;
 
   const modules = [
     "gdp",

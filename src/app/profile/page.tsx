@@ -225,7 +225,8 @@ export default function ProfilePage() {
         // Sign out since all sessions are invalidated by password change
         signOut({ callbackUrl: '/auth/login' });
       } else {
-        setError(data.error);
+        const errMsg = (data && typeof data.error === 'string') ? data.error : t('auth.error.serverError');
+        setError(errMsg);
       }
     } catch {
       setError(t('auth.error.serverError'));
@@ -246,7 +247,8 @@ export default function ProfilePage() {
         setSuccess(t('profile.verificationSent'));
         setResendCooldown(60); // 60 seconds cooldown
       } else {
-        setError(data.error);
+        const errMsg = (data && typeof data.error === 'string') ? data.error : t('auth.error.serverError');
+        setError(errMsg);
       }
     } catch {
       setError(t('auth.error.verificationSendError'));
@@ -268,7 +270,8 @@ export default function ProfilePage() {
         setSecret(data.secret);
         setShowQR(true);
       } else {
-        setError(data.error);
+        const errMsg = (data && typeof data.error === 'string') ? data.error : t('auth.error.serverError');
+        setError(errMsg);
       }
     } catch {
       setError(t('auth.error.2faSetupError'));
@@ -297,7 +300,8 @@ export default function ProfilePage() {
         setProfile((p) => (p ? { ...p, twoFactorEnabled: true } : null));
         update();
       } else {
-        setError(data.error);
+        const errMsg = (data && typeof data.error === 'string') ? data.error : t('auth.error.serverError');
+        setError(errMsg);
       }
     } catch {
       setError(t('auth.error.2faVerifyError'));
@@ -325,7 +329,8 @@ export default function ProfilePage() {
         setSuccess(t('dashboard.security.disable'));
         update();
       } else {
-        setError(data.error);
+        const errMsg = (data && typeof data.error === 'string') ? data.error : t('auth.error.serverError');
+        setError(errMsg);
       }
     } catch {
       setError(t('auth.error.2faDisableError'));
@@ -350,7 +355,8 @@ export default function ProfilePage() {
       if (res.ok) {
         signOut({ callbackUrl: '/' });
       } else {
-        setError(data.error);
+        const errMsg = (data && typeof data.error === 'string') ? data.error : t('auth.error.serverError');
+        setError(errMsg);
       }
     } catch {
       setError(t('auth.error.accountDeleteError'));

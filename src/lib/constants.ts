@@ -29,3 +29,28 @@ export const RESET_TOKEN_EXPIRY_MS = 60 * 60 * 1000;
  * Falls back to localhost in development.
  */
 export const BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+
+/**
+ * Maximum avatar image size in bytes (5 MB).
+ */
+export const AVATAR_MAX_BYTES = 5 * 1024 * 1024;
+
+/**
+ * Auto-dismiss timeout for alert messages in ms (5 seconds).
+ */
+export const ALERT_AUTO_DISMISS_MS = 5000;
+
+/**
+ * Registration success redirect delay in ms (3 seconds).
+ */
+export const REDIRECT_DELAY_MS = 3000;
+
+/**
+ * Resend verification email cooldown in seconds (60 seconds).
+ */
+export const RESEND_COOLDOWN_SECONDS = 60;
+
+/**
+ * Timing delay to prevent email enumeration via response time (1.5 seconds).
+ */
+export const ENUMERATION_DELAY_MS = 1500;

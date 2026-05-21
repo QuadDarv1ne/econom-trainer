@@ -5,6 +5,7 @@ import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { logError } from '@/lib/log-error';
+import { AVATAR_MAX_BYTES } from '@/lib/constants';
 
 // Shared select clause for user profile queries — avoid duplication between GET and PATCH
 const USER_PROFILE_SELECT = {
@@ -90,7 +91,7 @@ export async function PATCH(req: Request) {
 
     // Validate image (data URL)
     if (image !== undefined && image !== null) {
-      if (typeof image !== 'string' || image.length > 5 * 1024 * 1024) {
+      if (typeof image !== 'string' || image.length > AVATAR_MAX_BYTES) {
         return NextResponse.json({ error: 'Image must not exceed 5 MB' }, { status: 400 });
       }
       // Validate data URL MIME type is an image

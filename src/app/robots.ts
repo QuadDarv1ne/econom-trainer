@@ -1,6 +1,11 @@
 import type { MetadataRoute } from "next";
+import { BASE_URL } from "@/lib/constants";
 
 export default function robots(): MetadataRoute.Robots {
+  const sitemapUrl = BASE_URL.startsWith("http://localhost")
+    ? "https://econom-trainer.vercel.app"
+    : BASE_URL;
+
   return {
     rules: [
       {
@@ -16,6 +21,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       },
     ],
-    sitemap: `${process.env.NEXT_PUBLIC_URL || 'https://econom-trainer.vercel.app'}/sitemap.xml`,
+    sitemap: `${sitemapUrl}/sitemap.xml`,
   };
 }

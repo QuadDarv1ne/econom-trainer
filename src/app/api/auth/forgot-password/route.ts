@@ -5,7 +5,7 @@ import { sendEmail, getPasswordResetEmailHtml, getLocaleFromRequest } from '@/li
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { logError } from '@/lib/log-error';
-import { BASE_URL, RESET_TOKEN_EXPIRY_MS } from '@/lib/constants';
+import { BASE_URL, RESET_TOKEN_EXPIRY_MS, ENUMERATION_DELAY_MS } from '@/lib/constants';
 
 export async function POST(req: Request) {
   try {
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       // Constant-time delay to prevent timing-based email enumeration.
       // Wait the same duration as a real email send operation (~1-2s)
       // so attackers cannot distinguish registered vs unregistered emails.
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, ENUMERATION_DELAY_MS));
       return NextResponse.json({ message: 'If this email is registered, we will send a reset link' });
     }
 
