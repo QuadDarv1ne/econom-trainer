@@ -31,7 +31,7 @@ export async function GET() {
     // Rate limit authenticated reads to prevent enumeration
     const limit = checkRateLimit('profileRead', null);
     if (!limit.ok) {
-      return rateLimitResponse('profileRead', '', '');
+      return rateLimitResponse('profileRead', null);
     }
 
     const user = await prisma.user.findUnique({

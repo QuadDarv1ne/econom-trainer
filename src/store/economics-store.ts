@@ -84,43 +84,6 @@ export function getLevelTitle(level: number): string {
   return t('level.student', locale)
 }
 
-export interface EconomicsState {
-  quizResults: QuizResult[]
-  gdpResults: GDPResult[]
-  financeResults: FinanceResult[]
-  elasticityResults: ElasticityResult[]
-  moduleInteractions: ModuleInteraction[]
-  unlockedAchievements: string[]
-  totalXP: number
-  dailyChallenges: DailyChallenge[]
-  streakState: StreakState
-  addQuizResult: (result: QuizResult) => void
-  addGDPResult: (result: GDPResult) => void
-  addFinanceResult: (result: FinanceResult) => void
-  addElasticityResult: (result: ElasticityResult) => void
-  addModuleInteraction: (interaction: Omit<ModuleInteraction, 'id' | 'date'>) => void
-  completeDailyChallenge: (result: DailyChallenge) => void
-  recordActivity: () => void
-  unlockAchievement: (id: string, xpReward?: number) => void
-  addXP: (amount: number) => void
-  getTotalScore: () => { quizzes: number; gdp: number; finance: number; elasticity: number }
-  computeStats: () => { quizCorrect: number; quizTotal: number; financeCorrect: number; financeTotal: number }
-  getStreak: () => number
-  getXPState: () => XPState
-  resetProgress: () => void
-  getFullProgress: () => {
-    totalXP: number
-    level: number
-    levelTitle: string
-    totalSessions: number
-    moduleCounts: Record<string, number>
-    quizStats: { correct: number; total: number; accuracy: number }
-    financeStats: { correct: number; total: number; accuracy: number }
-    gdpCount: number
-    elasticityCount: number
-  }
-}
-
 export function getLevelColor(level: number): string {
   if (level >= 20) return 'text-yellow-500'
   if (level >= 15) return 'text-purple-500'
@@ -411,7 +374,7 @@ export const useEconomicsStore = create<EconomicsState>()(
 
       getXPState: () => {
         const state = get()
-        const { level, xpInCurrentLevel, xpToNextLevel } = getLevelFromXP(state.totalXP)
+        const { level, xpInCurrentLevel, xpToNextLevel } = getLevelFromXPShared(state.totalXP)
         return { totalXP: state.totalXP, level, xpToNextLevel, xpInCurrentLevel }
       },
 
@@ -432,7 +395,7 @@ export const useEconomicsStore = create<EconomicsState>()(
 
       getFullProgress: () => {
         const state = get()
-        const { level } = getLevelFromXP(state.totalXP)
+        const { level } = getLevelFromXPShared(state.totalXP)
         const levelTitle = getLevelTitle(level)
 
         const quizCorrect = state.quizResults.reduce((sum, r) => sum + r.score, 0)

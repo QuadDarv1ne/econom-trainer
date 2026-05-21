@@ -29,7 +29,7 @@ interface UseProfileReturn {
   setProfile: React.Dispatch<React.SetStateAction<UserProfile | null>>;
   fetchProfile: () => Promise<void>;
   updateProfile: (updateName?: string, updatePhone?: string) => Promise<void>;
-  update: () => Promise<void>;
+  update: () => Promise<unknown>;
   name: string;
   setName: React.Dispatch<React.SetStateAction<string>>;
   phone: string;

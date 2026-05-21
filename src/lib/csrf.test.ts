@@ -1,10 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { validateOrigin, csrfErrorResponse } from './csrf';
 
 describe('validateOrigin', () => {
   beforeEach(() => {
-    // Set up test origins
     vi.stubEnv('NEXT_PUBLIC_APP_URL', 'http://localhost:3000');
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it('allows matching origin', () => {
@@ -27,7 +30,6 @@ describe('validateOrigin', () => {
   });
 
   it('uses referer as fallback when origin is not set', () => {
-    vi.stubEnv('NEXT_PUBLIC_APP_URL', 'http://localhost:3000');
     const req = new Request('http://localhost', {
       headers: { referer: 'http://localhost:3000/some/path' },
     });
@@ -48,10 +50,22 @@ describe('validateOrigin', () => {
     vi.stubEnv('NEXTAUTH_URL', undefined);
     vi.stubEnv('VERCEL_URL', undefined);
 
-    // Re-import to get fresh ALLOWED_ORIGINS
-    // Since module is cached, we can't easily test this
-    // So we just verify the logic path exists
-    vi.unstubAllEnvs();
+    const req = new Request('http://localhost', {
+      headers: { origin: 'https://evil.com' },
+    });
+    expect(validateOrigin(req)).toBe(false);
+  });
+
+  it('allows request with no origin header when no origins configured', () => {
+    vi.stubEnv('NEXT_PUBLIC_APP_URL', undefined);
+    vi.stubEnv('NEXT_PUBLIC_URL', undefined);
+    vi.stubEnv('NEXTAUTH_URL', undefined);
+    vi.stubEnv('VERCEL_URL', undefined);
+
+    const req = new Request('http://localhost', {
+      headers: { origin: 'https://evil.com' },
+    });
+    expect(validateOrigin(req)).toBe(false);
   });
 
   it('allows trailing slash variation', () => {

@@ -3,12 +3,14 @@
  * Validates that the request Origin/Referer matches the app's host
  */
 
-const ALLOWED_ORIGINS = [
-  process.env.NEXT_PUBLIC_APP_URL,
-  process.env.NEXT_PUBLIC_URL,
-  process.env.NEXTAUTH_URL,
-  process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
-].filter(Boolean) as string[];
+function getAllowedOrigins(): string[] {
+  return [
+    process.env.NEXT_PUBLIC_APP_URL,
+    process.env.NEXT_PUBLIC_URL,
+    process.env.NEXTAUTH_URL,
+    process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
+  ].filter(Boolean) as string[];
+}
 
 /**
  * Check if the request's Origin header matches an allowed origin.
@@ -16,7 +18,8 @@ const ALLOWED_ORIGINS = [
  * Returns true if the origin is valid, false otherwise.
  */
 export function validateOrigin(req: Request): boolean {
-  if (ALLOWED_ORIGINS.length === 0) {
+  const allowedOrigins = getAllowedOrigins();
+  if (allowedOrigins.length === 0) {
     // If no origins are configured, only skip validation in development.
     // In production, fail-closed to prevent CSRF bypass from misconfiguration.
     if (process.env.NODE_ENV === 'production') {
@@ -39,7 +42,7 @@ export function validateOrigin(req: Request): boolean {
     // Strip trailing slash for comparison
     const requestOrigin = originUrl.origin.replace(/\/$/, '');
 
-    return ALLOWED_ORIGINS.some((allowed) => {
+    return allowedOrigins.some((allowed) => {
       const allowedOrigin = allowed.replace(/\/$/, '');
       return requestOrigin === allowedOrigin;
     });

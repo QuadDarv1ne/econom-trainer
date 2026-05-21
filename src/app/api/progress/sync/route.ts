@@ -18,7 +18,7 @@ export async function GET() {
     // Rate limit authenticated reads
     const limit = checkRateLimit('progressRead', null);
     if (!limit.ok) {
-      return rateLimitResponse('progressRead', '', '');
+      return rateLimitResponse('progressRead', null);
     }
 
     const progress = await prisma.userProgress.findUnique({
