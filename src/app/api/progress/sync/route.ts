@@ -14,6 +14,12 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Rate limit authenticated reads
+    const limit = checkRateLimit('progressRead', null);
+    if (!limit.ok) {
+      return rateLimitResponse('progressRead', '', '');
+    }
+
     const progress = await prisma.userProgress.findUnique({
       where: { userId: session.user.id },
     });

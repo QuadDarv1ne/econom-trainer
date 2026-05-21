@@ -33,6 +33,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Code is required' }, { status: 400 });
     }
 
+    // 2FA codes are 6 digits; reject overly long inputs
+    if (typeof code !== 'string' || code.length > 10) {
+      return NextResponse.json({ error: 'Invalid code format' }, { status: 400 });
+    }
+
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       include: { twoFactorConf: true },

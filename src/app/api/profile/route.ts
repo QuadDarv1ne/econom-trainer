@@ -13,6 +13,12 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Rate limit authenticated reads to prevent enumeration
+    const limit = checkRateLimit('profileRead', null);
+    if (!limit.ok) {
+      return rateLimitResponse('profileRead', '', '');
+    }
+
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: {

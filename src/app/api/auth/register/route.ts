@@ -62,41 +62,34 @@ export async function POST(req: Request) {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email: email.toLowerCase(),
-        passwordHash,
-        phone: phone || null,
-      },
-    });
-    const userId = user.id;
-
-    // Create empty progress
-    await prisma.userProgress.create({
-      data: {
-        userId: user.id,
-        totalXP: 0,
-        level: 1,
-      },
-    });
-
     // Generate email verification token
     const token = randomBytes(32).toString('hex');
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-
     const userEmail = email.toLowerCase();
 
-    await prisma.verificationToken.create({
-      data: {
-        identifier: userEmail,
-        token,
-        expires,
-      },
+    // Create user, progress, and verification token atomically
+    const user = await prisma.$transaction(async (tx) => {
+      const created = await tx.user.create({
+        data: {
+          name,
+          email: userEmail,
+          passwordHash,
+          phone: phone || null,
+        },
+      });
+
+      await tx.userProgress.create({
+        data: { userId: created.id, totalXP: 0, level: 1 },
+      });
+
+      await tx.verificationToken.create({
+        data: { identifier: userEmail, token, expires },
+      });
+
+      return created;
     });
 
-    // Send verification email
+    // Send verification email (outside transaction — if this fails, clean up)
     const verificationUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(userEmail)}`;
     const locale = getLocaleFromRequest(req);
     const verificationHtml = getEmailVerificationEmailHtml(user.name || (locale === 'en' ? 'User' : 'Пользователь'), verificationUrl, locale);
@@ -111,17 +104,11 @@ export async function POST(req: Request) {
     });
 
     if (!emailSent) {
-      // Rollback: atomically delete verification token, progress, and user
+      // Rollback: atomically delete all created records
       await prisma.$transaction([
-        prisma.verificationToken.deleteMany({
-          where: { identifier: userEmail },
-        }),
-        prisma.userProgress.deleteMany({
-          where: { userId },
-        }),
-        prisma.user.delete({
-          where: { id: userId },
-        }),
+        prisma.verificationToken.deleteMany({ where: { identifier: userEmail } }),
+        prisma.userProgress.deleteMany({ where: { userId: user.id } }),
+        prisma.user.delete({ where: { id: user.id } }),
       ]);
       return NextResponse.json(
         { error: 'Failed to send verification email. Please try again later.' },

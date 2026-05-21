@@ -7,6 +7,7 @@
 const globalForAuth = globalThis as unknown as {
   __sessionCache?: Map<string, { hash: string; expiresAt: number }>;
   __cleanupScheduled?: boolean;
+  __pendingValidations?: Map<string, Promise<string | null>>;
 };
 
 export const SESSION_CACHE_TTL = 30 * 1000; // 30 seconds
@@ -46,4 +47,29 @@ export function scheduleCacheCleanup(): void {
     }
     scheduleCacheCleanup();
   }, SESSION_CACHE_TTL).unref?.();
+}
+
+/**
+ * Get or create a deduplicated validation promise for a userId.
+ * Prevents multiple concurrent DB queries for the same user.
+ */
+export function getPendingValidation(
+  userId: string,
+  fetchFn: () => Promise<string | null>
+): Promise<string | null> {
+  if (!globalForAuth.__pendingValidations) {
+    globalForAuth.__pendingValidations = new Map();
+  }
+  const pending = globalForAuth.__pendingValidations.get(userId);
+  if (pending) return pending;
+
+  const promise = fetchFn().finally(() => {
+    globalForAuth.__pendingValidations?.delete(userId);
+  });
+  globalForAuth.__pendingValidations.set(userId, promise);
+  return promise;
+}
+
+export function clearPendingValidation(userId: string): void {
+  globalForAuth.__pendingValidations?.delete(userId);
 }

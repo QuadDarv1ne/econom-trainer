@@ -144,6 +144,11 @@ export function useProgressSync() {
       });
 
       if (res.ok) {
+        const serverData = await res.json();
+        // Update local store with server's merged values
+        if (serverData.totalXP !== undefined) {
+          useEconomicsStore.setState({ totalXP: serverData.totalXP });
+        }
         setSyncSuccess(t('dashboard.progress.synced'));
       }
     } catch {

@@ -14,6 +14,13 @@ interface RateLimitEntry {
 // In-memory store: key (IP + route) -> timestamps of requests
 const store = new Map<string, RateLimitEntry>();
 
+/**
+ * Reset the rate limit store. Used by tests for isolation.
+ */
+export function resetRateLimitStore(): void {
+  store.clear();
+}
+
 // Cleanup interval: prune expired entries every 5 minutes
 const CLEANUP_INTERVAL = 5 * 60 * 1000;
 let cleanupTimer: ReturnType<typeof setInterval> | null = null;

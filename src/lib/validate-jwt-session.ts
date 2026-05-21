@@ -9,6 +9,7 @@ import {
   setCachedSessionHash,
   invalidateSessionCache,
   scheduleCacheCleanup,
+  getPendingValidation,
 } from "@/lib/session-cache";
 
 /**
@@ -35,9 +36,11 @@ export async function validateJwtSession(token: JWT): Promise<JWT> {
   scheduleCacheCleanup();
 
   try {
-    const dbUser = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { sessionHash: true },
+    const dbUser = await getPendingValidation(userId, async () => {
+      return prisma.user.findUnique({
+        where: { id: userId },
+        select: { sessionHash: true },
+      });
     });
 
     if (!dbUser || dbUser.sessionHash !== sessionHash) {
