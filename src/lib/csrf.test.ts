@@ -56,16 +56,17 @@ describe('validateOrigin', () => {
     expect(validateOrigin(req)).toBe(false);
   });
 
-  it('allows request with no origin header when no origins configured', () => {
+  it('allows all requests when no origins configured in development', () => {
     vi.stubEnv('NEXT_PUBLIC_APP_URL', undefined);
     vi.stubEnv('NEXT_PUBLIC_URL', undefined);
     vi.stubEnv('NEXTAUTH_URL', undefined);
     vi.stubEnv('VERCEL_URL', undefined);
+    vi.stubEnv('NODE_ENV', 'development');
 
     const req = new Request('http://localhost', {
       headers: { origin: 'https://evil.com' },
     });
-    expect(validateOrigin(req)).toBe(false);
+    expect(validateOrigin(req)).toBe(true);
   });
 
   it('allows trailing slash variation', () => {

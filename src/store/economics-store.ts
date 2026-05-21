@@ -362,12 +362,48 @@ export const useEconomicsStore = create<EconomicsState>()(
         const allResults = [
           ...state.quizResults.map((r) => ({ date: r.date, success: r.score > r.total / 2 })),
           ...state.financeResults.map((r) => ({ date: r.date, success: r.correct })),
+          ...state.gdpResults.map((r) => ({ date: r.date, success: true })),
+          ...state.elasticityResults.map((r) => ({ date: r.date, success: true })),
+          ...state.moduleInteractions.map((i) => ({ date: i.date, success: true })),
         ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
-        let streak = 0
+        if (allResults.length === 0) return 0
+
+        // Group successful activities by date (YYYY-MM-DD)
+        const activeDates = new Set<string>()
         for (const result of allResults) {
-          if (result.success) streak++
-          else break
+          if (result.success) {
+            const dateStr = result.date.split('T')[0]
+            activeDates.add(dateStr)
+          }
+        }
+
+        if (activeDates.length === 0) return 0
+
+        // Sort dates and count consecutive days
+        const sortedDates = Array.from(activeDates).sort().reverse()
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const todayStr = today.toISOString().split('T')[0]
+        const yesterday = new Date(today)
+        yesterday.setDate(yesterday.getDate() - 1)
+        const yesterdayStr = yesterday.toISOString().split('T')[0]
+
+        // Streak must start from today or yesterday
+        if (sortedDates[0] !== todayStr && sortedDates[0] !== yesterdayStr) {
+          return 0
+        }
+
+        let streak = 1
+        for (let i = 0; i < sortedDates.length - 1; i++) {
+          const currentDate = new Date(sortedDates[i])
+          const nextDate = new Date(sortedDates[i + 1])
+          const diffDays = Math.round((currentDate.getTime() - nextDate.getTime()) / (1000 * 60 * 60 * 24))
+          if (diffDays === 1) {
+            streak++
+          } else {
+            break
+          }
         }
         return streak
       },
