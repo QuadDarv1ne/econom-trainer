@@ -54,7 +54,34 @@ npm install
 npm run dev
 ```
 
-Приложение будет доступно по адресу [http://localhost:3000](http://localhost:3000)
+Приложение автоматически найдёт свободный порт (начиная с 3000) и запустится на нём. URL будет выведен в консоль.
+
+## Конфигурация
+
+### Порт
+
+Скрипт `scripts/dev.mjs` автоматически находит свободный порт в диапазоне 3000–3099 и запускает сервер, устанавливая переменные `PORT`, `NEXTAUTH_URL`, `NEXT_PUBLIC_URL`, `NEXT_PUBLIC_APP_URL`. Если порт 3000 свободен — сервер запустится на нём.
+
+### База данных
+
+По умолчанию используется SQLite (файл `prisma/dev.db`). Поддерживаются также PostgreSQL и MySQL. Выберите БД через `DATABASE_URL` в `.env`:
+
+| База данных | `DATABASE_URL` |
+|-------------|----------------|
+| **SQLite** (по умолчанию) | `file:./dev.db` |
+| **PostgreSQL** | `postgresql://user:pass@localhost:5432/econom` |
+| **MySQL** | `mysql://user:pass@localhost:3306/econom` |
+
+Команды для работы с БД:
+
+```bash
+npm run db:generate  # Сгенерировать клиент Prisma
+npm run db:push      # Применить схему к БД
+npm run db:migrate   # Создать и применить миграцию
+npm run db:studio    # Открыть Prisma Studio
+```
+
+Скрипт `scripts/db-provider.mjs` автоматически определяет тип БД по `DATABASE_URL` и обновляет `prisma/schema.prisma` перед выполнением команд Prisma.
 
 ## Технологии
 

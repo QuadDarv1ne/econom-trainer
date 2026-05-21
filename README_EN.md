@@ -144,7 +144,7 @@ npm install
 npm run dev
 ```
 
-The application will be available at [http://localhost:3000](http://localhost:3000)
+The application will automatically find a free port (starting from 3000) and start on it. The URL will be printed to the console.
 
 ### Production Build
 
@@ -218,6 +218,33 @@ econom-trenazher/
 ├── LICENSE                         # License
 └── .gitignore                      # Git exclusions
 ```
+
+## Configuration
+
+### Port
+
+The `scripts/dev.mjs` script automatically finds a free port in the range 3000–3099 and starts the server, setting `PORT`, `NEXTAUTH_URL`, `NEXT_PUBLIC_URL`, and `NEXT_PUBLIC_APP_URL` environment variables. If port 3000 is available, the server will start there.
+
+### Database
+
+By default, SQLite is used (`prisma/dev.db`). PostgreSQL and MySQL are also supported. Choose your database via `DATABASE_URL` in `.env`:
+
+| Database | `DATABASE_URL` |
+|----------|----------------|
+| **SQLite** (default) | `file:./dev.db` |
+| **PostgreSQL** | `postgresql://user:pass@localhost:5432/econom` |
+| **MySQL** | `mysql://user:pass@localhost:3306/econom` |
+
+Database commands:
+
+```bash
+npm run db:generate  # Generate Prisma client
+npm run db:push      # Push schema to database
+npm run db:migrate   # Create and apply migration
+npm run db:studio    # Open Prisma Studio
+```
+
+The `scripts/db-provider.mjs` script automatically detects the database type from `DATABASE_URL` and updates `prisma/schema.prisma` before running Prisma commands.
 
 ## Roadmap
 

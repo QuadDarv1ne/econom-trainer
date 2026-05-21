@@ -2,22 +2,34 @@ import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
+function detectProvider(url: string | undefined): string {
+  if (!url) return "sqlite";
+  if (url.startsWith("postgresql://") || url.startsWith("postgres://")) return "postgresql";
+  if (url.startsWith("mysql://")) return "mysql";
+  return "sqlite";
+}
+
 function createPrismaClient(): PrismaClient {
   if (typeof window !== "undefined") {
     throw new Error("Prisma client cannot be used in browser environment");
   }
 
-  // Dynamic import for adapter to avoid Edge runtime issues
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3");
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const path = require("path");
+  const databaseUrl = process.env.DATABASE_URL;
+  const provider = detectProvider(databaseUrl);
 
-  const dbPath = path.resolve(process.cwd(), "prisma", "dev.db");
-  const adapter = new PrismaBetterSqlite3({ url: `file:${dbPath}` });
+  if (provider === "sqlite") {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3");
+    const url = databaseUrl || `file:${process.cwd()}/prisma/dev.db`;
+    const adapter = new PrismaBetterSqlite3({ url });
+    return new PrismaClient({
+      adapter,
+      log: process.env.NODE_ENV === "development" ? ["query"] : [],
+    });
+  }
 
+  // PostgreSQL / MySQL — use Prisma native engine (no adapter needed)
   return new PrismaClient({
-    adapter,
     log: process.env.NODE_ENV === "development" ? ["query"] : [],
   });
 }
