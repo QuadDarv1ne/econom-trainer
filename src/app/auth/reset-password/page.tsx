@@ -11,11 +11,8 @@ import { Progress } from '@/components/ui/progress';
 import { AlertCircle, Loader2, KeyRound, CheckCircle2, Check, X } from 'lucide-react';
 import { useI18n } from '@/lib/i18n-provider';
 import { PasswordInput } from '@/components/ui/password-input';
-import { checkPasswordStrength, type PasswordStrengthResult } from '@/lib/password-strength';
-
-function getPasswordStrength(password: string): PasswordStrengthResult {
-  return checkPasswordStrength(password);
-}
+import { checkPasswordStrength } from '@/lib/password-strength';
+import { REDIRECT_DELAY_MS } from '@/lib/constants';
 
 function ResetPasswordForm() {
   const { t } = useI18n();
@@ -29,7 +26,7 @@ function ResetPasswordForm() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const passwordStrength = useMemo(() => getPasswordStrength(password), [password]);
+  const passwordStrength = useMemo(() => checkPasswordStrength(password), [password]);
 
   useEffect(() => {
     if (!token) {
@@ -66,7 +63,7 @@ function ResetPasswordForm() {
         setError(data.error || t('auth.error.resetError'));
       } else {
         setSuccess(true);
-        setTimeout(() => router.push('/auth/login'), 3000);
+        setTimeout(() => router.push('/auth/login'), REDIRECT_DELAY_MS);
       }
     } catch {
       setError(t('auth.error.genericError'));

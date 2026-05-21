@@ -54,3 +54,8 @@ export const RESEND_COOLDOWN_SECONDS = 60;
  * Timing delay to prevent email enumeration via response time (1.5 seconds).
  */
 export const ENUMERATION_DELAY_MS = 1500;
+
+/**
+ * Copy-to-clipboard feedback toast duration in ms (2 seconds).
+ */
+export const COPY_FEEDBACK_MS = 2000;

@@ -14,11 +14,8 @@ import { Progress } from '@/components/ui/progress';
 import { GraduationCap, AlertCircle, Loader2, CheckCircle2, Check, X } from 'lucide-react';
 import { useI18n } from '@/lib/i18n-provider';
 import { PasswordInput } from '@/components/ui/password-input';
-import { checkPasswordStrength, type PasswordStrengthResult } from '@/lib/password-strength';
-
-function getPasswordStrength(password: string): PasswordStrengthResult {
-  return checkPasswordStrength(password);
-}
+import { checkPasswordStrength } from '@/lib/password-strength';
+import { REDIRECT_DELAY_MS } from '@/lib/constants';
 
 export default function RegisterPage() {
   const { t } = useI18n();
@@ -32,7 +29,7 @@ export default function RegisterPage() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const passwordStrength = useMemo(() => getPasswordStrength(password), [password]);
+  const passwordStrength = useMemo(() => checkPasswordStrength(password), [password]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -70,7 +67,7 @@ export default function RegisterPage() {
         setError(data.error || t('auth.error.registrationError'));
       } else {
         setSuccess(true);
-        setTimeout(() => router.push('/auth/login'), 3000);
+        setTimeout(() => router.push('/auth/login'), REDIRECT_DELAY_MS);
       }
     } catch {
       setError(t('auth.error.genericError'));

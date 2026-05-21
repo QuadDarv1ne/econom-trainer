@@ -45,6 +45,7 @@ import { useI18n } from '@/lib/i18n-provider';
 import { formatDate as formatLocaleDate } from '@/lib/i18n';
 import { checkPasswordStrength } from '@/lib/password-strength';
 import { useProfile, useProgressSync } from '@/hooks/use-profile';
+import { ALERT_AUTO_DISMISS_MS, COPY_FEEDBACK_MS, RESEND_COOLDOWN_SECONDS } from '@/lib/constants';
 
 export default function ProfilePage() {
   const { t, locale } = useI18n();
@@ -121,13 +122,13 @@ export default function ProfilePage() {
   // Auto-dismiss alerts
   useEffect(() => {
     if (!error) return;
-    const timer = setTimeout(() => setError(''), 5000);
+    const timer = setTimeout(() => setError(''), ALERT_AUTO_DISMISS_MS);
     return () => clearTimeout(timer);
   }, [error, setError]);
 
   useEffect(() => {
     if (!success) return;
-    const timer = setTimeout(() => setSuccess(''), 5000);
+    const timer = setTimeout(() => setSuccess(''), ALERT_AUTO_DISMISS_MS);
     return () => clearTimeout(timer);
   }, [success, setSuccess]);
 
@@ -245,7 +246,7 @@ export default function ProfilePage() {
 
       if (res.ok) {
         setSuccess(t('profile.verificationSent'));
-        setResendCooldown(60); // 60 seconds cooldown
+        setResendCooldown(RESEND_COOLDOWN_SECONDS);
       } else {
         const errMsg = (data && typeof data.error === 'string') ? data.error : t('auth.error.serverError');
         setError(errMsg);
@@ -753,7 +754,7 @@ export default function ProfilePage() {
                               onClick={() => {
                                 navigator.clipboard.writeText(secret);
                                 setCopiedCode(true);
-                                setTimeout(() => setCopiedCode(false), 2000);
+                                setTimeout(() => setCopiedCode(false), COPY_FEEDBACK_MS);
                               }}
                             >
                               {copiedCode ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}

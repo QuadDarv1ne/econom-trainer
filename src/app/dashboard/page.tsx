@@ -35,6 +35,7 @@ import {
 import { useEconomicsStore } from '@/store/economics-store';
 import { useI18n } from '@/lib/i18n-provider';
 import { useProfile, useProgressSync } from '@/hooks/use-profile';
+import { ALERT_AUTO_DISMISS_MS, COPY_FEEDBACK_MS } from '@/lib/constants';
 
 export default function DashboardPage() {
   const { t } = useI18n();
@@ -78,13 +79,13 @@ export default function DashboardPage() {
   // Auto-dismiss alerts
   useEffect(() => {
     if (!error) return;
-    const timer = setTimeout(() => setError(''), 5000);
+    const timer = setTimeout(() => setError(''), ALERT_AUTO_DISMISS_MS);
     return () => clearTimeout(timer);
   }, [error, setError]);
 
   useEffect(() => {
     if (!success) return;
-    const timer = setTimeout(() => setSuccess(''), 5000);
+    const timer = setTimeout(() => setSuccess(''), ALERT_AUTO_DISMISS_MS);
     return () => clearTimeout(timer);
   }, [success, setSuccess]);
 
@@ -386,7 +387,7 @@ export default function DashboardPage() {
                               onClick={() => {
                                 navigator.clipboard.writeText(secret);
                                 setCopiedCode(true);
-                                setTimeout(() => setCopiedCode(false), 2000);
+                                setTimeout(() => setCopiedCode(false), COPY_FEEDBACK_MS);
                               }}
                             >
                               {copiedCode ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}

@@ -10,6 +10,7 @@ import { getCurrentLocale, t, toLocale } from '@/lib/i18n'
 import { Button } from '@/components/ui/button'
 import { Download, Copy, Check, Share2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { COPY_FEEDBACK_MS } from '@/lib/constants'
 
 export function exportProgressToPDF() {
   const doc = new jsPDF()
@@ -193,7 +194,7 @@ export function ExportProgressButton() {
       const text = exportProgressToText()
       await navigator.clipboard.writeText(text)
       setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      setTimeout(() => setCopied(false), COPY_FEEDBACK_MS)
       toast.success(t('export.copied'))
     } catch {
       toast.error(t('export.copyFailed') ?? 'Failed to copy to clipboard')
