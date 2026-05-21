@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { t, getCurrentLocale } from '@/lib/i18n'
 import { generateId } from '@/lib/utils'
+import { getLevelFromXP as getLevelFromXPShared } from '@/lib/xp-utils'
 
 export interface QuizResult {
   id: string
@@ -70,26 +71,7 @@ export interface XPState {
   xpInCurrentLevel: number
 }
 
-const XP_PER_LEVEL = 500
-const LEVEL_MULTIPLIER = 1.2
-
-export function getLevelFromXP(totalXP: number): { level: number; xpInCurrentLevel: number; xpToNextLevel: number } {
-  let level = 1
-  let xpNeeded = XP_PER_LEVEL
-  let remaining = totalXP
-
-  while (remaining >= xpNeeded) {
-    remaining -= xpNeeded
-    level++
-    xpNeeded = Math.round(XP_PER_LEVEL * Math.pow(LEVEL_MULTIPLIER, level - 1))
-  }
-
-  return {
-    level,
-    xpInCurrentLevel: remaining,
-    xpToNextLevel: xpNeeded,
-  }
-}
+export { getLevelFromXPShared as getLevelFromXP }
 
 export function getLevelTitle(level: number): string {
   const locale = getCurrentLocale()
@@ -97,10 +79,46 @@ export function getLevelTitle(level: number): string {
   if (level >= 15) return t('level.professor', locale)
   if (level >= 10) return t('level.associate', locale)
   if (level >= 7) return t('level.phd', locale)
-  if (level >= 5) return t('level.master', locale)
-  if (level >= 3) return t('level.bachelor', locale)
-  if (level >= 2) return t('level.student', locale)
-  return t('level.novice', locale)
+  if (level >= 5) return t('level.analyst', locale)
+  if (level >= 3) return t('level.specialist', locale)
+  return t('level.student', locale)
+}
+
+export interface EconomicsState {
+  quizResults: QuizResult[]
+  gdpResults: GDPResult[]
+  financeResults: FinanceResult[]
+  elasticityResults: ElasticityResult[]
+  moduleInteractions: ModuleInteraction[]
+  unlockedAchievements: string[]
+  totalXP: number
+  dailyChallenges: DailyChallenge[]
+  streakState: StreakState
+  addQuizResult: (result: QuizResult) => void
+  addGDPResult: (result: GDPResult) => void
+  addFinanceResult: (result: FinanceResult) => void
+  addElasticityResult: (result: ElasticityResult) => void
+  addModuleInteraction: (interaction: Omit<ModuleInteraction, 'id' | 'date'>) => void
+  completeDailyChallenge: (result: DailyChallenge) => void
+  recordActivity: () => void
+  unlockAchievement: (id: string, xpReward?: number) => void
+  addXP: (amount: number) => void
+  getTotalScore: () => { quizzes: number; gdp: number; finance: number; elasticity: number }
+  computeStats: () => { quizCorrect: number; quizTotal: number; financeCorrect: number; financeTotal: number }
+  getStreak: () => number
+  getXPState: () => XPState
+  resetProgress: () => void
+  getFullProgress: () => {
+    totalXP: number
+    level: number
+    levelTitle: string
+    totalSessions: number
+    moduleCounts: Record<string, number>
+    quizStats: { correct: number; total: number; accuracy: number }
+    financeStats: { correct: number; total: number; accuracy: number }
+    gdpCount: number
+    elasticityCount: number
+  }
 }
 
 export function getLevelColor(level: number): string {

@@ -5,12 +5,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { authenticator } from "otplib";
 import { checkRateLimit, getClientIP } from "@/lib/rate-limit";
-import {
-  getCachedSessionHash,
-  setCachedSessionHash,
-  invalidateSessionCache,
-  scheduleCacheCleanup,
-} from "@/lib/session-cache";
+import { validateJwtSession } from "@/lib/validate-jwt-session";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -125,48 +120,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return { ...token, ...session };
       }
 
-      // Validate sessionHash against database with caching to avoid N+1 queries
+      // Validate sessionHash against database with caching
       if (token.id && token.sessionHash) {
-        const cachedHash = getCachedSessionHash(token.id as string);
-        if (cachedHash !== null && cachedHash === token.sessionHash) {
-          // Cache hit — session is valid, skip DB query
-        } else {
-          scheduleCacheCleanup();
-          try {
-            const dbUser = await prisma.user.findUnique({
-              where: { id: token.id as string },
-              select: { sessionHash: true },
-            });
-            if (!dbUser || dbUser.sessionHash !== token.sessionHash) {
-              // Session has been revoked - invalidate by clearing sensitive fields
-              invalidateSessionCache(token.id as string);
-              token.id = null;
-              token.sessionHash = null;
-              token.twoFactorEnabled = false;
-              return token;
-            }
-            // Cache the valid session hash
-            if (dbUser.sessionHash) {
-              setCachedSessionHash(token.id as string, dbUser.sessionHash);
-            }
-          } catch (error) {
-            // If DB check fails, log error and fail closed for security
-            console.error("Session validation failed:", error);
-            token.id = null;
-            token.sessionHash = null;
-            token.twoFactorEnabled = false;
-            return token;
-          }
-        }
+        return validateJwtSession(token);
       }
 
       return token;
     },
     async session({ session, token }) {
-      if (token.id) {
-        session.user.id = token.id as string;
+      if (typeof token.id === "string") {
+        session.user.id = token.id;
         session.user.twoFactorEnabled = !!token.twoFactorEnabled;
-        session.user.sessionHash = token.sessionHash as string | null | undefined;
+        session.user.sessionHash =
+          typeof token.sessionHash === "string" ? token.sessionHash : null;
       }
       return session;
     },

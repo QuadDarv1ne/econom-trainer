@@ -1,12 +1,6 @@
 import NextAuth from "next-auth";
 import type { NextAuthConfig } from "next-auth";
-import { prisma } from "@/lib/prisma";
-import {
-  getCachedSessionHash,
-  setCachedSessionHash,
-  invalidateSessionCache,
-  scheduleCacheCleanup,
-} from "@/lib/session-cache";
+import { validateJwtSession } from "@/lib/validate-jwt-session";
 
 export const authConfig: NextAuthConfig = {
   providers: [],
@@ -30,43 +24,17 @@ export const authConfig: NextAuthConfig = {
 
       // Validate sessionHash against database with caching
       if (token.id && token.sessionHash) {
-        const cachedHash = getCachedSessionHash(token.id as string);
-        if (cachedHash !== null && cachedHash === token.sessionHash) {
-          // Cache hit — session is valid, skip DB query
-        } else {
-          scheduleCacheCleanup();
-          try {
-            const dbUser = await prisma.user.findUnique({
-              where: { id: token.id as string },
-              select: { sessionHash: true },
-            });
-            if (!dbUser || dbUser.sessionHash !== token.sessionHash) {
-              invalidateSessionCache(token.id as string);
-              token.id = null;
-              token.sessionHash = null;
-              token.twoFactorEnabled = false;
-              return token;
-            }
-            if (dbUser.sessionHash) {
-              setCachedSessionHash(token.id as string, dbUser.sessionHash);
-            }
-          } catch (error) {
-            console.error('Session validation error:', error);
-            token.id = null;
-            token.sessionHash = null;
-            token.twoFactorEnabled = false;
-            return token;
-          }
-        }
+        return validateJwtSession(token);
       }
 
       return token;
     },
     async session({ session, token }) {
-      if (token.id) {
-        session.user.id = token.id as string;
+      if (typeof token.id === "string") {
+        session.user.id = token.id;
         session.user.twoFactorEnabled = !!token.twoFactorEnabled;
-        session.user.sessionHash = token.sessionHash as string | null | undefined;
+        session.user.sessionHash =
+          typeof token.sessionHash === "string" ? token.sessionHash : null;
       }
       return session;
     },

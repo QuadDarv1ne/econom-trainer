@@ -4,26 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
-
-const XP_PER_LEVEL = 500;
-const LEVEL_MULTIPLIER = 1.2;
-
-/**
- * Compute level from total XP using the same algorithm as the client.
- */
-function computeLevelFromXP(totalXP: number): number {
-  let level = 1;
-  let xpNeeded = XP_PER_LEVEL;
-  let remaining = totalXP;
-
-  while (remaining >= xpNeeded) {
-    remaining -= xpNeeded;
-    level++;
-    xpNeeded = Math.round(XP_PER_LEVEL * Math.pow(LEVEL_MULTIPLIER, level - 1));
-  }
-
-  return level;
-}
+import { getLevelFromXP } from '@/lib/xp-utils';
 
 // GET - Get user progress from server
 export async function GET() {
@@ -112,7 +93,7 @@ export async function POST(req: Request) {
 
     // Compute level from XP if not provided by client
     const resolvedTotalXP = totalXP ?? existingProgress?.totalXP ?? 0;
-    const resolvedLevel = level ?? computeLevelFromXP(resolvedTotalXP);
+    const resolvedLevel = level ?? getLevelFromXP(resolvedTotalXP).level;
 
     // Merge strategy: keep the higher value between client and server
     const mergedXP = existingProgress

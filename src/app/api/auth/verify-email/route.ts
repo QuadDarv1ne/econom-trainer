@@ -1,12 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 
-// POST - Verify email via token (protected against CSRF and prefetch attacks)
+// POST - Verify email via token
+// CSRF protection is provided by the cryptographically random, single-use token
+// sent via email. Origin-based CSRF checks would break legitimate email clicks.
 export async function POST(req: Request) {
-  if (!validateOrigin(req)) {
-    return csrfErrorResponse();
-  }
 
   let body: { token?: string; email?: string } = {};
   try {
