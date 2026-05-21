@@ -1,0 +1,69 @@
+/**
+ * Safe error logging utility.
+ * Sanitizes error objects before logging to prevent sensitive data
+ * (passwords, tokens, secrets) from appearing in logs.
+ */
+
+// Patterns that indicate sensitive values in error messages or stack traces
+const SENSITIVE_PATTERNS = [
+  /password/i,
+  /token/i,
+  /secret/i,
+  /authorization/i,
+  /cookie/i,
+  /credential/i,
+  /hash/i,
+  /key/i,
+];
+
+/**
+ * Check if a string contains sensitive data patterns.
+ */
+function containsSensitiveData(str: string): boolean {
+  return SENSITIVE_PATTERNS.some((pattern) => pattern.test(str));
+}
+
+/**
+ * Sanitize an error object for safe logging.
+ * Returns a safe message that doesn't leak sensitive data.
+ */
+function sanitizeError(error: unknown): string {
+  if (error instanceof Error) {
+    const message = error.message;
+    // If the error message contains sensitive patterns, log a generic message
+    if (containsSensitiveData(message)) {
+      return "Sensitive error occurred";
+    }
+    return message;
+  }
+  if (typeof error === "string") {
+    if (containsSensitiveData(error)) {
+      return "Sensitive error occurred";
+    }
+    return error;
+  }
+  // For objects, check keys and values
+  if (error && typeof error === "object") {
+    const obj = error as Record<string, unknown>;
+    for (const [key, value] of Object.entries(obj)) {
+      if (
+        SENSITIVE_PATTERNS.some((p) => p.test(key)) ||
+        (typeof value === "string" && containsSensitiveData(value))
+      ) {
+        return "Sensitive error occurred";
+      }
+    }
+    return JSON.stringify(error).slice(0, 200);
+  }
+  return String(error);
+}
+
+/**
+ * Log an error safely without leaking sensitive data.
+ * Usage: logError("Context label", error);
+ */
+export function logError(context: string, error: unknown): void {
+  const safeMessage = sanitizeError(error);
+  // Only log the context and a sanitized message
+  console.error(`[${context}] ${safeMessage}`);
+}

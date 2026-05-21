@@ -7,6 +7,7 @@ import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validatePasswordStrength } from '@/lib/validate-password';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
+import { logError } from '@/lib/log-error';
 
 // POST - Change password
 export async function POST(req: Request) {
@@ -72,7 +73,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: 'Password changed' });
   } catch (error) {
-    console.error('Change password error:', error);
+    logError('change-password', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -16,11 +16,39 @@ interface UserProfile {
   createdAt: Date;
 }
 
+interface UseProfileReturn {
+  status: 'authenticated' | 'loading' | 'unauthenticated';
+  profile: UserProfile | null;
+  loading: boolean;
+  saving: boolean;
+  error: string;
+  success: string;
+  setError: React.Dispatch<React.SetStateAction<string>>;
+  setSuccess: React.Dispatch<React.SetStateAction<string>>;
+  setProfile: React.Dispatch<React.SetStateAction<UserProfile | null>>;
+  fetchProfile: () => Promise<void>;
+  updateProfile: (updateName?: string, updatePhone?: string) => Promise<void>;
+  update: () => Promise<void>;
+  name: string;
+  setName: React.Dispatch<React.SetStateAction<string>>;
+  phone: string;
+  setPhone: React.Dispatch<React.SetStateAction<string>>;
+}
+
+interface UseProgressSyncReturn {
+  syncing: boolean;
+  syncError: string;
+  syncSuccess: string;
+  setSyncError: React.Dispatch<React.SetStateAction<string>>;
+  setSyncSuccess: React.Dispatch<React.SetStateAction<string>>;
+  syncProgress: () => Promise<void>;
+}
+
 /**
  * Shared hook for profile management: auth guard, fetch, update.
  * Used by both dashboard and profile pages.
  */
-export function useProfile() {
+export function useProfile(): UseProfileReturn {
   const { data: _session, status, update } = useSession();
   const { t } = useI18n();
   const router = useRouter();
@@ -118,7 +146,7 @@ export function useProfile() {
 /**
  * Shared hook for syncing local zustand progress to server.
  */
-export function useProgressSync() {
+export function useProgressSync(): UseProgressSyncReturn {
   const { t } = useI18n();
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState('');

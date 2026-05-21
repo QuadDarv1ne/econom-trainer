@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 import { randomBytes } from 'crypto';
+import { logError } from '@/lib/log-error';
 
 export async function POST(req: Request) {
   try {
@@ -58,7 +59,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: '2FA disabled' });
   } catch (error) {
-    console.error('2FA disable error:', error);
+    logError('two-factor-disable', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

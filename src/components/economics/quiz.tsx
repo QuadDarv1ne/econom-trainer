@@ -1490,7 +1490,7 @@ export function EconomicsQuiz() {
     setQuizState('active')
   }, [currentQuestion, shuffledQuestions, score, addQuizResult, toast, t])
 
-  const getDifficultyColor = (d: string): "secondary" | "default" | "destructive" => {
+  const getDifficultyColor = (d: Question['difficulty']): "secondary" | "default" | "destructive" => {
     if (d === 'easy') return 'secondary'
     if (d === 'medium') return 'default'
     return 'destructive'

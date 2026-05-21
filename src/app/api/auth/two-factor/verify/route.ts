@@ -7,6 +7,7 @@ import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { randomBytes } from 'crypto';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
+import { logError } from '@/lib/log-error';
 
 export async function POST(req: Request) {
   try {
@@ -83,7 +84,7 @@ export async function POST(req: Request) {
       backupCodes,
     });
   } catch (error) {
-    console.error('2FA verify error:', error);
+    logError('two-factor-verify', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

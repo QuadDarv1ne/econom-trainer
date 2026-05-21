@@ -5,6 +5,7 @@ import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { getLevelFromXP } from '@/lib/xp-utils';
+import { logError } from '@/lib/log-error';
 
 // GET - Get user progress from server
 export async function GET() {
@@ -38,7 +39,7 @@ export async function GET() {
 
     return NextResponse.json(progress);
   } catch (error) {
-    console.error('Progress GET error:', error);
+    logError('progress-get', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -130,7 +131,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(progress);
   } catch (error) {
-    console.error('Progress sync error:', error);
+    logError('progress-sync', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

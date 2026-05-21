@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
+import { logError } from '@/lib/log-error';
 
 // DELETE - Delete user account
 export async function DELETE(req: Request) {
@@ -62,7 +63,7 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({ message: 'Account deleted' });
   } catch (error) {
-    console.error('Delete account error:', error);
+    logError('delete-account', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

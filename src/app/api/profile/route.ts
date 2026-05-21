@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
+import { logError } from '@/lib/log-error';
 
 // GET - Get user profile
 export async function GET() {
@@ -40,7 +41,7 @@ export async function GET() {
 
     return NextResponse.json(user);
   } catch (error) {
-    console.error('Profile GET error:', error);
+    logError('profile-get', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -120,7 +121,7 @@ export async function PATCH(req: Request) {
 
     return NextResponse.json(user);
   } catch (error) {
-    console.error('Profile PATCH error:', error);
+    logError('profile-update', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

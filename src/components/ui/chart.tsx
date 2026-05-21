@@ -78,6 +78,11 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null
   }
 
+  // Validate color values before injecting into style tag
+  const isValidCssColor = (value: string): boolean => {
+    return /^#[0-9a-fA-F]{3,8}$|^(?:rgb|hsl)a?\(\s*\d+(?:\s*,\s*\d+(?:\.\d+)?%?){2,4}\s*\)$|^var\(--[\w-]+\)$/.test(value);
+  };
+
   return (
     <style
       dangerouslySetInnerHTML={{
@@ -90,7 +95,7 @@ ${colorConfig
     const color =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
-    return color ? `  --color-${key}: ${color};` : null
+    return color && isValidCssColor(color) ? `  --color-${key}: ${color};` : null
   })
   .join("\n")}
 }

@@ -6,6 +6,7 @@ import { randomBytes } from 'crypto';
 import { getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validatePasswordStrength } from '@/lib/validate-password';
+import { logError } from '@/lib/log-error';
 
 export async function POST(req: Request) {
   try {
@@ -124,7 +125,7 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Registration error:', error);
+    logError('register', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

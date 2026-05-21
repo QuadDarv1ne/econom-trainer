@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { sendEmail, getPasswordResetEmailHtml, getLocaleFromRequest } from '@/lib/email';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
+import { logError } from '@/lib/log-error';
 
 export async function POST(req: Request) {
   try {
@@ -89,7 +90,7 @@ export async function POST(req: Request) {
       message: 'If this email is registered, we will send a password reset link',
     });
   } catch (error) {
-    console.error('Forgot password error:', error);
+    logError('forgot-password', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

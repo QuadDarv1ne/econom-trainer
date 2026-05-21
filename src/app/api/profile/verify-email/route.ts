@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { randomBytes } from 'crypto';
 import { getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
+import { logError } from '@/lib/log-error';
 
 // POST - Send email verification
 export async function POST(req: Request) {
@@ -67,7 +68,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: 'Verification email sent' });
   } catch (error) {
-    console.error('Send verification email error:', error);
+    logError('verify-email-send', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

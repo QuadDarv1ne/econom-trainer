@@ -5,6 +5,7 @@ import qrcode from 'qrcode';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
+import { logError } from '@/lib/log-error';
 
 // Generate TOTP secret and QR code
 export async function POST(req: Request) {
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ secret, qrCode });
   } catch (error) {
-    console.error('2FA setup error:', error);
+    logError('two-factor-setup', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

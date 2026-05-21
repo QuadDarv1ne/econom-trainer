@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validatePasswordStrength } from '@/lib/validate-password';
+import { logError } from '@/lib/log-error';
 
 export async function POST(req: Request) {
   try {
@@ -61,7 +62,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: 'Password successfully changed' });
   } catch (error) {
-    console.error('Reset password error:', error);
+    logError('reset-password', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
