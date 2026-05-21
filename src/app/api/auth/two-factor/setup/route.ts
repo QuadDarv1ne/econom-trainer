@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     const issuer = 'Econom Trainer';
     // Sanitize email for TOTP URI: strip special characters, limit length
     const safeEmail = (user.email || session.user.email || 'user')
-      .replace(/[^\w@.\-]/g, '')
+      .replace(/[^\w@.-]/g, '')
       .slice(0, 64);
     const uri = authenticator.keyuri(safeEmail, issuer, secret);
     const qrCode = await qrcode.toDataURL(uri);

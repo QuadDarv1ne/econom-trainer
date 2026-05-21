@@ -6,7 +6,7 @@ import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validatePasswordStrength } from '@/lib/validate-password';
 import { logError } from '@/lib/log-error';
-import { BCRYPT_SALT_ROUNDS, BASE_URL } from '@/lib/constants';
+import { BCRYPT_SALT_ROUNDS } from '@/lib/constants';
 
 export async function POST(req: Request) {
   try {
