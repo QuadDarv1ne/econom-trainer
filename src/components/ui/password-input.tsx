@@ -28,7 +28,7 @@ const PasswordInput = React.forwardRef<
         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
         onClick={() => setIsVisible(!isVisible)}
         aria-label={isVisible ? "Hide password" : "Show password"}
-        aria-pressed={isVisible}
+        aria-checked={isVisible}
         role="switch"
       >
         {isVisible ? (

@@ -9,7 +9,7 @@ import { useEconomicsStore } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { questions, type Question } from '@/components/economics/quiz'
 import { Flame, Target, Zap, CheckCircle2, XCircle, Sparkles, Clock } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 const DAILY_QUESTIONS_COUNT = 3
 const DAILY_TIME_PER_QUESTION = 15
@@ -69,16 +69,30 @@ export function DailyChallenge() {
     setQuizState('active')
   }, [])
 
-  // Timer
-  useEffect(() => {
-    if (quizState !== 'active' || answered) return
-    if (timeLeft <= 0) {
-      handleAnswer(-1) // time's up
-      return
-    }
-    const timer = setTimeout(() => setTimeLeft((t) => t - 1), 1000)
-    return () => clearTimeout(timer)
-  }, [timeLeft, quizState, answered])
+  const processAnswer = useCallback(
+    (optionIndex: number) => {
+      const isCorrect = optionIndex === dailyQuestions[currentQ].correctAnswer
+      if (isCorrect) {
+        scoreRef.current += 1
+        setDisplayScore((s) => s + 1)
+      }
+
+      if (currentQ + 1 >= DAILY_QUESTIONS_COUNT) {
+        completeDailyChallenge({
+          date: today,
+          score: scoreRef.current,
+          total: DAILY_QUESTIONS_COUNT,
+        })
+        setQuizState('finished')
+      } else {
+        setCurrentQ((q) => q + 1)
+        setSelectedAnswer(null)
+        setAnswered(false)
+        setTimeLeft(DAILY_TIME_PER_QUESTION)
+      }
+    },
+    [currentQ, dailyQuestions, today, completeDailyChallenge]
+  )
 
   const handleAnswer = useCallback(
     (optionIndex: number) => {
@@ -86,30 +100,32 @@ export function DailyChallenge() {
       setSelectedAnswer(optionIndex)
       setAnswered(true)
 
-      const isCorrect = optionIndex === dailyQuestions[currentQ].correctAnswer
-      if (isCorrect) {
-        scoreRef.current += 1
-        setDisplayScore(scoreRef.current)
-      }
-
       setTimeout(() => {
-        if (currentQ + 1 >= DAILY_QUESTIONS_COUNT) {
-          completeDailyChallenge({
-            date: today,
-            score: scoreRef.current,
-            total: DAILY_QUESTIONS_COUNT,
-          })
-          setQuizState('finished')
-        } else {
-          setCurrentQ((q) => q + 1)
-          setSelectedAnswer(null)
-          setAnswered(false)
-          setTimeLeft(DAILY_TIME_PER_QUESTION)
-        }
+        processAnswer(optionIndex)
       }, 1500)
     },
-    [answered, currentQ, dailyQuestions, today, completeDailyChallenge]
+    [answered, processAnswer]
   )
+
+  // Countdown timer
+  useEffect(() => {
+    if (quizState !== 'active' || answered || timeLeft <= 0) return
+    const timer = setTimeout(() => setTimeLeft((t) => t - 1), 1000)
+    return () => clearTimeout(timer)
+  }, [quizState, answered, timeLeft])
+
+  // Timer - when time runs out, mark as answered and schedule next question
+  useEffect(() => {
+    if (quizState !== 'active' || answered || timeLeft > 0) return
+
+    // Time's up - schedule answer marking and next question
+    const timeout = setTimeout(() => {
+      setSelectedAnswer(-1)
+      setAnswered(true)
+      processAnswer(-1)
+    }, 1500)
+    return () => clearTimeout(timeout)
+  }, [quizState, answered, timeLeft, processAnswer])
 
   // Idle state - not completed today
   if (quizState === 'idle' && !isCompleted) {
