@@ -3964,16 +3964,13 @@ export function setLocale(locale: Locale): void {
   document.documentElement.lang = locale;
 }
 
-/** @deprecated Use toLocale() instead — identical function */
-export const getLocaleForFormatting = toLocale;
-
 // Format a number according to the current locale
 export function formatNumber(value: number, locale: Locale, options?: Intl.NumberFormatOptions): string {
-  return new Intl.NumberFormat(getLocaleForFormatting(locale), options).format(value);
+  return new Intl.NumberFormat(toLocale(locale), options).format(value);
 }
 
 // Format a date according to the current locale
 export function formatDate(date: Date | string, locale: Locale, options?: Intl.DateTimeFormatOptions): string {
   const d = typeof date === 'string' ? new Date(date) : date;
-  return new Intl.DateTimeFormat(getLocaleForFormatting(locale), options).format(d);
+  return new Intl.DateTimeFormat(toLocale(locale), options).format(d);
 }
