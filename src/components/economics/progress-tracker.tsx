@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { useEconomicsStore } from '@/store/economics-store'
+import { useEconomicsStore, computeQuizAndFinanceStats } from '@/store/economics-store'
 import { ExportProgressButton } from '@/components/economics/export-progress'
 import { useI18n } from '@/lib/i18n-provider'
 import { formatDate, formatNumber } from '@/lib/i18n'
@@ -22,7 +22,7 @@ import {
 } from 'recharts'
 import { Trophy, Target, Flame, BarChart3, Gauge } from 'lucide-react'
 
-const COLORS = ['#22c55e', '#ef4444']
+const COLORS = ['#22c55e', '#ef4444'];
 
 export function ProgressTracker() {
   const { t, locale } = useI18n()
@@ -35,10 +35,7 @@ export function ProgressTracker() {
   const scores = getTotalScore()
   const totalSessions = quizResults.length + gdpResults.length + financeResults.length + elasticityResults.length
 
-  const quizCorrect = quizResults.reduce((sum, r) => sum + r.score, 0)
-  const quizTotal = quizResults.reduce((sum, r) => sum + r.total, 0)
-  const financeCorrect = financeResults.filter((r) => r.correct).length
-  const financeTotal = financeResults.length
+  const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeQuizAndFinanceStats(quizResults, financeResults)
 
   const quizPieData = [
     { name: t('progress.chart.correct'), value: quizCorrect },

@@ -2,7 +2,7 @@
  * Utility functions for exporting progress data
  */
 
-import { useEconomicsStore, getLevelFromXP, getLevelTitle, getModuleDisplayName } from '@/store/economics-store'
+import { useEconomicsStore, getLevelFromXP, getLevelTitle, getModuleDisplayName, computeQuizAndFinanceStats } from '@/store/economics-store'
 import { getCurrentLocale, t } from '@/lib/i18n'
 
 export interface ExportData {
@@ -32,19 +32,6 @@ function escapeCsvValue(value: string | number): string {
     return `"${str.replace(/"/g, '""')}"`;
   }
   return str;
-}
-
-/**
- * Shared stats calculation for both CSV and JSON exports.
- * Eliminates duplicated logic between exportToCSV and exportToJSON.
- */
-function computeExportStats(state: ReturnType<typeof useEconomicsStore.getState>) {
-  const quizCorrect = state.quizResults.reduce((sum, r) => sum + r.score, 0)
-  const quizTotal = state.quizResults.reduce((sum, r) => sum + r.total, 0)
-  const financeCorrect = state.financeResults.filter((r) => r.correct).length
-  const financeTotal = state.financeResults.length
-
-  return { quizCorrect, quizTotal, financeCorrect, financeTotal }
 }
 
 /**
@@ -79,7 +66,7 @@ export function exportToCSV(): string {
   csv += `\n`
 
   // Quiz and finance stats (shared calculation)
-  const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeExportStats(state)
+  const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeQuizAndFinanceStats(state.quizResults, state.financeResults)
 
   csv += `${escapeCsvValue(t('export.csv.quizResults', locale))},${escapeCsvValue(quizCorrect)}\n`
   csv += `${escapeCsvValue(t('export.csv.quizTotalQuestions', locale))},${escapeCsvValue(quizTotal)}\n`
@@ -103,7 +90,7 @@ export function exportToJSON(): string {
   const level = getLevelFromXP(state.totalXP)
   const timestamp = new Date().toISOString()
 
-  const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeExportStats(state)
+  const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeQuizAndFinanceStats(state.quizResults, state.financeResults)
 
   // Convert module interactions array to counts per module
   const moduleCounts: Record<string, number> = {}

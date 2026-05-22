@@ -140,8 +140,8 @@ export function getModuleInteractionCount(interactions: ModuleInteraction[], mod
   return interactions.filter((i) => i.moduleId === moduleId).length
 }
 
-/** Shared stats computation — used by getTotalScore, computeStats, and getFullProgress */
-function computeQuizAndFinanceStats(
+/** Shared stats computation — used by store methods, export-progress, and progress-tracker */
+export function computeQuizAndFinanceStats(
   quizResults: QuizResult[],
   financeResults: FinanceResult[]
 ) {
