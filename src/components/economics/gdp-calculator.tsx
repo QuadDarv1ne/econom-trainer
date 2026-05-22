@@ -38,8 +38,8 @@ export function calculateGDP(components: GDPComponent[]) {
 
   const nominal = c.currentValue + i.currentValue + g.currentValue + x.currentValue - m.currentValue
   const real = c.baseValue + i.baseValue + g.baseValue + x.baseValue - m.baseValue
-  const deflator = real > 0 ? (nominal / real) * 100 : 0
-  const inflationRate = real > 0 ? ((nominal - real) / real) * 100 : 0
+  const deflator = real > 0.001 ? (nominal / real) * 100 : 0
+  const inflationRate = real > 0.001 ? ((nominal - real) / real) * 100 : 0
 
   return { nominalGDP: nominal, realGDP: real, deflator, inflationRate }
 }

@@ -205,6 +205,7 @@ export function ISLMModel() {
     setMoneySupply(1000)
     setMoneyDemandSensitivity(0.5)
     setInterestSensitivity(100)
+    hasEarnedXPRef.current = false // Allow XP to be earned again after reset
     toast({ title: t('islm.reset'), description: t('islm.resetDesc') })
   }
 
