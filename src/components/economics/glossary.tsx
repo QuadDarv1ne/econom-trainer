@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { BookOpen, Search } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 type GlossaryCategory = 'micro' | 'macro' | 'finance' | 'international'
 
@@ -118,7 +119,7 @@ export function Glossary() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5" />
+            <BookOpen className="h-5 w-5" aria-hidden="true" />
             {t('glossary.title')}
           </CardTitle>
           <CardDescription>
@@ -128,8 +129,10 @@ export function Glossary() {
         <CardContent className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
               <Input
+                id="glossary-search"
+                aria-label={t('glossary.searchPlaceholder')}
                 placeholder={t('glossary.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -138,16 +141,17 @@ export function Glossary() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2" role="group" aria-label={t('glossary.categories')}>
             {categoryKeys.map((key) => (
-              <Badge
+              <Button
                 key={key}
                 variant={activeCategory === key ? 'default' : 'outline'}
-                className="cursor-pointer"
+                size="sm"
                 onClick={() => setActiveCategory(key)}
+                aria-pressed={activeCategory === key}
               >
                 {t(key)}
-              </Badge>
+              </Button>
             ))}
           </div>
 
