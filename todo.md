@@ -1,67 +1,155 @@
 # Recommended Improvements for Econom Trainer
 
-## High Priority
+> Top 10 high-impact improvements prioritized by value vs. effort.
+> Last updated: 2026-05-22
 
-### 1. Real Authentication Database
-Currently using in-memory/demo auth. Replace with Prisma + PostgreSQL/SQLite for persistent user accounts, session management, and password recovery.
+---
 
-### 2. XP Persistence
-XP and progress are stored in localStorage via Zustand persist. Migrate to server-side storage so progress syncs across devices and survives cache clears.
+## 1. Error Boundary Pages (`error.tsx` / `global-error.tsx`)
 
-### 3. Input Validation & Sanitization
-Add Zod schemas for all user inputs (auth forms, module inputs, custom data). Prevent XSS and injection attacks at the API layer.
+**Priority:** High | **Effort:** Low | **Files:** `src/app/error.tsx`, `src/app/global-error.tsx`
 
-### 4. Rate Limiting on Auth Endpoints
-Add proper rate limiting (e.g., `@upstash/ratelimit` or custom) to prevent brute-force attacks on login/registration/2FA endpoints.
+The project has zero error boundary files. When any of the 25 interactive calculator modules throws an error, the entire SPA crashes and the user sees a blank screen.
 
-### 5. Error Boundary Components
-Add React Error Boundary wrappers around module components so one broken module doesn't crash the entire page.
+**What to do:**
+- Create `src/app/error.tsx` (route-level error boundary) with localized messages and a "Try Again" button using Next.js `reset()` prop
+- Create `src/app/global-error.tsx` for root-level errors during layout rendering
+- Both should use the existing i18n system for Russian/English/Chinese error messages
+- Wrap each dynamically imported module in `<Suspense fallback={...}>` with graceful error handling
 
-## Medium Priority
+---
 
-### 6. Module Completion Tracking
-Track per-module completion state (not just interaction count). Add "completed" badge when user finishes all exercises in a module.
+## 2. Normalize Database Schema — Replace JSON Blobs with Relational Tables
 
-### 7. Leaderboard System
-Global and friend leaderboards based on XP. Add weekly/monthly challenges with reset cycles.
+**Priority:** High | **Effort:** Medium | **Files:** `prisma/schema.prisma`, `src/app/api/progress/sync/route.ts`
 
-### 8. Daily Challenge Backend
-Currently daily challenges are client-side only. Move to server with proper scheduling, streak tracking, and rewards.
+The `UserProgress` model stores `quizResults`, `moduleHistory`, `achievements`, and `settings` as raw JSON strings. This prevents SQL queries, indexing, aggregations, and efficient delta syncs.
 
-### 9. Mobile Responsiveness Audit
-Test all 26 module components on mobile screens. Many charts and tables may overflow on small viewports.
+**What to do:**
+- Create `QuizAttempt`, `ModuleSession`, `UserAchievement`, and `UserSetting` as proper relational tables
+- Add foreign keys to `UserProgress` / `User` and indexes on `userId`, `date`, `moduleId`, `score`
+- Write a Prisma migration to migrate existing JSON data
+- Refactor the sync API to use delta sync (send only unsynced records) instead of full-state replacement
+- Enables future features: per-module analytics, leaderboards, efficient partial syncs
 
-### 10. Accessibility (a11y) Audit
-Run axe-core or Lighthouse accessibility audit. Fix color contrast, ARIA labels, keyboard navigation, and screen reader support.
+---
 
-### 11. Export & Import Progress
-Enhance the existing export feature to support JSON and PDF. Add import functionality to restore progress on a new device.
+## 3. Fix Progress Sync Race Condition with Delta Sync + Auto-Sync
 
-### 12. Module Search & Filter
-Add a search bar and category filter on the home page to quickly find modules among 26 options.
+**Priority:** High | **Effort:** Medium | **Files:** `src/store/economics-store.ts`, `src/app/api/progress/sync/route.ts`
 
-## Nice to Have
+Current sync uses `Math.max(clientXP, serverXP)` which silently overwrites progress when using multiple devices. No conflict resolution for quiz results or module interactions.
 
-### 13. Offline Mode (PWA)
-Convert to Progressive Web App with service worker for offline access to modules and translations.
+**What to do:**
+- Add `syncedAt` timestamp per record in the Zustand store
+- On sync, send only unsynced records (delta) instead of the full state blob
+- Server should merge by appending new records, not replacing entire arrays
+- Implement automatic sync triggered by the `online` event with debouncing
+- Add a sync conflict resolution UI when server data differs significantly from local data
+- Add optimistic UI with rollback on sync failure
 
-### 14. Analytics Dashboard
-Track user engagement metrics: time per module, completion rates, most/least popular modules, drop-off points.
+---
 
-### 15. Multiplayer / Study Groups
-Allow students to form study groups, compete in real-time quizzes, and share progress with peers.
+## 4. Add Input Sanitization + Tighten Content Security Policy
 
-### 16. Module Difficulty Levels
-Add beginner/intermediate/advanced difficulty tiers per module with different XP rewards.
+**Priority:** High | **Effort:** Low | **Files:** `src/app/api/profile/route.ts`, `src/app/dashboard/page.tsx`, `src/app/profile/page.tsx`, `next.config.ts`
 
-### 17. API Documentation
-Generate OpenAPI/Swagger docs for all backend endpoints (auth, progress, daily challenge).
+User-generated content (profile name, phone) is rendered directly in JSX without sanitization. The CSP currently allows `'unsafe-inline'` and `'unsafe-eval'`, weakening XSS protection.
 
-### 18. CI/CD Pipeline
-Add GitHub Actions for automated testing, linting, building, and deployment on every PR.
+**What to do:**
+- Add a `sanitizeHtml` utility using `DOMPurify` (browser) or `sanitize-html` (server)
+- Apply sanitization to all user-provided strings before rendering
+- Add server-side sanitization in the profile PATCH API endpoint
+- Tighten CSP in `next.config.ts`: remove `'unsafe-eval'` in production, add proper nonce for inline scripts
+- Add `X-Content-Type-Options: nosniff` and `Referrer-Policy: strict-origin-when-cross-origin` headers
 
-### 19. Dark Theme Polish
-Review all 26 modules for dark mode consistency. Some charts and badges may need color adjustments.
+---
 
-### 20. Performance: Code Splitting by Route
-Currently all modules are lazy-loaded but still part of the main bundle. Split by route to reduce initial load time.
+## 5. Expand E2E Test Coverage to Auth and API Flows
+
+**Priority:** High | **Effort:** Medium | **Files:** `e2e/`, `playwright.config.ts`
+
+The project has 19 unit test files and 6 E2E tests, but none of the E2E tests cover authentication flows or API endpoints.
+
+**What to do:**
+- Add Playwright E2E tests under `e2e/auth/` for: registration, login, password reset, 2FA setup, account deletion
+- Add API integration tests for all `/api/` endpoints: register, forgot-password, reset-password, profile, profile/delete, profile/revoke-sessions
+- Mock email sending (Resend API) in tests using request interceptors
+- Use `test.describe.serial` for multi-step auth flows
+- Target 70%+ test coverage (currently ~30-40%)
+
+---
+
+## 6. Convert Home Page to Server Component for SSR/SSG
+
+**Priority:** Medium | **Effort:** Medium | **Files:** `src/app/page.tsx`
+
+The entire main page is a client component (`'use client'`), meaning SEO crawlers see an empty page and First Contentful Paint is delayed until JS bundles load.
+
+**What to do:**
+- Convert `src/app/page.tsx` to a server component that renders the static module catalog grid server-side
+- Only interactive parts (active module rendering, daily challenge) need `dynamic()` imports
+- Use React Server Components for the hero section, module cards grid, and "How to use" section
+- Consider generating `/modules/[id]` routes for each module as individual pages with SSR
+- Expected improvement: LCP from ~1.5s to ~0.3s, proper content indexing by search engines
+
+---
+
+## 7. Add Cyrillic Font Subset to Geist Font Configuration
+
+**Priority:** Medium | **Effort:** Low | **Files:** `src/app/layout.tsx`
+
+Geist Sans and Geist Mono are loaded with `subsets: ["latin"]` only, but the app's primary language is Russian (`lang="ru"`). This causes FOUT (Flash of Unstyled Text) and layout shifts for Cyrillic characters.
+
+**What to do:**
+- Change `subsets: ["latin"]` to `subsets: ["latin", "cyrillic"]` for both Geist Sans and Geist Mono
+- Add `preload: true` to avoid additional network requests
+- For Chinese locale (`zh`), consider adding Noto Sans SC as a fallback font
+- This eliminates visual flicker on initial page load for Russian-speaking users
+
+---
+
+## 8. Extract Shared Components from Dashboard and Profile Pages
+
+**Priority:** Medium | **Effort:** Low | **Files:** `src/app/dashboard/page.tsx` (525 lines), `src/app/profile/page.tsx` (1021 lines)
+
+Dashboard and profile pages share massive amounts of duplicated code: identical headers, 2FA setup logic, progress display cards, error/success alert patterns (~400 lines of duplication).
+
+**What to do:**
+- Extract `<AppHeader>` component with nav links, user menu, and sign-out
+- Extract `<TwoFAManagement>` component handling the entire 2FA lifecycle (setup/verify/disable)
+- Extract `<ProgressSummary>` component for XP/quiz/session stat cards
+- Move `PasswordStrengthMeter` to `src/components/ui/password-strength-meter.tsx`
+- Extract `<AlertBanner>` component for the error/success alert pattern
+- Reduces total code by ~400 lines and makes maintenance significantly easier
+
+---
+
+## 9. Add Suspense Boundaries + Skeleton Loading States
+
+**Priority:** Medium | **Effort:** Low | **Files:** `src/app/`, `src/components/economics/`
+
+The app has no React Suspense boundaries or streaming loading states. The dashboard shows a full-page spinner when loading profile, blocking the entire UI.
+
+**What to do:**
+- Add `<Suspense fallback={<ModuleSkeleton />}>` around each dynamically imported module
+- Add a `loading` prop to the `dynamic()` call for `DailyChallenge`
+- Replace full-page spinners with skeleton UI that matches the final layout shape
+- Use Next.js `loading.tsx` files for route-level loading states (e.g., `src/app/dashboard/loading.tsx`)
+- Add `<Suspense>` boundaries in the root layout for the header's user dropdown (depends on session)
+- Improves perceived performance and prevents Cumulative Layout Shift (CLS)
+
+---
+
+## 10. Complete PWA Icons and Manifest Configuration
+
+**Priority:** Low | **Effort:** Low | **Files:** `src/app/manifest.ts`, `public/`
+
+The PWA manifest references only `/logo.svg` as an icon with `sizes: "any"`. SVG icons are not universally supported for PWA install banners, and the `screenshots` array is empty.
+
+**What to do:**
+- Generate PNG icons at 192x192 and 512x512 from the existing SVG using `sharp` or `sharp-cli`
+- Add them to `public/` and reference in the manifest with correct sizes and purposes (`any` and `maskable`)
+- Add at least 2 screenshots (narrow and wide form factors) showing the app in use
+- Consider using `next-pwa` for proper service worker registration instead of manual `sw.js`
+- The manifest `lang` is hardcoded to `"ru"` — should be dynamically set based on user's locale
