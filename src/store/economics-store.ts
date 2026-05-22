@@ -140,6 +140,18 @@ export function getModuleInteractionCount(interactions: ModuleInteraction[], mod
   return interactions.filter((i) => i.moduleId === moduleId).length
 }
 
+/** Shared stats computation — used by getTotalScore, computeStats, and getFullProgress */
+function computeQuizAndFinanceStats(
+  quizResults: QuizResult[],
+  financeResults: FinanceResult[]
+) {
+  const quizCorrect = quizResults.reduce((sum, r) => sum + r.score, 0)
+  const quizTotal = quizResults.reduce((sum, r) => sum + r.total, 0)
+  const financeCorrect = financeResults.filter((r) => r.correct).length
+  const financeTotal = financeResults.length
+  return { quizCorrect, quizTotal, financeCorrect, financeTotal }
+}
+
 export function getModuleDisplayName(moduleId: string, locale: string): string {
   const nameMap: Record<string, string> = {
     'gdp': 'module.gdp.title',
@@ -327,11 +339,8 @@ export const useEconomicsStore = create<EconomicsState>()(
 
       getTotalScore: () => {
         const state = get()
-        const quizCorrect = state.quizResults.reduce((sum, r) => sum + r.score, 0)
-        const quizTotal = state.quizResults.reduce((sum, r) => sum + r.total, 0)
+        const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeQuizAndFinanceStats(state.quizResults, state.financeResults)
         const gdpTotal = state.gdpResults.length
-        const financeCorrect = state.financeResults.filter((r) => r.correct).length
-        const financeTotal = state.financeResults.length
         const elasticityTotal = state.elasticityResults.length
         return {
           quizzes: quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 0,
@@ -343,10 +352,7 @@ export const useEconomicsStore = create<EconomicsState>()(
 
       computeStats: () => {
         const state = get()
-        const quizCorrect = state.quizResults.reduce((sum, r) => sum + r.score, 0)
-        const quizTotal = state.quizResults.reduce((sum, r) => sum + r.total, 0)
-        const financeCorrect = state.financeResults.filter((r) => r.correct).length
-        const financeTotal = state.financeResults.length
+        const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeQuizAndFinanceStats(state.quizResults, state.financeResults)
         return { quizCorrect, quizTotal, financeCorrect, financeTotal }
       },
 
@@ -376,10 +382,7 @@ export const useEconomicsStore = create<EconomicsState>()(
         const { level } = getLevelFromXPShared(state.totalXP)
         const levelTitle = getLevelTitle(level)
 
-        const quizCorrect = state.quizResults.reduce((sum, r) => sum + r.score, 0)
-        const quizTotal = state.quizResults.reduce((sum, r) => sum + r.total, 0)
-        const financeCorrect = state.financeResults.filter((r) => r.correct).length
-        const financeTotal = state.financeResults.length
+        const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeQuizAndFinanceStats(state.quizResults, state.financeResults)
 
         const moduleCounts: Record<string, number> = {}
         MODULE_IDS.forEach((id) => {
