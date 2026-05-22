@@ -13,6 +13,12 @@ export interface ExportData {
   totalSessions: number
   quizStats: { correct: number; total: number; accuracy: number }
   financeStats: { correct: number; total: number; accuracy: number }
+  currentStreak: number
+  longestStreak: number
+  dailyChallengesCompleted: number
+  achievementsUnlocked: number
+  gdpCalculations: number
+  elasticityCalculations: number
   createdAt: string
   lastUpdated: string
 }
@@ -26,6 +32,19 @@ function escapeCsvValue(value: string | number): string {
     return `"${str.replace(/"/g, '""')}"`;
   }
   return str;
+}
+
+/**
+ * Shared stats calculation for both CSV and JSON exports.
+ * Eliminates duplicated logic between exportToCSV and exportToJSON.
+ */
+function computeExportStats(state: ReturnType<typeof useEconomicsStore.getState>) {
+  const quizCorrect = state.quizResults.reduce((sum, r) => sum + r.score, 0)
+  const quizTotal = state.quizResults.reduce((sum, r) => sum + r.total, 0)
+  const financeCorrect = state.financeResults.filter((r) => r.correct).length
+  const financeTotal = state.financeResults.length
+
+  return { quizCorrect, quizTotal, financeCorrect, financeTotal }
 }
 
 /**
@@ -59,16 +78,19 @@ export function exportToCSV(): string {
   })
   csv += `\n`
 
-  // Quiz and finance stats
-  const quizCorrect = state.quizResults.reduce((sum, r) => sum + r.score, 0)
-  const quizTotal = state.quizResults.reduce((sum, r) => sum + r.total, 0)
-  const financeCorrect = state.financeResults.filter((r) => r.correct).length
-  const financeTotal = state.financeResults.length
+  // Quiz and finance stats (shared calculation)
+  const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeExportStats(state)
 
   csv += `${escapeCsvValue(t('export.csv.quizResults', locale))},${escapeCsvValue(quizCorrect)}\n`
   csv += `${escapeCsvValue(t('export.csv.quizTotalQuestions', locale))},${escapeCsvValue(quizTotal)}\n`
   csv += `${escapeCsvValue(t('export.csv.financeTasksCorrect', locale))},${escapeCsvValue(financeCorrect)}\n`
   csv += `${escapeCsvValue(t('export.csv.financeTasksTotal', locale))},${escapeCsvValue(financeTotal)}\n`
+  csv += `${escapeCsvValue(t('export.csv.currentStreak', locale))},${escapeCsvValue(state.streakState.currentStreak)}\n`
+  csv += `${escapeCsvValue(t('export.csv.longestStreak', locale))},${escapeCsvValue(state.streakState.longestStreak)}\n`
+  csv += `${escapeCsvValue(t('export.csv.dailyChallenges', locale))},${escapeCsvValue(state.dailyChallenges.length)}\n`
+  csv += `${escapeCsvValue(t('export.csv.achievements', locale))},${escapeCsvValue(state.unlockedAchievements.length)}\n`
+  csv += `${escapeCsvValue(t('export.csv.gdpCalculations', locale))},${escapeCsvValue(state.gdpResults.length)}\n`
+  csv += `${escapeCsvValue(t('export.csv.elasticityCalculations', locale))},${escapeCsvValue(state.elasticityResults.length)}\n`
 
   return csv
 }
@@ -81,10 +103,7 @@ export function exportToJSON(): string {
   const level = getLevelFromXP(state.totalXP)
   const timestamp = new Date().toISOString()
 
-  const quizCorrect = state.quizResults.reduce((sum, r) => sum + r.score, 0)
-  const quizTotal = state.quizResults.reduce((sum, r) => sum + r.total, 0)
-  const financeCorrect = state.financeResults.filter((r) => r.correct).length
-  const financeTotal = state.financeResults.length
+  const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeExportStats(state)
 
   // Convert module interactions array to counts per module
   const moduleCounts: Record<string, number> = {}
@@ -108,6 +127,12 @@ export function exportToJSON(): string {
       total: financeTotal,
       accuracy: financeTotal > 0 ? Math.round((financeCorrect / financeTotal) * 100) : 0,
     },
+    currentStreak: state.streakState.currentStreak,
+    longestStreak: state.streakState.longestStreak,
+    dailyChallengesCompleted: state.dailyChallenges.length,
+    achievementsUnlocked: state.unlockedAchievements.length,
+    gdpCalculations: state.gdpResults.length,
+    elasticityCalculations: state.elasticityResults.length,
     createdAt: timestamp,
     lastUpdated: timestamp,
   }
@@ -119,6 +144,10 @@ export function exportToJSON(): string {
  * Download file with given content
  */
 export function downloadFile(content: string, filename: string, mimeType: string) {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    console.warn('downloadFile: not available in server environment')
+    return
+  }
   const blob = new Blob([content], { type: mimeType })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')

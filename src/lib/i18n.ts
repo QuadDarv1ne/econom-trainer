@@ -1554,6 +1554,10 @@ export const translations = {
     'export.csv.gdpCalculations': 'Расчётов ВВП',
     'export.csv.financeTasks': 'Фин. задач',
     'export.csv.elasticityCalculations': 'Эластичностей',
+    'export.csv.currentStreak': 'Текущая серия (дней)',
+    'export.csv.longestStreak': 'Лучшая серия (дней)',
+    'export.csv.dailyChallenges': 'Ежедневных вызовов',
+    'export.csv.achievements': 'Достижений',
 
     // Homepage header
     'home.header.subtitle': 'Интерактивный тренажёр для экономистов',
@@ -3507,6 +3511,10 @@ export const translations = {
     'export.csv.gdpCalculations': 'GDP Calculations',
     'export.csv.financeTasks': 'Finance Tasks',
     'export.csv.elasticityCalculations': 'Elasticity Calculations',
+    'export.csv.currentStreak': 'Current Streak (days)',
+    'export.csv.longestStreak': 'Best Streak (days)',
+    'export.csv.dailyChallenges': 'Daily Challenges',
+    'export.csv.achievements': 'Achievements',
 
     // Homepage header
     'home.header.subtitle': 'Interactive trainer for economists',
