@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
-import { useEconomicsStore, getLevelFromXP, getLevelTitle, getLevelColor } from '@/store/economics-store'
+import { useEconomicsStore, getLevelTitle, getLevelColor } from '@/store/economics-store'
+import { getLevelFromXP } from '@/lib/xp-utils'
 import { useI18n } from '@/lib/i18n-provider'
 import { formatNumberLocale } from '@/lib/i18n'
 import {

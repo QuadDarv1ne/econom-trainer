@@ -2,8 +2,9 @@
  * Utility functions for exporting progress data
  */
 
-import { useEconomicsStore, getLevelFromXP, getLevelTitle, getModuleDisplayName, computeQuizAndFinanceStats, type EconomicsState } from '@/store/economics-store'
+import { useEconomicsStore, getLevelTitle, getModuleDisplayName, computeQuizAndFinanceStats, type EconomicsState } from '@/store/economics-store'
 import type { QuizResult, GDPResult, FinanceResult, ElasticityResult, ModuleInteraction, DailyChallenge } from '@/store/economics-store'
+import { getLevelFromXP } from '@/lib/xp-utils'
 import { getCurrentLocale, t } from '@/lib/i18n'
 
 export interface ExportData {

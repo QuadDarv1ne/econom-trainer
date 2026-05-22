@@ -23,7 +23,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { useEconomicsStore, getLevelFromXP, getLevelTitle, getLevelColor, getModuleInteractionCount } from '@/store/economics-store'
+import { useEconomicsStore, getLevelTitle, getLevelColor, getModuleInteractionCount } from '@/store/economics-store'
+import { getLevelFromXP } from '@/lib/xp-utils'
 import { useI18n } from '@/lib/i18n-provider'
 import { formatNumber } from '@/lib/i18n'
 import { LanguageToggle } from '@/components/economics/language-toggle'

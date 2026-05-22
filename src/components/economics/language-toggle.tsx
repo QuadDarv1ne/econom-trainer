@@ -28,6 +28,9 @@ export function LanguageToggle() {
         <DropdownMenuItem onClick={() => setLocale('en')} className={locale === 'en' ? 'font-bold' : ''}>
           🇬🇧 English
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setLocale('zh')} className={locale === 'zh' ? 'font-bold' : ''}>
+          🇨🇳 中文
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
