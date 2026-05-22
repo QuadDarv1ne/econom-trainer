@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress'
 import { useEconomicsStore } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { questions, type Question } from '@/components/economics/quiz'
-import { Flame, Target, Zap, CheckCircle2, XCircle, Sparkles } from 'lucide-react'
+import { Flame, Target, Zap, CheckCircle2, XCircle, Sparkles, Clock } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const DAILY_QUESTIONS_COUNT = 3
@@ -48,8 +48,13 @@ export function DailyChallenge() {
   const [currentQ, setCurrentQ] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [answered, setAnswered] = useState(false)
-  const [score, setScore] = useState(0)
   const [timeLeft, setTimeLeft] = useState(DAILY_TIME_PER_QUESTION)
+
+  // Track score via ref to avoid stale closure issues in setTimeout
+  const scoreRef = useRef(0)
+
+  // Helper to trigger re-renders when score changes (for UI updates)
+  const [displayScore, setDisplayScore] = useState(0)
 
   const startChallenge = useCallback(() => {
     const seed = getDailySeed()
@@ -58,7 +63,8 @@ export function DailyChallenge() {
     setCurrentQ(0)
     setSelectedAnswer(null)
     setAnswered(false)
-    setScore(0)
+    scoreRef.current = 0
+    setDisplayScore(0)
     setTimeLeft(DAILY_TIME_PER_QUESTION)
     setQuizState('active')
   }, [])
@@ -82,15 +88,15 @@ export function DailyChallenge() {
 
       const isCorrect = optionIndex === dailyQuestions[currentQ].correctAnswer
       if (isCorrect) {
-        setScore((s) => s + 1)
+        scoreRef.current += 1
+        setDisplayScore(scoreRef.current)
       }
 
       setTimeout(() => {
         if (currentQ + 1 >= DAILY_QUESTIONS_COUNT) {
-          const finalScore = isCorrect ? score + 1 : score
           completeDailyChallenge({
             date: today,
-            score: finalScore,
+            score: scoreRef.current,
             total: DAILY_QUESTIONS_COUNT,
           })
           setQuizState('finished')
@@ -102,7 +108,7 @@ export function DailyChallenge() {
         }
       }, 1500)
     },
-    [answered, currentQ, dailyQuestions, score, today, completeDailyChallenge]
+    [answered, currentQ, dailyQuestions, today, completeDailyChallenge]
   )
 
   // Idle state - not completed today
@@ -255,7 +261,7 @@ export function DailyChallenge() {
 
   // Finished state
   if (quizState === 'finished') {
-    const xpEarned = DAILY_BASE_XP + score * DAILY_PER_CORRECT_XP
+    const xpEarned = DAILY_BASE_XP + displayScore * DAILY_PER_CORRECT_XP
     return (
       <Card className="border-2 border-yellow-500/30 bg-gradient-to-r from-yellow-50/50 to-primary/5 dark:from-yellow-950/20 dark:to-primary/5">
         <CardHeader className="pb-3">
@@ -267,14 +273,14 @@ export function DailyChallenge() {
         <CardContent>
           <div className="text-center space-y-3">
             <div className="text-4xl font-bold">
-              {score}/{DAILY_QUESTIONS_COUNT}
+              {displayScore}/{DAILY_QUESTIONS_COUNT}
             </div>
             <div className="flex items-center justify-center gap-2">
               <Zap className="h-6 w-6 text-yellow-500" />
               <span className="text-xl font-semibold">+{xpEarned} XP</span>
             </div>
             <div className="text-sm text-muted-foreground">
-              {DAILY_BASE_XP} {t('dailyChallenge.baseXP')} + {score} × {DAILY_PER_CORRECT_XP} {t('dailyChallenge.perCorrect')}
+              {DAILY_BASE_XP} {t('dailyChallenge.baseXP')} + {displayScore} × {DAILY_PER_CORRECT_XP} {t('dailyChallenge.perCorrect')}
             </div>
             <p className="text-sm font-medium text-muted-foreground">{t('dailyChallenge.comingBack')}</p>
           </div>
