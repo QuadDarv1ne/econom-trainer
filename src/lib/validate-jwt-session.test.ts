@@ -1,13 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { validateJwtSession } from './validate-jwt-session';
 import * as sessionCache from './session-cache';
-
-interface MockUser {
-  id?: string;
-  sessionHash?: string | null;
-  twoFactorEnabled?: boolean;
-  [key: string]: unknown;
-}
+import type { User } from '@prisma/client';
 
 // Mock the session cache module
 vi.mock('./session-cache', async () => {
@@ -67,7 +61,7 @@ describe('validateJwtSession', () => {
   it('clears token if sessionHash does not match', async () => {
     vi.mocked(sessionCache.getCachedSessionHash).mockReturnValue(null);
     const { prisma } = await import('./prisma');
-    vi.mocked(prisma.user.findUnique).mockResolvedValue({ sessionHash: 'differentHash' } as MockUser);
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ sessionHash: 'differentHash' } as unknown as User);
 
     const token: Record<string, unknown> = { id: 'user123', sessionHash: 'hash1', twoFactorEnabled: true };
     const result = await validateJwtSession(token as never);
@@ -80,7 +74,7 @@ describe('validateJwtSession', () => {
   it('caches session hash when validation succeeds', async () => {
     vi.mocked(sessionCache.getCachedSessionHash).mockReturnValue(null);
     const { prisma } = await import('./prisma');
-    vi.mocked(prisma.user.findUnique).mockResolvedValue({ sessionHash: 'hash1' } as MockUser);
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ sessionHash: 'hash1' } as unknown as User);
 
     const token: Record<string, unknown> = { id: 'user123', sessionHash: 'hash1' };
     await validateJwtSession(token as never);

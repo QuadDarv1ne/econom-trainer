@@ -2,7 +2,8 @@
  * Utility functions for exporting progress data
  */
 
-import { useEconomicsStore, getLevelFromXP, getLevelTitle, getModuleDisplayName, computeQuizAndFinanceStats } from '@/store/economics-store'
+import { useEconomicsStore, getLevelFromXP, getLevelTitle, getModuleDisplayName, computeQuizAndFinanceStats, type EconomicsState } from '@/store/economics-store'
+import type { QuizResult, GDPResult, FinanceResult, ElasticityResult, ModuleInteraction, DailyChallenge } from '@/store/economics-store'
 import { getCurrentLocale, t } from '@/lib/i18n'
 
 export interface ExportData {
@@ -219,16 +220,16 @@ export function importProgressFromJSON(jsonString: string): string | void {
   state.resetProgress()
 
   // Re-populate the store with imported data
-  const importedData = {
-    quizResults: (data.quizResults as unknown[]) || [],
-    gdpResults: (data.gdpResults as unknown[]) || [],
-    financeResults: (data.financeResults as unknown[]) || [],
-    elasticityResults: (data.elasticityResults as unknown[]) || [],
-    moduleInteractions: (data.moduleInteractions as unknown[]) || [],
-    unlockedAchievements: (data.unlockedAchievements as string[]) || [],
+  const importedData: Partial<EconomicsState> = {
+    quizResults: ((data.quizResults ?? []) as unknown as QuizResult[]),
+    gdpResults: ((data.gdpResults ?? []) as unknown as GDPResult[]),
+    financeResults: ((data.financeResults ?? []) as unknown as FinanceResult[]),
+    elasticityResults: ((data.elasticityResults ?? []) as unknown as ElasticityResult[]),
+    moduleInteractions: ((data.moduleInteractions ?? []) as unknown as ModuleInteraction[]),
+    unlockedAchievements: (data.unlockedAchievements as string[]) ?? [],
     totalXP: data.totalXP as number,
-    dailyChallenges: (data.dailyChallenges as unknown[]) || [],
-    streakState: (data.streakState as typeof state.streakState) || { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
+    dailyChallenges: ((data.dailyChallenges ?? []) as unknown as DailyChallenge[]),
+    streakState: (data.streakState as typeof state.streakState) ?? { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
   }
 
   // Use zustand set directly to restore full state
