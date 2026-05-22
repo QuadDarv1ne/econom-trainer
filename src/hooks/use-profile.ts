@@ -88,7 +88,7 @@ export function useProfile(): UseProfileReturn {
     }
 
     if (status === 'authenticated') {
-      fetchProfile();
+      queueMicrotask(() => fetchProfile());
     }
   }, [status, router, fetchProfile]);
 

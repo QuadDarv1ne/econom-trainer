@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { useState, useEffect, Suspense, useMemo } from 'react';
+import { useState, Suspense, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -27,12 +27,6 @@ function ResetPasswordForm() {
   const [loading, setLoading] = useState(false);
 
   const passwordStrength = useMemo(() => checkPasswordStrength(password), [password]);
-
-  useEffect(() => {
-    if (!token) {
-      setError(t('auth.error.missingToken'));
-    }
-  }, [token, t]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -78,7 +72,7 @@ function ResetPasswordForm() {
         <CardHeader className="text-center">
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
+            <AlertDescription>{t('auth.error.missingToken')}</AlertDescription>
           </Alert>
         </CardHeader>
       </Card>

@@ -12,27 +12,18 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>('ru');
-  const [mounted, setMounted] = useState(false);
-
-  // After mount, load the actual stored locale and set document lang
-  useEffect(() => {
-    setMounted(true);
+  const [locale, setLocaleState] = useState<Locale>(() => {
     try {
-      const stored = getCurrentLocale();
-      setLocaleState(stored);
-      document.documentElement.lang = stored;
+      return getCurrentLocale();
     } catch {
-      document.documentElement.lang = 'ru';
+      return 'ru';
     }
-  }, []);
+  });
 
-  // Update document lang when locale changes after mount
+  // Update document lang when locale changes
   useEffect(() => {
-    if (mounted) {
-      document.documentElement.lang = locale;
-    }
-  }, [locale, mounted]);
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   const changeLocale = (newLocale: Locale) => {
     setLocale(newLocale);

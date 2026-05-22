@@ -4,6 +4,8 @@ import { t, getCurrentLocale } from '@/lib/i18n'
 import { generateId } from '@/lib/utils'
 import { getLevelFromXP } from '@/lib/xp-utils'
 
+export { getLevelFromXP }
+
 export interface QuizResult {
   id: string
   topic: string
