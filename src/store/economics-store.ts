@@ -378,7 +378,7 @@ export const useEconomicsStore = create<EconomicsState>()(
           }
         }
 
-        if (activeDates.length === 0) return 0
+        if (activeDates.size === 0) return 0
 
         // Sort dates and count consecutive days
         const sortedDates = Array.from(activeDates).sort().reverse()

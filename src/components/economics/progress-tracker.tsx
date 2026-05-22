@@ -52,7 +52,7 @@ export function ProgressTracker() {
 
   const quizBarData = quizResults.slice(0, 8).reverse().map((r, i) => ({
     name: `#${i + 1}`,
-    score: Math.round((r.score / r.total) * 100),
+    score: r.total > 0 ? Math.round((r.score / r.total) * 100) : 0,
   }))
 
   const financeLineData = financeResults.slice(0, 15).reverse().map((r, i) => ({

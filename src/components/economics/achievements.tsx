@@ -69,6 +69,8 @@ export function Achievements() {
   const levelTitle = getLevelTitle(xpState.level)
   const levelColor = getLevelColor(xpState.level)
 
+  const unlockedAchievements = useEconomicsStore((s) => s.unlockedAchievements)
+
   const achievements: Achievement[] = useMemo(() => {
     // Compute intermediate values inside useMemo to avoid invalidating on every store change
     const finCorrect = financeResults.filter((r) => r.correct).length
@@ -308,13 +310,17 @@ export function Achievements() {
   // Award XP for newly unlocked achievements (idempotent via processedRef)
   const processedRef = useRef<Set<string>>(new Set())
   useEffect(() => {
+    // If store was reset (unlockedAchievements cleared), reset processed set too
+    if (unlockedAchievements.length === 0) {
+      processedRef.current.clear()
+    }
     for (const ach of achievements) {
       if (ach.unlocked && !processedRef.current.has(ach.id)) {
         processedRef.current.add(ach.id)
         unlockAchievement(ach.id, ach.xpReward)
       }
     }
-  }, [achievements, unlockAchievement])
+  }, [achievements, unlockAchievement, unlockedAchievements])
 
   return (
     <div className="space-y-6">
