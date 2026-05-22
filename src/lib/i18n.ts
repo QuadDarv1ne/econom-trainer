@@ -1921,6 +1921,10 @@ export const translations = {
     // Homepage update
     'home.hero.badge': '23 модуля • 85 вопросов • 55+ терминов • 23 достижения • XP • Ежедневные вызовы',
 
+    // CTA banner for unauthenticated users
+    'home.cta.title': 'Доступно 10 модулей',
+    'home.cta.description': 'Войдите, чтобы получить доступ ко всем 26 модулям тренажёра',
+
     // Auth API / error messages
     'auth.error.invalidCredentials': 'Неверный email или пароль',
     'auth.error.twoFactorRequired': 'Требуется код двухфакторной аутентификации',
@@ -3712,6 +3716,10 @@ export const translations = {
 
     // Homepage update
     'home.hero.badge': '23 modules • 85 questions • 55+ terms • 23 achievements • XP • Daily Challenges',
+
+    // CTA banner for unauthenticated users
+    'home.cta.title': '10 Modules Available',
+    'home.cta.description': 'Sign in to access all 26 training modules',
 
     // Auth
     'auth.login.title': 'Sign In',
@@ -5545,6 +5553,8 @@ export const translations = {
     'achievement.streak30Days.title': '30天连胜',
     'achievement.streak30Days.desc': '连续学习30天',
     'home.hero.badge': '23个模块 • 85道题目 • 55+术语 • 23个成就 • XP • 每日挑战',
+    'home.cta.title': '10个模块可用',
+    'home.cta.description': '登录以访问所有26个训练模块',
     'auth.login.title': '登录',
     'auth.login.subtitle': '输入你的凭据以访问仪表板',
     'auth.login.password': '密码',

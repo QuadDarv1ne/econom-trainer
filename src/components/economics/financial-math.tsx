@@ -31,7 +31,7 @@ interface NPVProblem {
   question: string
 }
 
-type Locale = 'ru' | 'en'
+type Locale = 'ru' | 'en' | 'zh'
 
 function generateCompoundProblem(t: (key: string) => string, locale: Locale): CompoundProblem {
   const principal = (Math.floor(Math.random() * 90) + 10) * 1000

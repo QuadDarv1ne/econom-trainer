@@ -171,10 +171,10 @@ function sanitizeIP(ip: string): string {
 
 /**
  * Helper to create a rate-limited response.
- * Accepts an optional locale ('en' | 'ru') or Request object to determine response language.
+ * Accepts an optional locale ('en' | 'ru' | 'zh') or Request object to determine response language.
  * Falls back to Russian if no locale is provided.
  */
-export function rateLimitResponse(key: string, _ip: string | null, locale?: 'en' | 'ru' | Request) {
+export function rateLimitResponse(key: string, _ip: string | null, locale?: 'en' | 'ru' | 'zh' | Request) {
   const config = configs.get(key);
   if (!config) throw new Error(`Unknown rate limit config key: ${key}`);
 
@@ -186,18 +186,21 @@ export function rateLimitResponse(key: string, _ip: string | null, locale?: 'en'
     : Math.ceil(config.windowMs / 1000);
 
   // Resolve locale from Request object or direct locale string
-  let resolvedLocale: 'en' | 'ru' = 'ru';
+  let resolvedLocale: 'en' | 'ru' | 'zh' = 'ru';
   if (typeof locale === 'object' && locale instanceof Request) {
     const acceptLanguage = locale.headers.get('accept-language') || '';
     const primary = acceptLanguage.split(',')[0]?.trim().toLowerCase() || '';
     if (primary.startsWith('en')) resolvedLocale = 'en';
-  } else if (locale === 'en' || locale === 'ru') {
+    else if (primary.startsWith('zh')) resolvedLocale = 'zh';
+  } else if (locale === 'en' || locale === 'ru' || locale === 'zh') {
     resolvedLocale = locale;
   }
 
   const errorMessage = resolvedLocale === 'en'
     ? 'Too many requests. Please try again later.'
-    : 'Слишком много запросов. Попробуйте позже.';
+    : resolvedLocale === 'zh'
+      ? '请求过多。请稍后再试。'
+      : 'Слишком много запросов. Попробуйте позже.';
 
   return NextResponse.json(
     { error: errorMessage },

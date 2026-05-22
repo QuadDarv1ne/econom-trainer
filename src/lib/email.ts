@@ -104,12 +104,28 @@ const emailTranslations = {
       ignore: 'If you did not create an account, please ignore this email.',
     },
   },
+  zh: {
+    siteName: '经济训练师',
+    siteDescription: '经济训练师 — 一个学习经济学的互动平台',
+    greeting: '你好',
+    resetPassword: {
+      body: '您请求了密码重置。点击下面的按钮设置新密码：',
+      button: '重置密码',
+      ignore: '如果您没有请求密码重置，请忽略此邮件。',
+      expiry: '此链接有效期为1小时。',
+    },
+    verifyEmail: {
+      body: '感谢您的注册。点击下面的按钮验证您的邮箱：',
+      button: '验证邮箱',
+      ignore: '如果您没有创建账户，请忽略此邮件。',
+    },
+  },
 };
 
 export function getPasswordResetEmailHtml(
   name: string,
   resetUrl: string,
-  locale: 'ru' | 'en' = 'ru'
+  locale: Locale = 'ru'
 ): string {
   const t = emailTranslations[locale];
   return `
@@ -139,7 +155,7 @@ export function getPasswordResetEmailHtml(
 export function getEmailVerificationEmailHtml(
   name: string,
   verificationUrl: string,
-  locale: 'ru' | 'en' = 'ru'
+  locale: Locale = 'ru'
 ): string {
   const t = emailTranslations[locale];
   return `

@@ -74,10 +74,13 @@ export async function POST(req: Request) {
     // Send email
     const resetUrl = `${BASE_URL}/auth/reset-password?token=${token}`;
     const locale = getLocaleFromRequest(req);
-    const html = getPasswordResetEmailHtml(user.name || (locale === 'en' ? 'User' : 'Студент'), resetUrl, locale);
+    const userName = user.name || (locale === 'en' ? 'User' : locale === 'zh' ? '用户' : 'Студент');
+    const html = getPasswordResetEmailHtml(userName, resetUrl, locale);
     const subject = locale === 'en'
       ? 'Password Reset — Economic Trainer'
-      : 'Сброс пароля — Экономический тренажёр';
+      : locale === 'zh'
+        ? '密码重置 — 经济训练师'
+        : 'Сброс пароля — Экономический тренажёр';
     const emailSent = await sendEmail({
       to: user.email,
       subject,

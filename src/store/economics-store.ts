@@ -180,7 +180,7 @@ export function getModuleDisplayName(moduleId: string, locale: string): string {
   }
   const key = nameMap[moduleId]
   if (!key) return moduleId
-  return t(key, locale as 'ru' | 'en')
+  return t(key, locale as 'ru' | 'en' | 'zh')
 }
 
 export interface EconomicsState {

@@ -27,15 +27,26 @@ const PASSWORD_ERRORS_EN = {
   special: 'Password must contain at least one special character',
 } as const;
 
+const PASSWORD_ERRORS_ZH = {
+  minLength: '密码至少需要8个字符',
+  maxLength: '密码不能超过128个字符',
+  upper: '密码必须包含至少一个大写字母',
+  lower: '密码必须包含至少一个小写字母',
+  number: '密码必须包含至少一个数字',
+  special: '密码必须包含至少一个特殊字符',
+} as const;
+
 type PasswordErrors = Record<keyof typeof PASSWORD_ERRORS_EN, string>;
 
-function getPasswordErrors(locale?: 'ru' | 'en'): PasswordErrors {
-  return locale === 'ru' ? { ...PASSWORD_ERRORS_RU } : { ...PASSWORD_ERRORS_EN };
+function getPasswordErrors(locale?: 'ru' | 'en' | 'zh'): PasswordErrors {
+  if (locale === 'ru') return { ...PASSWORD_ERRORS_RU };
+  if (locale === 'zh') return { ...PASSWORD_ERRORS_ZH };
+  return { ...PASSWORD_ERRORS_EN };
 }
 
 export function validatePasswordStrength(
   password: string,
-  locale?: 'ru' | 'en'
+  locale?: 'ru' | 'en' | 'zh'
 ): { valid: true } | { valid: false; error: string } {
   const errors = getPasswordErrors(locale);
 

@@ -1,118 +1,67 @@
-# План улучшений проекта Econom Trainer
+# Recommended Improvements for Econom Trainer
 
-## Текущий статус
+## High Priority
 
-**Версия:** 7.2.0
-**Бранч:** main (синхронизирован с origin)
-**Последнее обновление:** 2026-05-18
+### 1. Real Authentication Database
+Currently using in-memory/demo auth. Replace with Prisma + PostgreSQL/SQLite for persistent user accounts, session management, and password recovery.
 
----
+### 2. XP Persistence
+XP and progress are stored in localStorage via Zustand persist. Migrate to server-side storage so progress syncs across devices and survives cache clears.
 
-## Высокий приоритет
+### 3. Input Validation & Sanitization
+Add Zod schemas for all user inputs (auth forms, module inputs, custom data). Prevent XSS and injection attacks at the API layer.
 
-### 1. ✅ Модуль «Валютный калькулятор» — реализован
-- Конвертация валют с 12 валютами
-- Матрица кросс-курсов
-- Симуляция волатильности с графиками
-- XP-система (+15 XP за взаимодействия)
+### 4. Rate Limiting on Auth Endpoints
+Add proper rate limiting (e.g., `@upstash/ratelimit` or custom) to prevent brute-force attacks on login/registration/2FA endpoints.
 
-### 2. ✅ Экспорт прогресса в PDF-отчёт — реализован
-- Установлены `jspdf` и `jspdf-autotable`
-- Функция генерации PDF с полной статистикой
-- Кнопка экспорта в модуле «Прогресс»
+### 5. Error Boundary Components
+Add React Error Boundary wrappers around module components so one broken module doesn't crash the entire page.
 
-### 3. ✅ Service Worker для офлайн-работы — реализован
-- Настроен `next-pwa` с кэшированием
-- Service Worker (`public/sw.js`) с cache-first стратегией
-- Офлайн-страница `/offline`
-- Индикатор офлайн-статуса в layout
+## Medium Priority
 
-### 4. ✅ Мультиязычность (EN/RU) — реализована
-**Статус:** Завершено
-**Что сделано:**
-- Контекст i18n с localStorage (`src/lib/i18n.ts`, `i18n-provider.tsx`)
-- Компонент переключателя языка (`language-toggle.tsx`)
-- Поддержка RU/EN языков
-- 1032 RU ключей и 974 EN ключей
-- Все 14 экономических модулей полностью переведены:
-  keynesian-cross, phillips-curve, lorenz-curve, is-lm, ppf, cost-analysis,
-  comparative-advantage, tax-calculator, game-theory, market-structures,
-  currency-calculator, financial-math, glossary, price-indices, gdp,
-  supply-demand, breakeven, elasticity
-- Переведены все UI элементы: кнопки, лейблы, описания, карточки теорий, графики
+### 6. Module Completion Tracking
+Track per-module completion state (not just interaction count). Add "completed" badge when user finishes all exercises in a module.
 
-### 5. ✅ E2E-тесты (Playwright) — реализованы
-**Статус:** Завершено
-**Что сделано:**
-- 6 E2E тестов: homepage, achievements, export, quiz, financial-math, xp-progress
-- Конфигурация Playwright настроена
-- Тесты покрывают ключевые пользовательские сценарии
+### 7. Leaderboard System
+Global and friend leaderboards based on XP. Add weekly/monthly challenges with reset cycles.
 
----
+### 8. Daily Challenge Backend
+Currently daily challenges are client-side only. Move to server with proper scheduling, streak tracking, and rewards.
 
-## Средний приоритет
+### 9. Mobile Responsiveness Audit
+Test all 26 module components on mobile screens. Many charts and tables may overflow on small viewports.
 
-### 6. ✅ Улучшения UX — реализовано
-- Диалог подтверждения сброса прогресса
-- Функция "Поделиться" для экспорта прогресса
-- Улучшена страница офлайн-режима
-- Skeleton-загрузчики для модулей
+### 10. Accessibility (a11y) Audit
+Run axe-core or Lighthouse accessibility audit. Fix color contrast, ARIA labels, keyboard navigation, and screen reader support.
 
-### 7. ✅ Unit-тесты (Vitest) — реализованы
-- Тесты для XP-системы и уровней
-- Тесты для store (economics-store.test.ts)
-- Проверка localStorage persistence
+### 11. Export & Import Progress
+Enhance the existing export feature to support JSON and PDF. Add import functionality to restore progress on a new device.
 
-**Что нужно улучшить:**
-- [ ] Добавить тесты для всех калькуляторов (эластичность, валюта, фин.математика, налоги, цены, break-even, издержки, AD-AS, IS-LM, etc.)
-- [x] Добавлены тесты для GDP калькулятора (15 тестов) и квиза (9 тестов)
+### 12. Module Search & Filter
+Add a search bar and category filter on the home page to quickly find modules among 26 options.
 
-### 8. ✅ Модуль «Индексы цен» — реализован
-- ИПЦ, дефлятор ВВП
-- Расчёт инфляции и покупательной способности
-- XP-система (+15 XP за взаимодействия)
+## Nice to Have
 
----
+### 13. Offline Mode (PWA)
+Convert to Progressive Web App with service worker for offline access to modules and translations.
 
-## Низкий приоритет
+### 14. Analytics Dashboard
+Track user engagement metrics: time per module, completion rates, most/least popular modules, drop-off points.
 
-### 9. Интеграция с LMS (Moodle, Canvas)
-**Статус:** Дистанционно
-**Что нужно сделать:**
-- [ ] Изучить LTI стандарт
-- [ ] Создать API для экспорта результатов
-- [ ] Добавить SCORM-пакет
+### 15. Multiplayer / Study Groups
+Allow students to form study groups, compete in real-time quizzes, and share progress with peers.
 
----
+### 16. Module Difficulty Levels
+Add beginner/intermediate/advanced difficulty tiers per module with different XP rewards.
 
-## Ключевые метрики проекта
+### 17. API Documentation
+Generate OpenAPI/Swagger docs for all backend endpoints (auth, progress, daily challenge).
 
-| Показатель | Значение |
-|------------|----------|
-| Интерактивные модули | 22/22 |
-| Вопросы квиза | 100 |
-| Экономические термины | 41 |
-| Достижения | 19 |
-| Уровни XP | 20+ |
-| PWA офлайн-поддержка | ✅ |
-| Unit-тесты | ✅ (78 тестов, 6 файлов, Vitest) |
-| E2E-тесты | ✅ (6 тестов, Playwright) |
-| Мультиязычность | ✅ (RU/EN, 2000+ ключей) |
+### 18. CI/CD Pipeline
+Add GitHub Actions for automated testing, linting, building, and deployment on every PR.
 
----
+### 19. Dark Theme Polish
+Review all 26 modules for dark mode consistency. Some charts and badges may need color adjustments.
 
-## Следующие шаги
-
-1. ✅ Добавлены unit-тесты для GDP калькулятора (15 тестов) и квиза (9 тестов)
-2. [ ] Добавить unit-тесты для всех калькуляторов (эластичность, валюта, фин.математика, налоги, цены, break-even, издержки, AD-AS, IS-LM, etc.)
-3. ✅ Вопросы квиза расширены до 100
-4. Расширить E2E тесты для дополнительных сценариев (тёмная тема, все модули)
-5. Рассмотреть добавление новых модулей (экономические кризисы, монетарная политика)
-6. Оптимизация производительности (ленивая загрузка модулей, code splitting)
-
----
-
-## Заметки по разработке
-
-- Dev workflow: `npm run dev` → тестирование → `npm run build` → git commit → push to main
-- Качество важнее количества — фокус на стабильность и функциональность
+### 20. Performance: Code Splitting by Route
+Currently all modules are lazy-loaded but still part of the main bundle. Split by route to reduce initial load time.

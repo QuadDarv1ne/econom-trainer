@@ -41,6 +41,7 @@ import {
   LogOut,
 } from 'lucide-react'
 import { modules, tabItems, cardVariants, moduleComponents, categoryBreaks, ThemeToggle } from '@/lib/module-registry'
+import { Lock } from 'lucide-react'
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('home')
@@ -57,21 +58,26 @@ export default function Home() {
     ? session.user.name.split(' ').map(n => n[0]).join('').toUpperCase()
     : session?.user?.email?.[0]?.toUpperCase() || '?'
 
+  // Filter modules and tabs based on auth status
+  const visibleModules = session ? modules : modules.filter((m) => m.public)
+  const visibleTabItems = session ? tabItems : tabItems.filter((item) => item.value === 'home' || modules.find((m) => m.id === item.value)?.public)
+  const visibleCategoryBreaks = session ? categoryBreaks : new Set([...categoryBreaks].filter((id) => modules.find((m) => m.id === id)?.public))
+
   // Compute progress per module
   const moduleProgress = useMemo(() => {
     const progress: Record<string, number> = {}
-    for (const mod of modules) {
+    for (const mod of visibleModules) {
       const count = getModuleInteractionCount(moduleInteractions, mod.id)
       // 3 interactions = 100% explored for most modules
       progress[mod.id] = Math.min(100, Math.round((count / 3) * 100))
     }
     return progress
-  }, [moduleInteractions])
+  }, [moduleInteractions, visibleModules])
 
   // Count explored modules
   const exploredCount = useMemo(() => {
-    return modules.filter((m) => moduleProgress[m.id] > 0).length
-  }, [moduleProgress])
+    return visibleModules.filter((m) => moduleProgress[m.id] > 0).length
+  }, [moduleProgress, visibleModules])
 
   // Render only the active module (performance optimization)
   const ActiveModule = activeTab !== 'home' ? moduleComponents[activeTab] : null
@@ -155,12 +161,12 @@ export default function Home() {
           <div className="mb-6 -mx-4 px-4">
             <ScrollArea className="w-full whitespace-nowrap">
               <TabsList className="inline-flex h-auto p-1 gap-0.5 bg-transparent">
-                {tabItems.map((item, idx) => (
+                {visibleTabItems.map((item, idx) => (
                   <span key={item.value} className="inline-flex items-center">
-                    {idx > 0 && categoryBreaks.has(item.value) && (
+                    {idx > 0 && visibleCategoryBreaks.has(item.value) && (
                       <Separator orientation="vertical" className="h-6 mx-1" />
                     )}
-                    {idx === 1 && !categoryBreaks.has(item.value) && (
+                    {idx === 1 && !visibleCategoryBreaks.has(item.value) && (
                       <Separator orientation="vertical" className="h-6 mx-1" />
                     )}
                     <TabsTrigger
@@ -218,7 +224,7 @@ export default function Home() {
             {/* Modules Grid with progress indicators */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               <AnimatePresence mode="popLayout">
-                {modules.map((mod, i) => {
+                {visibleModules.map((mod, i) => {
                   const Icon = mod.icon
                   const progress = moduleProgress[mod.id]
                   const isExplored = progress > 0
@@ -285,6 +291,36 @@ export default function Home() {
               </AnimatePresence>
             </div>
 
+            {/* CTA Banner for unauthenticated users */}
+            {!session && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <Card className="bg-gradient-to-r from-primary/10 to-primary/20 border-primary/30">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Lock className="h-5 w-5" />
+                      {t('home.cta.title')}
+                    </CardTitle>
+                    <CardDescription className="text-sm">
+                      {t('home.cta.description')}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex flex-wrap gap-3">
+                    <Button onClick={() => router.push('/auth/login')} size="sm">
+                      <LogIn className="h-4 w-4 mr-2" />
+                      {t('auth.login.submit')}
+                    </Button>
+                    <Button variant="outline" onClick={() => router.push('/auth/register')} size="sm">
+                      {t('auth.register.submit')}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
             {/* How to use */}
             <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
               <CardHeader>
@@ -345,7 +381,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
           {t('home.footer.text')}
           {totalXP > 0 && (
-            <span className="hidden sm:inline"> • {formatNumber(totalXP, locale)} {t('home.header.xpLabel')} • {exploredCount}/{modules.length} {t('home.hero.modulesExplored')}</span>
+            <span className="hidden sm:inline"> • {formatNumber(totalXP, locale)} {t('home.header.xpLabel')} • {exploredCount}/{visibleModules.length} {t('home.hero.modulesExplored')}</span>
           )}
           <span className="hidden sm:inline"> • {t('home.footer.author')}</span>
         </div>

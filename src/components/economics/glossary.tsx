@@ -101,7 +101,7 @@ export function Glossary() {
           item.definition.toLowerCase().includes(searchQuery.toLowerCase())
         return matchesCategory && matchesSearch
       })
-      .sort((a, b) => a.term.localeCompare(b.term, locale === 'ru' ? 'ru' : 'en'))
+      .sort((a, b) => a.term.localeCompare(b.term, locale === 'ru' ? 'ru' : locale === 'zh' ? 'zh' : 'en'))
   }, [searchQuery, activeCategory, glossaryData, locale])
 
   const getCategoryColor = (cat: string) => {
