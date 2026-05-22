@@ -13,7 +13,7 @@ import { useI18n } from '@/lib/i18n-provider'
 import { generateId } from '@/lib/utils'
 import { Brain, CheckCircle2, XCircle, Clock, ArrowRight, RotateCcw } from 'lucide-react'
 
-interface Question {
+export interface Question {
   id: number
   question: string
   options: string[]
@@ -23,7 +23,7 @@ interface Question {
   difficulty: 'easy' | 'medium' | 'hard'
 }
 
-const questions: Question[] = [
+export const questions: Question[] = [
   {
     id: 1,
     question: 'Что происходит с равновесной ценой при увеличении спроса при неизменном предложении?',

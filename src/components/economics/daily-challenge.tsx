@@ -1,0 +1,288 @@
+'use client'
+
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
+import { useEconomicsStore } from '@/store/economics-store'
+import { useI18n } from '@/lib/i18n-provider'
+import { questions, type Question } from '@/components/economics/quiz'
+import { Flame, Target, Zap, CheckCircle2, XCircle, Sparkles } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+
+const DAILY_QUESTIONS_COUNT = 3
+const DAILY_TIME_PER_QUESTION = 15
+const DAILY_BASE_XP = 30
+const DAILY_PER_CORRECT_XP = 10
+
+function getDailySeed(): number {
+  const now = new Date()
+  return Math.floor(now.getTime() / 86400000)
+}
+
+function shuffleWithSeed(arr: Question[], seed: number): Question[] {
+  const shuffled = [...arr]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = (seed * (i + 1) + i) % (i + 1)
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
+export function DailyChallenge() {
+  const { t } = useI18n()
+  const dailyChallenges = useEconomicsStore((s) => s.dailyChallenges)
+  const streakState = useEconomicsStore((s) => s.streakState)
+  const completeDailyChallenge = useEconomicsStore((s) => s.completeDailyChallenge)
+
+  const today = useMemo(() => new Date().toISOString().split('T')[0], [])
+  const todayChallenge = useMemo(
+    () => dailyChallenges.find((c) => c.date === today),
+    [dailyChallenges, today]
+  )
+  const isCompleted = !!todayChallenge
+
+  const [quizState, setQuizState] = useState<'idle' | 'active' | 'finished'>('idle')
+  const [dailyQuestions, setDailyQuestions] = useState<Question[]>([])
+  const [currentQ, setCurrentQ] = useState(0)
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
+  const [answered, setAnswered] = useState(false)
+  const [score, setScore] = useState(0)
+  const [timeLeft, setTimeLeft] = useState(DAILY_TIME_PER_QUESTION)
+
+  const startChallenge = useCallback(() => {
+    const seed = getDailySeed()
+    const selected = shuffleWithSeed(questions, seed).slice(0, DAILY_QUESTIONS_COUNT)
+    setDailyQuestions(selected)
+    setCurrentQ(0)
+    setSelectedAnswer(null)
+    setAnswered(false)
+    setScore(0)
+    setTimeLeft(DAILY_TIME_PER_QUESTION)
+    setQuizState('active')
+  }, [])
+
+  // Timer
+  useEffect(() => {
+    if (quizState !== 'active' || answered) return
+    if (timeLeft <= 0) {
+      handleAnswer(-1) // time's up
+      return
+    }
+    const timer = setTimeout(() => setTimeLeft((t) => t - 1), 1000)
+    return () => clearTimeout(timer)
+  }, [timeLeft, quizState, answered])
+
+  const handleAnswer = useCallback(
+    (optionIndex: number) => {
+      if (answered) return
+      setSelectedAnswer(optionIndex)
+      setAnswered(true)
+
+      const isCorrect = optionIndex === dailyQuestions[currentQ].correctAnswer
+      if (isCorrect) {
+        setScore((s) => s + 1)
+      }
+
+      setTimeout(() => {
+        if (currentQ + 1 >= DAILY_QUESTIONS_COUNT) {
+          const finalScore = isCorrect ? score + 1 : score
+          completeDailyChallenge({
+            date: today,
+            score: finalScore,
+            total: DAILY_QUESTIONS_COUNT,
+          })
+          setQuizState('finished')
+        } else {
+          setCurrentQ((q) => q + 1)
+          setSelectedAnswer(null)
+          setAnswered(false)
+          setTimeLeft(DAILY_TIME_PER_QUESTION)
+        }
+      }, 1500)
+    },
+    [answered, currentQ, dailyQuestions, score, today, completeDailyChallenge]
+  )
+
+  // Idle state - not completed today
+  if (quizState === 'idle' && !isCompleted) {
+    return (
+      <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-yellow-50/50 dark:from-primary/5 dark:to-yellow-950/20">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Sparkles className="h-5 w-5 text-yellow-500" />
+              {t('dailyChallenge.title')}
+            </CardTitle>
+            {streakState.currentStreak > 0 && (
+              <Badge variant="outline" className="flex items-center gap-1 border-orange-300 bg-orange-50 dark:bg-orange-950/30">
+                <Flame className="h-3.5 w-3.5 text-orange-500" />
+                {streakState.currentStreak} {t('dailyChallenge.streak')}
+              </Badge>
+            )}
+          </div>
+          <CardDescription>{t('dailyChallenge.description')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-3 gap-3 mb-4">
+            <div className="text-center p-2 rounded-lg bg-background/80">
+              <Zap className="h-4 w-4 text-yellow-500 mx-auto mb-1" />
+              <div className="text-lg font-bold">{DAILY_BASE_XP}</div>
+              <div className="text-[10px] text-muted-foreground">{t('dailyChallenge.baseXP')}</div>
+            </div>
+            <div className="text-center p-2 rounded-lg bg-background/80">
+              <CheckCircle2 className="h-4 w-4 text-green-500 mx-auto mb-1" />
+              <div className="text-lg font-bold">+{DAILY_PER_CORRECT_XP}</div>
+              <div className="text-[10px] text-muted-foreground">{t('dailyChallenge.perCorrect')}</div>
+            </div>
+            <div className="text-center p-2 rounded-lg bg-background/80">
+              <Target className="h-4 w-4 text-blue-500 mx-auto mb-1" />
+              <div className="text-lg font-bold">{DAILY_QUESTIONS_COUNT}</div>
+              <div className="text-[10px] text-muted-foreground">{t('dailyChallenge.today')}</div>
+            </div>
+          </div>
+          <Button onClick={startChallenge} className="w-full" size="lg">
+            <Flame className="h-4 w-4 mr-2" />
+            {t('dailyChallenge.start')}
+          </Button>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // Idle state - already completed today
+  if (quizState === 'idle' && isCompleted) {
+    const xpEarned = DAILY_BASE_XP + todayChallenge.score * DAILY_PER_CORRECT_XP
+    return (
+      <Card className="border-2 border-green-500/30 bg-gradient-to-r from-green-50/50 to-primary/5 dark:from-green-950/20 dark:to-primary/5">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <CheckCircle2 className="h-5 w-5 text-green-500" />
+              {t('dailyChallenge.complete')}
+            </CardTitle>
+            {streakState.currentStreak > 0 && (
+              <Badge variant="outline" className="flex items-center gap-1 border-orange-300 bg-orange-50 dark:bg-orange-950/30">
+                <Flame className="h-3.5 w-3.5 text-orange-500" />
+                {streakState.currentStreak} {t('dailyChallenge.streak')}
+              </Badge>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center space-y-2">
+            <div className="text-3xl font-bold">
+              {todayChallenge.score}/{todayChallenge.total}
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <Zap className="h-5 w-5 text-yellow-500" />
+              <span className="text-lg font-semibold">+{xpEarned} XP</span>
+            </div>
+            <p className="text-sm text-muted-foreground">{t('dailyChallenge.comingBack')}</p>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // Active quiz state
+  if (quizState === 'active' && dailyQuestions.length > 0) {
+    const question = dailyQuestions[currentQ]
+    const timerColor = timeLeft <= 5 ? 'text-red-500' : timeLeft <= 10 ? 'text-amber-500' : 'text-green-500'
+
+    return (
+      <Card className="border-2 border-primary/20">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-yellow-500" />
+              <CardTitle className="text-base">{t('dailyChallenge.title')}</CardTitle>
+            </div>
+            <div className="flex items-center gap-3">
+              <Badge variant="outline" className="text-xs">
+                {currentQ + 1}/{DAILY_QUESTIONS_COUNT}
+              </Badge>
+              <div className={`flex items-center gap-1 font-mono font-bold ${timerColor}`}>
+                <Clock className="h-3.5 w-3.5" />
+                {timeLeft}s
+              </div>
+            </div>
+          </div>
+          <Progress value={(timeLeft / DAILY_TIME_PER_QUESTION) * 100} className="h-1.5" />
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="font-medium text-sm">{question.question}</p>
+          <div className="grid gap-2">
+            {question.options.map((option, idx) => {
+              let btnVariant: 'outline' | 'default' | 'destructive' | 'secondary' = 'outline'
+              if (answered) {
+                if (idx === question.correctAnswer) btnVariant = 'default'
+                else if (idx === selectedAnswer) btnVariant = 'destructive'
+              }
+              return (
+                <Button
+                  key={idx}
+                  variant={btnVariant}
+                  className="justify-start text-left h-auto py-3 px-4 whitespace-normal"
+                  onClick={() => handleAnswer(idx)}
+                  disabled={answered}
+                >
+                  <span className="flex-1">{option}</span>
+                  {answered && idx === question.correctAnswer && (
+                    <CheckCircle2 className="h-4 w-4 text-green-400 ml-2 shrink-0" />
+                  )}
+                  {answered && idx === selectedAnswer && idx !== question.correctAnswer && (
+                    <XCircle className="h-4 w-4 text-red-400 ml-2 shrink-0" />
+                  )}
+                </Button>
+              )
+            })}
+          </div>
+          {answered && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-xs text-muted-foreground p-3 rounded-lg bg-muted/50"
+            >
+              {question.explanation}
+            </motion.div>
+          )}
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // Finished state
+  if (quizState === 'finished') {
+    const xpEarned = DAILY_BASE_XP + score * DAILY_PER_CORRECT_XP
+    return (
+      <Card className="border-2 border-yellow-500/30 bg-gradient-to-r from-yellow-50/50 to-primary/5 dark:from-yellow-950/20 dark:to-primary/5">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Sparkles className="h-5 w-5 text-yellow-500" />
+            {t('dailyChallenge.complete')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center space-y-3">
+            <div className="text-4xl font-bold">
+              {score}/{DAILY_QUESTIONS_COUNT}
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <Zap className="h-6 w-6 text-yellow-500" />
+              <span className="text-xl font-semibold">+{xpEarned} XP</span>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {DAILY_BASE_XP} {t('dailyChallenge.baseXP')} + {score} × {DAILY_PER_CORRECT_XP} {t('dailyChallenge.perCorrect')}
+            </div>
+            <p className="text-sm font-medium text-muted-foreground">{t('dailyChallenge.comingBack')}</p>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // Fallback (should not happen)
+  return null
+}
