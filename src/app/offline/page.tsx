@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { WifiOff, RefreshCw, Home, Cloud, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { useEconomicsStore } from "@/store/economics-store";
@@ -14,6 +14,14 @@ export default function OfflinePage() {
   const [syncing, setSyncing] = useState(false);
   const { toast } = useToast();
   const { t } = useI18n();
+  const toastRef = useRef(toast);
+  const tRef = useRef(t);
+
+  useEffect(() => {
+    toastRef.current = toast;
+    tRef.current = t;
+  }, [toast, t]);
+
   const storeState = useEconomicsStore((s) => ({
     totalXP: s.totalXP,
     quizResults: s.quizResults,
@@ -55,7 +63,7 @@ export default function OfflinePage() {
 
     const handleOnline = () => {
       setIsOnline(true);
-      toast({ title: t('offline.connectionRestored') });
+      toastRef.current({ title: tRef.current('offline.connectionRestored') });
     };
     const handleOffline = () => setIsOnline(false);
 
@@ -66,7 +74,7 @@ export default function OfflinePage() {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
-  }, [toast, t]);
+  }, []);
 
   const handleReload = () => {
     window.location.reload();

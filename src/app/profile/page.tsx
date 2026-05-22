@@ -164,8 +164,10 @@ export default function ProfilePage() {
 
         if (res.ok) {
           const data = await res.json();
-          setProfile(data);
-          update();
+          if (data && typeof data === 'object' && 'id' in data) {
+            setProfile(data);
+            update();
+          }
         }
       } catch {
         setError(t('auth.error.avatarUploadError'));
@@ -184,8 +186,10 @@ export default function ProfilePage() {
 
       if (res.ok) {
         const data = await res.json();
-        setProfile(data);
-        update();
+        if (data && typeof data === 'object' && 'id' in data) {
+          setProfile(data);
+          update();
+        }
       }
     } catch {
       setError(t('auth.error.avatarRemoveError'));

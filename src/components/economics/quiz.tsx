@@ -1421,13 +1421,14 @@ export function EconomicsQuiz() {
   useEffect(() => {
     if (quizState !== 'active') return
     hasTransitionedRef.current = false // Reset guard when starting new question
+    let isMounted = true
     const timer = setInterval(() => {
       setTimeLeft((t) => {
         if (t <= 1) {
           // Time expired — handle inside setState updater to avoid cascading setState
           // Use microtask to ensure state update is applied first
           queueMicrotask(() => {
-            if (hasTransitionedRef.current) return
+            if (!isMounted || hasTransitionedRef.current) return
             hasTransitionedRef.current = true
             setTimeExpired(true)
             setAnswers((prev) => {
@@ -1443,7 +1444,10 @@ export function EconomicsQuiz() {
         return t - 1
       })
     }, 1000)
-    return () => clearInterval(timer)
+    return () => {
+      isMounted = false
+      clearInterval(timer)
+    }
   }, [quizState])
 
   const handleAnswer = useCallback(
