@@ -6,6 +6,7 @@ import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { logError } from '@/lib/log-error';
 import { BASE_URL, RESET_TOKEN_EXPIRY_MS, ENUMERATION_DELAY_MS } from '@/lib/constants';
+import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 
 export async function POST(req: Request) {
   try {
@@ -13,6 +14,10 @@ export async function POST(req: Request) {
     const limit = checkRateLimit('forgotPass', ip);
     if (!limit.ok) {
       return rateLimitResponse('forgotPass', ip, req);
+    }
+
+    if (!validateOriginStrict(req)) {
+      return csrfErrorResponse();
     }
 
     const parsed = await safeJson<{ email: string }>(req);

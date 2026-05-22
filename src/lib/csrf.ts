@@ -53,6 +53,42 @@ export function validateOrigin(req: Request): boolean {
 }
 
 /**
+ * Strict origin validation — rejects requests with no Origin/Referer header.
+ * Use for public POST endpoints where legitimate requests always originate from
+ * the app's own JavaScript (which always sends the Origin header).
+ */
+export function validateOriginStrict(req: Request): boolean {
+  const allowedOrigins = getAllowedOrigins();
+  if (allowedOrigins.length === 0) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[CSRF] No allowed origins configured in production — rejecting request');
+      return false;
+    }
+    return true;
+  }
+
+  const origin = req.headers.get('origin') || req.headers.get('referer');
+
+  if (!origin) {
+    // Reject requests with no origin header — legitimate browser fetch/XHR
+    // requests from the app will always include an Origin header.
+    return false;
+  }
+
+  try {
+    const originUrl = new URL(origin);
+    const requestOrigin = originUrl.origin.replace(/\/$/, '');
+
+    return allowedOrigins.some((allowed) => {
+      const allowedOrigin = allowed.replace(/\/$/, '');
+      return requestOrigin === allowedOrigin;
+    });
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Return a 403 response for invalid CSRF origins
  */
 export function csrfErrorResponse() {

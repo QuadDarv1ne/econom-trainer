@@ -8,6 +8,7 @@ import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validatePasswordStrength } from '@/lib/validate-password';
 import { logError } from '@/lib/log-error';
 import { BCRYPT_SALT_ROUNDS, VERIFICATION_TOKEN_EXPIRY_MS, BASE_URL } from '@/lib/constants';
+import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 
 export async function POST(req: Request) {
   try {
@@ -15,6 +16,10 @@ export async function POST(req: Request) {
     const limit = checkRateLimit('register', ip);
     if (!limit.ok) {
       return rateLimitResponse('register', ip, req);
+    }
+
+    if (!validateOriginStrict(req)) {
+      return csrfErrorResponse();
     }
 
     const parsed = await safeJson<{ name: string; email: string; password: string; phone?: string }>(req);
