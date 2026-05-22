@@ -139,9 +139,9 @@ export default function Home() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="ghost" size="sm" onClick={() => router.push('/auth/login')} className="hidden sm:flex">
+              <Button variant="ghost" size="sm" onClick={() => router.push('/auth/login')}>
                 <LogIn className="h-4 w-4 mr-1" />
-                {t('auth.login.submit')}
+                <span className="hidden sm:inline">{t('auth.login.submit')}</span>
               </Button>
             )}
           </div>
@@ -151,20 +151,24 @@ export default function Home() {
       <main className="container mx-auto px-4 py-6 flex-1">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Scrollable Tab Navigation with category groups */}
-          <div className="mb-6">
+          <div className="mb-6 -mx-4 px-4">
             <ScrollArea className="w-full whitespace-nowrap">
-              <TabsList className="inline-flex h-auto p-1 gap-0.5">
+              <TabsList className="inline-flex h-auto p-1 gap-0.5 bg-transparent">
                 {tabItems.map((item, idx) => (
                   <span key={item.value} className="inline-flex items-center">
                     {idx > 0 && categoryBreaks.has(item.value) && (
-                      <Separator orientation="vertical" className="h-6 mx-1.5" />
+                      <Separator orientation="vertical" className="h-6 mx-1" />
                     )}
                     {idx === 1 && !categoryBreaks.has(item.value) && (
-                      <Separator orientation="vertical" className="h-6 mx-1.5" />
+                      <Separator orientation="vertical" className="h-6 mx-1" />
                     )}
-                    <TabsTrigger value={item.value} className="text-xs px-2 py-2 flex items-center gap-1">
-                      <item.icon className="h-3.5 w-3.5" />
-                      <span className="hidden sm:inline">{t(item.labelKey)}</span>
+                    <TabsTrigger
+                      value={item.value}
+                      className="text-xs px-2.5 py-1.5 flex items-center gap-1.5 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                      title={t(item.labelKey)}
+                    >
+                      <item.icon className="h-3.5 w-3.5 shrink-0" />
+                      <span className="hidden md:inline">{t(item.labelKey)}</span>
                     </TabsTrigger>
                   </span>
                 ))}
@@ -289,7 +293,7 @@ export default function Home() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 text-sm">
                   <div className="space-y-1">
                     <div className="font-semibold flex items-center gap-2">
                       <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">1</span>

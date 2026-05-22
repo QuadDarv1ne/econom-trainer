@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { t, getCurrentLocale } from '@/lib/i18n'
 import { generateId } from '@/lib/utils'
-import { getLevelFromXP as getLevelFromXPShared } from '@/lib/xp-utils'
+import { getLevelFromXP } from '@/lib/xp-utils'
 
 export interface QuizResult {
   id: string
@@ -70,8 +70,6 @@ export interface XPState {
   xpToNextLevel: number
   xpInCurrentLevel: number
 }
-
-export { getLevelFromXPShared as getLevelFromXP }
 
 export function getLevelTitle(level: number): string {
   const locale = getCurrentLocale()
@@ -358,7 +356,7 @@ export const useEconomicsStore = create<EconomicsState>()(
 
       getXPState: () => {
         const state = get()
-        const { level, xpInCurrentLevel, xpToNextLevel } = getLevelFromXPShared(state.totalXP)
+        const { level, xpInCurrentLevel, xpToNextLevel } = getLevelFromXP(state.totalXP)
         return { totalXP: state.totalXP, level, xpToNextLevel, xpInCurrentLevel }
       },
 
@@ -379,7 +377,7 @@ export const useEconomicsStore = create<EconomicsState>()(
 
       getFullProgress: () => {
         const state = get()
-        const { level } = getLevelFromXPShared(state.totalXP)
+        const { level } = getLevelFromXP(state.totalXP)
         const levelTitle = getLevelTitle(level)
 
         const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeQuizAndFinanceStats(state.quizResults, state.financeResults)

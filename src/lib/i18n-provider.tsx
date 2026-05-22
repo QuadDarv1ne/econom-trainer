@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { Locale, getCurrentLocale, setLocale, t as translate } from '@/lib/i18n';
 
 interface I18nContextType {
@@ -12,21 +12,31 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(() => {
-    // Initialize from stored locale on first render (works for SSR/SSG)
+  const [locale, setLocaleState] = useState<Locale>('ru');
+  const [mounted, setMounted] = useState(false);
+
+  // After mount, load the actual stored locale and set document lang
+  useEffect(() => {
+    setMounted(true);
     try {
-      return getCurrentLocale();
+      const stored = getCurrentLocale();
+      setLocaleState(stored);
+      document.documentElement.lang = stored;
     } catch {
-      return 'ru';
+      document.documentElement.lang = 'ru';
     }
-  });
+  }, []);
+
+  // Update document lang when locale changes after mount
+  useEffect(() => {
+    if (mounted) {
+      document.documentElement.lang = locale;
+    }
+  }, [locale, mounted]);
 
   const changeLocale = (newLocale: Locale) => {
     setLocale(newLocale);
     setLocaleState(newLocale);
-    if (typeof document !== 'undefined') {
-      document.documentElement.lang = newLocale;
-    }
   };
 
   const t = useCallback((key: string) => translate(key, locale), [locale]);

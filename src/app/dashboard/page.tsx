@@ -189,22 +189,22 @@ export default function DashboardPage() {
             </Link>
             <h1 className="text-lg font-bold">{t('dashboard.title')}</h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Link href="/">
-              <Button variant="ghost" size="sm">
-                <Home className="h-4 w-4 mr-2" />
-                {t('dashboard.home')}
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Home className="h-4 w-4" />
+                <span className="sr-only">{t('dashboard.home')}</span>
               </Button>
             </Link>
             <Link href="/profile">
-              <Button variant="ghost" size="sm">
-                <User className="h-4 w-4 mr-2" />
-                {t('profile.title')}
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <User className="h-4 w-4" />
+                <span className="sr-only">{t('profile.title')}</span>
               </Button>
             </Link>
-            <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: '/' })}>
-              <LogOut className="h-4 w-4 mr-2" />
-              {t('dashboard.signOut')}
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => signOut({ callbackUrl: '/' })}>
+              <LogOut className="h-4 w-4" />
+              <span className="sr-only">{t('dashboard.signOut')}</span>
             </Button>
           </div>
         </div>
@@ -216,7 +216,7 @@ export default function DashboardPage() {
             <AlertCircle className="h-4 w-4" />
             <AlertDescription className="flex items-center justify-between gap-2">
               <span>{error}</span>
-              <button onClick={() => setError('')} className="shrink-0" aria-label="Close">
+              <button onClick={() => setError('')} className="shrink-0" aria-label={t('common.close')}>
                 <X className="h-4 w-4" />
               </button>
             </AlertDescription>
@@ -227,7 +227,7 @@ export default function DashboardPage() {
             <CheckCircle2 className="h-4 w-4 text-green-500" />
             <AlertDescription className="flex items-center justify-between gap-2 text-green-700 dark:text-green-400">
               <span>{success}</span>
-              <button onClick={() => setSuccess('')} className="shrink-0" aria-label="Close">
+              <button onClick={() => setSuccess('')} className="shrink-0" aria-label={t('common.close')}>
                 <X className="h-4 w-4" />
               </button>
             </AlertDescription>
@@ -474,7 +474,7 @@ export default function DashboardPage() {
                 <CardDescription>{t('dashboard.progress.desc')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <Card>
                     <CardContent className="pt-6 text-center">
                       <Zap className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
