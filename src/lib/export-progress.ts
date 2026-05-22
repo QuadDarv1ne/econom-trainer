@@ -180,3 +180,107 @@ export function downloadProgressJSON() {
   const timestamp = new Date().toISOString().split('T')[0]
   downloadFile(json, `economy-progress-${timestamp}.json`, 'application/json')
 }
+
+/**
+ * Validate and import progress data from a JSON string.
+ * Returns an error message on failure, or void on success.
+ */
+export function importProgressFromJSON(jsonString: string): string | void {
+  if (typeof window === 'undefined') {
+    return 'Import is not available in server environment'
+  }
+
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(jsonString)
+  } catch {
+    return 'Invalid JSON format'
+  }
+
+  if (!parsed || typeof parsed !== 'object') {
+    return 'Invalid progress data: expected a JSON object'
+  }
+
+  const data = parsed as Record<string, unknown>
+
+  // Validate required fields
+  if (typeof data.totalXP !== 'number' || data.totalXP < 0) {
+    return 'Invalid progress data: totalXP must be a non-negative number'
+  }
+
+  // Validate arrays
+  const arrayFields = ['quizResults', 'gdpResults', 'financeResults', 'elasticityResults', 'moduleInteractions', 'dailyChallenges'] as const
+  for (const field of arrayFields) {
+    if (field in data && !Array.isArray(data[field])) {
+      return `Invalid progress data: ${field} must be an array`
+    }
+  }
+
+  // Validate streakState
+  if ('streakState' in data) {
+    const streak = data.streakState
+    if (!streak || typeof streak !== 'object' ||
+        typeof (streak as Record<string, unknown>).currentStreak !== 'number' ||
+        typeof (streak as Record<string, unknown>).longestStreak !== 'number') {
+      return 'Invalid progress data: streakState must contain currentStreak and longestStreak'
+    }
+  }
+
+  // Import into store
+  const state = useEconomicsStore.getState()
+
+  state.resetProgress()
+
+  // Re-populate the store with imported data
+  const importedData = {
+    quizResults: (data.quizResults as unknown[]) || [],
+    gdpResults: (data.gdpResults as unknown[]) || [],
+    financeResults: (data.financeResults as unknown[]) || [],
+    elasticityResults: (data.elasticityResults as unknown[]) || [],
+    moduleInteractions: (data.moduleInteractions as unknown[]) || [],
+    unlockedAchievements: (data.unlockedAchievements as string[]) || [],
+    totalXP: data.totalXP as number,
+    dailyChallenges: (data.dailyChallenges as unknown[]) || [],
+    streakState: (data.streakState as typeof state.streakState) || { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
+  }
+
+  // Use zustand set directly to restore full state
+  useEconomicsStore.setState(importedData)
+}
+
+/**
+ * Open file picker and import progress from selected JSON file
+ */
+export function importProgressFromFile() {
+  if (typeof window === 'undefined') {
+    console.warn('importProgressFromFile: not available in server environment')
+    return
+  }
+
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = '.json,application/json'
+  input.style.display = 'none'
+
+  input.onchange = async () => {
+    const file = input.files?.[0]
+    if (!file) return
+
+    try {
+      const text = await file.text()
+      const error = importProgressFromJSON(text)
+      if (error) {
+        console.error('Import failed:', error)
+        throw new Error(error)
+      }
+    } catch (err) {
+      console.error('Failed to import progress:', err)
+      throw err
+    } finally {
+      document.body.removeChild(input)
+    }
+  }
+
+  document.body.appendChild(input)
+  input.click()
+}

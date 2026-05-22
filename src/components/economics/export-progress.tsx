@@ -4,11 +4,11 @@ import { useState } from 'react'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
 import { useEconomicsStore, getLevelTitle, getModuleDisplayName } from '@/store/economics-store'
-import { downloadProgressCSV, downloadProgressJSON } from '@/lib/export-progress'
+import { downloadProgressCSV, downloadProgressJSON, importProgressFromFile } from '@/lib/export-progress'
 import { useI18n } from '@/lib/i18n-provider'
 import { getCurrentLocale, t, toLocale } from '@/lib/i18n'
 import { Button } from '@/components/ui/button'
-import { Download, Copy, Check, Share2 } from 'lucide-react'
+import { Download, Upload, Copy, Check, Share2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { COPY_FEEDBACK_MS } from '@/lib/constants'
 
@@ -225,6 +225,16 @@ export function ExportProgressButton() {
     }
   }
 
+  const handleImport = () => {
+    try {
+      importProgressFromFile()
+      toast.success(t('export.importSuccess') ?? 'Progress imported successfully')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error'
+      toast.error(t('export.importFailed') ?? `Failed to import: ${message}`)
+    }
+  }
+
   return (
     <div className="flex gap-2 flex-wrap">
       <Button onClick={exportProgressToPDF} variant="outline" size="sm">
@@ -238,6 +248,10 @@ export function ExportProgressButton() {
       <Button onClick={() => downloadProgressJSON()} variant="outline" size="sm">
         <Download className="h-4 w-4 mr-2" />
         JSON
+      </Button>
+      <Button onClick={handleImport} variant="outline" size="sm">
+        <Upload className="h-4 w-4 mr-2" />
+        {t('export.import') ?? 'Import'}
       </Button>
       <Button onClick={handleCopy} variant="outline" size="sm">
         {copied ? <Check className="h-4 w-4 mr-2 text-green-500" /> : <Copy className="h-4 w-4 mr-2" />}
