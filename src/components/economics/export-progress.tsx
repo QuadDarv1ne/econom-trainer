@@ -225,9 +225,9 @@ export function ExportProgressButton() {
     }
   }
 
-  const handleImport = () => {
+  const handleImport = async () => {
     try {
-      importProgressFromFile()
+      await importProgressFromFile()
       toast.success(t('export.importSuccess') ?? 'Progress imported successfully')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error'

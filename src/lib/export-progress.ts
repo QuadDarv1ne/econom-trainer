@@ -172,36 +172,36 @@ export function downloadProgressJSON() {
 
 /**
  * Validate and import progress data from a JSON string.
- * Returns an error message on failure, or void on success.
+ * Throws on failure so errors can be properly caught by callers.
  */
-export function importProgressFromJSON(jsonString: string): string | void {
+export function importProgressFromJSON(jsonString: string): void {
   if (typeof window === 'undefined') {
-    return 'Import is not available in server environment'
+    throw new Error('Import is not available in server environment')
   }
 
   let parsed: unknown
   try {
     parsed = JSON.parse(jsonString)
   } catch {
-    return 'Invalid JSON format'
+    throw new Error('Invalid JSON format')
   }
 
   if (!parsed || typeof parsed !== 'object') {
-    return 'Invalid progress data: expected a JSON object'
+    throw new Error('Invalid progress data: expected a JSON object')
   }
 
   const data = parsed as Record<string, unknown>
 
   // Validate required fields
   if (typeof data.totalXP !== 'number' || data.totalXP < 0) {
-    return 'Invalid progress data: totalXP must be a non-negative number'
+    throw new Error('Invalid progress data: totalXP must be a non-negative number')
   }
 
   // Validate arrays
   const arrayFields = ['quizResults', 'gdpResults', 'financeResults', 'elasticityResults', 'moduleInteractions', 'dailyChallenges'] as const
   for (const field of arrayFields) {
     if (field in data && !Array.isArray(data[field])) {
-      return `Invalid progress data: ${field} must be an array`
+      throw new Error(`Invalid progress data: ${field} must be an array`)
     }
   }
 
@@ -211,65 +211,65 @@ export function importProgressFromJSON(jsonString: string): string | void {
     if (!streak || typeof streak !== 'object' ||
         typeof (streak as Record<string, unknown>).currentStreak !== 'number' ||
         typeof (streak as Record<string, unknown>).longestStreak !== 'number') {
-      return 'Invalid progress data: streakState must contain currentStreak and longestStreak'
+      throw new Error('Invalid progress data: streakState must contain currentStreak and longestStreak')
     }
   }
 
-  // Import into store
+  // Build imported data BEFORE resetting progress
   const state = useEconomicsStore.getState()
-
-  state.resetProgress()
-
-  // Re-populate the store with imported data
   const importedData: Partial<EconomicsState> = {
     quizResults: ((data.quizResults ?? []) as unknown as QuizResult[]),
     gdpResults: ((data.gdpResults ?? []) as unknown as GDPResult[]),
     financeResults: ((data.financeResults ?? []) as unknown as FinanceResult[]),
     elasticityResults: ((data.elasticityResults ?? []) as unknown as ElasticityResult[]),
     moduleInteractions: ((data.moduleInteractions ?? []) as unknown as ModuleInteraction[]),
-    unlockedAchievements: (data.unlockedAchievements as string[]) ?? [],
+    unlockedAchievements: (data.unlockedAchievements as string[] | undefined) ?? [],
     totalXP: data.totalXP as number,
     dailyChallenges: ((data.dailyChallenges ?? []) as unknown as DailyChallenge[]),
-    streakState: (data.streakState as typeof state.streakState) ?? { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
+    streakState: (data.streakState as typeof state.streakState | undefined) ?? { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
   }
 
-  // Use zustand set directly to restore full state
+  // Now reset and import atomically
+  state.resetProgress()
   useEconomicsStore.setState(importedData)
 }
 
 /**
- * Open file picker and import progress from selected JSON file
+ * Open file picker and import progress from selected JSON file.
+ * Returns a Promise that resolves on success or rejects on failure.
  */
-export function importProgressFromFile() {
+export function importProgressFromFile(): Promise<void> {
   if (typeof window === 'undefined') {
     console.warn('importProgressFromFile: not available in server environment')
-    return
+    return Promise.resolve()
   }
 
-  const input = document.createElement('input')
-  input.type = 'file'
-  input.accept = '.json,application/json'
-  input.style.display = 'none'
+  return new Promise((resolve, reject) => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.json,application/json'
+    input.style.display = 'none'
 
-  input.onchange = async () => {
-    const file = input.files?.[0]
-    if (!file) return
-
-    try {
-      const text = await file.text()
-      const error = importProgressFromJSON(text)
-      if (error) {
-        console.error('Import failed:', error)
-        throw new Error(error)
+    input.onchange = async () => {
+      const file = input.files?.[0]
+      if (!file) {
+        document.body.removeChild(input)
+        reject(new Error('No file selected'))
+        return
       }
-    } catch (err) {
-      console.error('Failed to import progress:', err)
-      throw err
-    } finally {
-      document.body.removeChild(input)
-    }
-  }
 
-  document.body.appendChild(input)
-  input.click()
+      try {
+        const text = await file.text()
+        importProgressFromJSON(text)
+        resolve()
+      } catch (err) {
+        reject(err)
+      } finally {
+        document.body.removeChild(input)
+      }
+    }
+
+    document.body.appendChild(input)
+    input.click()
+  })
 }
