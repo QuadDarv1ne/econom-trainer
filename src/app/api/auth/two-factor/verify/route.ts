@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { randomBytes } from 'crypto';
-import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
+import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
 import { BCRYPT_SALT_ROUNDS_BACKUP } from '@/lib/constants';
 
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!validateOrigin(req)) {
+    if (!validateOriginStrict(req)) {
       return csrfErrorResponse();
     }
 

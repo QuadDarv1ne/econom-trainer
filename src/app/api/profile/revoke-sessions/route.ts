@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { randomBytes } from 'crypto';
-import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
+import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { logError } from '@/lib/log-error';
 
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!validateOrigin(req)) {
+    if (!validateOriginStrict(req)) {
       return csrfErrorResponse();
     }
 

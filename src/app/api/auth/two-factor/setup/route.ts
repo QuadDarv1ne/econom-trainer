@@ -4,7 +4,7 @@ import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
-import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
+import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
 
 // Generate TOTP secret and QR code
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!validateOrigin(req)) {
+    if (!validateOriginStrict(req)) {
       return csrfErrorResponse();
     }
 

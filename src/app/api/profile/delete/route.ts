@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
-import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
+import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
 
 // DELETE - Delete user account
@@ -15,7 +15,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!validateOrigin(req)) {
+    if (!validateOriginStrict(req)) {
       return csrfErrorResponse();
     }
 
