@@ -26,12 +26,19 @@ export interface ExportData {
 }
 
 /**
- * Escape a value for CSV output. Wraps in quotes and doubles any internal quotes.
+ * Escape a value for CSV output. Protects against CSV formula injection
+ * by prefixing dangerous characters. Wraps in quotes and doubles internal quotes.
  */
 function escapeCsvValue(value: string | number): string {
   const str = String(value);
-  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-    return `"${str.replace(/"/g, '""')}"`;
+  const dangerousPrefixes = ['=', '+', '-', '@'] as const;
+  const startsWithDangerous = dangerousPrefixes.some(prefix => str.startsWith(prefix));
+  const needsQuoting = startsWithDangerous || str.includes(',') || str.includes('"') || str.includes('\n');
+
+  if (needsQuoting) {
+    const escaped = str.replace(/"/g, '""');
+    // Prepend tab to neutralize formula injection while keeping value readable
+    return startsWithDangerous ? `"\t${escaped}"` : `"${escaped}"`;
   }
   return str;
 }
