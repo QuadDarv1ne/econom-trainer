@@ -3,7 +3,6 @@
 import type React from 'react';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { signOut } from 'next-auth/react';
-import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,27 +10,17 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { PasswordInput } from '@/components/ui/password-input';
 import { Progress } from '@/components/ui/progress';
 import {
-  GraduationCap,
   User,
   Mail,
   Phone,
   Shield,
-  QrCode,
-  Copy,
   Check,
   Loader2,
-  LogOut,
-  Home,
   BarChart3,
-  Zap,
-  AlertCircle,
-  CheckCircle2,
   Camera,
   Trash2,
   KeyRound,
@@ -39,14 +28,19 @@ import {
   Monitor,
   AlertTriangle,
   X,
+  LogOut,
 } from 'lucide-react';
 import { useEconomicsStore } from '@/store/economics-store';
 import { useI18n } from '@/lib/i18n-provider';
 import { formatDate as formatLocaleDate } from '@/lib/i18n';
 import { checkPasswordStrength } from '@/lib/password-strength';
 import { useProfile, useProgressSync } from '@/hooks/use-profile';
-import { ALERT_AUTO_DISMISS_MS, COPY_FEEDBACK_MS, RESEND_COOLDOWN_SECONDS } from '@/lib/constants';
+import { ALERT_AUTO_DISMISS_MS, RESEND_COOLDOWN_SECONDS } from '@/lib/constants';
 import { AlertBanner } from '@/components/ui/alert-banner';
+import { safeErrorMessage } from '@/lib/safe-error';
+import { AppHeader } from '@/components/shared/app-header';
+import { TwoFAManagement } from '@/components/shared/two-fa-management';
+import { ProgressStats } from '@/components/shared/progress-stats';
 
 export default function ProfilePage() {
   const { t, locale } = useI18n();
@@ -86,19 +80,6 @@ export default function ProfilePage() {
   // Email verification
   const [sendingVerification, setSendingVerification] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
-
-  // 2FA
-  const [qrCode, setQrCode] = useState('');
-  const [secret, setSecret] = useState('');
-  const [backupCodes, setBackupCodes] = useState<string[]>([]);
-  const [twoFactorCode, setTwoFactorCode] = useState('');
-  const [settingUp2FA, setSettingUp2FA] = useState(false);
-  const [verifying2FA, setVerifying2FA] = useState(false);
-  const [showQR, setShowQR] = useState(false);
-  const [showBackupCodes, setShowBackupCodes] = useState(false);
-  const [copiedCode, setCopiedCode] = useState(false);
-  const [disablePassword, setDisablePassword] = useState('');
-  const [disabling2FA, setDisabling2FA] = useState(false);
 
   // Local progress display
   const totalXP = useEconomicsStore((s) => s.totalXP);
@@ -231,8 +212,7 @@ export default function ProfilePage() {
         // Sign out since all sessions are invalidated by password change
         signOut({ callbackUrl: '/auth/login' });
       } else {
-        const errMsg = (data && typeof data.error === 'string') ? data.error : t('auth.error.serverError');
-        setError(errMsg);
+        setError(safeErrorMessage(data, t('auth.error.serverError')));
       }
     } catch {
       setError(t('auth.error.serverError'));
@@ -253,95 +233,12 @@ export default function ProfilePage() {
         setSuccess(t('profile.verificationSent'));
         setResendCooldown(RESEND_COOLDOWN_SECONDS);
       } else {
-        const errMsg = (data && typeof data.error === 'string') ? data.error : t('auth.error.serverError');
-        setError(errMsg);
+        setError(safeErrorMessage(data, t('auth.error.serverError')));
       }
     } catch {
       setError(t('auth.error.verificationSendError'));
     } finally {
       setSendingVerification(false);
-    }
-  }
-
-  async function setup2FA() {
-    setSettingUp2FA(true);
-    setError('');
-
-    try {
-      const res = await fetch('/api/auth/two-factor/setup', { method: 'POST' });
-      const data = await res.json();
-
-      if (res.ok) {
-        setQrCode(data.qrCode);
-        setSecret(data.secret);
-        setShowQR(true);
-      } else {
-        const errMsg = (data && typeof data.error === 'string') ? data.error : t('auth.error.serverError');
-        setError(errMsg);
-      }
-    } catch {
-      setError(t('auth.error.2faSetupError'));
-    } finally {
-      setSettingUp2FA(false);
-    }
-  }
-
-  async function verify2FA() {
-    setVerifying2FA(true);
-    setError('');
-
-    try {
-      const res = await fetch('/api/auth/two-factor/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: twoFactorCode }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setBackupCodes(data.backupCodes);
-        setShowBackupCodes(true);
-        setShowQR(false);
-        setProfile((p) => (p ? { ...p, twoFactorEnabled: true } : null));
-        update();
-      } else {
-        const errMsg = (data && typeof data.error === 'string') ? data.error : t('auth.error.serverError');
-        setError(errMsg);
-      }
-    } catch {
-      setError(t('auth.error.2faVerifyError'));
-    } finally {
-      setVerifying2FA(false);
-    }
-  }
-
-  async function disable2FA() {
-    setDisabling2FA(true);
-    setError('');
-    try {
-      const res = await fetch('/api/auth/two-factor/disable', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: disablePassword }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setProfile((p) => (p ? { ...p, twoFactorEnabled: false } : null));
-        setQrCode('');
-        setSecret('');
-        setBackupCodes([]);
-        setDisablePassword('');
-        setSuccess(t('dashboard.security.disable'));
-        update();
-      } else {
-        const errMsg = (data && typeof data.error === 'string') ? data.error : t('auth.error.serverError');
-        setError(errMsg);
-      }
-    } catch {
-      setError(t('auth.error.2faDisableError'));
-    } finally {
-      setDisabling2FA(false);
     }
   }
 
@@ -361,8 +258,7 @@ export default function ProfilePage() {
       if (res.ok) {
         signOut({ callbackUrl: '/' });
       } else {
-        const errMsg = (data && typeof data.error === 'string') ? data.error : t('auth.error.serverError');
-        setError(errMsg);
+        setError(safeErrorMessage(data, t('auth.error.serverError')));
       }
     } catch {
       setError(t('auth.error.accountDeleteError'));
@@ -415,37 +311,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/">
-              <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
-                <GraduationCap className="h-5 w-5 text-primary-foreground" />
-              </div>
-            </Link>
-            <h1 className="text-lg font-bold">{t('profile.title')}</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link href="/">
-              <Button variant="ghost" size="sm">
-                <Home className="h-4 w-4 mr-2" />
-                {t('dashboard.home')}
-              </Button>
-            </Link>
-            <Link href="/dashboard">
-              <Button variant="ghost" size="sm">
-                <BarChart3 className="h-4 w-4 mr-2" />
-                {t('dashboard.title')}
-              </Button>
-            </Link>
-            <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: '/' })}>
-              <LogOut className="h-4 w-4 mr-2" />
-              {t('dashboard.signOut')}
-            </Button>
-          </div>
-        </div>
-      </header>
+      <AppHeader title={t('profile.title')} variant="full" />
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <AlertBanner type="error" message={error} onDismiss={() => setError('')} closeLabel={t('auth.error.close') || 'Close'} />
@@ -664,155 +530,15 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
-            {/* 2FA */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5" />
-                  {t('dashboard.security.title')}
-                </CardTitle>
-                <CardDescription>
-                  {t('dashboard.security.desc')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {profile?.twoFactorEnabled ? (
-                  <div className="space-y-4">
-                    <Alert className="border-green-500 bg-green-50 dark:bg-green-950/20">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <AlertDescription className="text-green-700 dark:text-green-400">
-                        {t('dashboard.security.enabled')}
-                      </AlertDescription>
-                    </Alert>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="disable-2fa-password">{t('profile.password')}</Label>
-                      <PasswordInput
-                        id="disable-2fa-password"
-                        value={disablePassword}
-                        onChange={(e) => setDisablePassword(e.target.value)}
-                        placeholder={t('auth.login.password')}
-                      />
-                    </div>
-
-                    <Button variant="destructive" onClick={disable2FA} disabled={disabling2FA || !disablePassword}>
-                      {disabling2FA ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t('auth.login.loading')}</> : t('dashboard.security.disable')}
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <Alert>
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>
-                        {t('dashboard.security.warning')}
-                      </AlertDescription>
-                    </Alert>
-
-                    {!showQR && (
-                      <Button onClick={setup2FA} disabled={settingUp2FA}>
-                        {settingUp2FA ? (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                          <QrCode className="mr-2 h-4 w-4" />
-                        )}
-                        {t('dashboard.security.setup')}
-                      </Button>
-                    )}
-
-                    {showQR && (
-                      <div className="space-y-4 pt-4">
-                        <Separator />
-                        <div className="text-center space-y-2">
-                          <h4 className="font-semibold">{t('dashboard.security.scanQr')}</h4>
-                          <div className="inline-block p-4 bg-white rounded-lg">
-                            <img src={qrCode} alt={t('dashboard.security.qrCodeAlt') || 'QR Code'} className="w-48 h-48" />
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <h4 className="font-semibold">{t('dashboard.security.manualEntry')}</h4>
-                          <div className="flex items-center gap-2">
-                            <code className="bg-muted px-3 py-2 rounded text-sm font-mono">{secret}</code>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                navigator.clipboard.writeText(secret);
-                                setCopiedCode(true);
-                                setTimeout(() => setCopiedCode(false), COPY_FEEDBACK_MS);
-                              }}
-                            >
-                              {copiedCode ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                            </Button>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <h4 className="font-semibold">{t('dashboard.security.enterCode')}</h4>
-                          <div className="flex flex-col gap-2">
-                            <InputOTP
-                              maxLength={6}
-                              value={twoFactorCode}
-                              onChange={setTwoFactorCode}
-                            >
-                              <InputOTPGroup>
-                                <InputOTPSlot index={0} />
-                                <InputOTPSlot index={1} />
-                                <InputOTPSlot index={2} />
-                              </InputOTPGroup>
-                              <InputOTPGroup>
-                                <InputOTPSlot index={3} />
-                                <InputOTPSlot index={4} />
-                                <InputOTPSlot index={5} />
-                              </InputOTPGroup>
-                            </InputOTP>
-                            <Button onClick={verify2FA} disabled={verifying2FA} className="self-start">
-                              {verifying2FA ? <Loader2 className="h-4 w-4 animate-spin" /> : t('dashboard.security.verify')}
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {showBackupCodes && (
-                      <div className="space-y-4 pt-4">
-                        <Separator />
-                        <Alert className="border-amber-500 bg-amber-50 dark:bg-amber-950/20">
-                          <AlertCircle className="h-4 w-4 text-amber-500" />
-                          <AlertDescription className="text-amber-700 dark:text-amber-400">
-                            <strong>{t('dashboard.security.saveCodes')}</strong>
-                          </AlertDescription>
-                        </Alert>
-
-                        <div className="grid grid-cols-2 gap-2">
-                          {backupCodes.map((code, i) => (
-                            <div
-                              key={i}
-                              className="flex items-center justify-between bg-muted px-3 py-2 rounded"
-                            >
-                              <code className="font-mono text-sm">{code}</code>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => {
-                                  navigator.clipboard.writeText(code);
-                                }}
-                              >
-                                <Copy className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-
-                        <Button onClick={() => setShowBackupCodes(false)}>
-                          {t('dashboard.security.savedCodes')}
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <TwoFAManagement
+              twoFactorEnabled={!!profile?.twoFactorEnabled}
+              onTwoFactorChange={(enabled) => {
+                setProfile((p) => (p ? { ...p, twoFactorEnabled: enabled } : null));
+                update();
+              }}
+              setError={setError}
+              setSuccess={setSuccess}
+            />
 
             {/* Session Management */}
             <Card>
@@ -904,58 +630,14 @@ export default function ProfilePage() {
 
           {/* Progress Tab */}
           <TabsContent value="progress" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  {t('dashboard.progress.title')}
-                </CardTitle>
-                <CardDescription>{t('dashboard.progress.desc')}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Card>
-                    <CardContent className="pt-6 text-center">
-                      <Zap className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
-                      <div className="text-3xl font-bold">{totalXP}</div>
-                      <div className="text-sm text-muted-foreground">{t('dashboard.progress.totalXP')}</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-6 text-center">
-                      <User className="h-8 w-8 text-primary mx-auto mb-2" />
-                      <div className="text-3xl font-bold">{profile?.name || t('dashboard.progress.student')}</div>
-                      <div className="text-sm text-muted-foreground">{t('dashboard.progress.account')}</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-6 text-center">
-                      <CheckCircle2 className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                      <div className="text-3xl font-bold">{quizResultsCount}</div>
-                      <div className="text-sm text-muted-foreground">{t('dashboard.progress.quizzes')}</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-6 text-center">
-                      <BarChart3 className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-                      <div className="text-3xl font-bold">{moduleInteractionsCount}</div>
-                      <div className="text-sm text-muted-foreground">{t('dashboard.progress.sessions')}</div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <Button onClick={syncProgress} disabled={syncing} className="w-full">
-                  {syncing ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : null}
-                  {t('dashboard.progress.sync')}
-                </Button>
-
-                <p className="text-xs text-muted-foreground text-center">
-                  {t('dashboard.progress.note')}
-                </p>
-              </CardContent>
-            </Card>
+            <ProgressStats
+              totalXP={totalXP}
+              userName={profile?.name ?? null}
+              quizResultsCount={quizResultsCount}
+              moduleInteractionsCount={moduleInteractionsCount}
+              onSync={syncProgress}
+              syncing={syncing}
+            />
           </TabsContent>
         </Tabs>
       </main>
