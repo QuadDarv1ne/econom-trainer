@@ -52,6 +52,8 @@ export function DailyChallenge() {
 
   // Track score via ref to avoid stale closure issues in setTimeout
   const scoreRef = useRef(0)
+  // Prevent double-calling processAnswer when timer expires and user clicks simultaneously
+  const hasProcessedRef = useRef(false)
 
   // Helper to trigger re-renders when score changes (for UI updates)
   const [displayScore, setDisplayScore] = useState(0)
@@ -64,6 +66,7 @@ export function DailyChallenge() {
     setSelectedAnswer(null)
     setAnswered(false)
     scoreRef.current = 0
+    hasProcessedRef.current = false
     setDisplayScore(0)
     setTimeLeft(DAILY_TIME_PER_QUESTION)
     setQuizState('active')
@@ -71,6 +74,10 @@ export function DailyChallenge() {
 
   const processAnswer = useCallback(
     (optionIndex: number) => {
+      // Prevent double-processing from race between timer and user click
+      if (hasProcessedRef.current) return
+      hasProcessedRef.current = true
+
       const isCorrect = optionIndex === dailyQuestions[currentQ].correctAnswer
       if (isCorrect) {
         scoreRef.current += 1
@@ -85,6 +92,8 @@ export function DailyChallenge() {
         })
         setQuizState('finished')
       } else {
+        // Reset guard for next question
+        hasProcessedRef.current = false
         setCurrentQ((q) => q + 1)
         setSelectedAnswer(null)
         setAnswered(false)
