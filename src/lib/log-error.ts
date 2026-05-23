@@ -13,7 +13,11 @@ const SENSITIVE_PATTERNS = [
   /cookie/i,
   /credential/i,
   /hash/i,
-  /key/i,
+  /api[_\s-]?key/i,
+  /private[_\s-]?key/i,
+  /access[_\s-]?key/i,
+  /signing[_\s-]?key/i,
+  /encryption[_\s-]?key/i,
 ];
 
 /**

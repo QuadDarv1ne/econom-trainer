@@ -12,8 +12,26 @@ import { logError } from '@/lib/log-error';
  */
 export function getLocaleFromRequest(req: Request): Locale {
   const acceptLanguage = req.headers.get('accept-language') || '';
-  const primary = acceptLanguage.split(',')[0]?.trim().toLowerCase() || '';
-  if (primary.startsWith('en')) return 'en';
+  const parts = acceptLanguage.split(',').map((p) => p.trim().toLowerCase()).filter(Boolean);
+
+  // Parse each part with its quality factor and sort by quality descending
+  const parsed = parts.map((part) => {
+    const [locale, ...params] = part.split(';');
+    let quality = 1;
+    for (const param of params) {
+      const match = param.trim().match(/^q=(\d(?:\.\d+)?)$/);
+      if (match) quality = parseFloat(match[1]);
+    }
+    return { locale, quality };
+  });
+
+  parsed.sort((a, b) => b.quality - a.quality);
+
+  for (const { locale } of parsed) {
+    if (locale.startsWith('zh')) return 'zh';
+    if (locale.startsWith('en')) return 'en';
+    if (locale.startsWith('ru')) return 'ru';
+  }
   return 'ru';
 }
 

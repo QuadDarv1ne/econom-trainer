@@ -72,7 +72,8 @@ export function useProfile(): UseProfileReturn {
         setName(data.name || '');
         setPhone(data.phone || '');
       } else {
-        setError(t('dashboard.profile.fetchError'));
+        const data = await res.json().catch(() => null);
+        setError(safeErrorMessage(data, t('dashboard.profile.fetchError')));
       }
     } catch (e) {
       logError('fetch-profile', e);
