@@ -133,13 +133,17 @@ export function GDPCalculator() {
             <div>{t('gdp.basePrices')}</div>
           </div>
 
-          {components.map((comp, idx) => (
+          {components.map((comp, idx) => {
+            const currentId = `gdp-current-${idx}`
+            const baseId = `gdp-base-${idx}`
+            return (
             <div
               key={comp.name}
               className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center p-3 rounded-lg bg-muted/50"
             >
-              <Label className="font-medium text-sm">{t(comp.name)}</Label>
+              <Label htmlFor={currentId} className="font-medium text-sm">{t(comp.name)}</Label>
               <Input
+                id={currentId}
                 type="number"
                 placeholder="0"
                 value={comp.currentValue !== null && comp.currentValue !== undefined ? comp.currentValue : ''}
@@ -147,14 +151,17 @@ export function GDPCalculator() {
                 className="font-mono"
               />
               <Input
+                id={baseId}
                 type="number"
                 placeholder="0"
                 value={comp.baseValue !== null && comp.baseValue !== undefined ? comp.baseValue : ''}
                 onChange={(e) => updateComponent(idx, 'baseValue', e.target.value)}
                 className="font-mono"
+                aria-label={t('gdp.basePrices')}
               />
             </div>
-          ))}
+            )
+          })}
 
           <div className="flex gap-3 pt-2">
             <Button onClick={calculate} className="flex-1" size="lg">
@@ -170,7 +177,7 @@ export function GDPCalculator() {
       </Card>
 
       {calculated && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div aria-live="polite" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card className="border-2 border-primary/20">
             <CardHeader className="pb-2">
               <CardDescription>{t('gdp.nominal')}</CardDescription>

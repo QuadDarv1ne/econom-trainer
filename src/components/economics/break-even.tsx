@@ -135,6 +135,7 @@ export function BreakEvenAnalysis() {
                 <span className="font-mono text-muted-foreground">{formatNum(fixedCosts)} {t('breakeven.rub')}</span>
               </div>
               <Slider
+                aria-label={t('breakeven.fixedCosts')}
                 value={[fixedCosts]}
                 onValueChange={([v]) => { awardXP(); setFixedCosts(v) }}
                 min={10000}
@@ -149,6 +150,7 @@ export function BreakEvenAnalysis() {
                 <span className="font-mono text-muted-foreground">{formatNum(variableCostPerUnit)} {t('breakeven.rub')}</span>
               </div>
               <Slider
+                aria-label={t('breakeven.variableCosts')}
                 value={[variableCostPerUnit]}
                 onValueChange={([v]) => { awardXP(); setVariableCostPerUnit(v) }}
                 min={10}
@@ -163,6 +165,7 @@ export function BreakEvenAnalysis() {
                 <span className="font-mono text-muted-foreground">{formatNum(pricePerUnit)} {t('breakeven.rub')}</span>
               </div>
               <Slider
+                aria-label={t('breakeven.pricePerUnit')}
                 value={[pricePerUnit]}
                 onValueChange={([v]) => { awardXP(); setPricePerUnit(v) }}
                 min={10}
@@ -177,6 +180,7 @@ export function BreakEvenAnalysis() {
                 <span className="font-mono text-muted-foreground">{maxUnits} {t('breakeven.units')}</span>
               </div>
               <Slider
+                aria-label={t('breakeven.maxUnits')}
                 value={[maxUnits]}
                 onValueChange={([v]) => { awardXP(); setMaxUnits(v) }}
                 min={100}
@@ -211,7 +215,7 @@ export function BreakEvenAnalysis() {
 
       {viable && (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div aria-live="polite" className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <Card className="border-2 border-primary/20">
               <CardContent className="p-3 text-center">
                 <div className="text-xs text-muted-foreground">{t('breakeven.breakEvenUnits')}</div>

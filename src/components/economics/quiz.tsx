@@ -1547,7 +1547,7 @@ export function EconomicsQuiz() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="text-center space-y-2">
+          <div aria-live="polite" className="text-center space-y-2">
             <div className="text-5xl font-bold">
               {score}/{shuffledQuestions.length}
             </div>

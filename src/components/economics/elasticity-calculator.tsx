@@ -173,20 +173,20 @@ export function ElasticityCalculator() {
             <TabsContent value="price" className="space-y-4 mt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>{t('elasticity.input.q1')}</Label>
-                  <Input type="number" placeholder="100" value={q1} onChange={(e) => setQ1(e.target.value)} className="font-mono" />
+                  <Label htmlFor="el-price-q1">{t('elasticity.input.q1')}</Label>
+                  <Input id="el-price-q1" type="number" placeholder="100" value={q1} onChange={(e) => setQ1(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('elasticity.input.q2')}</Label>
-                  <Input type="number" placeholder="80" value={q2} onChange={(e) => setQ2(e.target.value)} className="font-mono" />
+                  <Label htmlFor="el-price-q2">{t('elasticity.input.q2')}</Label>
+                  <Input id="el-price-q2" type="number" placeholder="80" value={q2} onChange={(e) => setQ2(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('elasticity.input.p1')}</Label>
-                  <Input type="number" placeholder="50" value={p1} onChange={(e) => setP1(e.target.value)} className="font-mono" />
+                  <Label htmlFor="el-price-p1">{t('elasticity.input.p1')}</Label>
+                  <Input id="el-price-p1" type="number" placeholder="50" value={p1} onChange={(e) => setP1(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('elasticity.input.p2')}</Label>
-                  <Input type="number" placeholder="60" value={p2} onChange={(e) => setP2(e.target.value)} className="font-mono" />
+                  <Label htmlFor="el-price-p2">{t('elasticity.input.p2')}</Label>
+                  <Input id="el-price-p2" type="number" placeholder="60" value={p2} onChange={(e) => setP2(e.target.value)} className="font-mono" />
                 </div>
               </div>
               <div className="flex gap-3">
@@ -194,7 +194,7 @@ export function ElasticityCalculator() {
                   <Gauge className="h-4 w-4 mr-2" />
                   {t('elasticity.button.calculate')}
                 </Button>
-                <Button onClick={reset} variant="outline">
+                <Button onClick={reset} variant="outline" aria-label={t('gdp.reset')}>
                   <RotateCcw className="h-4 w-4" />
                 </Button>
               </div>
@@ -203,20 +203,20 @@ export function ElasticityCalculator() {
             <TabsContent value="income" className="space-y-4 mt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>{t('elasticity.input.q1')}</Label>
-                  <Input type="number" placeholder="50" value={q1Inc} onChange={(e) => setQ1Inc(e.target.value)} className="font-mono" />
+                  <Label htmlFor="el-income-q1">{t('elasticity.input.q1')}</Label>
+                  <Input id="el-income-q1" type="number" placeholder="50" value={q1Inc} onChange={(e) => setQ1Inc(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('elasticity.input.q2')}</Label>
-                  <Input type="number" placeholder="70" value={q2Inc} onChange={(e) => setQ2Inc(e.target.value)} className="font-mono" />
+                  <Label htmlFor="el-income-q2">{t('elasticity.input.q2')}</Label>
+                  <Input id="el-income-q2" type="number" placeholder="70" value={q2Inc} onChange={(e) => setQ2Inc(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('elasticity.input.y1')}</Label>
-                  <Input type="number" placeholder="30000" value={y1} onChange={(e) => setY1(e.target.value)} className="font-mono" />
+                  <Label htmlFor="el-income-y1">{t('elasticity.input.y1')}</Label>
+                  <Input id="el-income-y1" type="number" placeholder="30000" value={y1} onChange={(e) => setY1(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('elasticity.input.y2')}</Label>
-                  <Input type="number" placeholder="50000" value={y2} onChange={(e) => setY2(e.target.value)} className="font-mono" />
+                  <Label htmlFor="el-income-y2">{t('elasticity.input.y2')}</Label>
+                  <Input id="el-income-y2" type="number" placeholder="50000" value={y2} onChange={(e) => setY2(e.target.value)} className="font-mono" />
                 </div>
               </div>
               <div className="flex gap-3">
@@ -233,20 +233,20 @@ export function ElasticityCalculator() {
             <TabsContent value="cross" className="space-y-4 mt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>{t('elasticity.input.q1')}</Label>
-                  <Input type="number" placeholder="100" value={q1Cross} onChange={(e) => setQ1Cross(e.target.value)} className="font-mono" />
+                  <Label htmlFor="el-cross-q1">{t('elasticity.input.q1')}</Label>
+                  <Input id="el-cross-q1" type="number" placeholder="100" value={q1Cross} onChange={(e) => setQ1Cross(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('elasticity.input.q2')}</Label>
-                  <Input type="number" placeholder="120" value={q2Cross} onChange={(e) => setQ2Cross(e.target.value)} className="font-mono" />
+                  <Label htmlFor="el-cross-q2">{t('elasticity.input.q2')}</Label>
+                  <Input id="el-cross-q2" type="number" placeholder="120" value={q2Cross} onChange={(e) => setQ2Cross(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('elasticity.input.px1')}</Label>
-                  <Input type="number" placeholder="40" value={px1} onChange={(e) => setPx1(e.target.value)} className="font-mono" />
+                  <Label htmlFor="el-cross-px1">{t('elasticity.input.px1')}</Label>
+                  <Input id="el-cross-px1" type="number" placeholder="40" value={px1} onChange={(e) => setPx1(e.target.value)} className="font-mono" />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('elasticity.input.px2')}</Label>
-                  <Input type="number" placeholder="50" value={px2} onChange={(e) => setPx2(e.target.value)} className="font-mono" />
+                  <Label htmlFor="el-cross-px2">{t('elasticity.input.px2')}</Label>
+                  <Input id="el-cross-px2" type="number" placeholder="50" value={px2} onChange={(e) => setPx2(e.target.value)} className="font-mono" />
                 </div>
               </div>
               <div className="flex gap-3">
@@ -264,7 +264,7 @@ export function ElasticityCalculator() {
       </Card>
 
       {result && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div aria-live="polite" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card className="border-2 border-primary/20">
             <CardHeader className="pb-2">
               <CardDescription>{t('elasticity.result.coefficient')}</CardDescription>

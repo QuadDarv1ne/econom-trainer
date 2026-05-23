@@ -131,8 +131,9 @@ export function InflationCalculator() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>{t('inflation.initialAmount')}</Label>
+              <Label htmlFor="inflation-amount">{t('inflation.initialAmount')}</Label>
               <Input
+                id="inflation-amount"
                 type="number"
                 placeholder="100 000"
                 value={initialAmount}
@@ -141,9 +142,10 @@ export function InflationCalculator() {
               />
             </div>
             <div className="space-y-2">
-              <Label>{t('inflation.annualRate')}</Label>
+              <Label htmlFor="inflation-rate">{t('inflation.annualRate')}</Label>
               <div className="flex items-center gap-2">
                 <Input
+                  id="inflation-rate"
                   type="number"
                   placeholder="7"
                   value={inflationRate}
@@ -156,8 +158,9 @@ export function InflationCalculator() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>{t('inflation.startYear')}</Label>
+              <Label htmlFor="inflation-start-year">{t('inflation.startYear')}</Label>
               <Input
+                id="inflation-start-year"
                 type="number"
                 placeholder="2020"
                 value={initialYear}
@@ -166,8 +169,9 @@ export function InflationCalculator() {
               />
             </div>
             <div className="space-y-2">
-              <Label>{t('inflation.endYear')}</Label>
+              <Label htmlFor="inflation-end-year">{t('inflation.endYear')}</Label>
               <Input
+                id="inflation-end-year"
                 type="number"
                 placeholder="2025"
                 value={finalYear}
@@ -181,7 +185,7 @@ export function InflationCalculator() {
 
       {result && (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div aria-live="polite" className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Card className="border-2 border-primary/20">
               <CardHeader className="pb-2">
                 <CardDescription>{t('inflation.realValue')}</CardDescription>

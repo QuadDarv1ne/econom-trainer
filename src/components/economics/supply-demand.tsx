@@ -290,6 +290,7 @@ export function SupplyDemand() {
                 <span className="font-mono text-muted-foreground">{demandSlope.toFixed(1)}</span>
               </div>
               <Slider
+                aria-label={t('supply-demand.demandSlope')}
                 value={[demandSlope]}
                 onValueChange={([v]) => { awardXP(); setDemandSlope(v) }}
                 min={0.2}
@@ -304,6 +305,7 @@ export function SupplyDemand() {
                 <span className="font-mono text-muted-foreground">{supplySlope.toFixed(1)}</span>
               </div>
               <Slider
+                aria-label={t('supply-demand.supplySlope')}
                 value={[supplySlope]}
                 onValueChange={([v]) => { awardXP(); setSupplySlope(v) }}
                 min={0.2}
@@ -328,6 +330,7 @@ export function SupplyDemand() {
                 </span>
               </div>
               <Slider
+                aria-label={t('supply-demand.demandShift')}
                 value={[demandShift]}
                 onValueChange={([v]) => { awardXP(); setDemandShift(v) }}
                 min={-40}
@@ -345,6 +348,7 @@ export function SupplyDemand() {
                 </span>
               </div>
               <Slider
+                aria-label={t('supply-demand.supplyShift')}
                 value={[supplyShift]}
                 onValueChange={([v]) => { awardXP(); setSupplyShift(v) }}
                 min={-40}
@@ -364,7 +368,7 @@ export function SupplyDemand() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div aria-live="polite" className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="p-3 bg-muted/50 rounded-lg text-center">
               <div className="text-sm text-muted-foreground">{t('supply-demand.summary.price')}</div>
               <div className="text-xl font-mono font-bold">{equilibrium.price.toFixed(1)}</div>
