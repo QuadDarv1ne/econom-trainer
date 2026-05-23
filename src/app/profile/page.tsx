@@ -46,6 +46,7 @@ import { formatDate as formatLocaleDate } from '@/lib/i18n';
 import { checkPasswordStrength } from '@/lib/password-strength';
 import { useProfile, useProgressSync } from '@/hooks/use-profile';
 import { ALERT_AUTO_DISMISS_MS, COPY_FEEDBACK_MS, RESEND_COOLDOWN_SECONDS } from '@/lib/constants';
+import { AlertBanner } from '@/components/ui/alert-banner';
 
 export default function ProfilePage() {
   const { t, locale } = useI18n();
@@ -447,28 +448,8 @@ export default function ProfilePage() {
       </header>
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
-        {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription className="flex items-center justify-between gap-2">
-              <span>{error}</span>
-              <button onClick={() => setError('')} className="shrink-0" aria-label={t('auth.error.close') || 'Close'}>
-                <X className="h-4 w-4" />
-              </button>
-            </AlertDescription>
-          </Alert>
-        )}
-        {success && (
-          <Alert className="mb-4 border-green-500 bg-green-50 dark:bg-green-950/20">
-            <CheckCircle2 className="h-4 w-4 text-green-500" />
-            <AlertDescription className="flex items-center justify-between gap-2 text-green-700 dark:text-green-400">
-              <span>{success}</span>
-              <button onClick={() => setSuccess('')} className="shrink-0" aria-label={t('auth.error.close') || 'Close'}>
-                <X className="h-4 w-4" />
-              </button>
-            </AlertDescription>
-          </Alert>
-        )}
+        <AlertBanner type="error" message={error} onDismiss={() => setError('')} closeLabel={t('auth.error.close') || 'Close'} />
+        <AlertBanner type="success" message={success} onDismiss={() => setSuccess('')} closeLabel={t('auth.error.close') || 'Close'} />
 
         <Tabs defaultValue="personal" className="space-y-6" onValueChange={() => { setError(''); setSuccess(''); }}>
           <TabsList>

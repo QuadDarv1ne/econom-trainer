@@ -30,12 +30,12 @@ import {
   Zap,
   AlertCircle,
   CheckCircle2,
-  X,
 } from 'lucide-react';
 import { useEconomicsStore } from '@/store/economics-store';
 import { useI18n } from '@/lib/i18n-provider';
 import { useProfile, useProgressSync } from '@/hooks/use-profile';
 import { ALERT_AUTO_DISMISS_MS, COPY_FEEDBACK_MS } from '@/lib/constants';
+import { AlertBanner } from '@/components/ui/alert-banner';
 
 export default function DashboardPage() {
   const { t } = useI18n();
@@ -89,6 +89,12 @@ export default function DashboardPage() {
     return () => clearTimeout(timer);
   }, [success, setSuccess]);
 
+  function safeError(data: unknown, fallback: string): string {
+    return (data && typeof data === 'object' && 'error' in data && typeof (data as Record<string, unknown>).error === 'string')
+      ? (data as Record<string, string>).error
+      : fallback
+  }
+
   async function setup2FA() {
     setSettingUp2FA(true);
     setError('');
@@ -102,7 +108,7 @@ export default function DashboardPage() {
         setSecret(data.secret);
         setShowQR(true);
       } else {
-        setError(data.error);
+        setError(safeError(data, t('auth.error.serverError')));
       }
     } catch {
       setError(t('auth.error.2faSetupError'));
@@ -131,7 +137,7 @@ export default function DashboardPage() {
         setProfile((p) => (p ? { ...p, twoFactorEnabled: true } : null));
         update();
       } else {
-        setError(data.error);
+        setError(safeError(data, t('auth.error.serverError')));
       }
     } catch {
       setError(t('auth.error.2faVerifyError'));
@@ -159,7 +165,7 @@ export default function DashboardPage() {
         setSuccess(t('dashboard.security.disabled'));
         update();
       } else {
-        setError(data.error);
+        setError(safeError(data, t('auth.error.serverError')));
       }
     } catch {
       setError(t('auth.error.2faDisableError'));
@@ -211,28 +217,8 @@ export default function DashboardPage() {
       </header>
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
-        {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription className="flex items-center justify-between gap-2">
-              <span>{error}</span>
-              <button onClick={() => setError('')} className="shrink-0" aria-label={t('common.close')}>
-                <X className="h-4 w-4" />
-              </button>
-            </AlertDescription>
-          </Alert>
-        )}
-        {success && (
-          <Alert className="mb-4 border-green-500 bg-green-50 dark:bg-green-950/20">
-            <CheckCircle2 className="h-4 w-4 text-green-500" />
-            <AlertDescription className="flex items-center justify-between gap-2 text-green-700 dark:text-green-400">
-              <span>{success}</span>
-              <button onClick={() => setSuccess('')} className="shrink-0" aria-label={t('common.close')}>
-                <X className="h-4 w-4" />
-              </button>
-            </AlertDescription>
-          </Alert>
-        )}
+        <AlertBanner type="error" message={error} onDismiss={() => setError('')} closeLabel={t('common.close') || 'Close'} />
+        <AlertBanner type="success" message={success} onDismiss={() => setSuccess('')} closeLabel={t('common.close') || 'Close'} />
 
         <Tabs defaultValue="profile" className="space-y-6" onValueChange={() => { setError(''); setSuccess(''); }}>
           <TabsList>
@@ -277,8 +263,10 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Mail className="h-4 w-4" />
                       <span>{profile?.email}</span>
-                      {profile?.emailVerified && (
+                      {profile?.emailVerified ? (
                         <Badge variant="secondary" className="text-xs">{t('dashboard.profile.emailVerified')}</Badge>
+                      ) : (
+                        <Badge variant="destructive" className="text-xs">{t('profile.emailUnverified')}</Badge>
                       )}
                     </div>
                   </div>
@@ -373,7 +361,7 @@ export default function DashboardPage() {
                         <div className="text-center space-y-2">
                           <h4 className="font-semibold">{t('dashboard.security.scanQr')}</h4>
                           <div className="inline-block p-4 bg-white rounded-lg">
-                            <img src={qrCode} alt="2FA QR Code" className="w-48 h-48" />
+                            <img src={qrCode} alt={t('dashboard.security.qrCodeAlt') || 'QR Code'} className="w-48 h-48" />
                           </div>
                         </div>
 
