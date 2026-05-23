@@ -90,31 +90,31 @@ describe('setLocale', () => {
 })
 
 describe('translations structure', () => {
-  it('has both ru and en locales', () => {
+  it('has ru, en and zh locales', () => {
     expect(translations).toHaveProperty('ru')
     expect(translations).toHaveProperty('en')
+    expect(translations).toHaveProperty('zh')
   })
 
-  it('has common keys in both locales', () => {
+  it('has common keys in all locales', () => {
     const ruKeys = Object.keys(translations.ru)
     const enKeys = Object.keys(translations.en)
-    
-    // Check that all RU keys exist in EN
+    const zhKeys = Object.keys(translations.zh)
+
     for (const key of ruKeys) {
       expect(enKeys).toContain(key)
+      expect(zhKeys).toContain(key)
     }
   })
 
   it('has non-empty values', () => {
-    const ruValues = Object.values(translations.ru)
-    const enValues = Object.values(translations.en)
-    
-    for (const value of ruValues) {
-      expect(typeof value).toBe('string')
-      expect(value.length).toBeGreaterThan(0)
-    }
-    
-    for (const value of enValues) {
+    const allValues = [
+      ...Object.values(translations.ru),
+      ...Object.values(translations.en),
+      ...Object.values(translations.zh),
+    ]
+
+    for (const value of allValues) {
       expect(typeof value).toBe('string')
       expect(value.length).toBeGreaterThan(0)
     }
