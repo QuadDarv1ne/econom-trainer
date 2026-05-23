@@ -1964,6 +1964,15 @@ export const translations = {
     'notFound.title': 'Страница не найдена',
     'notFound.description': 'Запрашиваемая страница не существует или была перемещена',
     'notFound.backHome': 'Вернуться на главную',
+    'error.title': 'Произошла ошибка',
+    'error.description': 'К сожалению, возникла непредвиденная ошибка. Попробуйте обновить страницу или вернитесь позже.',
+    'error.retry': 'Попробовать снова',
+    'error.goHome': 'На главную',
+    'error.unknown': 'Неизвестная ошибка',
+    'globalError.title': 'Критическая ошибка',
+    'globalError.description': 'Произошла серьёзная ошибка при загрузке приложения. Попробуйте перезагрузить страницу.',
+    'globalError.reload': 'Перезагрузить',
+    'globalError.goHome': 'На главную',
   },
 
   en: {
@@ -3928,6 +3937,15 @@ export const translations = {
     'notFound.title': 'Page not found',
     'notFound.description': 'The page you are looking for does not exist or has been moved',
     'notFound.backHome': 'Back to home',
+    'error.title': 'An error occurred',
+    'error.description': 'Unfortunately, an unexpected error occurred. Try refreshing the page or come back later.',
+    'error.retry': 'Try again',
+    'error.goHome': 'Go to home',
+    'error.unknown': 'Unknown error',
+    'globalError.title': 'Critical error',
+    'globalError.description': 'A serious error occurred while loading the application. Try reloading the page.',
+    'globalError.reload': 'Reload',
+    'globalError.goHome': 'Go to home',
   },
 
   zh: {
@@ -5745,6 +5763,15 @@ export const translations = {
     'notFound.title': '页面未找到',
     'notFound.description': '你查找的页面不存在或已被移动',
     'notFound.backHome': '返回首页',
+    'error.title': '发生错误',
+    'error.description': '抱歉，发生了意外错误。请尝试刷新页面或稍后再来。',
+    'error.retry': '重试',
+    'error.goHome': '返回首页',
+    'error.unknown': '未知错误',
+    'globalError.title': '严重错误',
+    'globalError.description': '加载应用程序时发生严重错误。请尝试重新加载页面。',
+    'globalError.reload': '重新加载',
+    'globalError.goHome': '返回首页',
   },
 } as const;
 

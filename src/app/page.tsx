@@ -1,5 +1,5 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, Suspense } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -40,6 +40,7 @@ import {
   Shield,
   LogOut,
 } from 'lucide-react'
+import { ModuleSkeleton } from '@/components/economics/module-skeleton'
 import { modules, tabItems, cardVariants, moduleComponents, categoryBreaks, ThemeToggle } from '@/lib/module-registry'
 import { Lock } from 'lucide-react'
 
@@ -219,7 +220,9 @@ export default function Home() {
             </motion.div>
 
             {/* Daily Challenge */}
-            <DailyChallenge />
+            <Suspense fallback={<ModuleSkeleton />}>
+              <DailyChallenge />
+            </Suspense>
 
             {/* Modules Grid with progress indicators */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -372,7 +375,7 @@ export default function Home() {
           </TabsContent>
 
           {/* Conditionally render only the active module (performance) */}
-          {ActiveModule && <TabsContent value={activeTab}><ActiveModule /></TabsContent>}
+          {ActiveModule && <TabsContent value={activeTab}><Suspense fallback={<ModuleSkeleton />}><ActiveModule /></Suspense></TabsContent>}
         </Tabs>
       </main>
 

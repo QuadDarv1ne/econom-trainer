@@ -6,13 +6,13 @@ import { Providers } from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin", "cyrillic", "cyrillic-ext"],
+  subsets: ["latin", "cyrillic"],
   preload: true,
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin", "cyrillic", "cyrillic-ext"],
+  subsets: ["latin", "cyrillic"],
   preload: true,
 });
 

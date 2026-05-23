@@ -93,7 +93,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // Fetch existing progress for merge strategy (keep max XP/level to prevent data loss)
+    // Fetch existing progress for merge strategy
     const existingProgress = await prisma.userProgress.findUnique({
       where: { userId: session.user.id },
     });
@@ -102,7 +102,7 @@ export async function POST(req: Request) {
     const resolvedTotalXP = totalXP ?? existingProgress?.totalXP ?? 0;
     const resolvedLevel = level ?? getLevelFromXP(resolvedTotalXP).level;
 
-    // Merge strategy: keep the higher value between client and server
+    // Merge XP: keep the higher value to prevent data loss
     const mergedXP = existingProgress
       ? Math.max(resolvedTotalXP, existingProgress.totalXP)
       : resolvedTotalXP;
@@ -110,22 +110,81 @@ export async function POST(req: Request) {
       ? Math.max(resolvedLevel, existingProgress.level)
       : resolvedLevel;
 
+    // Merge JSON array fields: combine records from both client and server,
+    // deduplicating by id or timestamp to prevent data loss across devices
+    const mergeArrays = (
+      clientData: unknown,
+      serverData: string | null | undefined,
+    ): string | null | undefined => {
+      if (clientData === undefined) return undefined;
+      if (!clientData && !serverData) return null;
+
+      let clientArr: unknown[] = [];
+      let serverArr: unknown[] = [];
+
+      if (Array.isArray(clientData)) {
+        clientArr = clientData;
+      }
+      if (serverData) {
+        try {
+          const parsed = JSON.parse(serverData);
+          if (Array.isArray(parsed)) serverArr = parsed;
+        } catch {
+          // If server data is corrupt, use client data only
+        }
+      }
+
+      if (clientArr.length === 0 && serverArr.length === 0) return null;
+      if (clientArr.length === 0) return serverData;
+      if (serverArr.length === 0) return JSON.stringify(clientData);
+
+      // Deduplicate by 'id' field if present, otherwise by timestamp
+      const merged = new Map<string, unknown>();
+      const getKey = (item: unknown): string | null => {
+        if (typeof item === 'object' && item !== null) {
+          const obj = item as Record<string, unknown>;
+          if (typeof obj.id === 'string') return obj.id;
+          if (typeof obj.moduleId === 'string' && typeof obj.completedAt === 'string')
+            return `${obj.moduleId}:${obj.completedAt}`;
+          if (typeof obj.timestamp === 'number') return String(obj.timestamp);
+        }
+        return null;
+      };
+
+      for (const item of serverArr) {
+        const key = getKey(item);
+        if (key) merged.set(key, item);
+        else merged.set(`idx_${merged.size}`, item);
+      }
+      for (const item of clientArr) {
+        const key = getKey(item);
+        if (key) merged.set(key, item);
+        else merged.set(`idx_${merged.size}`, item);
+      }
+
+      return JSON.stringify(Array.from(merged.values()));
+    };
+
+    const mergedQuizResults = mergeArrays(quizResults, existingProgress?.quizResults);
+    const mergedModuleHistory = mergeArrays(moduleHistory, existingProgress?.moduleHistory);
+    const mergedAchievements = mergeArrays(achievements, existingProgress?.achievements);
+
     const progress = await prisma.userProgress.upsert({
       where: { userId: session.user.id },
       create: {
         userId: session.user.id,
         totalXP: mergedXP,
         level: mergedLevel,
-        quizResults: quizResults !== undefined ? JSON.stringify(quizResults) : null,
-        moduleHistory: moduleHistory !== undefined ? JSON.stringify(moduleHistory) : null,
-        achievements: achievements !== undefined ? JSON.stringify(achievements) : null,
+        quizResults: mergedQuizResults ?? null,
+        moduleHistory: mergedModuleHistory ?? null,
+        achievements: mergedAchievements ?? null,
       },
       update: {
         totalXP: mergedXP,
         level: mergedLevel,
-        quizResults: quizResults !== undefined ? JSON.stringify(quizResults) : undefined,
-        moduleHistory: moduleHistory !== undefined ? JSON.stringify(moduleHistory) : undefined,
-        achievements: achievements !== undefined ? JSON.stringify(achievements) : undefined,
+        quizResults: mergedQuizResults !== undefined ? mergedQuizResults : undefined,
+        moduleHistory: mergedModuleHistory !== undefined ? mergedModuleHistory : undefined,
+        achievements: mergedAchievements !== undefined ? mergedAchievements : undefined,
       },
     });
 
