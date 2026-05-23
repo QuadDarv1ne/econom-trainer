@@ -16,6 +16,7 @@ import { useI18n } from '@/lib/i18n-provider';
 import { PasswordInput } from '@/components/ui/password-input';
 import { checkPasswordStrength } from '@/lib/password-strength';
 import { REDIRECT_DELAY_MS } from '@/lib/constants';
+import { safeErrorMessage } from '@/lib/safe-error';
 
 export default function RegisterPage() {
   const { t } = useI18n();
@@ -64,7 +65,7 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || t('auth.error.registrationError'));
+        setError(safeErrorMessage(data, t('auth.error.registrationError')));
       } else {
         setSuccess(true);
         setTimeout(() => router.push('/auth/login'), REDIRECT_DELAY_MS);

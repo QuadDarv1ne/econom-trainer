@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Loader2, Mail, CheckCircle2 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n-provider';
+import { safeErrorMessage } from '@/lib/safe-error';
 
 export default function ForgotPasswordPage() {
   const { t } = useI18n();
@@ -33,7 +34,7 @@ export default function ForgotPasswordPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || t('auth.error.saveError'));
+        setError(safeErrorMessage(data, t('auth.error.saveError')));
       } else {
         setSuccess(true);
       }

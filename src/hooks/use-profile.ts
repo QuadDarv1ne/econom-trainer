@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useEconomicsStore } from '@/store/economics-store';
 import { useI18n } from '@/lib/i18n-provider';
 import { logError } from '@/lib/log-error';
+import { safeErrorMessage } from '@/lib/safe-error';
 
 interface UserProfile {
   id: string;
@@ -116,7 +117,7 @@ export function useProfile(): UseProfileReturn {
         await update();
       } else {
         const data = await res.json();
-        setError(data.error);
+        setError(safeErrorMessage(data, t('dashboard.profile.saveError')));
       }
     } catch {
       setError(t('dashboard.profile.saveError'));

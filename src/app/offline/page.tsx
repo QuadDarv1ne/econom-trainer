@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { useEconomicsStore } from "@/store/economics-store";
 import { useI18n } from "@/lib/i18n-provider";
+import { safeErrorMessage } from "@/lib/safe-error";
 
 export default function OfflinePage() {
   const [isOnline, setIsOnline] = useState(true);
@@ -47,7 +48,7 @@ export default function OfflinePage() {
         toast({ title: t('offline.syncCompleted'), description: t('offline.syncSuccess') });
       } else {
         const data = await res.json();
-        toast({ title: t('offline.syncErrorTitle'), description: data.error || t('offline.syncError'), variant: "destructive" });
+        toast({ title: t('offline.syncErrorTitle'), description: safeErrorMessage(data, t('offline.syncError')), variant: "destructive" });
       }
     } catch {
       toast({ title: t('offline.syncErrorTitle'), description: t('offline.syncCheckConnection'), variant: "destructive" });

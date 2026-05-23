@@ -36,6 +36,7 @@ import { useI18n } from '@/lib/i18n-provider';
 import { useProfile, useProgressSync } from '@/hooks/use-profile';
 import { ALERT_AUTO_DISMISS_MS, COPY_FEEDBACK_MS } from '@/lib/constants';
 import { AlertBanner } from '@/components/ui/alert-banner';
+import { safeErrorMessage } from '@/lib/safe-error';
 
 export default function DashboardPage() {
   const { t } = useI18n();
@@ -89,12 +90,6 @@ export default function DashboardPage() {
     return () => clearTimeout(timer);
   }, [success, setSuccess]);
 
-  function safeError(data: unknown, fallback: string): string {
-    return (data && typeof data === 'object' && 'error' in data && typeof (data as Record<string, unknown>).error === 'string')
-      ? (data as Record<string, string>).error
-      : fallback
-  }
-
   async function setup2FA() {
     setSettingUp2FA(true);
     setError('');
@@ -108,7 +103,7 @@ export default function DashboardPage() {
         setSecret(data.secret);
         setShowQR(true);
       } else {
-        setError(safeError(data, t('auth.error.serverError')));
+        setError(safeErrorMessage(data, t('auth.error.serverError')));
       }
     } catch {
       setError(t('auth.error.2faSetupError'));
@@ -137,7 +132,7 @@ export default function DashboardPage() {
         setProfile((p) => (p ? { ...p, twoFactorEnabled: true } : null));
         update();
       } else {
-        setError(safeError(data, t('auth.error.serverError')));
+        setError(safeErrorMessage(data, t('auth.error.serverError')));
       }
     } catch {
       setError(t('auth.error.2faVerifyError'));
@@ -165,7 +160,7 @@ export default function DashboardPage() {
         setSuccess(t('dashboard.security.disabled'));
         update();
       } else {
-        setError(safeError(data, t('auth.error.serverError')));
+        setError(safeErrorMessage(data, t('auth.error.serverError')));
       }
     } catch {
       setError(t('auth.error.2faDisableError'));

@@ -13,6 +13,7 @@ import { useI18n } from '@/lib/i18n-provider';
 import { PasswordInput } from '@/components/ui/password-input';
 import { checkPasswordStrength } from '@/lib/password-strength';
 import { REDIRECT_DELAY_MS } from '@/lib/constants';
+import { safeErrorMessage } from '@/lib/safe-error';
 
 function ResetPasswordForm() {
   const { t } = useI18n();
@@ -54,7 +55,7 @@ function ResetPasswordForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || t('auth.error.resetError'));
+        setError(safeErrorMessage(data, t('auth.error.resetError')));
       } else {
         setSuccess(true);
         setTimeout(() => router.push('/auth/login'), REDIRECT_DELAY_MS);
