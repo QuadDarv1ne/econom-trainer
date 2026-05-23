@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEconomicsStore } from '@/store/economics-store';
@@ -62,6 +62,10 @@ export function useProfile(): UseProfileReturn {
   const [success, setSuccess] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const tRef = useRef(t);
+  useEffect(() => {
+    tRef.current = t;
+  }, [t]);
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -73,15 +77,15 @@ export function useProfile(): UseProfileReturn {
         setPhone(data.phone || '');
       } else {
         const data = await res.json().catch(() => null);
-        setError(safeErrorMessage(data, t('dashboard.profile.fetchError')));
+        setError(safeErrorMessage(data, tRef.current('dashboard.profile.fetchError')));
       }
     } catch (e) {
       logError('fetch-profile', e);
-      setError(t('dashboard.profile.fetchError'));
+      setError(tRef.current('dashboard.profile.fetchError'));
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, []);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
