@@ -26,6 +26,9 @@ jobs:
       - name: Run linter
         run: npm run lint
 
+      - name: Check i18n key parity
+        run: npm run check:i18n
+
       - name: Run tests
         run: npm test
 

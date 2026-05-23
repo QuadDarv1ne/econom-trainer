@@ -4021,7 +4021,7 @@ export const translations = {
     'analysis.marginOfSafetyMedium': '适中',
     'analysis.marginOfSafetyHigh': '高，业务稳定',
     'analysis.payoffLabel': '回收期:',
-    'analysis.payoffDescriptions': '需出售 {breakEvenUnits} 单位才能盈亏平衡',
+    'analysis.payoffDescription': '需出售 {breakEvenUnits} 单位才能盈亏平衡',
     'keynesian.before': '之前',
     'keynesian.after': '之后',
     'gdp.toast.title': '计算完成',

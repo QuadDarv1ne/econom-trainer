@@ -26,6 +26,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint \".\"",
+    "check:i18n": "node scripts/check-i18n-keys.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
