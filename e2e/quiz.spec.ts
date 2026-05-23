@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { setupAuthenticatedUser } from './auth-helper';
 
 test.describe('Quiz Module', () => {
   test('should display quiz and allow answering questions', async ({ page }) => {
+    await setupAuthenticatedUser(page);
     await page.goto('/');
 
     // Navigate to quiz module
@@ -25,6 +27,7 @@ test.describe('Quiz Module', () => {
   });
 
   test('should show quiz results after completion', async ({ page }) => {
+    await setupAuthenticatedUser(page);
     await page.goto('/');
 
     // Navigate to quiz module

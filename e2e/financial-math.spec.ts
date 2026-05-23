@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { setupAuthenticatedUser } from './auth-helper';
 
 test.describe('Financial Math Module', () => {
   test('should display financial math module and perform calculations', async ({ page }) => {
+    await setupAuthenticatedUser(page);
     await page.goto('/');
 
     // Navigate to financial math module
@@ -16,6 +18,7 @@ test.describe('Financial Math Module', () => {
   });
 
   test('should calculate compound interest', async ({ page }) => {
+    await setupAuthenticatedUser(page);
     await page.goto('/');
 
     // Navigate to financial math module
@@ -25,7 +28,7 @@ test.describe('Financial Math Module', () => {
     const principalInput = page.getByPlaceholder(/0/).first();
     if (await principalInput.isVisible()) {
       await principalInput.fill('1000');
-      
+
       const rateInput = page.getByPlaceholder(/0/).nth(1);
       if (await rateInput.isVisible()) {
         await rateInput.fill('5');
@@ -35,7 +38,7 @@ test.describe('Financial Math Module', () => {
       const calcButton = page.getByRole('button', { name: /Рассчитать/ });
       if (await calcButton.isVisible()) {
         await calcButton.click();
-        
+
         // Check results are displayed
         await page.waitForTimeout(300);
       }

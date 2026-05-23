@@ -44,6 +44,16 @@ describe('checkRateLimit', () => {
     // key-b (login) has separate limit
     expect(checkRateLimit('login', '3.3.3.3').ok).toBe(true);
   });
+
+  it('blocks verifyEmail after 3 requests per hour', () => {
+    // verifyEmail has max: 3 per hour
+    for (let i = 0; i < 3; i++) {
+      const result = checkRateLimit('verifyEmail', '10.0.0.5');
+      expect(result.ok).toBe(true);
+    }
+    const blocked = checkRateLimit('verifyEmail', '10.0.0.5');
+    expect(blocked.ok).toBe(false);
+  });
 });
 
 describe('getClientIP', () => {

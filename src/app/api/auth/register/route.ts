@@ -97,7 +97,7 @@ export async function POST(req: Request) {
       return created;
     });
 
-    // Send verification email (outside transaction — if this fails, clean up)
+    // Send verification email (outside transaction — failure doesn't prevent registration)
     const verificationUrl = `${BASE_URL}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(userEmail)}`;
     const locale = getLocaleFromRequest(req);
     const verificationHtml = getEmailVerificationEmailHtml(user.name || (locale === 'en' ? 'User' : 'Пользователь'), verificationUrl, locale);
@@ -112,22 +112,15 @@ export async function POST(req: Request) {
     });
 
     if (!emailSent) {
-      // Rollback: atomically delete all created records
-      await prisma.$transaction([
-        prisma.verificationToken.deleteMany({ where: { identifier: userEmail } }),
-        prisma.userProgress.deleteMany({ where: { userId: user.id } }),
-        prisma.user.delete({ where: { id: user.id } }),
-      ]);
-      return NextResponse.json(
-        { error: 'Failed to send verification email. Please try again later.' },
-        { status: 500 }
-      );
+      // Log warning but don't fail registration — user can request verification email later
+      console.warn('[register] Failed to send verification email, user can resend via profile');
     }
 
     return NextResponse.json(
       {
         message: 'Registration successful',
         userId: user.id,
+        emailVerificationSent: emailSent,
       },
       { status: 201 }
     );

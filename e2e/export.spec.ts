@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { setupAuthenticatedUser } from './auth-helper';
 
 test.describe('Export', () => {
   test('should allow exporting progress', async ({ page }) => {
+    await setupAuthenticatedUser(page);
     await page.goto('/');
 
     // Navigate to GDP module and do a calculation to earn XP
@@ -22,6 +24,7 @@ test.describe('Export', () => {
   });
 
   test('should show progress statistics', async ({ page }) => {
+    await setupAuthenticatedUser(page);
     await page.goto('/');
 
     // Navigate to GDP module and do a calculation to earn XP first
@@ -36,7 +39,7 @@ test.describe('Export', () => {
 
     // Check that progress tracker title is displayed
     await expect(page.getByText('Прогресс тренировок').first()).toBeVisible({ timeout: 15000 });
-    
+
     // Check that statistics are displayed (sessions, quizzes, etc.)
     await expect(page.getByText(/сессий|сес|sess|ВВП|расчет|calculat/i).first()).toBeVisible();
   });

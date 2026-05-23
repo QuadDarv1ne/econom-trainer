@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { setupAuthenticatedUser } from './auth-helper';
 
 test.describe('Achievements', () => {
   test('should display achievements and allow reset', async ({ page }) => {
+    await setupAuthenticatedUser(page);
     await page.goto('/');
 
     // Navigate to achievements section
@@ -16,6 +18,7 @@ test.describe('Achievements', () => {
   });
 
   test('should show achievement badges', async ({ page }) => {
+    await setupAuthenticatedUser(page);
     await page.goto('/');
 
     // Navigate to achievements

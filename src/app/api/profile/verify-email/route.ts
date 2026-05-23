@@ -6,6 +6,7 @@ import { getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
 import { BASE_URL, VERIFICATION_TOKEN_EXPIRY_MS } from '@/lib/constants';
+import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 
 // POST - Send email verification
 export async function POST(req: Request) {
@@ -17,6 +18,12 @@ export async function POST(req: Request) {
 
     if (!validateOrigin(req)) {
       return csrfErrorResponse();
+    }
+
+    const ip = getClientIP(req);
+    const limit = checkRateLimit('verifyEmail', ip);
+    if (!limit.ok) {
+      return rateLimitResponse('verifyEmail', ip, req);
     }
 
     const user = await prisma.user.findUnique({

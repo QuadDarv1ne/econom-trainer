@@ -65,6 +65,7 @@ export const RATE_LIMITS = {
   revokeSessions: { windowMs: 15 * 60 * 1000, max: 5 }, // 5 revocations per 15 min
   profileUpdate:  { windowMs: 60 * 1000, max: 20 },     // 20 profile updates per min
   profileRead:    { windowMs: 60 * 1000, max: 30 },     // 30 profile reads per min
+  verifyEmail:    { windowMs: 60 * 60 * 1000, max: 3 }, // 3 verification emails per hour
   progressSync:   { windowMs: 60 * 1000, max: 30 },     // 30 syncs per min
   progressRead:   { windowMs: 60 * 1000, max: 30 },     // 30 progress reads per min
 } as const;

@@ -10,10 +10,9 @@ test.describe('Homepage', () => {
     // Check that main heading is present
     await expect(page.getByRole('heading', { name: 'Экономический тренажёр' })).toBeVisible();
 
-    // Check that modules are displayed (use first() since text appears multiple times)
+    // Check that public modules are displayed (finance modules require auth)
     await expect(page.getByText('Макро').first()).toBeVisible();
     await expect(page.getByText('Микро').first()).toBeVisible();
-    await expect(page.getByText('Финансы').first()).toBeVisible();
   });
 
   test('should navigate to GDP module and perform calculation', async ({ page }) => {
@@ -38,8 +37,8 @@ test.describe('Homepage', () => {
   test('should toggle dark/light theme', async ({ page }) => {
     await page.goto('/');
 
-    // Click theme toggle button (uses Sun/Moon/Monitor icons, has title attribute)
-    await page.locator('button[title*="Тема"], button[title*="theme"], .h-9.w-9').first().click({ timeout: 15000 });
+    // Click theme toggle button in header
+    await page.locator('button.h-9.w-9').first().click({ timeout: 15000 });
 
     // Theme should change
     await page.waitForTimeout(300);

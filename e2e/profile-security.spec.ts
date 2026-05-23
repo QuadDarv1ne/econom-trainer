@@ -1,12 +1,10 @@
 import { test, expect } from '@playwright/test';
+import { setupAuthenticatedUser } from './auth-helper';
 
 test.describe('Profile & Security', () => {
   test('should navigate to profile page and display tabs', async ({ page }) => {
-    await page.goto('/');
-
-    // Navigate to profile via header
-    await page.getByRole('link', { name: /профиль|profile/i }).click();
-    await expect(page).toHaveURL('/profile');
+    await setupAuthenticatedUser(page);
+    await page.goto('/profile');
 
     // Check tabs are visible
     await expect(page.getByRole('tab', { name: /личн|personal/i })).toBeVisible();
@@ -15,18 +13,19 @@ test.describe('Profile & Security', () => {
   });
 
   test('should display dashboard with profile tab', async ({ page }) => {
+    await setupAuthenticatedUser(page);
     await page.goto('/dashboard');
 
     // Check dashboard loads
     await expect(page).toHaveURL('/dashboard');
 
-    // Check tabs exist
-    await expect(page.getByRole('tab', { name: /профиль|profile/i })).toBeVisible();
-    await expect(page.getByRole('tab', { name: /безопас|security/i })).toBeVisible();
-    await expect(page.getByRole('tab', { name: /прогресс|progress/i })).toBeVisible();
+    // Check navigation links exist in header
+    await expect(page.getByRole('link', { name: /профиль|profile/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: /дашборд|dashboard/i })).toBeVisible();
   });
 
   test('should navigate between profile and dashboard', async ({ page }) => {
+    await setupAuthenticatedUser(page);
     await page.goto('/profile');
 
     // From profile, go to dashboard via header
@@ -39,6 +38,8 @@ test.describe('Profile & Security', () => {
   });
 
   test('should show loading state on initial load', async ({ page }) => {
+    await setupAuthenticatedUser(page);
+
     // Intercept the profile API to simulate slow load
     await page.route('**/api/profile', async (route) => {
       await page.waitForTimeout(500);

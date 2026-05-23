@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { setupAuthenticatedUser } from './auth-helper';
 
 test.describe('XP and Progress System', () => {
   test('should track XP after module interactions', async ({ page }) => {
+    await setupAuthenticatedUser(page);
     await page.goto('/');
 
     // Check initial XP display
@@ -23,6 +25,7 @@ test.describe('XP and Progress System', () => {
   });
 
   test('should display level information', async ({ page }) => {
+    await setupAuthenticatedUser(page);
     await page.goto('/');
 
     // Navigate to achievements or progress
@@ -34,6 +37,7 @@ test.describe('XP and Progress System', () => {
   });
 
   test('should persist progress across page reloads', async ({ page }) => {
+    await setupAuthenticatedUser(page);
     await page.goto('/');
 
     // Navigate to GDP module and calculate
