@@ -188,7 +188,7 @@ export function rateLimitResponse(key: string, _ip: string | null, locale?: 'en'
 
   // Resolve locale from Request object or direct locale string
   let resolvedLocale: 'en' | 'ru' | 'zh' = 'ru';
-  if (typeof locale === 'object' && locale instanceof Request) {
+  if (locale && typeof locale === 'object' && locale instanceof Request) {
     const acceptLanguage = locale.headers.get('accept-language') || '';
     const primary = acceptLanguage.split(',')[0]?.trim().toLowerCase() || '';
     if (primary.startsWith('en')) resolvedLocale = 'en';

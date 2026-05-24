@@ -124,6 +124,9 @@ export async function POST(req: Request) {
 
       if (Array.isArray(clientData)) {
         clientArr = clientData;
+      } else if (clientData !== null && clientData !== false) {
+        // Wrap non-array truthy values in an array
+        clientArr = [clientData];
       }
       if (serverData) {
         try {

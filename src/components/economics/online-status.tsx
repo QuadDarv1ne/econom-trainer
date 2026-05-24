@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { WifiOff, Wifi } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/lib/i18n-provider";
+import { useAutoSync } from "@/hooks/use-sync";
 
 function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(true);
@@ -28,6 +29,7 @@ function useOnlineStatus() {
 export function OnlineStatusIndicator() {
   const { t } = useI18n();
   const isOnline = useOnlineStatus()
+  useAutoSync();
 
   if (isOnline) return null;
 
