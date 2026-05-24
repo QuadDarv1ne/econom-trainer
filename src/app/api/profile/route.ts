@@ -6,6 +6,7 @@ import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { logError } from '@/lib/log-error';
 import { AVATAR_MAX_BYTES } from '@/lib/constants';
+import { withSecurityHeaders } from '@/lib/security-headers';
 
 // Shared select clause for user profile queries — avoid duplication between GET and PATCH
 const USER_PROFILE_SELECT = {
@@ -32,7 +33,7 @@ export async function GET() {
     // Use session.user.id as identifier to prevent shared bucket across users
     const limit = checkRateLimit('profileRead', session.user.id);
     if (!limit.ok) {
-      return rateLimitResponse('profileRead', session.user.id);
+      return rateLimitResponse('profileRead', session.user.id, req);
     }
 
     const user = await prisma.user.findUnique({
@@ -44,10 +45,10 @@ export async function GET() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json(user);
+    return withSecurityHeaders(NextResponse.json(user));
   } catch (error) {
     logError('profile-get', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return withSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }));
   }
 }
 
@@ -114,9 +115,9 @@ export async function PATCH(req: Request) {
       select: USER_PROFILE_SELECT,
     });
 
-    return NextResponse.json(user);
+    return withSecurityHeaders(NextResponse.json(user));
   } catch (error) {
     logError('profile-update', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return withSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }));
   }
 }

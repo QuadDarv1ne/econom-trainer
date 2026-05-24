@@ -83,6 +83,11 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return /^#[0-9a-fA-F]{3,8}$|^(?:rgb|hsl)a?\(\s*\d+(?:\s*,\s*\d+(?:\.\d+)?%?){2,4}\s*\)$|^var\(--[\w-]+\)$/.test(value);
   };
 
+  // Validate key to prevent CSS injection via --color-{key}
+  const isValidKey = (key: string): boolean => {
+    return /^[\w-]+$/.test(key);
+  };
+
   return (
     <style
       dangerouslySetInnerHTML={{
@@ -92,6 +97,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 ${prefix} [data-chart=${id}] {
 ${colorConfig
   .map(([key, itemConfig]) => {
+    if (!isValidKey(key)) return null;
     const color =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color

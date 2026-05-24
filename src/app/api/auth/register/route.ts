@@ -10,6 +10,7 @@ import { validatePasswordStrength } from '@/lib/validate-password';
 import { logError } from '@/lib/log-error';
 import { BCRYPT_SALT_ROUNDS, VERIFICATION_TOKEN_EXPIRY_MS, BASE_URL } from '@/lib/constants';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
+import { withSecurityHeaders } from '@/lib/security-headers';
 
 export async function POST(req: Request) {
   try {
@@ -118,19 +119,19 @@ export async function POST(req: Request) {
       console.warn('[register] Failed to send verification email, user can resend via profile');
     }
 
-    return NextResponse.json(
+    return withSecurityHeaders(NextResponse.json(
       {
         message: 'Registration successful',
         userId: user.id,
         emailVerificationSent: emailSent,
       },
       { status: 201 }
-    );
+    ));
   } catch (error) {
     logError('register', error);
-    return NextResponse.json(
+    return withSecurityHeaders(NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
-    );
+    ));
   }
 }
