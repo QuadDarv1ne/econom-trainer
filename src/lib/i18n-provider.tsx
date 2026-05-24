@@ -25,10 +25,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = locale;
   }, [locale]);
 
-  const changeLocale = (newLocale: Locale) => {
+  const changeLocale = useCallback((newLocale: Locale) => {
     setLocale(newLocale);
     setLocaleState(newLocale);
-  };
+  }, []);
 
   const t = useCallback((key: string) => translate(key, locale), [locale]);
 

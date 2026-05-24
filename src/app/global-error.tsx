@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { t, translations } from '@/lib/i18n';
+import { logError } from '@/lib/log-error';
 
 interface GlobalErrorProps {
   error: Error & { digest?: string };
@@ -28,7 +29,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
   const [locale] = useState<'ru' | 'en' | 'zh'>(getLocale());
 
   useEffect(() => {
-    console.error('Global application error:', error);
+    logError('global-error', error);
   }, [error]);
 
   return (

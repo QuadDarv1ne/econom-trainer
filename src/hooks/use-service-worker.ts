@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { logError } from "@/lib/log-error";
 
 /**
  * Hook that registers the service worker for PWA/offline support.
@@ -21,10 +22,10 @@ export function useServiceWorker() {
         .register("/sw.js", { scope: "/" })
         .then((registration) => {
           registeredRef.current = true;
-          console.log("SW registered:", registration.scope);
+          // SW registered successfully
         })
         .catch((error) => {
-          console.error("SW registration failed:", error);
+          logError('service-worker', error);
         });
     };
 
