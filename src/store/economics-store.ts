@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { t, getCurrentLocale } from '@/lib/i18n'
+import { t, getCurrentLocale, type Locale } from '@/lib/i18n'
 import { generateId } from '@/lib/utils'
 import { getLevelFromXP } from '@/lib/xp-utils'
 
@@ -108,7 +108,7 @@ export const MODULE_IDS = [
 export type ModuleId = typeof MODULE_IDS[number]
 
 // XP rewards per module interaction
-export const MODULE_XP: Record<string, number> = {
+export const MODULE_XP: Record<ModuleId, number> = {
   'gdp': 15,
   'supply-demand': 15,
   'elasticity': 15,
@@ -152,7 +152,7 @@ export function computeQuizAndFinanceStats(
   return { quizCorrect, quizTotal, financeCorrect, financeTotal }
 }
 
-export function getModuleDisplayName(moduleId: string, locale: string): string {
+export function getModuleDisplayName(moduleId: string, locale: Locale): string {
   const nameMap: Record<string, string> = {
     'gdp': 'module.gdp.title',
     'supply-demand': 'module.supply-demand.title',
@@ -182,7 +182,7 @@ export function getModuleDisplayName(moduleId: string, locale: string): string {
   }
   const key = nameMap[moduleId]
   if (!key) return moduleId
-  return t(key, locale as 'ru' | 'en' | 'zh')
+  return t(key, locale)
 }
 
 /**
@@ -265,9 +265,8 @@ export const useEconomicsStore = create<EconomicsState>()(
       addQuizResult: (result) => {
         const today = new Date().toISOString().split('T')[0]
         const xpEarned = result.score * 10
-        const newResults = [result]
         set((state) => ({
-          quizResults: [...newResults, ...state.quizResults].slice(0, 50),
+          quizResults: [result, ...state.quizResults].slice(0, 50),
           totalXP: state.totalXP + xpEarned,
           streakState: updateStreakState(state.streakState, today),
         }))
@@ -275,10 +274,9 @@ export const useEconomicsStore = create<EconomicsState>()(
 
       addGDPResult: (result) => {
         const today = new Date().toISOString().split('T')[0]
-        const newResults = [result]
         set((state) => ({
-          gdpResults: [...newResults, ...state.gdpResults].slice(0, 50),
-          totalXP: state.totalXP + 15,
+          gdpResults: [result, ...state.gdpResults].slice(0, 50),
+          totalXP: state.totalXP + MODULE_XP['gdp'],
           streakState: updateStreakState(state.streakState, today),
         }))
       },
@@ -286,9 +284,8 @@ export const useEconomicsStore = create<EconomicsState>()(
       addFinanceResult: (result) => {
         const today = new Date().toISOString().split('T')[0]
         const xpEarned = result.correct ? 20 : 5
-        const newResults = [result]
         set((state) => ({
-          financeResults: [...newResults, ...state.financeResults].slice(0, 50),
+          financeResults: [result, ...state.financeResults].slice(0, 50),
           totalXP: state.totalXP + xpEarned,
           streakState: updateStreakState(state.streakState, today),
         }))
@@ -296,10 +293,9 @@ export const useEconomicsStore = create<EconomicsState>()(
 
       addElasticityResult: (result) => {
         const today = new Date().toISOString().split('T')[0]
-        const newResults = [result]
         set((state) => ({
-          elasticityResults: [...newResults, ...state.elasticityResults].slice(0, 50),
-          totalXP: state.totalXP + 15,
+          elasticityResults: [result, ...state.elasticityResults].slice(0, 50),
+          totalXP: state.totalXP + MODULE_XP['elasticity'],
           streakState: updateStreakState(state.streakState, today),
         }))
       },
@@ -321,9 +317,8 @@ export const useEconomicsStore = create<EconomicsState>()(
       completeDailyChallenge: (result) => {
         const today = new Date().toISOString().split('T')[0]
         const xpEarned = 30 + result.score * 10
-        const newChallenges = [result]
         set((state) => ({
-          dailyChallenges: [...newChallenges, ...state.dailyChallenges].slice(0, 30),
+          dailyChallenges: [result, ...state.dailyChallenges].slice(0, 30),
           totalXP: state.totalXP + xpEarned,
           streakState: updateStreakState(state.streakState, today),
         }))
