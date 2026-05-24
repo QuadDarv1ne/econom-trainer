@@ -29,9 +29,10 @@ export async function GET() {
     }
 
     // Rate limit authenticated reads to prevent enumeration
-    const limit = checkRateLimit('profileRead', null);
+    // Use session.user.id as identifier to prevent shared bucket across users
+    const limit = checkRateLimit('profileRead', session.user.id);
     if (!limit.ok) {
-      return rateLimitResponse('profileRead', null);
+      return rateLimitResponse('profileRead', session.user.id);
     }
 
     const user = await prisma.user.findUnique({

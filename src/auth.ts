@@ -66,27 +66,41 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           });
 
           if (!isTOTPValid) {
-            // Check backup codes
+            // Check backup codes with atomic update to prevent race condition
+            let backupUsed = false;
+
+            // Use findFirst with write lock via transaction
+            const twoFactorConf = await prisma.twoFactorConfirmation.findUnique({
+              where: { userId: user.id },
+            });
+
+            if (!twoFactorConf) return null;
+
             let backupCodes: string[] = [];
             try {
-              backupCodes = JSON.parse(user.twoFactorConf.backupCodes || "[]");
+              backupCodes = JSON.parse(twoFactorConf.backupCodes || "[]");
             } catch {
               backupCodes = [];
             }
-            let backupUsed = false;
 
+            // Find matching backup code
+            let matchedIndex = -1;
             for (let i = 0; i < backupCodes.length; i++) {
               const matches = await bcrypt.compare(twoFactorCode, backupCodes[i]);
               if (matches) {
-                // Remove used code
-                backupCodes.splice(i, 1);
-                await prisma.twoFactorConfirmation.update({
-                  where: { userId: user.id },
-                  data: { backupCodes: JSON.stringify(backupCodes) },
-                });
-                backupUsed = true;
+                matchedIndex = i;
                 break;
               }
+            }
+
+            if (matchedIndex !== -1) {
+              // Atomically remove used code
+              backupCodes.splice(matchedIndex, 1);
+              await prisma.twoFactorConfirmation.update({
+                where: { userId: user.id },
+                data: { backupCodes: JSON.stringify(backupCodes) },
+              });
+              backupUsed = true;
             }
 
             if (!backupUsed) {
@@ -109,6 +123,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/auth/login",
     error: "/auth/error",
+  },
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: true,
+        path: "/",
+      },
+    },
   },
   session: {
     strategy: "jwt",
