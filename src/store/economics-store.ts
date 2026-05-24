@@ -185,6 +185,34 @@ export function getModuleDisplayName(moduleId: string, locale: string): string {
   return t(key, locale as 'ru' | 'en' | 'zh')
 }
 
+/**
+ * Calculate updated streak state based on activity today.
+ * Returns unchanged state if already active today, otherwise:
+ * - Increments streak if last activity was yesterday
+ * - Resets to 1 if gap > 1 day or first activity
+ */
+function updateStreakState(streakState: StreakState, today: string): StreakState {
+  if (streakState.lastActiveDate === today) return streakState;
+
+  const { currentStreak, longestStreak, lastActiveDate } = streakState;
+  let newStreak = currentStreak;
+
+  if (lastActiveDate) {
+    const diffDays = Math.round(
+      (new Date(today).getTime() - new Date(lastActiveDate).getTime()) / (1000 * 60 * 60 * 24)
+    );
+    newStreak = diffDays === 1 ? currentStreak + 1 : 1;
+  } else {
+    newStreak = 1;
+  }
+
+  return {
+    currentStreak: newStreak,
+    longestStreak: Math.max(longestStreak, newStreak),
+    lastActiveDate: today,
+  };
+}
+
 export interface EconomicsState {
   quizResults: QuizResult[]
   gdpResults: GDPResult[]
@@ -238,118 +266,42 @@ export const useEconomicsStore = create<EconomicsState>()(
         const today = new Date().toISOString().split('T')[0]
         const xpEarned = result.score * 10
         const newResults = [result]
-        set((state) => {
-          const quizResults = [...newResults, ...state.quizResults].slice(0, 50)
-          const { currentStreak, longestStreak, lastActiveDate } = state.streakState
-          let newStreak = currentStreak
-          if (lastActiveDate !== today) {
-            if (lastActiveDate) {
-              const last = new Date(lastActiveDate)
-              const now = new Date(today)
-              const diffDays = Math.round((now.getTime() - last.getTime()) / (1000 * 60 * 60 * 24))
-              newStreak = diffDays === 1 ? currentStreak + 1 : 1
-            } else {
-              newStreak = 1
-            }
-          }
-          return {
-            quizResults,
-            totalXP: state.totalXP + xpEarned,
-            streakState: {
-              currentStreak: newStreak,
-              longestStreak: Math.max(longestStreak, newStreak),
-              lastActiveDate: today,
-            },
-          }
-        })
+        set((state) => ({
+          quizResults: [...newResults, ...state.quizResults].slice(0, 50),
+          totalXP: state.totalXP + xpEarned,
+          streakState: updateStreakState(state.streakState, today),
+        }))
       },
 
       addGDPResult: (result) => {
         const today = new Date().toISOString().split('T')[0]
         const newResults = [result]
-        set((state) => {
-          const gdpResults = [...newResults, ...state.gdpResults].slice(0, 50)
-          const { currentStreak, longestStreak, lastActiveDate } = state.streakState
-          let newStreak = currentStreak
-          if (lastActiveDate !== today) {
-            if (lastActiveDate) {
-              const last = new Date(lastActiveDate)
-              const now = new Date(today)
-              const diffDays = Math.round((now.getTime() - last.getTime()) / (1000 * 60 * 60 * 24))
-              newStreak = diffDays === 1 ? currentStreak + 1 : 1
-            } else {
-              newStreak = 1
-            }
-          }
-          return {
-            gdpResults,
-            totalXP: state.totalXP + 15,
-            streakState: {
-              currentStreak: newStreak,
-              longestStreak: Math.max(longestStreak, newStreak),
-              lastActiveDate: today,
-            },
-          }
-        })
+        set((state) => ({
+          gdpResults: [...newResults, ...state.gdpResults].slice(0, 50),
+          totalXP: state.totalXP + 15,
+          streakState: updateStreakState(state.streakState, today),
+        }))
       },
 
       addFinanceResult: (result) => {
         const today = new Date().toISOString().split('T')[0]
         const xpEarned = result.correct ? 20 : 5
         const newResults = [result]
-        set((state) => {
-          const financeResults = [...newResults, ...state.financeResults].slice(0, 50)
-          const { currentStreak, longestStreak, lastActiveDate } = state.streakState
-          let newStreak = currentStreak
-          if (lastActiveDate !== today) {
-            if (lastActiveDate) {
-              const last = new Date(lastActiveDate)
-              const now = new Date(today)
-              const diffDays = Math.round((now.getTime() - last.getTime()) / (1000 * 60 * 60 * 24))
-              newStreak = diffDays === 1 ? currentStreak + 1 : 1
-            } else {
-              newStreak = 1
-            }
-          }
-          return {
-            financeResults,
-            totalXP: state.totalXP + xpEarned,
-            streakState: {
-              currentStreak: newStreak,
-              longestStreak: Math.max(longestStreak, newStreak),
-              lastActiveDate: today,
-            },
-          }
-        })
+        set((state) => ({
+          financeResults: [...newResults, ...state.financeResults].slice(0, 50),
+          totalXP: state.totalXP + xpEarned,
+          streakState: updateStreakState(state.streakState, today),
+        }))
       },
 
       addElasticityResult: (result) => {
         const today = new Date().toISOString().split('T')[0]
         const newResults = [result]
-        set((state) => {
-          const elasticityResults = [...newResults, ...state.elasticityResults].slice(0, 50)
-          const { currentStreak, longestStreak, lastActiveDate } = state.streakState
-          let newStreak = currentStreak
-          if (lastActiveDate !== today) {
-            if (lastActiveDate) {
-              const last = new Date(lastActiveDate)
-              const now = new Date(today)
-              const diffDays = Math.round((now.getTime() - last.getTime()) / (1000 * 60 * 60 * 24))
-              newStreak = diffDays === 1 ? currentStreak + 1 : 1
-            } else {
-              newStreak = 1
-            }
-          }
-          return {
-            elasticityResults,
-            totalXP: state.totalXP + 15,
-            streakState: {
-              currentStreak: newStreak,
-              longestStreak: Math.max(longestStreak, newStreak),
-              lastActiveDate: today,
-            },
-          }
-        })
+        set((state) => ({
+          elasticityResults: [...newResults, ...state.elasticityResults].slice(0, 50),
+          totalXP: state.totalXP + 15,
+          streakState: updateStreakState(state.streakState, today),
+        }))
       },
 
       addModuleInteraction: (interaction) => {
@@ -359,90 +311,29 @@ export const useEconomicsStore = create<EconomicsState>()(
           id: generateId(),
           date: new Date().toISOString(),
         }
-        set((state) => {
-          const moduleInteractions = [newInteraction, ...state.moduleInteractions].slice(0, 500)
-          const { currentStreak, longestStreak, lastActiveDate } = state.streakState
-          let newStreak = currentStreak
-          if (lastActiveDate !== today) {
-            if (lastActiveDate) {
-              const last = new Date(lastActiveDate)
-              const now = new Date(today)
-              const diffDays = Math.round((now.getTime() - last.getTime()) / (1000 * 60 * 60 * 24))
-              newStreak = diffDays === 1 ? currentStreak + 1 : 1
-            } else {
-              newStreak = 1
-            }
-          }
-          return {
-            moduleInteractions,
-            totalXP: state.totalXP + interaction.xpEarned,
-            streakState: {
-              currentStreak: newStreak,
-              longestStreak: Math.max(longestStreak, newStreak),
-              lastActiveDate: today,
-            },
-          }
-        })
+        set((state) => ({
+          moduleInteractions: [newInteraction, ...state.moduleInteractions].slice(0, 500),
+          totalXP: state.totalXP + interaction.xpEarned,
+          streakState: updateStreakState(state.streakState, today),
+        }))
       },
 
       completeDailyChallenge: (result) => {
         const today = new Date().toISOString().split('T')[0]
         const xpEarned = 30 + result.score * 10
         const newChallenges = [result]
-        set((state) => {
-          const dailyChallenges = [...newChallenges, ...state.dailyChallenges].slice(0, 30)
-          const { currentStreak, longestStreak, lastActiveDate } = state.streakState
-          let newStreak = currentStreak
-          if (lastActiveDate !== today) {
-            if (lastActiveDate) {
-              const last = new Date(lastActiveDate)
-              const now = new Date(today)
-              const diffDays = Math.round((now.getTime() - last.getTime()) / (1000 * 60 * 60 * 24))
-              newStreak = diffDays === 1 ? currentStreak + 1 : 1
-            } else {
-              newStreak = 1
-            }
-          }
-          return {
-            dailyChallenges,
-            totalXP: state.totalXP + xpEarned,
-            streakState: {
-              currentStreak: newStreak,
-              longestStreak: Math.max(longestStreak, newStreak),
-              lastActiveDate: today,
-            },
-          }
-        })
+        set((state) => ({
+          dailyChallenges: [...newChallenges, ...state.dailyChallenges].slice(0, 30),
+          totalXP: state.totalXP + xpEarned,
+          streakState: updateStreakState(state.streakState, today),
+        }))
       },
 
       recordActivity: () => {
         const today = new Date().toISOString().split('T')[0]
-        set((state) => {
-          const { currentStreak, longestStreak, lastActiveDate } = state.streakState
-          if (lastActiveDate === today) return state // Already recorded today
-
-          let newStreak: number
-          if (lastActiveDate) {
-            const last = new Date(lastActiveDate)
-            const now = new Date(today)
-            const diffDays = Math.round((now.getTime() - last.getTime()) / (1000 * 60 * 60 * 24))
-            if (diffDays === 1) {
-              newStreak = currentStreak + 1
-            } else {
-              newStreak = 1
-            }
-          } else {
-            newStreak = 1
-          }
-
-          return {
-            streakState: {
-              currentStreak: newStreak,
-              longestStreak: Math.max(longestStreak, newStreak),
-              lastActiveDate: today,
-            },
-          }
-        })
+        set((state) => ({
+          streakState: updateStreakState(state.streakState, today),
+        }))
       },
 
       addXP: (amount) => {
