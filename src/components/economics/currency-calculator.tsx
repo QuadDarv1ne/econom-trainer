@@ -64,12 +64,12 @@ export function CurrencyCalculator() {
 
   const hasEarnedXPRef = useRef(false)
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
-  const awardXP = () => {
+  const awardXP = useCallback(() => {
     if (!hasEarnedXPRef.current) {
       hasEarnedXPRef.current = true
       addModuleInteraction({ moduleId: 'currency', action: 'convert', xpEarned: MODULE_XP['currency'] ?? 15 })
     }
-  }
+  }, [addModuleInteraction])
 
   const { toast } = useToast()
 

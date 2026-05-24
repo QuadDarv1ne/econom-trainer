@@ -196,7 +196,7 @@ export function ElasticityCalculator() {
                   <Gauge className="h-4 w-4 mr-2" />
                   {t('elasticity.button.calculate')}
                 </Button>
-                <Button onClick={reset} variant="outline" aria-label={t('gdp.reset')}>
+                <Button onClick={reset} variant="outline" aria-label={t('common.reset')}>
                   <RotateCcw className="h-4 w-4" />
                 </Button>
               </div>
@@ -226,7 +226,7 @@ export function ElasticityCalculator() {
                   <Gauge className="h-4 w-4 mr-2" />
                   {t('elasticity.button.calculate')}
                 </Button>
-                <Button onClick={reset} variant="outline">
+                <Button onClick={reset} variant="outline" aria-label={t('common.reset')}>
                   <RotateCcw className="h-4 w-4" />
                 </Button>
               </div>
@@ -256,7 +256,7 @@ export function ElasticityCalculator() {
                   <Gauge className="h-4 w-4 mr-2" />
                   {t('elasticity.button.calculate')}
                 </Button>
-                <Button onClick={reset} variant="outline">
+                <Button onClick={reset} variant="outline" aria-label={t('common.reset')}>
                   <RotateCcw className="h-4 w-4" />
                 </Button>
               </div>

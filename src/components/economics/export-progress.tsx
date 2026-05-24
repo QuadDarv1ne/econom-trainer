@@ -204,24 +204,21 @@ export function ExportProgressButton() {
   const handleShare = async () => {
     const text = exportProgressToText()
 
-    if (navigator.share) {
-      try {
+    try {
+      if (navigator.share) {
         await navigator.share({
           title: t('progress.title') + ' — ' + t('export.pdf.title'),
           text: text,
         })
         toast.success(t('export.shareSuccess'))
-      } catch (err) {
-        if (err instanceof DOMException && err.name !== 'AbortError') {
-          toast.error(t('export.shareFailed'))
-        } else if (!(err instanceof DOMException)) {
-          toast.error(t('export.shareFailed'))
-        }
+      } else {
+        // Fallback to copy
+        await handleCopy()
+        toast.success(t('export.shareFallback'))
       }
-    } else {
-      // Fallback to copy
-      await handleCopy()
-      toast.success(t('export.shareFallback'))
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return
+      toast.error(t('export.shareFailed'))
     }
   }
 
