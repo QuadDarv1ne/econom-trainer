@@ -70,11 +70,13 @@ export function generateChartData(
   supplyShift: number
 ): ChartDataPoint[] {
   const data: ChartDataPoint[] = []
-  const maxQ = 120
-  for (let q = 0; q <= maxQ; q += 2) {
+  // Visible chart bounds: max quantity and max price for display
+  const CHART_MAX_Q = 120
+  const CHART_MAX_P = 150
+  for (let q = 0; q <= CHART_MAX_Q; q += 2) {
     const demandPrice = (demandIntercept + demandShift) - demandSlope * q
     const supplyPrice = (supplyIntercept + supplyShift) + supplySlope * q
-    if (demandPrice >= 0 && supplyPrice <= 150) {
+    if (demandPrice >= 0 && supplyPrice <= CHART_MAX_P) {
       data.push({
         quantity: q,
         demand: Math.max(0, demandPrice),
@@ -414,6 +416,7 @@ export function SupplyDemand() {
                   onChange={(e) => setPracticeAnswer(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && checkPracticeAnswer()}
                   className="max-w-[200px]"
+                  aria-label={t('supply-demand.practice.answerPlaceholder')}
                 />
                 <Button onClick={checkPracticeAnswer} disabled={practiceResult !== null}>
                   {t('supply-demand.practice.check')}

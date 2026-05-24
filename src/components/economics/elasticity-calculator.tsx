@@ -19,37 +19,37 @@ export type ElasticityType = 'price' | 'income' | 'cross'
 export interface ElasticityResult {
   type: ElasticityType
   value: number
-  interpretation: string
-  category: string
+  interpretationKey: string
+  categoryKey: string
 }
 
 export function calcPriceElasticity(q1: number, q2: number, p1: number, p2: number): ElasticityResult | null {
   if (p1 === p2) return null
   const midQ = (q1 + q2) / 2
   const midP = (p1 + p2) / 2
-  if (midQ === 0 || midP === 0) return null // Prevent division by zero
+  if (midQ === 0 || midP === 0) return null
   const value = ((q2 - q1) / midQ) / ((p2 - p1) / midP)
   const absVal = Math.abs(value)
-  let interpretation: string, category: string
-  if (absVal > 1) { interpretation = 'Спрос эластичен — изменение цены ведёт к большему процентному изменению объёма спроса'; category = 'Эластичный' }
-  else if (Math.abs(absVal - 1) < 0.001) { interpretation = 'Единичная эластичность — процентное изменение спроса равно процентному изменению цены'; category = 'Единичный' }
-  else if (absVal > 0) { interpretation = 'Спрос неэластичен — изменение цены ведёт к меньшему процентному изменению объёма спроса'; category = 'Неэластичный' }
-  else { interpretation = 'Абсолютно неэластичный спрос — объём не меняется при изменении цены'; category = 'Абс. неэластичный' }
-  return { type: 'price', value, interpretation, category }
+  let interpretationKey: string, categoryKey: string
+  if (absVal > 1) { interpretationKey = 'elasticity.interpretation.elastic'; categoryKey = 'elasticity.category.elastic' }
+  else if (Math.abs(absVal - 1) < 0.001) { interpretationKey = 'elasticity.interpretation.unitary'; categoryKey = 'elasticity.category.unitary' }
+  else if (absVal > 0) { interpretationKey = 'elasticity.interpretation.inelastic'; categoryKey = 'elasticity.category.inelastic' }
+  else { interpretationKey = 'elasticity.interpretation.perfectlyInelastic'; categoryKey = 'elasticity.category.perfectlyInelastic' }
+  return { type: 'price', value, interpretationKey, categoryKey }
 }
 
 export function calcIncomeElasticity(q1: number, q2: number, y1: number, y2: number): ElasticityResult | null {
   if (y1 === y2) return null
   const midQ = (q1 + q2) / 2
   const midY = (y1 + y2) / 2
-  if (midQ === 0 || midY === 0) return null // Prevent division by zero
+  if (midQ === 0 || midY === 0) return null
   const value = ((q2 - q1) / midQ) / ((y2 - y1) / midY)
-  let interpretation: string, category: string
-  if (value > 1) { interpretation = 'Предмет роскоши — спрос растёт быстрее дохода (E > 1)'; category = 'Роскошь' }
-  else if (value > 0.001) { interpretation = 'Нормальный товар — спрос растёт с ростом дохода, но медленнее (0 < E < 1)'; category = 'Нормальный' }
-  else if (Math.abs(value) < 0.001) { interpretation = 'Нейтральный товар — спрос не зависит от дохода'; category = 'Нейтральный' }
-  else { interpretation = 'Низший товар — спрос падает с ростом дохода (E < 0)'; category = 'Низший' }
-  return { type: 'income', value, interpretation, category }
+  let interpretationKey: string, categoryKey: string
+  if (value > 1) { interpretationKey = 'elasticity.interpretation.luxury'; categoryKey = 'elasticity.category.luxury' }
+  else if (value > 0.001) { interpretationKey = 'elasticity.interpretation.normal'; categoryKey = 'elasticity.category.normal' }
+  else if (Math.abs(value) < 0.001) { interpretationKey = 'elasticity.interpretation.neutral'; categoryKey = 'elasticity.category.neutral' }
+  else { interpretationKey = 'elasticity.interpretation.inferior'; categoryKey = 'elasticity.category.inferior' }
+  return { type: 'income', value, interpretationKey, categoryKey }
 }
 
 export function calcCrossElasticity(q1: number, q2: number, px1: number, px2: number): ElasticityResult | null {
@@ -57,11 +57,11 @@ export function calcCrossElasticity(q1: number, q2: number, px1: number, px2: nu
   const midQ = (q1 + q2) / 2
   const midPx = (px1 + px2) / 2
   const value = ((q2 - q1) / midQ) / ((px2 - px1) / midPx)
-  let interpretation: string, category: string
-  if (value > 0) { interpretation = 'Товары-субституты (заменители) — рост цены товара Y ведёт к росту спроса на товар X'; category = 'Субституты' }
-  else if (value < 0) { interpretation = 'Комплементарные товары (дополнители) — рост цены товара Y ведёт к падению спроса на товар X'; category = 'Комплементы' }
-  else { interpretation = 'Независимые товары — цена товара Y не влияет на спрос товара X'; category = 'Независимые' }
-  return { type: 'cross', value, interpretation, category }
+  let interpretationKey: string, categoryKey: string
+  if (value > 0) { interpretationKey = 'elasticity.interpretation.substitutes'; categoryKey = 'elasticity.category.substitutes' }
+  else if (value < 0) { interpretationKey = 'elasticity.interpretation.complements'; categoryKey = 'elasticity.category.complements' }
+  else { interpretationKey = 'elasticity.interpretation.independent'; categoryKey = 'elasticity.category.independent' }
+  return { type: 'cross', value, interpretationKey, categoryKey }
 }
 
 export function ElasticityCalculator() {
@@ -276,7 +276,7 @@ export function ElasticityCalculator() {
             </CardHeader>
             <CardContent>
               <Badge variant={getCategoryColor() as "destructive" | "default" | "secondary" | "outline"} className="text-base px-3 py-1">
-                {result.category}
+                {t(result.categoryKey)}
               </Badge>
             </CardContent>
           </Card>
@@ -289,7 +289,7 @@ export function ElasticityCalculator() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm leading-relaxed">{result.interpretation}</p>
+              <p className="text-sm leading-relaxed">{t(result.interpretationKey)}</p>
             </CardContent>
           </Card>
         </div>
