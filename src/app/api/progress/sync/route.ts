@@ -104,6 +104,7 @@ export async function POST(req: Request) {
     const mergeArrays = (
       clientData: unknown,
       serverData: string | null | undefined,
+      maxItems: number = 500,
     ): string | null | undefined => {
       if (clientData === undefined) return undefined;
       if (!clientData && !serverData) return null;
@@ -154,12 +155,14 @@ export async function POST(req: Request) {
         else merged.set(`idx_${merged.size}`, item);
       }
 
-      return JSON.stringify(Array.from(merged.values()));
+      const result = Array.from(merged.values());
+      // Prune oldest items if exceeding limit (keep newest = first items)
+      return JSON.stringify(result.slice(0, maxItems));
     };
 
-    const mergedQuizResults = mergeArrays(quizResults, existingProgress?.quizResults);
-    const mergedModuleHistory = mergeArrays(moduleHistory, existingProgress?.moduleHistory);
-    const mergedAchievements = mergeArrays(achievements, existingProgress?.achievements);
+    const mergedQuizResults = mergeArrays(quizResults, existingProgress?.quizResults, 50);
+    const mergedModuleHistory = mergeArrays(moduleHistory, existingProgress?.moduleHistory, 500);
+    const mergedAchievements = mergeArrays(achievements, existingProgress?.achievements, 50);
 
     const progress = await prisma.userProgress.upsert({
       where: { userId: session.user.id },
