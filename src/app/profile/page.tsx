@@ -2,7 +2,7 @@
 
 import type React from 'react';
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { signOut } from 'next-auth/react';
+import { signOutAndClearStore } from '@/lib/sign-out';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -210,7 +210,7 @@ export default function ProfilePage() {
         setNewPassword('');
         setConfirmNewPassword('');
         // Sign out since all sessions are invalidated by password change
-        signOut({ callbackUrl: '/auth/login' });
+        signOutAndClearStore({ callbackUrl: '/auth/login' });
       } else {
         setError(safeErrorMessage(data, t('auth.error.serverError')));
       }
@@ -256,7 +256,7 @@ export default function ProfilePage() {
       const data = await res.json();
 
       if (res.ok) {
-        signOut({ callbackUrl: '/' });
+        signOutAndClearStore({ callbackUrl: '/' });
       } else {
         setError(safeErrorMessage(data, t('auth.error.serverError')));
       }
@@ -569,7 +569,7 @@ export default function ProfilePage() {
                     try {
                       const res = await fetch('/api/profile/revoke-sessions', { method: 'POST' });
                       if (res.ok) {
-                        signOut({ callbackUrl: '/auth/login' });
+                        signOutAndClearStore({ callbackUrl: '/auth/login' });
                       }
                     } catch {
                       setError(t('auth.error.sessionError'));

@@ -61,9 +61,11 @@ export async function POST(req: Request) {
     });
 
     if (existingUser) {
+      // Use constant-time delay to prevent timing-based email enumeration
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return NextResponse.json(
-        { error: 'User with this email already exists' },
-        { status: 409 }
+        { message: 'If this email is not registered, you can create an account' },
+        { status: 200 }
       );
     }
 

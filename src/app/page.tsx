@@ -1,6 +1,7 @@
 'use client'
 import { useState, useMemo, Suspense } from 'react'
-import { useSession, signOut } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
+import { signOutAndClearStore } from '@/lib/sign-out';
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import dynamic from 'next/dynamic'
@@ -140,7 +141,7 @@ export default function Home() {
                     {t('dashboard.tab.security')}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/' })}>
+                  <DropdownMenuItem onClick={() => signOutAndClearStore({ callbackUrl: '/' })}>
                     <LogOut className="mr-2 h-4 w-4" />
                     {t('dashboard.signOut')}
                   </DropdownMenuItem>

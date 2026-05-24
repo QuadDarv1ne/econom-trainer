@@ -2,10 +2,10 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
 import { GraduationCap, Home, User, BarChart3, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useI18n } from '@/lib/i18n-provider'
+import { signOutAndClearStore } from '@/lib/sign-out'
 
 interface NavLink {
   href: string
@@ -53,7 +53,7 @@ export function AppHeader({ title, variant = 'simple' }: AppHeaderProps) {
               </Button>
             </Link>
           ))}
-          <Button variant="ghost" size={variant === 'full' ? 'sm' : 'icon'} className={variant === 'full' ? '' : 'h-8 w-8'} onClick={() => signOut({ callbackUrl: '/' })}>
+          <Button variant="ghost" size={variant === 'full' ? 'sm' : 'icon'} className={variant === 'full' ? '' : 'h-8 w-8'} onClick={() => signOutAndClearStore({ callbackUrl: '/' })}>
             <LogOut className={variant === 'full' ? 'h-4 w-4 mr-2' : 'h-4 w-4'} />
             {variant === 'full' && <span>{t('dashboard.signOut')}</span>}
             {variant !== 'full' && <span className="sr-only">{t('dashboard.signOut')}</span>}
