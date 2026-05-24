@@ -242,7 +242,7 @@ export function CurrencyCalculator() {
 
             {/* Inverse rate */}
             <div className="text-center text-xs text-muted-foreground">
-              {t('currency.rate')}: 1 {toCurr.code} = {(1 / crossRate).toFixed(4)} {fromCurr.code}
+              {t('currency.rate')}: 1 {toCurr.code} = {crossRate !== 0 ? (1 / crossRate).toFixed(4) : 'N/A'} {fromCurr.code}
             </div>
           </CardContent>
         </Card>

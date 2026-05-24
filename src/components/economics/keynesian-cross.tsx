@@ -55,7 +55,8 @@ export function KeynesianCross() {
     const maxY = Math.max(equilibriumY * 1.5, 1000)
     const points: Array<{ income: number; aggregateDemand: number; fortyFive: number }> = []
     for (let y = 0; y <= maxY; y += maxY / 60) {
-      const aggregateDemand = autonomousSpending + govSpending + mpc * (1 - taxRate) * y + mpi * y
+      // AD = A + G + MPC*(1-t)*Y - MPI*Y (imports are a leakage)
+      const aggregateDemand = autonomousSpending + govSpending + mpc * (1 - taxRate) * y - mpi * y
       points.push({
         income: Math.round(y),
         aggregateDemand: Math.round(aggregateDemand),
@@ -130,7 +131,7 @@ export function KeynesianCross() {
                   strokeDasharray="5 5"
                 />
                 <ReferenceLine
-                  y={Math.round(autonomousSpending + govSpending + mpcSimple * equilibriumY + mpi * equilibriumY)}
+                  y={Math.round(equilibriumY)}
                   stroke="hsl(var(--muted-foreground))"
                   strokeDasharray="5 5"
                 />
