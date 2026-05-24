@@ -16,7 +16,15 @@ export function useAutoSync() {
   const performSync = useCallback(async () => {
     if (!navigator.onLine) return;
 
-    const session = await fetch("/api/auth/session").then((r) => r.json());
+    let session;
+    try {
+      const response = await fetch("/api/auth/session");
+      if (!response.ok) return;
+      session = await response.json();
+    } catch {
+      return; // Network error, skip sync
+    }
+
     if (!session?.user?.id) return;
 
     const state = useEconomicsStore.getState();
@@ -35,14 +43,12 @@ export function useAutoSync() {
       });
 
       if (!response.ok) {
-        console.error("Auto-sync failed:", response.status);
         return;
       }
 
       hasSyncedRef.current = true;
-      console.log("Auto-sync completed successfully");
-    } catch (error) {
-      console.error("Auto-sync error:", error);
+    } catch {
+      // Silently fail - will retry on next online event
     }
   }, []);
 
