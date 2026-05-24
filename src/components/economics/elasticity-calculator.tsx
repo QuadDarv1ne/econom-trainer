@@ -103,7 +103,7 @@ export function ElasticityCalculator() {
       return
     }
     setResult(res)
-    addElasticityResult({ id: generateId(), elasticityType: 'price', value: res.value, interpretation: res.interpretation, category: res.category, date: new Date().toISOString() })
+    addElasticityResult({ id: generateId(), elasticityType: 'price', value: res.value, interpretation: res.interpretationKey, category: res.categoryKey, date: new Date().toISOString() })
   }, [q1, q2, p1, p2, addElasticityResult, toast, t])
 
   const calculateIncomeElasticity = useCallback(() => {
@@ -119,7 +119,7 @@ export function ElasticityCalculator() {
       return
     }
     setResult(res)
-    addElasticityResult({ id: generateId(), elasticityType: 'income', value: res.value, interpretation: res.interpretation, category: res.category, date: new Date().toISOString() })
+    addElasticityResult({ id: generateId(), elasticityType: 'income', value: res.value, interpretation: res.interpretationKey, category: res.categoryKey, date: new Date().toISOString() })
   }, [q1Inc, q2Inc, y1, y2, addElasticityResult, toast, t])
 
   const calculateCrossElasticity = useCallback(() => {
@@ -135,7 +135,7 @@ export function ElasticityCalculator() {
       return
     }
     setResult(res)
-    addElasticityResult({ id: generateId(), elasticityType: 'cross', value: res.value, interpretation: res.interpretation, category: res.category, date: new Date().toISOString() })
+    addElasticityResult({ id: generateId(), elasticityType: 'cross', value: res.value, interpretation: res.interpretationKey, category: res.categoryKey, date: new Date().toISOString() })
   }, [q1Cross, q2Cross, px1, px2, addElasticityResult, toast, t])
 
   const reset = useCallback(() => {

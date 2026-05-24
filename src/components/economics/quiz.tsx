@@ -1388,6 +1388,12 @@ export function EconomicsQuiz() {
   const { toast } = useToast()
   const { t } = useI18n()
 
+  // Ref to track current score value synchronously (avoids stale closure in nextQuestion)
+  const scoreRef = useRef(score)
+  useEffect(() => {
+    scoreRef.current = score
+  }, [score])
+
   // Ref to track current question index inside interval callbacks
   const currentQuestionRef = useRef(currentQuestion)
   useEffect(() => {
@@ -1472,7 +1478,7 @@ export function EconomicsQuiz() {
 
   const nextQuestion = useCallback(() => {
     if (currentQuestion + 1 >= shuffledQuestions.length) {
-      const finalScore = score
+      const finalScore = scoreRef.current
       addQuizResult({
         id: generateId(),
         topic: t('quiz.topicEconomicTheory'),
@@ -1492,7 +1498,7 @@ export function EconomicsQuiz() {
     setTimeLeft(QUIZ_TIME)
     setTimeExpired(false)
     setQuizState('active')
-  }, [currentQuestion, shuffledQuestions, score, addQuizResult, toast, t])
+  }, [currentQuestion, shuffledQuestions, addQuizResult, toast, t])
 
   const getDifficultyColor = (d: Question['difficulty']): "secondary" | "default" | "destructive" => {
     if (d === 'easy') return 'secondary'
@@ -1611,7 +1617,7 @@ export function EconomicsQuiz() {
           </Badge>
           <Badge variant="outline">{question.topic}</Badge>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1" role="timer" aria-live="polite" aria-atomic="true">
           <Clock className={`h-4 w-4 ${timeLeft <= 10 ? 'text-red-500' : ''}`} />
           <span className={`font-mono font-bold ${timeLeft <= 10 ? 'text-red-500' : ''}`}>
             {timeLeft}{t('quiz.secondsSuffix')}

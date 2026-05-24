@@ -10,21 +10,21 @@ describe('calcPriceElasticity', () => {
     const res = calcPriceElasticity(100, 80, 50, 60)
     checkResult(res)
     expect(Math.abs(res.value)).toBeGreaterThan(1)
-    expect(res.category).toBe('Эластичный')
+    expect(res.categoryKey).toBe('elasticity.category.elastic')
   })
 
   it('calculates inelastic demand (|E| < 1)', () => {
     const res = calcPriceElasticity(100, 95, 50, 60)
     checkResult(res)
     expect(Math.abs(res.value)).toBeLessThan(1)
-    expect(res.category).toBe('Неэластичный')
+    expect(res.categoryKey).toBe('elasticity.category.inelastic')
   })
 
   it('calculates unit elastic demand (|E| = 1)', () => {
     const res = calcPriceElasticity(100, 80, 50, 40)
     checkResult(res)
     expect(Math.abs(res.value)).toBeCloseTo(1, 1)
-    expect(res.category).toBe('Единичный')
+    expect(res.categoryKey).toBe('elasticity.category.unitary')
   })
 
   it('returns null when p1 === p2', () => {
@@ -35,7 +35,7 @@ describe('calcPriceElasticity', () => {
     const res = calcPriceElasticity(100, 100, 50, 60)
     checkResult(res)
     expect(res.value).toBe(0)
-    expect(res.category).toBe('Абс. неэластичный')
+    expect(res.categoryKey).toBe('elasticity.category.perfectlyInelastic')
   })
 })
 
@@ -44,7 +44,7 @@ describe('calcIncomeElasticity', () => {
     const res = calcIncomeElasticity(50, 100, 10000, 15000)
     checkResult(res)
     expect(res.value).toBeGreaterThan(1)
-    expect(res.category).toBe('Роскошь')
+    expect(res.categoryKey).toBe('elasticity.category.luxury')
   })
 
   it('identifies normal goods (0 < E < 1)', () => {
@@ -52,14 +52,14 @@ describe('calcIncomeElasticity', () => {
     checkResult(res)
     expect(res.value).toBeGreaterThan(0)
     expect(res.value).toBeLessThan(1)
-    expect(res.category).toBe('Нормальный')
+    expect(res.categoryKey).toBe('elasticity.category.normal')
   })
 
   it('identifies inferior goods (E < 0)', () => {
     const res = calcIncomeElasticity(100, 80, 10000, 15000)
     checkResult(res)
     expect(res.value).toBeLessThan(0)
-    expect(res.category).toBe('Низший')
+    expect(res.categoryKey).toBe('elasticity.category.inferior')
   })
 
   it('returns null when y1 === y2', () => {
@@ -72,21 +72,21 @@ describe('calcCrossElasticity', () => {
     const res = calcCrossElasticity(100, 120, 50, 60)
     checkResult(res)
     expect(res.value).toBeGreaterThan(0)
-    expect(res.category).toBe('Субституты')
+    expect(res.categoryKey).toBe('elasticity.category.substitutes')
   })
 
   it('identifies complements (E < 0)', () => {
     const res = calcCrossElasticity(100, 80, 50, 60)
     checkResult(res)
     expect(res.value).toBeLessThan(0)
-    expect(res.category).toBe('Комплементы')
+    expect(res.categoryKey).toBe('elasticity.category.complements')
   })
 
   it('identifies independent goods (E = 0)', () => {
     const res = calcCrossElasticity(100, 100, 50, 60)
     checkResult(res)
     expect(res.value).toBe(0)
-    expect(res.category).toBe('Независимые')
+    expect(res.categoryKey).toBe('elasticity.category.independent')
   })
 
   it('returns null when px1 === px2', () => {
