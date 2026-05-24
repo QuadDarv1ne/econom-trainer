@@ -103,6 +103,10 @@ export function InflationCalculator() {
     const rate = parseFloat(inflationRate)
     const startYear = parseInt(initialYear)
     const endYear = parseInt(finalYear)
+    // Validate inputs: must be finite numbers
+    if (!isFinite(amount) || !isFinite(rate) || !isFinite(startYear) || !isFinite(endYear)) {
+      return null
+    }
     return calcInflationResult(amount, rate, startYear, endYear)
   }, [initialAmount, initialYear, finalYear, inflationRate])
 

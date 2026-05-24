@@ -2,28 +2,33 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { logError } from '@/lib/log-error';
 import { BASE_URL } from '@/lib/constants';
+import { safeJson } from '@/lib/safe-json';
 
 // POST - Verify email via token
 // CSRF protection is provided by the cryptographically random, single-use token
 // sent via email. Origin-based CSRF checks would break legitimate email clicks.
 export async function POST(req: Request) {
 
-  let body: { token?: string; email?: string } = {};
-  try {
-    body = await req.json();
-  } catch {
-    // JSON parse failed — try form data instead
-    const formData = await req.formData();
-    const tokenVal = formData.get('token');
-    const emailVal = formData.get('email');
-    body = {
-      token: typeof tokenVal === 'string' ? tokenVal : undefined,
-      email: typeof emailVal === 'string' ? emailVal : undefined,
-    };
-  }
+  let email = '';
+  let token = '';
 
-  const token = body.token;
-  const email = (body.email || '').toLowerCase();
+  // Try JSON parsing first, fallback to form data
+  const parsed = await safeJson<{ token?: string; email?: string }>(req);
+  if ('status' in parsed && parsed.status === 400) {
+    // JSON parse failed, try form data
+    try {
+      const formData = await req.formData();
+      const tokenVal = formData.get('token');
+      const emailVal = formData.get('email');
+      token = typeof tokenVal === 'string' ? tokenVal : '';
+      email = typeof emailVal === 'string' ? emailVal.toLowerCase() : '';
+    } catch {
+      return NextResponse.redirect(BASE_URL + '/auth/verify-email?status=invalid');
+    }
+  } else {
+    token = parsed.token || '';
+    email = (parsed.email || '').toLowerCase();
+  }
 
   const baseUrl = BASE_URL;
 

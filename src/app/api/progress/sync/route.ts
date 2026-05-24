@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
-import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
+import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { getLevelFromXP } from '@/lib/xp-utils';
 import { logError } from '@/lib/log-error';
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!validateOrigin(req)) {
+    if (!validateOriginStrict(req)) {
       return csrfErrorResponse();
     }
 
@@ -65,22 +65,16 @@ export async function POST(req: Request) {
 
     const parsed = await safeJson<{
       totalXP?: number;
-      level?: number;
       quizResults?: unknown;
       moduleHistory?: unknown;
       achievements?: unknown;
     }>(req);
     if (isErrorResponse(parsed)) return parsed;
-    const { totalXP, level, quizResults, moduleHistory, achievements } = parsed;
+    const { totalXP, quizResults, moduleHistory, achievements } = parsed;
 
     // Validate totalXP: must be non-negative and reasonable (< 10M)
     if (totalXP !== undefined && (typeof totalXP !== 'number' || totalXP < 0 || totalXP > 10_000_000)) {
       return NextResponse.json({ error: 'Invalid XP value' }, { status: 400 });
-    }
-
-    // Validate level: must be between 1 and 200
-    if (level !== undefined && (typeof level !== 'number' || level < 1 || level > 200)) {
-      return NextResponse.json({ error: 'Invalid level' }, { status: 400 });
     }
 
     // Validate JSON payload sizes (max 100KB each)
@@ -99,17 +93,11 @@ export async function POST(req: Request) {
       where: { userId: session.user.id },
     });
 
-    // Compute level from XP if not provided by client
-    const resolvedTotalXP = totalXP ?? existingProgress?.totalXP ?? 0;
-    const resolvedLevel = level ?? getLevelFromXP(resolvedTotalXP).level;
-
-    // Merge XP: keep the higher value to prevent data loss
+    // Level is ALWAYS computed from XP server-side - prevents mass assignment attack
     const mergedXP = existingProgress
-      ? Math.max(resolvedTotalXP, existingProgress.totalXP)
-      : resolvedTotalXP;
-    const mergedLevel = existingProgress
-      ? Math.max(resolvedLevel, existingProgress.level)
-      : resolvedLevel;
+      ? Math.max(totalXP ?? existingProgress.totalXP, existingProgress.totalXP)
+      : totalXP ?? 0;
+    const mergedLevel = getLevelFromXP(mergedXP).level;
 
     // Merge JSON array fields: combine records from both client and server,
     // deduplicating by id or timestamp to prevent data loss across devices
