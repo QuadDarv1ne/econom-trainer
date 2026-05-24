@@ -7,6 +7,7 @@ import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { logError } from '@/lib/log-error';
 import { BASE_URL, RESET_TOKEN_EXPIRY_MS, ENUMERATION_DELAY_MS } from '@/lib/constants';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
+import { withSecurityHeaders } from '@/lib/security-headers';
 
 export async function POST(req: Request) {
   try {
@@ -25,10 +26,10 @@ export async function POST(req: Request) {
     const { email } = parsed;
 
     if (!email) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Email is required' },
         { status: 400 }
-      );
+      ));
     }
 
     const user = await prisma.user.findUnique({
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
       // Wait the same duration as a real email send operation (~1-2s)
       // so attackers cannot distinguish registered vs unregistered emails.
       await new Promise((resolve) => setTimeout(resolve, ENUMERATION_DELAY_MS));
-      return NextResponse.json({ message: 'If this email is registered, we will send a reset link' });
+      return withSecurityHeaders(NextResponse.json({ message: 'If this email is registered, we will send a reset link' }));
     }
 
     // Generate reset token
@@ -95,14 +96,14 @@ export async function POST(req: Request) {
     }
 
     // Always return success to prevent email enumeration
-    return NextResponse.json({
+    return withSecurityHeaders(NextResponse.json({
       message: 'If this email is registered, we will send a password reset link',
-    });
+    }));
   } catch (error) {
     logError('forgot-password', error);
-    return NextResponse.json(
+    return withSecurityHeaders(NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
-    );
+    ));
   }
 }

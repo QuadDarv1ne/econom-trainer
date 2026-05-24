@@ -8,6 +8,7 @@ import { validatePasswordStrength } from '@/lib/validate-password';
 import { logError } from '@/lib/log-error';
 import { BCRYPT_SALT_ROUNDS } from '@/lib/constants';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
+import { withSecurityHeaders } from '@/lib/security-headers';
 
 export async function POST(req: Request) {
   try {
@@ -26,15 +27,15 @@ export async function POST(req: Request) {
     const { token, password } = parsed;
 
     if (!token || !password) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Token and password are required' },
         { status: 400 }
-      );
+      ));
     }
 
     const strength = validatePasswordStrength(password);
     if (!strength.valid) {
-      return NextResponse.json({ error: strength.error }, { status: 400 });
+      return withSecurityHeaders(NextResponse.json({ error: strength.error }, { status: 400 }));
     }
 
     // Find valid token
@@ -43,10 +44,10 @@ export async function POST(req: Request) {
     });
 
     if (!resetToken || resetToken.expires < new Date() || resetToken.used) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Invalid or expired token' },
         { status: 400 }
-      );
+      ));
     }
 
     // Hash new password and generate new session hash to invalidate all existing sessions
@@ -68,18 +69,18 @@ export async function POST(req: Request) {
 
     // If updateMany affected 0 rows, another request already used this token
     if (updatedToken.count === 0) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Token has already been used' },
         { status: 400 }
-      );
+      ));
     }
 
-    return NextResponse.json({ message: 'Password successfully changed' });
+    return withSecurityHeaders(NextResponse.json({ message: 'Password successfully changed' }));
   } catch (error) {
     logError('reset-password', error);
-    return NextResponse.json(
+    return withSecurityHeaders(NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
-    );
+    ));
   }
 }

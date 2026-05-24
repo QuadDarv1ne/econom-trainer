@@ -8,7 +8,7 @@ import { getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validatePasswordStrength } from '@/lib/validate-password';
 import { logError } from '@/lib/log-error';
-import { BCRYPT_SALT_ROUNDS, VERIFICATION_TOKEN_EXPIRY_MS, BASE_URL } from '@/lib/constants';
+import { BCRYPT_SALT_ROUNDS, VERIFICATION_TOKEN_EXPIRY_MS, BASE_URL, ENUMERATION_DELAY_MS } from '@/lib/constants';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { withSecurityHeaders } from '@/lib/security-headers';
 
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
 
     if (existingUser) {
       // Use constant-time delay to prevent timing-based email enumeration
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, ENUMERATION_DELAY_MS));
       return NextResponse.json(
         { message: 'If this email is not registered, you can create an account' },
         { status: 200 }
