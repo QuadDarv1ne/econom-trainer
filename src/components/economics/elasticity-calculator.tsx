@@ -94,12 +94,12 @@ export function ElasticityCalculator() {
     const Q1 = parseFloat(q1), Q2 = parseFloat(q2)
     const P1 = parseFloat(p1), P2 = parseFloat(p2)
     if ([Q1, Q2, P1, P2].some((v) => isNaN(v))) {
-      toast({ title: t('common.error'), description: 'Заполните все поля корректно', variant: 'destructive' })
+      toast({ title: t('common.error'), description: t('elasticity.error.fillAll'), variant: 'destructive' })
       return
     }
     const res = calcPriceElasticity(Q1, Q2, P1, P2)
     if (!res) {
-      toast({ title: t('common.error'), description: 'Заполните все поля корректно (P1 ≠ P2)', variant: 'destructive' })
+      toast({ title: t('common.error'), description: t('elasticity.error.p1NotP2'), variant: 'destructive' })
       return
     }
     setResult(res)
@@ -110,12 +110,12 @@ export function ElasticityCalculator() {
     const Q1 = parseFloat(q1Inc), Q2 = parseFloat(q2Inc)
     const Y1 = parseFloat(y1), Y2 = parseFloat(y2)
     if ([Q1, Q2, Y1, Y2].some((v) => isNaN(v))) {
-      toast({ title: t('common.error'), description: 'Заполните все поля корректно', variant: 'destructive' })
+      toast({ title: t('common.error'), description: t('elasticity.error.fillAll'), variant: 'destructive' })
       return
     }
     const res = calcIncomeElasticity(Q1, Q2, Y1, Y2)
     if (!res) {
-      toast({ title: t('common.error'), description: 'Заполните все поля корректно (Y1 ≠ Y2)', variant: 'destructive' })
+      toast({ title: t('common.error'), description: t('elasticity.error.y1NotY2'), variant: 'destructive' })
       return
     }
     setResult(res)
@@ -126,12 +126,12 @@ export function ElasticityCalculator() {
     const Q1 = parseFloat(q1Cross), Q2 = parseFloat(q2Cross)
     const PX1 = parseFloat(px1), PX2 = parseFloat(px2)
     if ([Q1, Q2, PX1, PX2].some((v) => isNaN(v))) {
-      toast({ title: t('common.error'), description: 'Заполните все поля корректно', variant: 'destructive' })
+      toast({ title: t('common.error'), description: t('elasticity.error.fillAll'), variant: 'destructive' })
       return
     }
     const res = calcCrossElasticity(Q1, Q2, PX1, PX2)
     if (!res) {
-      toast({ title: t('common.error'), description: 'Заполните все поля корректно (Px1 ≠ Px2)', variant: 'destructive' })
+      toast({ title: t('common.error'), description: t('elasticity.error.px1NotPx2'), variant: 'destructive' })
       return
     }
     setResult(res)

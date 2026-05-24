@@ -194,7 +194,7 @@ export function InflationCalculator() {
               <CardHeader className="pb-2">
                 <CardDescription>{t('inflation.realValue')}</CardDescription>
                 <CardTitle className="text-2xl font-mono">
-                  {formatNumberLocale(locale, Math.round(result.realValue))} руб.
+                  {formatNumberLocale(locale, Math.round(result.realValue))} {t('common.currency.rub')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -255,8 +255,8 @@ export function InflationCalculator() {
                         fontSize: '12px',
                       }}
                       formatter={(value: number, name: string) => {
-                        if (name === 'realValue') return [formatNumberLocale(locale, value) + ' руб.', t('inflation.tooltip.realValue')]
-                        if (name === 'lostValue') return [formatNumberLocale(locale, value) + ' руб.', t('inflation.tooltip.lost')]
+                        if (name === 'realValue') return [formatNumberLocale(locale, value) + ' ' + t('common.currency.rub'), t('inflation.tooltip.realValue')]
+                        if (name === 'lostValue') return [formatNumberLocale(locale, value) + ' ' + t('common.currency.rub'), t('inflation.tooltip.lost')]
                         return [value, name]
                       }}
                     />
@@ -303,8 +303,8 @@ export function InflationCalculator() {
                     {result.yearlyData.map((row) => (
                       <tr key={row.year} className="border-b hover:bg-muted/50">
                         <td className="p-2 font-medium">{row.year}</td>
-                        <td className="p-2 text-right font-mono">{formatNumberLocale(locale, row.realValue)} руб.</td>
-                        <td className="p-2 text-right font-mono text-red-600">-{formatNumberLocale(locale, row.lostValue)} руб.</td>
+                        <td className="p-2 text-right font-mono">{formatNumberLocale(locale, row.realValue)} {t('common.currency.rub')}</td>
+                        <td className="p-2 text-right font-mono text-red-600">-{formatNumberLocale(locale, row.lostValue)} {t('common.currency.rub')}</td>
                         <td className="p-2 text-right font-mono">{row.purchasingPower}%</td>
                       </tr>
                     ))}

@@ -244,6 +244,27 @@ function PrisonersDilemma() {
     [rounds]
   )
 
+  // Precompute cumulative sums for history table — O(n) instead of O(n²)
+  const playerCumulativeSums = useMemo(() => {
+    const sums: number[] = []
+    let sum = 0
+    for (const r of rounds) {
+      sum += r.playerPayoff
+      sums.push(sum)
+    }
+    return sums
+  }, [rounds])
+
+  const aiCumulativeSums = useMemo(() => {
+    const sums: number[] = []
+    let sum = 0
+    for (const r of rounds) {
+      sum += r.aiPayoff
+      sums.push(sum)
+    }
+    return sums
+  }, [rounds])
+
   const playRound = useCallback(
     (choice: PDChoice) => {
       const aiChoice = getAIChoice(aiStrategy, playerHistory)
@@ -490,10 +511,10 @@ function PrisonersDilemma() {
                           {r.aiChoice === 'cooperate' ? '🤝' : '🗡️'}
                         </td>
                         <td className="p-2 text-right font-mono">
-                          {rounds.slice(0, i + 1).reduce((s, x) => s + x.playerPayoff, 0)}
+                          {playerCumulativeSums[i]}
                         </td>
                         <td className="p-2 text-right font-mono">
-                          {rounds.slice(0, i + 1).reduce((s, x) => s + x.aiPayoff, 0)}
+                          {aiCumulativeSums[i]}
                         </td>
                       </tr>
                     ))}
@@ -551,6 +572,27 @@ function BattleOfTheSexes() {
 
   const totalP1 = useMemo(() => rounds.reduce((s, r) => s + r.player1Payoff, 0), [rounds])
   const totalP2 = useMemo(() => rounds.reduce((s, r) => s + r.player2Payoff, 0), [rounds])
+
+  // Precompute cumulative sums — O(n) instead of O(n²)
+  const p1CumulativeSums = useMemo(() => {
+    const sums: number[] = []
+    let sum = 0
+    for (const r of rounds) {
+      sum += r.player1Payoff
+      sums.push(sum)
+    }
+    return sums
+  }, [rounds])
+
+  const p2CumulativeSums = useMemo(() => {
+    const sums: number[] = []
+    let sum = 0
+    for (const r of rounds) {
+      sum += r.player2Payoff
+      sums.push(sum)
+    }
+    return sums
+  }, [rounds])
 
   const mixed = calcMixedESS()
   const mixedP1Opera = mixed.hawkProportion
@@ -786,10 +828,10 @@ function BattleOfTheSexes() {
                         <td className="p-2">{r.player1Choice === 'opera' ? '🎭' : '⚽'}</td>
                         <td className="p-2">{r.player2Choice === 'opera' ? '🎭' : '⚽'}</td>
                         <td className="p-2 text-right font-mono">
-                          {rounds.slice(0, i + 1).reduce((s, x) => s + x.player1Payoff, 0)}
+                          {p1CumulativeSums[i]}
                         </td>
                         <td className="p-2 text-right font-mono">
-                          {rounds.slice(0, i + 1).reduce((s, x) => s + x.player2Payoff, 0)}
+                          {p2CumulativeSums[i]}
                         </td>
                       </tr>
                     ))}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -119,7 +119,7 @@ export function EconomicCrises() {
     setResults(null)
   }
 
-  const runSimulation = () => {
+  const runSimulation = useCallback(() => {
     if (!selectedScenario) return
     const scenario = scenarios.find((s) => s.id === selectedScenario)
     if (!scenario) return
@@ -141,13 +141,13 @@ export function EconomicCrises() {
       xpEarned: 25,
       details: { scenario: selectedScenario },
     })
-  }
+  }, [selectedScenario, indicators, addModuleInteraction, t])
 
-  const resetSimulation = () => {
+  const resetSimulation = useCallback(() => {
     setIndicators({ gdpGrowth: 2.5, unemployment: 5, inflation: 2, debtToGDP: 60, interestRate: 5 })
     setSelectedScenario(null)
     setResults(null)
-  }
+  }, [])
 
   const selectedScenarioData = scenarios.find((s) => s.id === selectedScenario)
 

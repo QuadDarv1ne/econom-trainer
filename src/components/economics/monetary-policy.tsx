@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -89,7 +89,7 @@ export function MonetaryPolicy() {
     }
   }, [conditions, policyTools])
 
-  const simulate = () => {
+  const simulate = useCallback(() => {
     setHasSimulated(true)
     addModuleInteraction({
       moduleId: 'monetary-policy',
@@ -97,13 +97,13 @@ export function MonetaryPolicy() {
       xpEarned: 25,
       details: { rateChange: policyTools.rateChange },
     })
-  }
+  }, [addModuleInteraction, policyTools.rateChange])
 
-  const reset = () => {
+  const reset = useCallback(() => {
     setConditions({ inflation: 4, gdpGrowth: 1.5, unemployment: 6, currentRate: 7.5, moneySupply: 8 })
     setPolicyTools({ rateChange: 0, openMarketOperation: 'none', reserveRequirementChange: 0, quantitativeEasing: 'none' })
     setHasSimulated(false)
-  }
+  }, [])
 
   const chartData = hasSimulated ? [
     {
