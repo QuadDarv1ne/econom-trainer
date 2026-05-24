@@ -6,13 +6,14 @@ import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { getLevelFromXP } from '@/lib/xp-utils';
 import { logError } from '@/lib/log-error';
+import { withSecurityHeaders } from '@/lib/security-headers';
 
 // GET - Get user progress from server
 export async function GET(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
     }
 
     // Rate limit authenticated reads
@@ -35,13 +36,13 @@ export async function GET(req: Request) {
           level: 1,
         },
       });
-      return NextResponse.json(newProgress);
+      return withSecurityHeaders(NextResponse.json(newProgress));
     }
 
-    return NextResponse.json(progress);
+    return withSecurityHeaders(NextResponse.json(progress));
   } catch (error) {
     logError('progress-get', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return withSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }));
   }
 }
 
@@ -50,7 +51,7 @@ export async function POST(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
     }
 
     if (!validateOriginStrict(req)) {
@@ -74,7 +75,7 @@ export async function POST(req: Request) {
 
     // Validate totalXP: must be non-negative and reasonable (< 10M)
     if (totalXP !== undefined && (typeof totalXP !== 'number' || totalXP < 0 || totalXP > 10_000_000)) {
-      return NextResponse.json({ error: 'Invalid XP value' }, { status: 400 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Invalid XP value' }, { status: 400 }));
     }
 
     // Validate JSON payload sizes (max 100KB each)
@@ -83,7 +84,7 @@ export async function POST(req: Request) {
       if (value !== undefined && value !== null) {
         const size = new TextEncoder().encode(JSON.stringify(value)).length;
         if (size > maxJsonSize) {
-          return NextResponse.json({ error: `Data limit exceeded for ${key}` }, { status: 400 });
+          return withSecurityHeaders(NextResponse.json({ error: `Data limit exceeded for ${key}` }, { status: 400 }));
         }
       }
     }
@@ -93,10 +94,28 @@ export async function POST(req: Request) {
       where: { userId: session.user.id },
     });
 
-    // Level is ALWAYS computed from XP server-side - prevents mass assignment attack
-    const mergedXP = existingProgress
-      ? Math.max(totalXP ?? existingProgress.totalXP, existingProgress.totalXP)
-      : totalXP ?? 0;
+    // XP merge strategy: prevent client-side XP inflation attacks.
+    // Server XP is authoritative. Only accept client XP if it's within
+    // a reasonable delta (max 1000 XP above server = plausible single session gain).
+    // Otherwise, use server XP as the base to prevent manipulation.
+    const MAX_XP_DELTA = 1000;
+    let mergedXP = existingProgress?.totalXP ?? 0;
+
+    if (totalXP !== undefined && existingProgress) {
+      const serverXP = existingProgress.totalXP;
+      // Accept client XP only if it's >= server and within reasonable delta
+      if (totalXP >= serverXP && totalXP <= serverXP + MAX_XP_DELTA) {
+        mergedXP = totalXP;
+      } else if (totalXP > serverXP + MAX_XP_DELTA) {
+        // Client XP is suspiciously high — use server XP + max allowed delta
+        mergedXP = serverXP + MAX_XP_DELTA;
+      }
+      // If client XP < server XP, keep server XP (already more authoritative)
+    } else if (totalXP !== undefined && !existingProgress) {
+      // First sync — accept client XP if reasonable (< 5000 for new user)
+      mergedXP = totalXP <= 5000 ? totalXP : 5000;
+    }
+
     const mergedLevel = getLevelFromXP(mergedXP).level;
 
     // Merge JSON array fields: combine records from both client and server,
@@ -183,9 +202,9 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json(progress);
+    return withSecurityHeaders(NextResponse.json(progress));
   } catch (error) {
     logError('progress-sync', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return withSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }));
   }
 }
