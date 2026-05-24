@@ -24,6 +24,9 @@ import {
   Coins,
   AlertTriangle,
 } from 'lucide-react'
+import { modules as baseModules, tabItems as baseTabItems, categoryBreaks as baseCategoryBreaks } from '@/lib/module-data'
+export type { ModuleMeta as ModuleDefinition, TabMeta as TabItem } from '@/lib/module-data'
+export { modules, tabItems, categoryBreaks } from '@/lib/module-data'
 
 // Lazy-load all module components for performance
 const GDPCalculator = dynamic(() => import('@/components/economics/gdp-calculator').then(m => ({ default: m.GDPCalculator })), { ssr: false })
@@ -53,82 +56,76 @@ const MonetaryPolicy = dynamic(() => import('@/components/economics/monetary-pol
 const ADASModel = dynamic(() => import('@/components/economics/adas-model').then(m => ({ default: m.ADASModel })), { ssr: false })
 export const ThemeToggle = dynamic(() => import('@/components/economics/theme-toggle').then(m => ({ default: m.ThemeToggle })), { ssr: false })
 
-export interface ModuleDefinition {
-  id: string
-  titleKey: string
-  descriptionKey: string
-  icon: React.ComponentType<{ className?: string }>
-  color: string
-  bg: string
-  categoryKey: string
-  catId: string
-  xpReward: number
-  public: boolean
+// Icon map for client-side module rendering
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  'gdp': Calculator,
+  'supply-demand': ArrowRightLeft,
+  'elasticity': Gauge,
+  'keynesian': Crosshair,
+  'inflation': Landmark,
+  'phillips': TrendingDown,
+  'lorenz': Scale,
+  'is-lm': Landmark,
+  'ppf': ArrowLeftRight,
+  'costs': BarChart3,
+  'comparative': Globe,
+  'breakeven': Target,
+  'tax': Receipt,
+  'game-theory': Swords,
+  'market-structures': Building2,
+  'price-indices': TrendingUp,
+  'economic-crises': AlertTriangle,
+  'monetary-policy': Landmark,
+  'adas': TrendingUp,
+  'quiz': Brain,
+  'currency': Coins,
+  'finance': DollarSign,
+  'glossary': BookOpen,
+  'achievements': Trophy,
+  'progress': BarChart3,
 }
 
-export interface TabItem {
-  value: string
-  icon: React.ComponentType<{ className?: string }>
-  labelKey: string
-  catId: string | null
+// Tab icon map
+const tabIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  'home': GraduationCap,
+  'gdp': Calculator,
+  'keynesian': Crosshair,
+  'inflation': Landmark,
+  'phillips': TrendingDown,
+  'lorenz': Scale,
+  'is-lm': Landmark,
+  'supply-demand': ArrowRightLeft,
+  'elasticity': Gauge,
+  'ppf': ArrowLeftRight,
+  'costs': BarChart3,
+  'comparative': Globe,
+  'game-theory': Swords,
+  'market-structures': Building2,
+  'price-indices': TrendingUp,
+  'economic-crises': AlertTriangle,
+  'monetary-policy': Landmark,
+  'adas': TrendingUp,
+  'breakeven': Target,
+  'tax': Receipt,
+  'currency': Coins,
+  'finance': DollarSign,
+  'quiz': Brain,
+  'glossary': BookOpen,
+  'achievements': Trophy,
+  'progress': BarChart3,
 }
 
-export const modules: ModuleDefinition[] = [
-  { id: 'gdp', titleKey: 'module.gdp.title', descriptionKey: 'module.gdp.description', icon: Calculator, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 15, public: true },
-  { id: 'supply-demand', titleKey: 'module.supply-demand.title', descriptionKey: 'module.supply-demand.description', icon: ArrowRightLeft, color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 15, public: true },
-  { id: 'elasticity', titleKey: 'module.elasticity.title', descriptionKey: 'module.elasticity.description', icon: Gauge, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 15, public: true },
-  { id: 'keynesian', titleKey: 'module.keynesian.title', descriptionKey: 'module.keynesian.description', icon: Crosshair, color: 'text-teal-600', bg: 'bg-teal-50 dark:bg-teal-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 20, public: true },
-  { id: 'inflation', titleKey: 'module.inflation.title', descriptionKey: 'module.inflation.description', icon: Landmark, color: 'text-rose-600', bg: 'bg-rose-50 dark:bg-rose-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 15, public: true },
-  { id: 'phillips', titleKey: 'module.phillips.title', descriptionKey: 'module.phillips.description', icon: TrendingDown, color: 'text-cyan-600', bg: 'bg-cyan-50 dark:bg-cyan-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 20, public: true },
-  { id: 'lorenz', titleKey: 'module.lorenz.title', descriptionKey: 'module.lorenz.description', icon: Scale, color: 'text-amber-700', bg: 'bg-amber-50 dark:bg-amber-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 20, public: true },
-  { id: 'is-lm', titleKey: 'module.is-lm.title', descriptionKey: 'module.is-lm.description', icon: Landmark, color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 25, public: true },
-  { id: 'ppf', titleKey: 'module.ppf.title', descriptionKey: 'module.ppf.description', icon: ArrowLeftRight, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 15, public: true },
-  { id: 'costs', titleKey: 'module.costs.title', descriptionKey: 'module.costs.description', icon: BarChart3, color: 'text-blue-700', bg: 'bg-blue-50 dark:bg-blue-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 20, public: true },
-  { id: 'comparative', titleKey: 'module.comparative.title', descriptionKey: 'module.comparative.description', icon: Globe, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 15, public: false },
-  { id: 'breakeven', titleKey: 'module.breakeven.title', descriptionKey: 'module.breakeven.description', icon: Target, color: 'text-pink-600', bg: 'bg-pink-50 dark:bg-pink-950/30', categoryKey: 'home.modcat.financeAnalysis', catId: 'finance', xpReward: 15, public: false },
-  { id: 'tax', titleKey: 'module.tax.title', descriptionKey: 'module.tax.description', icon: Receipt, color: 'text-lime-600', bg: 'bg-lime-50 dark:bg-lime-950/30', categoryKey: 'home.modcat.finance', catId: 'finance', xpReward: 20, public: false },
-  { id: 'game-theory', titleKey: 'module.game-theory.title', descriptionKey: 'module.game-theory.description', icon: Swords, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 20, public: false },
-  { id: 'market-structures', titleKey: 'module.market-structures.title', descriptionKey: 'module.market-structures.description', icon: Building2, color: 'text-teal-600', bg: 'bg-teal-50 dark:bg-teal-950/30', categoryKey: 'home.modcat.micro', catId: 'micro', xpReward: 25, public: false },
-  { id: 'price-indices', titleKey: 'module.price-indices.title', descriptionKey: 'module.price-indices.description', icon: TrendingUp, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 15, public: false },
-  { id: 'economic-crises', titleKey: 'module.economic-crises.title', descriptionKey: 'module.economic-crises.description', icon: AlertTriangle, color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 25, public: false },
-  { id: 'monetary-policy', titleKey: 'module.monetary-policy.title', descriptionKey: 'module.monetary-policy.description', icon: Landmark, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 25, public: false },
-  { id: 'adas', titleKey: 'module.adas.title', descriptionKey: 'module.adas.description', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30', categoryKey: 'home.modcat.macro', catId: 'macro', xpReward: 20, public: false },
-  { id: 'quiz', titleKey: 'module.quiz.title', descriptionKey: 'module.quiz.description', icon: Brain, color: 'text-violet-600', bg: 'bg-violet-50 dark:bg-violet-950/30', categoryKey: 'home.modcat.tests', catId: 'tools', xpReward: 10, public: false },
-  { id: 'currency', titleKey: 'module.currency.title', descriptionKey: 'module.currency.description', icon: Coins, color: 'text-cyan-600', bg: 'bg-cyan-50 dark:bg-cyan-950/30', categoryKey: 'home.modcat.finance', catId: 'finance', xpReward: 15, public: false },
-  { id: 'finance', titleKey: 'module.finance.title', descriptionKey: 'module.finance.description', icon: DollarSign, color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/30', categoryKey: 'home.modcat.finance', catId: 'finance', xpReward: 20, public: false },
-  { id: 'glossary', titleKey: 'module.glossary.title', descriptionKey: 'module.glossary.description', icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/30', categoryKey: 'home.modcat.reference', catId: 'tools', xpReward: 5, public: false },
-  { id: 'achievements', titleKey: 'module.achievements.title', descriptionKey: 'module.achievements.description', icon: Trophy, color: 'text-yellow-600', bg: 'bg-yellow-50 dark:bg-yellow-950/30', categoryKey: 'home.modcat.motivation', catId: 'tools', xpReward: 0, public: false },
-  { id: 'progress', titleKey: 'module.progress.title', descriptionKey: 'module.progress.description', icon: BarChart3, color: 'text-sky-600', bg: 'bg-sky-50 dark:bg-sky-950/30', categoryKey: 'home.modcat.analytics', catId: 'tools', xpReward: 0, public: false },
-]
+// Enriched modules with icons (client-side only)
+export const modulesWithIcons = baseModules.map(m => ({
+  ...m,
+  icon: iconMap[m.id] ?? GraduationCap,
+}))
 
-export const tabItems: TabItem[] = [
-  { value: 'home', icon: GraduationCap, labelKey: 'home.tab.home', catId: null },
-  { value: 'gdp', icon: Calculator, labelKey: 'home.tab.gdp', catId: 'macro' },
-  { value: 'keynesian', icon: Crosshair, labelKey: 'home.tab.keynesian', catId: 'macro' },
-  { value: 'inflation', icon: Landmark, labelKey: 'home.tab.inflation', catId: 'macro' },
-  { value: 'phillips', icon: TrendingDown, labelKey: 'home.tab.phillips', catId: 'macro' },
-  { value: 'lorenz', icon: Scale, labelKey: 'home.tab.lorenz', catId: 'macro' },
-  { value: 'is-lm', icon: Landmark, labelKey: 'home.tab.islm', catId: 'macro' },
-  { value: 'supply-demand', icon: ArrowRightLeft, labelKey: 'home.tab.supplyDemand', catId: 'micro' },
-  { value: 'elasticity', icon: Gauge, labelKey: 'home.tab.elasticity', catId: 'micro' },
-  { value: 'ppf', icon: ArrowLeftRight, labelKey: 'home.tab.ppf', catId: 'micro' },
-  { value: 'costs', icon: BarChart3, labelKey: 'home.tab.costs', catId: 'micro' },
-  { value: 'comparative', icon: Globe, labelKey: 'home.tab.comparative', catId: 'micro' },
-  { value: 'game-theory', icon: Swords, labelKey: 'home.tab.gameTheory', catId: 'micro' },
-  { value: 'market-structures', icon: Building2, labelKey: 'home.tab.marketStructures', catId: 'micro' },
-  { value: 'price-indices', icon: TrendingUp, labelKey: 'home.tab.priceIndices', catId: 'macro' },
-  { value: 'economic-crises', icon: AlertTriangle, labelKey: 'home.tab.economicCrises', catId: 'macro' },
-  { value: 'monetary-policy', icon: Landmark, labelKey: 'home.tab.monetaryPolicy', catId: 'macro' },
-  { value: 'adas', icon: TrendingUp, labelKey: 'home.tab.adas', catId: 'macro' },
-  { value: 'breakeven', icon: Target, labelKey: 'home.tab.breakeven', catId: 'finance' },
-  { value: 'tax', icon: Receipt, labelKey: 'home.tab.tax', catId: 'finance' },
-  { value: 'currency', icon: Coins, labelKey: 'home.tab.currency', catId: 'finance' },
-  { value: 'finance', icon: DollarSign, labelKey: 'home.tab.finance', catId: 'finance' },
-  { value: 'quiz', icon: Brain, labelKey: 'home.tab.quiz', catId: 'tools' },
-  { value: 'glossary', icon: BookOpen, labelKey: 'home.tab.glossary', catId: 'tools' },
-  { value: 'achievements', icon: Trophy, labelKey: 'home.tab.achievements', catId: 'tools' },
-  { value: 'progress', icon: BarChart3, labelKey: 'home.tab.progress', catId: 'tools' },
-]
+// Enriched tab items with icons (client-side only)
+export const tabItemsWithIcons = baseTabItems.map(t => ({
+  ...t,
+  icon: tabIconMap[t.value] ?? GraduationCap,
+}))
 
 export const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -166,5 +163,3 @@ export const moduleComponents: Record<string, React.ComponentType> = {
   'achievements': Achievements,
   'progress': ProgressTracker,
 }
-
-export const categoryBreaks = new Set(['gdp', 'supply-demand', 'breakeven', 'quiz'])

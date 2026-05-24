@@ -244,6 +244,11 @@ export function CurrencyCalculator() {
             <div className="text-center text-xs text-muted-foreground">
               {t('currency.rate')}: 1 {toCurr.code} = {crossRate !== 0 ? (1 / crossRate).toFixed(4) : 'N/A'} {fromCurr.code}
             </div>
+
+            <div className="flex items-start gap-2 rounded-md bg-amber-50 dark:bg-amber-950/30 p-3 text-xs text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+              <Info className="h-4 w-4 shrink-0 mt-0.5" />
+              <span>{t('currency.disclaimer') || 'Rates are illustrative and may not reflect current market values.'}</span>
+            </div>
           </CardContent>
         </Card>
 

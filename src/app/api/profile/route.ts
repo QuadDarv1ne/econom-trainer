@@ -8,6 +8,14 @@ import { logError } from '@/lib/log-error';
 import { AVATAR_MAX_BYTES } from '@/lib/constants';
 import { withSecurityHeaders } from '@/lib/security-headers';
 
+// Strip HTML tags and control characters from user input
+function sanitizeInput(value: string): string {
+  return value
+    .replace(/<[^>]*>/g, '')
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+    .trim();
+}
+
 // Shared select clause for user profile queries — avoid duplication between GET and PATCH
 const USER_PROFILE_SELECT = {
   id: true,
@@ -108,8 +116,8 @@ export async function PATCH(req: Request) {
     const user = await prisma.user.update({
       where: { id: session.user.id },
       data: {
-        ...(name !== undefined && { name: name.trim() }),
-        ...(phone !== undefined && { phone: phone === '' ? null : phone }),
+        ...(name !== undefined && { name: sanitizeInput(name) }),
+        ...(phone !== undefined && { phone: phone === '' ? null : sanitizeInput(phone ?? '') }),
         ...(image !== undefined && { image: image === '' ? null : image }),
       },
       select: USER_PROFILE_SELECT,
