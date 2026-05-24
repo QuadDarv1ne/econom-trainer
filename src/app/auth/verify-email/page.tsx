@@ -1,51 +1,55 @@
-'use client';
+'use client'
 
-import { Suspense, useEffect, useRef, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { GraduationCap, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
-import { useI18n } from '@/lib/i18n-provider';
+import { Suspense, useEffect, useRef, useState } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { GraduationCap, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
+import { useI18n } from '@/lib/i18n-provider'
+import { logError } from '@/lib/log-error'
 
 function VerifyEmailContent() {
-  const { t } = useI18n();
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const [status, setStatus] = useState<string | null>(searchParams.get('status'));
-  const submittedRef = useRef(false);
+  const { t } = useI18n()
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const [status, setStatus] = useState<string | null>(searchParams.get('status'))
+  const submittedRef = useRef(false)
 
-  const token = searchParams.get('token');
-  const email = searchParams.get('email');
+  const token = searchParams.get('token')
+  const email = searchParams.get('email')
 
   // Auto-submit verification when token and email are present in URL
   useEffect(() => {
-    if (!token || !email || status || submittedRef.current) return;
-    submittedRef.current = true;
+    if (!token || !email || status || submittedRef.current) return
+    submittedRef.current = true
 
-    (async () => {
+    ;(async () => {
       try {
         const res = await fetch('/api/auth/verify-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token, email }),
-        });
+        })
 
         // The endpoint redirects, but if it fails without redirect, handle it
         if (res.ok) {
           // Redirect happened via Response.redirect, but in case it didn't:
-          const data = await res.json().catch(() => null);
+          const data = await res.json().catch((e) => {
+            logError('verify-email-json', e)
+            return null
+          })
           if (data?.error) {
-            setStatus('error');
+            setStatus('error')
           }
         } else {
-          setStatus('error');
+          setStatus('error')
         }
       } catch {
-        setStatus('error');
+        setStatus('error')
       }
-    })();
-  }, [token, email, status, router]);
+    })()
+  }, [token, email, status, router])
 
   if (status === 'success') {
     return (
@@ -68,15 +72,16 @@ function VerifyEmailContent() {
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   if (status === 'invalid' || status === 'expired' || status === 'error') {
-    const message = status === 'invalid'
-      ? t('auth.verifyEmail.invalid')
-      : status === 'expired'
-        ? t('auth.verifyEmail.expired')
-        : t('auth.verifyEmail.error');
+    const message =
+      status === 'invalid'
+        ? t('auth.verifyEmail.invalid')
+        : status === 'expired'
+          ? t('auth.verifyEmail.expired')
+          : t('auth.verifyEmail.error')
     return (
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-2 text-center">
@@ -99,7 +104,7 @@ function VerifyEmailContent() {
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -117,7 +122,9 @@ function VerifyEmailContent() {
           {token && email ? (
             <>
               <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-              <CardDescription>{t('auth.verifyEmail.verifying') || 'Verifying your email...'}</CardDescription>
+              <CardDescription>
+                {t('auth.verifyEmail.verifying') || 'Verifying your email...'}
+              </CardDescription>
             </>
           ) : (
             <>
@@ -133,13 +140,19 @@ function VerifyEmailContent() {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      }
+    >
       <VerifyEmailContent />
     </Suspense>
-  );
+  )
 }

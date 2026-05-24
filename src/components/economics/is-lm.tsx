@@ -20,9 +20,18 @@ import {
   ReferenceDot,
   ReferenceLine,
 } from 'recharts'
-import { TrendingUp, TrendingDown, RotateCcw, Landmark, Banknote, Info, ArrowRight } from 'lucide-react'
+import {
+  TrendingUp,
+  TrendingDown,
+  RotateCcw,
+  Landmark,
+  Banknote,
+  Info,
+  ArrowRight,
+} from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
+import { CHART_COLORS } from '@/lib/chart-colors'
 import { formatNumberLocale } from '@/lib/i18n'
 
 // ─── Types and pure calculation functions ────────────────────────────
@@ -48,7 +57,11 @@ export function calcISSlope(mpc: number, taxRate: number, investmentSensitivity:
   return -(1 - mpc * (1 - taxRate)) / investmentSensitivity
 }
 
-export function calcISIntercept(autonomousInvestment: number, govSpending: number, investmentSensitivity: number): number {
+export function calcISIntercept(
+  autonomousInvestment: number,
+  govSpending: number,
+  investmentSensitivity: number
+): number {
   return (autonomousInvestment + govSpending) / investmentSensitivity
 }
 
@@ -118,8 +131,9 @@ export function calcFiscalMultiplier(
   equilibriumY: number
 ): number {
   if (equilibriumY <= 0) return 0
-  const denominator = (1 - mpc * (1 - taxRate)) / investmentSensitivity + moneyDemandSensitivity / interestSensitivity
-  return (1 / investmentSensitivity) / denominator
+  const denominator =
+    (1 - mpc * (1 - taxRate)) / investmentSensitivity + moneyDemandSensitivity / interestSensitivity
+  return 1 / investmentSensitivity / denominator
 }
 
 export function calcMonetaryMultiplier(
@@ -131,8 +145,9 @@ export function calcMonetaryMultiplier(
   equilibriumY: number
 ): number {
   if (equilibriumY <= 0) return 0
-  const denominator = (1 - mpc * (1 - taxRate)) / investmentSensitivity + moneyDemandSensitivity / interestSensitivity
-  return (1 / interestSensitivity) / denominator
+  const denominator =
+    (1 - mpc * (1 - taxRate)) / investmentSensitivity + moneyDemandSensitivity / interestSensitivity
+  return 1 / interestSensitivity / denominator
 }
 
 export function ISLMModel() {
@@ -155,46 +170,83 @@ export function ISLMModel() {
   const awardXP = useCallback(() => {
     if (!hasEarnedXPRef.current) {
       hasEarnedXPRef.current = true
-      addModuleInteraction({ moduleId: 'is-lm', action: 'calculate', xpEarned: MODULE_XP['is-lm'] ?? 20 })
+      addModuleInteraction({
+        moduleId: 'is-lm',
+        action: 'calculate',
+        xpEarned: MODULE_XP['is-lm'] ?? 20,
+      })
     }
   }, [addModuleInteraction])
 
   const { toast } = useToast()
 
   // IS curve: r = (A + G - (1-MPC(1-t))Y) / d
-  const isSlope = useMemo(() => calcISSlope(mpc, taxRate, investmentSensitivity), [mpc, taxRate, investmentSensitivity])
-  const isIntercept = useMemo(() => calcISIntercept(autonomousInvestment, govSpending, investmentSensitivity), [autonomousInvestment, govSpending, investmentSensitivity])
+  const isSlope = useMemo(
+    () => calcISSlope(mpc, taxRate, investmentSensitivity),
+    [mpc, taxRate, investmentSensitivity]
+  )
+  const isIntercept = useMemo(
+    () => calcISIntercept(autonomousInvestment, govSpending, investmentSensitivity),
+    [autonomousInvestment, govSpending, investmentSensitivity]
+  )
 
   // LM curve: r = (kY - M/P) / h
-  const lmSlope = useMemo(() => calcLMSlope(moneyDemandSensitivity, interestSensitivity), [moneyDemandSensitivity, interestSensitivity])
-  const lmIntercept = useMemo(() => calcLMIntercept(moneySupply, interestSensitivity), [moneySupply, interestSensitivity])
+  const lmSlope = useMemo(
+    () => calcLMSlope(moneyDemandSensitivity, interestSensitivity),
+    [moneyDemandSensitivity, interestSensitivity]
+  )
+  const lmIntercept = useMemo(
+    () => calcLMIntercept(moneySupply, interestSensitivity),
+    [moneySupply, interestSensitivity]
+  )
 
   // Equilibrium: IS = LM
-  const equilibrium = useMemo(() =>
-    calcISLMEquilibrium(isIntercept, isSlope, lmIntercept, lmSlope),
-    [isIntercept, isSlope, lmIntercept, lmSlope])
+  const equilibrium = useMemo(
+    () => calcISLMEquilibrium(isIntercept, isSlope, lmIntercept, lmSlope),
+    [isIntercept, isSlope, lmIntercept, lmSlope]
+  )
   const equilibriumY = equilibrium.y
   const equilibriumR = equilibrium.r
 
   // Generate chart data
-  const chartData = useMemo(() =>
-    calcISLMData(isIntercept, isSlope, lmIntercept, lmSlope, equilibriumY),
-    [isIntercept, isSlope, lmIntercept, lmSlope, equilibriumY])
+  const chartData = useMemo(
+    () => calcISLMData(isIntercept, isSlope, lmIntercept, lmSlope, equilibriumY),
+    [isIntercept, isSlope, lmIntercept, lmSlope, equilibriumY]
+  )
 
   // Crowding out effect
-  const crowdingOut = useMemo(() =>
-    calcCrowdingOut(mpc, taxRate, autonomousInvestment, govSpending, equilibriumY),
-    [mpc, taxRate, autonomousInvestment, govSpending, equilibriumY])
+  const crowdingOut = useMemo(
+    () => calcCrowdingOut(mpc, taxRate, autonomousInvestment, govSpending, equilibriumY),
+    [mpc, taxRate, autonomousInvestment, govSpending, equilibriumY]
+  )
 
   // Fiscal policy multiplier (with monetary constraint)
-  const fiscalMultiplier = useMemo(() =>
-    calcFiscalMultiplier(mpc, taxRate, investmentSensitivity, moneyDemandSensitivity, interestSensitivity, equilibriumY),
-    [mpc, taxRate, investmentSensitivity, moneyDemandSensitivity, interestSensitivity, equilibriumY])
+  const fiscalMultiplier = useMemo(
+    () =>
+      calcFiscalMultiplier(
+        mpc,
+        taxRate,
+        investmentSensitivity,
+        moneyDemandSensitivity,
+        interestSensitivity,
+        equilibriumY
+      ),
+    [mpc, taxRate, investmentSensitivity, moneyDemandSensitivity, interestSensitivity, equilibriumY]
+  )
 
   // Monetary policy multiplier
-  const monetaryMultiplier = useMemo(() =>
-    calcMonetaryMultiplier(mpc, taxRate, investmentSensitivity, moneyDemandSensitivity, interestSensitivity, equilibriumY),
-    [mpc, taxRate, investmentSensitivity, moneyDemandSensitivity, interestSensitivity, equilibriumY])
+  const monetaryMultiplier = useMemo(
+    () =>
+      calcMonetaryMultiplier(
+        mpc,
+        taxRate,
+        investmentSensitivity,
+        moneyDemandSensitivity,
+        interestSensitivity,
+        equilibriumY
+      ),
+    [mpc, taxRate, investmentSensitivity, moneyDemandSensitivity, interestSensitivity, equilibriumY]
+  )
 
   const reset = () => {
     setAutonomousInvestment(200)
@@ -213,13 +265,21 @@ export function ISLMModel() {
     setGovSpending(250)
     setAutonomousInvestment(250)
     awardXP()
-    addModuleInteraction({ moduleId: 'is-lm', action: 'preset', xpEarned: MODULE_XP['is-lm'] ?? 20 })
+    addModuleInteraction({
+      moduleId: 'is-lm',
+      action: 'preset',
+      xpEarned: MODULE_XP['is-lm'] ?? 20,
+    })
   }
 
   const applyContractionaryMonetary = () => {
     setMoneySupply(800)
     awardXP()
-    addModuleInteraction({ moduleId: 'is-lm', action: 'preset', xpEarned: MODULE_XP['is-lm'] ?? 20 })
+    addModuleInteraction({
+      moduleId: 'is-lm',
+      action: 'preset',
+      xpEarned: MODULE_XP['is-lm'] ?? 20,
+    })
   }
 
   return (
@@ -231,9 +291,7 @@ export function ISLMModel() {
             <Landmark className="h-5 w-5" />
             {t('islm.title')}
           </CardTitle>
-          <CardDescription>
-            {t('islm.description')}
-          </CardDescription>
+          <CardDescription>{t('islm.description')}</CardDescription>
         </CardHeader>
       </Card>
 
@@ -242,23 +300,34 @@ export function ISLMModel() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="text-base">{t('islm.graph')}</CardTitle>
-            <CardDescription>
-              {t('islm.graphDesc')}
-            </CardDescription>
+            <CardDescription>{t('islm.graphDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="w-full h-[420px]">
               <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                <ComposedChart
+                  data={chartData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                   <XAxis
                     dataKey="income"
-                    label={{ value: t('islm.income'), position: 'insideBottom', offset: -10, fontSize: 12 }}
+                    label={{
+                      value: t('islm.income'),
+                      position: 'insideBottom',
+                      offset: -10,
+                      fontSize: 12,
+                    }}
                     fontSize={11}
                   />
                   <YAxis
                     domain={[0, 15]}
-                    label={{ value: t('islm.interestRate'), angle: -90, position: 'insideLeft', fontSize: 12 }}
+                    label={{
+                      value: t('islm.interestRate'),
+                      angle: -90,
+                      position: 'insideLeft',
+                      fontSize: 12,
+                    }}
                     fontSize={11}
                   />
                   <Tooltip
@@ -287,7 +356,7 @@ export function ISLMModel() {
                   <Line
                     type="monotone"
                     dataKey="isRate"
-                    stroke="#ef4444"
+                    stroke={CHART_COLORS.demand}
                     strokeWidth={2.5}
                     dot={false}
                     connectNulls={false}
@@ -298,7 +367,7 @@ export function ISLMModel() {
                   <Line
                     type="monotone"
                     dataKey="lmRate"
-                    stroke="#22c55e"
+                    stroke={CHART_COLORS.success}
                     strokeWidth={2.5}
                     dot={false}
                     connectNulls={false}
@@ -311,14 +380,14 @@ export function ISLMModel() {
                       x={Math.round(equilibriumY)}
                       y={Math.round(equilibriumR * 100) / 100}
                       r={7}
-                      fill="#3b82f6"
+                      fill={CHART_COLORS.primary}
                       stroke="#fff"
                       strokeWidth={2}
                       label={{
                         value: `E: Y=${Math.round(equilibriumY)}, r=${equilibriumR.toFixed(1)}%`,
                         position: 'top',
                         fontSize: 11,
-                        fill: '#3b82f6',
+                        fill: CHART_COLORS.primary,
                         offset: 12,
                       }}
                     />
@@ -328,7 +397,7 @@ export function ISLMModel() {
                   {equilibriumY > 0 && (
                     <ReferenceLine
                       x={Math.round(equilibriumY)}
-                      stroke="#3b82f6"
+                      stroke={CHART_COLORS.primary}
                       strokeDasharray="4 4"
                       strokeWidth={1}
                     />
@@ -336,7 +405,7 @@ export function ISLMModel() {
                   {equilibriumR > 0 && (
                     <ReferenceLine
                       y={Math.round(equilibriumR * 100) / 100}
-                      stroke="#3b82f6"
+                      stroke={CHART_COLORS.primary}
                       strokeDasharray="4 4"
                       strokeWidth={1}
                     />
@@ -349,11 +418,15 @@ export function ISLMModel() {
             <div className="flex flex-wrap items-center gap-4 mt-4 text-sm">
               <div className="flex items-center gap-2">
                 <div className="h-0.5 w-6 rounded bg-red-500" />
-                <span className="text-muted-foreground">{t('islm.isCurve')} — {t('islm.negativeSlope')}</span>
+                <span className="text-muted-foreground">
+                  {t('islm.isCurve')} — {t('islm.negativeSlope')}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-0.5 w-6 rounded bg-green-500" />
-                <span className="text-muted-foreground">{t('islm.lmCurve')} — {t('islm.positiveSlope')}</span>
+                <span className="text-muted-foreground">
+                  {t('islm.lmCurve')} — {t('islm.positiveSlope')}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-3 w-3 rounded-full bg-blue-500" />
@@ -379,7 +452,16 @@ export function ISLMModel() {
                   <Label className="text-sm">{t('islm.autonomousInvestment')}</Label>
                   <Badge variant="secondary">{autonomousInvestment}</Badge>
                 </div>
-                <Slider value={[autonomousInvestment]} min={50} max={500} step={10} onValueChange={(v) => { awardXP(); setAutonomousInvestment(v[0]) }} />
+                <Slider
+                  value={[autonomousInvestment]}
+                  min={50}
+                  max={500}
+                  step={10}
+                  onValueChange={(v) => {
+                    awardXP()
+                    setAutonomousInvestment(v[0])
+                  }}
+                />
               </div>
 
               <div className="space-y-2">
@@ -387,7 +469,16 @@ export function ISLMModel() {
                   <Label className="text-sm">{t('islm.govSpending')}</Label>
                   <Badge variant="secondary">{govSpending}</Badge>
                 </div>
-                <Slider value={[govSpending]} min={0} max={500} step={10} onValueChange={(v) => { awardXP(); setGovSpending(v[0]) }} />
+                <Slider
+                  value={[govSpending]}
+                  min={0}
+                  max={500}
+                  step={10}
+                  onValueChange={(v) => {
+                    awardXP()
+                    setGovSpending(v[0])
+                  }}
+                />
               </div>
 
               <div className="space-y-2">
@@ -395,7 +486,16 @@ export function ISLMModel() {
                   <Label className="text-sm">{t('islm.mpc')}</Label>
                   <Badge variant="secondary">{mpc.toFixed(2)}</Badge>
                 </div>
-                <Slider value={[mpc]} min={0.1} max={0.95} step={0.05} onValueChange={(v) => { awardXP(); setMpc(v[0]) }} />
+                <Slider
+                  value={[mpc]}
+                  min={0.1}
+                  max={0.95}
+                  step={0.05}
+                  onValueChange={(v) => {
+                    awardXP()
+                    setMpc(v[0])
+                  }}
+                />
               </div>
 
               <div className="space-y-2">
@@ -403,7 +503,16 @@ export function ISLMModel() {
                   <Label className="text-sm">{t('islm.taxRate')}</Label>
                   <Badge variant="secondary">{(taxRate * 100).toFixed(0)}%</Badge>
                 </div>
-                <Slider value={[taxRate]} min={0} max={0.5} step={0.05} onValueChange={(v) => { awardXP(); setTaxRate(v[0]) }} />
+                <Slider
+                  value={[taxRate]}
+                  min={0}
+                  max={0.5}
+                  step={0.05}
+                  onValueChange={(v) => {
+                    awardXP()
+                    setTaxRate(v[0])
+                  }}
+                />
               </div>
 
               <div className="space-y-2">
@@ -411,8 +520,19 @@ export function ISLMModel() {
                   <Label className="text-sm">{t('islm.investmentSensitivity')}</Label>
                   <Badge variant="secondary">{investmentSensitivity}</Badge>
                 </div>
-                <Slider value={[investmentSensitivity]} min={10} max={200} step={10} onValueChange={(v) => { awardXP(); setInvestmentSensitivity(v[0]) }} />
-                <p className="text-xs text-muted-foreground">{t('islm.investmentSensitivityDesc')}</p>
+                <Slider
+                  value={[investmentSensitivity]}
+                  min={10}
+                  max={200}
+                  step={10}
+                  onValueChange={(v) => {
+                    awardXP()
+                    setInvestmentSensitivity(v[0])
+                  }}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {t('islm.investmentSensitivityDesc')}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -431,7 +551,16 @@ export function ISLMModel() {
                   <Label className="text-sm">{t('islm.moneySupply')}</Label>
                   <Badge variant="secondary">{moneySupply}</Badge>
                 </div>
-                <Slider value={[moneySupply]} min={200} max={2000} step={50} onValueChange={(v) => { awardXP(); setMoneySupply(v[0]) }} />
+                <Slider
+                  value={[moneySupply]}
+                  min={200}
+                  max={2000}
+                  step={50}
+                  onValueChange={(v) => {
+                    awardXP()
+                    setMoneySupply(v[0])
+                  }}
+                />
               </div>
 
               <div className="space-y-2">
@@ -439,7 +568,16 @@ export function ISLMModel() {
                   <Label className="text-sm">{t('islm.moneyDemandIncome')}</Label>
                   <Badge variant="secondary">{moneyDemandSensitivity.toFixed(2)}</Badge>
                 </div>
-                <Slider value={[moneyDemandSensitivity]} min={0.1} max={2} step={0.1} onValueChange={(v) => { awardXP(); setMoneyDemandSensitivity(v[0]) }} />
+                <Slider
+                  value={[moneyDemandSensitivity]}
+                  min={0.1}
+                  max={2}
+                  step={0.1}
+                  onValueChange={(v) => {
+                    awardXP()
+                    setMoneyDemandSensitivity(v[0])
+                  }}
+                />
               </div>
 
               <div className="space-y-2">
@@ -447,7 +585,16 @@ export function ISLMModel() {
                   <Label className="text-sm">{t('islm.moneyDemandRate')}</Label>
                   <Badge variant="secondary">{interestSensitivity}</Badge>
                 </div>
-                <Slider value={[interestSensitivity]} min={20} max={300} step={10} onValueChange={(v) => { awardXP(); setInterestSensitivity(v[0]) }} />
+                <Slider
+                  value={[interestSensitivity]}
+                  min={20}
+                  max={300}
+                  step={10}
+                  onValueChange={(v) => {
+                    awardXP()
+                    setInterestSensitivity(v[0])
+                  }}
+                />
                 <p className="text-xs text-muted-foreground">{t('islm.moneyDemandRateDesc')}</p>
               </div>
             </CardContent>
@@ -460,13 +607,17 @@ export function ISLMModel() {
         <Card className="border-2 border-blue-200 dark:border-blue-900">
           <CardContent className="p-3 text-center">
             <div className="text-xs text-muted-foreground">{t('islm.equilibriumY')}</div>
-            <div className="text-xl font-mono font-bold text-blue-600">{formatNumberLocale(locale, Math.round(equilibriumY))}</div>
+            <div className="text-xl font-mono font-bold text-blue-600">
+              {formatNumberLocale(locale, Math.round(equilibriumY))}
+            </div>
           </CardContent>
         </Card>
         <Card className="border-2 border-blue-200 dark:border-blue-900">
           <CardContent className="p-3 text-center">
             <div className="text-xs text-muted-foreground">{t('islm.equilibriumR')}</div>
-            <div className="text-xl font-mono font-bold text-blue-600">{equilibriumR.toFixed(2)}%</div>
+            <div className="text-xl font-mono font-bold text-blue-600">
+              {equilibriumR.toFixed(2)}%
+            </div>
           </CardContent>
         </Card>
         <Card className="border-2 border-red-200 dark:border-red-900">
@@ -504,7 +655,9 @@ export function ISLMModel() {
             <Separator />
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('islm.crowdingOut')}</span>
-              <span className={`font-mono font-bold ${crowdingOut > 0 ? 'text-orange-600' : ''}`}>{formatNumberLocale(locale, Math.round(crowdingOut))}</span>
+              <span className={`font-mono font-bold ${crowdingOut > 0 ? 'text-orange-600' : ''}`}>
+                {formatNumberLocale(locale, Math.round(crowdingOut))}
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -518,13 +671,15 @@ export function ISLMModel() {
           </CardHeader>
           <CardContent className="text-sm space-y-2 font-mono">
             <div className="p-2 bg-red-50 dark:bg-red-950/30 rounded">
-              <span className="text-red-600 font-bold">IS:</span> r = (I₀ + G)/d − [(1−MPC(1−t))/d] · Y
+              <span className="text-red-600 font-bold">IS:</span> r = (I₀ + G)/d − [(1−MPC(1−t))/d]
+              · Y
             </div>
             <div className="p-2 bg-green-50 dark:bg-green-950/30 rounded">
               <span className="text-green-600 font-bold">LM:</span> r = −(M/P)/h + (k/h) · Y
             </div>
             <div className="p-2 bg-blue-50 dark:bg-blue-950/30 rounded">
-              <span className="text-blue-600 font-bold">Y* =</span> {formatNumberLocale(locale, equilibriumY > 0 ? Math.round(equilibriumY) : 0)}
+              <span className="text-blue-600 font-bold">Y* =</span>{' '}
+              {formatNumberLocale(locale, equilibriumY > 0 ? Math.round(equilibriumY) : 0)}
             </div>
           </CardContent>
         </Card>
@@ -542,7 +697,11 @@ export function ISLMModel() {
               <TrendingUp className="h-4 w-4 mr-2 text-green-500" />
               {t('islm.expansionaryFiscal')}
             </Button>
-            <Button variant="outline" className="justify-start" onClick={applyContractionaryMonetary}>
+            <Button
+              variant="outline"
+              className="justify-start"
+              onClick={applyContractionaryMonetary}
+            >
               <TrendingDown className="h-4 w-4 mr-2 text-red-500" />
               {t('islm.contractionaryMonetary')}
             </Button>
@@ -566,12 +725,13 @@ export function ISLMModel() {
           <CardContent className="text-sm text-muted-foreground space-y-2">
             <p>{t('islm.isText')}</p>
             <p>
-              <strong className="text-foreground">{t('islm.negativeSlope')}:</strong> рост дохода Y увеличивает сбережения,
-              для сохранения равновесия ставка r должна упасть, чтобы стимулировать инвестиции.
+              <strong className="text-foreground">{t('islm.negativeSlope')}:</strong> рост дохода Y
+              увеличивает сбережения, для сохранения равновесия ставка r должна упасть, чтобы
+              стимулировать инвестиции.
             </p>
             <p>
-              <strong className="text-foreground">{t('islm.shiftsLabel')}:</strong> рост G или I₀ сдвигает IS вправо (экспансия);
-              рост налогов — влево (сжатие).
+              <strong className="text-foreground">{t('islm.shiftsLabel')}:</strong> рост G или I₀
+              сдвигает IS вправо (экспансия); рост налогов — влево (сжатие).
             </p>
           </CardContent>
         </Card>
@@ -586,11 +746,13 @@ export function ISLMModel() {
           <CardContent className="text-sm text-muted-foreground space-y-2">
             <p>{t('islm.lmText')}</p>
             <p>
-              <strong className="text-foreground">{t('islm.positiveSlope')}:</strong> рост дохода Y увеличивает транзакционный
-              спрос на деньги, для сохранения равновесия ставка r должна вырасти.
+              <strong className="text-foreground">{t('islm.positiveSlope')}:</strong> рост дохода Y
+              увеличивает транзакционный спрос на деньги, для сохранения равновесия ставка r должна
+              вырасти.
             </p>
             <p>
-              <strong className="text-foreground">{t('islm.shiftsLabel')}:</strong> рост M/P сдвигает LM вправо; сокращение денежной массы — влево.
+              <strong className="text-foreground">{t('islm.shiftsLabel')}:</strong> рост M/P
+              сдвигает LM вправо; сокращение денежной массы — влево.
             </p>
           </CardContent>
         </Card>
@@ -604,16 +766,20 @@ export function ISLMModel() {
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-2">
             <p>
-              <strong className="text-foreground">{t('islm.fiscalPolicy')}</strong> эффективнее при <strong className="text-foreground">{t('islm.flatLM')}</strong>{' '}
-              (h → ∞, {t('islm.liquidityTrap')}) или <strong className="text-foreground">{t('islm.steepIS')}</strong> (d → 0).
+              <strong className="text-foreground">{t('islm.fiscalPolicy')}</strong> эффективнее при{' '}
+              <strong className="text-foreground">{t('islm.flatLM')}</strong> (h → ∞,{' '}
+              {t('islm.liquidityTrap')}) или{' '}
+              <strong className="text-foreground">{t('islm.steepIS')}</strong> (d → 0).
             </p>
             <p>
-              <strong className="text-foreground">{t('islm.monetaryPolicy')}</strong> эффективнее при <strong className="text-foreground">{t('islm.steepLM')}</strong>{' '}
-              (h → 0) или <strong className="text-foreground">{t('islm.flatIS')}</strong> (d → ∞).
+              <strong className="text-foreground">{t('islm.monetaryPolicy')}</strong> эффективнее
+              при <strong className="text-foreground">{t('islm.steepLM')}</strong> (h → 0) или{' '}
+              <strong className="text-foreground">{t('islm.flatIS')}</strong> (d → ∞).
             </p>
             <p>
-              <strong className="text-foreground">{t('islm.crowdingOut')}:</strong> рост G повышает r, что снижает I.
-              Чем чувствительнее инвестиции к ставке (больший d), тем сильнее вытеснение.
+              <strong className="text-foreground">{t('islm.crowdingOut')}:</strong> рост G повышает
+              r, что снижает I. Чем чувствительнее инвестиции к ставке (больший d), тем сильнее
+              вытеснение.
             </p>
           </CardContent>
         </Card>

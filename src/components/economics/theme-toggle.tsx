@@ -13,9 +13,10 @@ export function ThemeToggle() {
 
   // Using a callback ref pattern to avoid setState in effect
   useEffect(() => {
-    requestAnimationFrame(() => {
+    const id = requestAnimationFrame(() => {
       setMounted(true)
     })
+    return () => cancelAnimationFrame(id)
   }, [])
 
   if (!mounted) {
@@ -40,13 +41,7 @@ export function ThemeToggle() {
         : t('theme.systemTooltip')
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      className="h-9 w-9"
-      onClick={cycleTheme}
-      title={tooltip}
-    >
+    <Button variant="ghost" size="icon" className="h-9 w-9" onClick={cycleTheme} title={tooltip}>
       {theme === 'dark' ? (
         <Moon className="h-4 w-4" />
       ) : theme === 'light' ? (

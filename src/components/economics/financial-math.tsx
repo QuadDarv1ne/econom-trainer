@@ -12,7 +12,15 @@ import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
 import { generateId } from '@/lib/utils'
 import { formatNumber } from '@/lib/i18n'
-import { DollarSign, Percent, TrendingUp, Calculator, CheckCircle2, XCircle, RotateCcw } from 'lucide-react'
+import {
+  DollarSign,
+  Percent,
+  TrendingUp,
+  Calculator,
+  CheckCircle2,
+  XCircle,
+  RotateCcw,
+} from 'lucide-react'
 
 interface CompoundProblem {
   principal: number
@@ -33,14 +41,32 @@ interface NPVProblem {
 
 type Locale = 'ru' | 'en' | 'zh'
 
+const COMPOUND_FREQUENCIES = [1, 2, 4, 12] as const
+
 function generateCompoundProblem(t: (key: string) => string, locale: Locale): CompoundProblem {
-  const principal = (Math.floor(Math.random() * 90) + 10) * 1000
-  const rate = (Math.floor(Math.random() * 15) + 3)
-  const years = Math.floor(Math.random() * 8) + 2
-  const compounding = [1, 2, 4, 12][Math.floor(Math.random() * 4)]
+  const PRINCIPAL_MIN = 10
+  const PRINCIPAL_MAX = 90
+  const PRINCIPAL_MULTIPLIER = 1000
+  const RATE_MIN = 3
+  const RATE_MAX = 15
+  const YEARS_MIN = 2
+  const YEARS_MAX = 8
+
+  const principal =
+    (Math.floor(Math.random() * (PRINCIPAL_MAX - PRINCIPAL_MIN + 1)) + PRINCIPAL_MIN) *
+    PRINCIPAL_MULTIPLIER
+  const rate = Math.floor(Math.random() * (RATE_MAX - RATE_MIN + 1)) + RATE_MIN
+  const years = Math.floor(Math.random() * (YEARS_MAX - YEARS_MIN + 1)) + YEARS_MIN
+  const compounding = COMPOUND_FREQUENCIES[Math.floor(Math.random() * COMPOUND_FREQUENCIES.length)]
   const answer = principal * Math.pow(1 + rate / 100 / compounding, compounding * years)
   const compLabel =
-    compounding === 1 ? t('finance.compounding.annually') : compounding === 2 ? t('finance.compounding.semiannually') : compounding === 4 ? t('finance.compounding.quarterly') : t('finance.compounding.monthly')
+    compounding === 1
+      ? t('finance.compounding.annually')
+      : compounding === 2
+        ? t('finance.compounding.semiannually')
+        : compounding === 4
+          ? t('finance.compounding.quarterly')
+          : t('finance.compounding.monthly')
 
   return {
     principal,
@@ -57,16 +83,40 @@ function generateCompoundProblem(t: (key: string) => string, locale: Locale): Co
 }
 
 function generateNPVProblem(t: (key: string) => string, locale: Locale): NPVProblem {
-  const initialInvestment = (Math.floor(Math.random() * 40) + 10) * 1000
-  const rate = Math.floor(Math.random() * 12) + 5
-  const numYears = Math.floor(Math.random() * 3) + 3
-  const cashFlows = Array.from({ length: numYears }, () =>
-    (Math.floor(Math.random() * 20) + 3) * 1000
+  const INVESTMENT_MIN = 10
+  const INVESTMENT_MAX = 40
+  const INVESTMENT_MULTIPLIER = 1000
+  const RATE_MIN = 5
+  const RATE_MAX = 12
+  const YEARS_MIN = 3
+  const YEARS_MAX = 3
+  const CASH_FLOW_MIN = 3
+  const CASH_FLOW_MAX = 20
+  const CASH_FLOW_MULTIPLIER = 1000
+
+  const initialInvestment =
+    (Math.floor(Math.random() * (INVESTMENT_MAX - INVESTMENT_MIN + 1)) + INVESTMENT_MIN) *
+    INVESTMENT_MULTIPLIER
+  const rate = Math.floor(Math.random() * (RATE_MAX - RATE_MIN + 1)) + RATE_MIN
+  const numYears = Math.floor(Math.random() * (YEARS_MAX - YEARS_MIN + 1)) + YEARS_MIN
+  const cashFlows = Array.from(
+    { length: numYears },
+    () =>
+      (Math.floor(Math.random() * (CASH_FLOW_MAX - CASH_FLOW_MIN + 1)) + CASH_FLOW_MIN) *
+      CASH_FLOW_MULTIPLIER
   )
   const npv =
-    cashFlows.reduce((sum, cf, i) => sum + cf / Math.pow(1 + rate / 100, i + 1), 0) - initialInvestment
+    cashFlows.reduce((sum, cf, i) => sum + cf / Math.pow(1 + rate / 100, i + 1), 0) -
+    initialInvestment
 
-  const cashFlowsStr = cashFlows.map((cf, i) => t('finance.npvCashFlow.year').replace('{year}', String(i + 1)) + ' ' + formatNumber(cf, locale)).join(', ')
+  const cashFlowsStr = cashFlows
+    .map(
+      (cf, i) =>
+        t('finance.npvCashFlow.year').replace('{year}', String(i + 1)) +
+        ' ' +
+        formatNumber(cf, locale)
+    )
+    .join(', ')
 
   return {
     initialInvestment,
@@ -80,10 +130,21 @@ function generateNPVProblem(t: (key: string) => string, locale: Locale): NPVProb
   }
 }
 
-function generateAnnuityProblem(t: (key: string) => string, locale: Locale): { question: string; answer: number; pmf: number; rate: number; years: number } {
-  const rate = Math.floor(Math.random() * 10) + 3
-  const years = Math.floor(Math.random() * 10) + 5
-  const futureValue = (Math.floor(Math.random() * 50) + 10) * 10000
+function generateAnnuityProblem(
+  t: (key: string) => string,
+  locale: Locale
+): { question: string; answer: number; pmf: number; rate: number; years: number } {
+  const RATE_MIN = 3
+  const RATE_MAX = 10
+  const YEARS_MIN = 5
+  const YEARS_MAX = 10
+  const FV_MIN = 10
+  const FV_MAX = 50
+  const FV_MULTIPLIER = 10000
+
+  const rate = Math.floor(Math.random() * (RATE_MAX - RATE_MIN + 1)) + RATE_MIN
+  const years = Math.floor(Math.random() * (YEARS_MAX - YEARS_MIN + 1)) + YEARS_MIN
+  const futureValue = (Math.floor(Math.random() * (FV_MAX - FV_MIN + 1)) + FV_MIN) * FV_MULTIPLIER
   const r = rate / 100
   const pmf = futureValue * (r / (Math.pow(1 + r, years) - 1))
 
@@ -123,7 +184,11 @@ export function FinancialMath() {
     (correctAnswer: number, problemType: string) => {
       const parsed = parseFloat(userAnswer.replace(',', '.'))
       if (isNaN(parsed)) {
-        toast({ title: t('finance.enterNumber'), description: t('finance.enterNumberDesc'), variant: 'destructive' })
+        toast({
+          title: t('finance.enterNumber'),
+          description: t('finance.enterNumberDesc'),
+          variant: 'destructive',
+        })
         return
       }
       const tolerance = Math.max(Math.abs(correctAnswer) * 0.02, 100)
@@ -188,7 +253,15 @@ export function FinancialMath() {
         </div>
       </div>
 
-      <Tabs defaultValue="compound" className="w-full" onValueChange={() => { setUserAnswer(''); setShowResult(false); setIsCorrect(false) }}>
+      <Tabs
+        defaultValue="compound"
+        className="w-full"
+        onValueChange={() => {
+          setUserAnswer('')
+          setShowResult(false)
+          setIsCorrect(false)
+        }}
+      >
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="compound" className="text-xs sm:text-sm">
             <Percent className="h-4 w-4 mr-1" />
@@ -211,9 +284,7 @@ export function FinancialMath() {
                 <Percent className="h-5 w-5" />
                 {t('finance.compound.title')}
               </CardTitle>
-              <CardDescription>
-                {t('finance.compound.formula')}
-              </CardDescription>
+              <CardDescription>{t('finance.compound.formula')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {!compoundProblem ? (
@@ -253,7 +324,9 @@ export function FinancialMath() {
                     )}
                   </div>
                   {showResult && (
-                    <div className={`p-4 rounded-lg ${isCorrect ? 'bg-green-50 dark:bg-green-950/30' : 'bg-red-50 dark:bg-red-950/30'}`}>
+                    <div
+                      className={`p-4 rounded-lg ${isCorrect ? 'bg-green-50 dark:bg-green-950/30' : 'bg-red-50 dark:bg-red-950/30'}`}
+                    >
                       <div className="flex items-center gap-2 mb-2">
                         {isCorrect ? (
                           <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -265,11 +338,18 @@ export function FinancialMath() {
                         </span>
                       </div>
                       <div className="text-sm">
-                        {t('finance.correctAnswer')} <strong>{formatNumber(compoundProblem.answer, locale, { maximumFractionDigits: 0 })} {t('finance.rub')}</strong>
+                        {t('finance.correctAnswer')}{' '}
+                        <strong>
+                          {formatNumber(compoundProblem.answer, locale, {
+                            maximumFractionDigits: 0,
+                          })}{' '}
+                          {t('finance.rub')}
+                        </strong>
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
-                        FV = {formatNumber(compoundProblem.principal, locale)} × (1 + {compoundProblem.rate}/{compoundProblem.compounding * 100})
-                        ^({compoundProblem.compounding}×{compoundProblem.years})
+                        FV = {formatNumber(compoundProblem.principal, locale)} × (1 +{' '}
+                        {compoundProblem.rate}/{compoundProblem.compounding * 100}) ^(
+                        {compoundProblem.compounding}×{compoundProblem.years})
                       </div>
                     </div>
                   )}
@@ -286,9 +366,7 @@ export function FinancialMath() {
                 <DollarSign className="h-5 w-5" />
                 {t('finance.npv.title')}
               </CardTitle>
-              <CardDescription>
-                {t('finance.npv.formula')}
-              </CardDescription>
+              <CardDescription>{t('finance.npv.formula')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {!npvProblem ? (
@@ -314,7 +392,10 @@ export function FinancialMath() {
                       />
                     </div>
                     {!showResult ? (
-                      <Button onClick={() => checkAnswer(npvProblem.answer, 'NPV')} className="mt-6">
+                      <Button
+                        onClick={() => checkAnswer(npvProblem.answer, 'NPV')}
+                        className="mt-6"
+                      >
                         {t('finance.check')}
                       </Button>
                     ) : (
@@ -325,7 +406,9 @@ export function FinancialMath() {
                     )}
                   </div>
                   {showResult && (
-                    <div className={`p-4 rounded-lg ${isCorrect ? 'bg-green-50 dark:bg-green-950/30' : 'bg-red-50 dark:bg-red-950/30'}`}>
+                    <div
+                      className={`p-4 rounded-lg ${isCorrect ? 'bg-green-50 dark:bg-green-950/30' : 'bg-red-50 dark:bg-red-950/30'}`}
+                    >
                       <div className="flex items-center gap-2 mb-2">
                         {isCorrect ? (
                           <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -337,7 +420,11 @@ export function FinancialMath() {
                         </span>
                       </div>
                       <div className="text-sm">
-                        {t('finance.correctAnswer')} <strong>{formatNumber(npvProblem.answer, locale, { maximumFractionDigits: 0 })} {t('finance.rub')}</strong>
+                        {t('finance.correctAnswer')}{' '}
+                        <strong>
+                          {formatNumber(npvProblem.answer, locale, { maximumFractionDigits: 0 })}{' '}
+                          {t('finance.rub')}
+                        </strong>
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
                         {npvProblem.answer > 0
@@ -359,9 +446,7 @@ export function FinancialMath() {
                 <TrendingUp className="h-5 w-5" />
                 {t('finance.annuity.title')}
               </CardTitle>
-              <CardDescription>
-                {t('finance.annuity.formula')}
-              </CardDescription>
+              <CardDescription>{t('finance.annuity.formula')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {!annuityProblem ? (
@@ -387,7 +472,10 @@ export function FinancialMath() {
                       />
                     </div>
                     {!showResult ? (
-                      <Button onClick={() => checkAnswer(annuityProblem.answer, 'Аннуитет')} className="mt-6">
+                      <Button
+                        onClick={() => checkAnswer(annuityProblem.answer, 'Аннуитет')}
+                        className="mt-6"
+                      >
                         {t('finance.check')}
                       </Button>
                     ) : (
@@ -398,7 +486,9 @@ export function FinancialMath() {
                     )}
                   </div>
                   {showResult && (
-                    <div className={`p-4 rounded-lg ${isCorrect ? 'bg-green-50 dark:bg-green-950/30' : 'bg-red-50 dark:bg-red-950/30'}`}>
+                    <div
+                      className={`p-4 rounded-lg ${isCorrect ? 'bg-green-50 dark:bg-green-950/30' : 'bg-red-50 dark:bg-red-950/30'}`}
+                    >
                       <div className="flex items-center gap-2 mb-2">
                         {isCorrect ? (
                           <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -410,7 +500,13 @@ export function FinancialMath() {
                         </span>
                       </div>
                       <div className="text-sm">
-                        {t('finance.correctAnswer')} <strong>{formatNumber(annuityProblem.answer, locale, { maximumFractionDigits: 0 })} {t('finance.rubPerYear')}</strong>
+                        {t('finance.correctAnswer')}{' '}
+                        <strong>
+                          {formatNumber(annuityProblem.answer, locale, {
+                            maximumFractionDigits: 0,
+                          })}{' '}
+                          {t('finance.rubPerYear')}
+                        </strong>
                       </div>
                     </div>
                   )}

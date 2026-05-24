@@ -21,10 +21,15 @@ import {
 import { Target, RotateCcw, Info, TrendingDown } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
+import { CHART_COLORS } from '@/lib/chart-colors'
 
 // ─── Pure calculation functions ──────────────────────────────────────
 
-export function calcBreakEvenUnits(fixedCosts: number, variableCostPerUnit: number, pricePerUnit: number): number {
+export function calcBreakEvenUnits(
+  fixedCosts: number,
+  variableCostPerUnit: number,
+  pricePerUnit: number
+): number {
   const contribution = pricePerUnit - variableCostPerUnit
   if (contribution <= 0) return Infinity
   return Math.ceil(fixedCosts / contribution)
@@ -54,7 +59,10 @@ export interface ChartDataPoint {
 }
 
 export function calcChartData(
-  fixedCosts: number, variableCostPerUnit: number, pricePerUnit: number, maxUnits: number
+  fixedCosts: number,
+  variableCostPerUnit: number,
+  pricePerUnit: number,
+  maxUnits: number
 ): ChartDataPoint[] {
   const data: ChartDataPoint[] = []
   const step = Math.max(1, Math.floor(maxUnits / 50))
@@ -67,7 +75,12 @@ export function calcChartData(
   return data
 }
 
-export function calcProfitAtMax(fixedCosts: number, variableCostPerUnit: number, pricePerUnit: number, maxUnits: number): number {
+export function calcProfitAtMax(
+  fixedCosts: number,
+  variableCostPerUnit: number,
+  pricePerUnit: number,
+  maxUnits: number
+): number {
   return pricePerUnit * maxUnits - (fixedCosts + variableCostPerUnit * maxUnits)
 }
 
@@ -89,7 +102,11 @@ export function BreakEvenAnalysis() {
   const awardXP = useCallback(() => {
     if (!hasEarnedXPRef.current) {
       hasEarnedXPRef.current = true
-      addModuleInteraction({ moduleId: 'breakeven', action: 'calculate', xpEarned: MODULE_XP['breakeven'] })
+      addModuleInteraction({
+        moduleId: 'breakeven',
+        action: 'calculate',
+        xpEarned: MODULE_XP['breakeven'],
+      })
     }
   }, [addModuleInteraction])
 
@@ -98,11 +115,26 @@ export function BreakEvenAnalysis() {
 
   const formatNum = (n: number) => n.toLocaleString(locale)
 
-  const breakEvenUnits = useMemo(() => calcBreakEvenUnits(fixedCosts, variableCostPerUnit, pricePerUnit), [fixedCosts, variableCostPerUnit, pricePerUnit])
-  const breakEvenRevenue = useMemo(() => calcBreakEvenRevenue(breakEvenUnits, pricePerUnit), [breakEvenUnits, pricePerUnit])
-  const contributionMargin = useMemo(() => calcContributionMargin(pricePerUnit, variableCostPerUnit), [pricePerUnit, variableCostPerUnit])
-  const marginOfSafety = useMemo(() => calcMarginOfSafety(maxUnits, breakEvenUnits), [maxUnits, breakEvenUnits])
-  const chartData = useMemo(() => calcChartData(fixedCosts, variableCostPerUnit, pricePerUnit, maxUnits), [fixedCosts, variableCostPerUnit, pricePerUnit, maxUnits])
+  const breakEvenUnits = useMemo(
+    () => calcBreakEvenUnits(fixedCosts, variableCostPerUnit, pricePerUnit),
+    [fixedCosts, variableCostPerUnit, pricePerUnit]
+  )
+  const breakEvenRevenue = useMemo(
+    () => calcBreakEvenRevenue(breakEvenUnits, pricePerUnit),
+    [breakEvenUnits, pricePerUnit]
+  )
+  const contributionMargin = useMemo(
+    () => calcContributionMargin(pricePerUnit, variableCostPerUnit),
+    [pricePerUnit, variableCostPerUnit]
+  )
+  const marginOfSafety = useMemo(
+    () => calcMarginOfSafety(maxUnits, breakEvenUnits),
+    [maxUnits, breakEvenUnits]
+  )
+  const chartData = useMemo(
+    () => calcChartData(fixedCosts, variableCostPerUnit, pricePerUnit, maxUnits),
+    [fixedCosts, variableCostPerUnit, pricePerUnit, maxUnits]
+  )
   const profitAtMax = calcProfitAtMax(fixedCosts, variableCostPerUnit, pricePerUnit, maxUnits)
 
   const reset = useCallback(() => {
@@ -123,21 +155,24 @@ export function BreakEvenAnalysis() {
             <Target className="h-5 w-5" />
             {t('module.breakeven.title')}
           </CardTitle>
-          <CardDescription>
-            {t('module.breakeven.description')}
-          </CardDescription>
+          <CardDescription>{t('module.breakeven.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <Label>{t('breakeven.fixedCosts')}</Label>
-                <span className="font-mono text-muted-foreground">{formatNum(fixedCosts)} {t('breakeven.rub')}</span>
+                <span className="font-mono text-muted-foreground">
+                  {formatNum(fixedCosts)} {t('breakeven.rub')}
+                </span>
               </div>
               <Slider
                 aria-label={t('breakeven.fixedCosts')}
                 value={[fixedCosts]}
-                onValueChange={([v]) => { awardXP(); setFixedCosts(v) }}
+                onValueChange={([v]) => {
+                  awardXP()
+                  setFixedCosts(v)
+                }}
                 min={10000}
                 max={1000000}
                 step={10000}
@@ -147,12 +182,17 @@ export function BreakEvenAnalysis() {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <Label>{t('breakeven.variableCosts')}</Label>
-                <span className="font-mono text-muted-foreground">{formatNum(variableCostPerUnit)} {t('breakeven.rub')}</span>
+                <span className="font-mono text-muted-foreground">
+                  {formatNum(variableCostPerUnit)} {t('breakeven.rub')}
+                </span>
               </div>
               <Slider
                 aria-label={t('breakeven.variableCosts')}
                 value={[variableCostPerUnit]}
-                onValueChange={([v]) => { awardXP(); setVariableCostPerUnit(v) }}
+                onValueChange={([v]) => {
+                  awardXP()
+                  setVariableCostPerUnit(v)
+                }}
                 min={10}
                 max={2000}
                 step={10}
@@ -162,12 +202,17 @@ export function BreakEvenAnalysis() {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <Label>{t('breakeven.pricePerUnit')}</Label>
-                <span className="font-mono text-muted-foreground">{formatNum(pricePerUnit)} {t('breakeven.rub')}</span>
+                <span className="font-mono text-muted-foreground">
+                  {formatNum(pricePerUnit)} {t('breakeven.rub')}
+                </span>
               </div>
               <Slider
                 aria-label={t('breakeven.pricePerUnit')}
                 value={[pricePerUnit]}
-                onValueChange={([v]) => { awardXP(); setPricePerUnit(v) }}
+                onValueChange={([v]) => {
+                  awardXP()
+                  setPricePerUnit(v)
+                }}
                 min={10}
                 max={5000}
                 step={10}
@@ -177,12 +222,17 @@ export function BreakEvenAnalysis() {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <Label>{t('breakeven.maxUnits')}</Label>
-                <span className="font-mono text-muted-foreground">{maxUnits} {t('breakeven.units')}</span>
+                <span className="font-mono text-muted-foreground">
+                  {maxUnits} {t('breakeven.units')}
+                </span>
               </div>
               <Slider
                 aria-label={t('breakeven.maxUnits')}
                 value={[maxUnits]}
-                onValueChange={([v]) => { awardXP(); setMaxUnits(v) }}
+                onValueChange={([v]) => {
+                  awardXP()
+                  setMaxUnits(v)
+                }}
                 min={100}
                 max={5000}
                 step={100}
@@ -220,13 +270,17 @@ export function BreakEvenAnalysis() {
               <CardContent className="p-3 text-center">
                 <div className="text-xs text-muted-foreground">{t('breakeven.breakEvenUnits')}</div>
                 <div className="text-xl font-mono font-bold">
-                  {isFinite(breakEvenUnits) ? `${formatNum(breakEvenUnits)} ${t('breakeven.units')}` : '—'}
+                  {isFinite(breakEvenUnits)
+                    ? `${formatNum(breakEvenUnits)} ${t('breakeven.units')}`
+                    : '—'}
                 </div>
               </CardContent>
             </Card>
             <Card className="border-2 border-primary/20">
               <CardContent className="p-3 text-center">
-                <div className="text-xs text-muted-foreground">{t('breakeven.breakEvenRevenue')}</div>
+                <div className="text-xs text-muted-foreground">
+                  {t('breakeven.breakEvenRevenue')}
+                </div>
                 <div className="text-xl font-mono font-bold">
                   {isFinite(breakEvenRevenue) ? formatNum(breakEvenRevenue) : '—'}
                 </div>
@@ -234,14 +288,18 @@ export function BreakEvenAnalysis() {
             </Card>
             <Card className="border-2 border-primary/20">
               <CardContent className="p-3 text-center">
-                <div className="text-xs text-muted-foreground">{t('breakeven.contributionMargin')}</div>
+                <div className="text-xs text-muted-foreground">
+                  {t('breakeven.contributionMargin')}
+                </div>
                 <div className="text-xl font-mono font-bold">{contributionMargin.toFixed(1)}%</div>
               </CardContent>
             </Card>
             <Card className="border-2 border-primary/20">
               <CardContent className="p-3 text-center">
                 <div className="text-xs text-muted-foreground">{t('breakeven.marginOfSafety')}</div>
-                <div className={`text-xl font-mono font-bold ${marginOfSafety < 20 ? 'text-red-500' : marginOfSafety < 40 ? 'text-yellow-500' : 'text-green-500'}`}>
+                <div
+                  className={`text-xl font-mono font-bold ${marginOfSafety < 20 ? 'text-red-500' : marginOfSafety < 40 ? 'text-yellow-500' : 'text-green-500'}`}
+                >
                   {marginOfSafety.toFixed(1)}%
                 </div>
               </CardContent>
@@ -255,10 +313,24 @@ export function BreakEvenAnalysis() {
             <CardContent>
               <div className="h-[320px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={chartData} margin={{ top: 10, right: 20, left: 10, bottom: 10 }}>
+                  <ComposedChart
+                    data={chartData}
+                    margin={{ top: 10, right: 20, left: 10, bottom: 10 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                    <XAxis dataKey="quantity" label={{ value: t('chart.quantityLabel'), position: 'insideBottom', offset: -5 }} fontSize={11} />
-                    <YAxis label={{ value: t('chart.amountLabel'), angle: -90, position: 'insideLeft' }} fontSize={11} />
+                    <XAxis
+                      dataKey="quantity"
+                      label={{
+                        value: t('chart.quantityLabel'),
+                        position: 'insideBottom',
+                        offset: -5,
+                      }}
+                      fontSize={11}
+                    />
+                    <YAxis
+                      label={{ value: t('chart.amountLabel'), angle: -90, position: 'insideLeft' }}
+                      fontSize={11}
+                    />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: 'hsl(var(--card))',
@@ -281,8 +353,8 @@ export function BreakEvenAnalysis() {
                     <Area
                       type="monotone"
                       dataKey="fixedCost"
-                      stroke="#94a3b8"
-                      fill="#94a3b8"
+                      stroke={CHART_COLORS.neutral}
+                      fill={CHART_COLORS.neutral}
                       fillOpacity={0.1}
                       strokeWidth={1}
                       strokeDasharray="3 3"
@@ -291,7 +363,7 @@ export function BreakEvenAnalysis() {
                     <Line
                       type="monotone"
                       dataKey="totalCost"
-                      stroke="#ef4444"
+                      stroke={CHART_COLORS.danger}
                       strokeWidth={2}
                       dot={false}
                       name={t('legend.totalCost')}
@@ -299,7 +371,7 @@ export function BreakEvenAnalysis() {
                     <Line
                       type="monotone"
                       dataKey="revenue"
-                      stroke="#22c55e"
+                      stroke={CHART_COLORS.success}
                       strokeWidth={2}
                       dot={false}
                       name={t('legend.revenue')}
@@ -317,8 +389,11 @@ export function BreakEvenAnalysis() {
               </CardHeader>
               <CardContent>
                 <div className="text-center p-4">
-                  <div className={`text-3xl font-mono font-bold ${profitAtMax > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {profitAtMax > 0 ? '+' : ''}{formatNum(profitAtMax)} {t('breakeven.rub')}
+                  <div
+                    className={`text-3xl font-mono font-bold ${profitAtMax > 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {profitAtMax > 0 ? '+' : ''}
+                    {formatNum(profitAtMax)} {t('breakeven.rub')}
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">
                     {t('card.profitAtMaxDescription')
@@ -338,13 +413,24 @@ export function BreakEvenAnalysis() {
               </CardHeader>
               <CardContent className="text-sm space-y-2">
                 <div className="p-2 bg-muted/50 rounded">
-                  <strong>{t('breakeven.profitPerUnit')}</strong> {formatNum(pricePerUnit - variableCostPerUnit)} {t('breakeven.rub')}
+                  <strong>{t('breakeven.profitPerUnit')}</strong>{' '}
+                  {formatNum(pricePerUnit - variableCostPerUnit)} {t('breakeven.rub')}
                 </div>
                 <div className="p-2 bg-muted/50 rounded">
-                  <strong>{t('breakeven.marginOfSafetyLabel')}</strong> {marginOfSafety.toFixed(1)}% — {marginOfSafety < 20 ? t('analysis.marginOfSafetyLow') : marginOfSafety < 40 ? t('analysis.marginOfSafetyMedium') : t('analysis.marginOfSafetyHigh')}
+                  <strong>{t('breakeven.marginOfSafetyLabel')}</strong> {marginOfSafety.toFixed(1)}%
+                  —{' '}
+                  {marginOfSafety < 20
+                    ? t('analysis.marginOfSafetyLow')
+                    : marginOfSafety < 40
+                      ? t('analysis.marginOfSafetyMedium')
+                      : t('analysis.marginOfSafetyHigh')}
                 </div>
                 <div className="p-2 bg-primary/5 rounded">
-                  <strong>{t('breakeven.payoff')}</strong> {t('analysis.payoffDescription').replace('{breakEvenUnits}', isFinite(breakEvenUnits) ? String(breakEvenUnits) : '—')}
+                  <strong>{t('breakeven.payoff')}</strong>{' '}
+                  {t('analysis.payoffDescription').replace(
+                    '{breakEvenUnits}',
+                    isFinite(breakEvenUnits) ? String(breakEvenUnits) : '—'
+                  )}
                 </div>
               </CardContent>
             </Card>

@@ -19,8 +19,18 @@ import {
   ReferenceLine,
   ReferenceDot,
 } from 'recharts'
-import { BarChart3, TrendingUp, TrendingDown, Info, Users, Building2, Store, ShieldAlert } from 'lucide-react'
+import {
+  BarChart3,
+  TrendingUp,
+  TrendingDown,
+  Info,
+  Users,
+  Building2,
+  Store,
+  ShieldAlert,
+} from 'lucide-react'
 import { useI18n } from '@/lib/i18n-provider'
+import { CHART_COLORS } from '@/lib/chart-colors'
 import { formatNumberLocale } from '@/lib/i18n'
 
 type MarketType = 'perfect' | 'monopoly' | 'monopolistic' | 'oligopoly'
@@ -47,7 +57,11 @@ export function MarketStructures() {
   const awardXP = () => {
     if (!hasEarnedXPRef.current) {
       hasEarnedXPRef.current = true
-      addModuleInteraction({ moduleId: 'market-structures', action: 'explore', xpEarned: MODULE_XP['market-structures'] ?? 20 })
+      addModuleInteraction({
+        moduleId: 'market-structures',
+        action: 'explore',
+        xpEarned: MODULE_XP['market-structures'] ?? 20,
+      })
     }
   }
 
@@ -66,17 +80,17 @@ export function MarketStructures() {
         // Perfect competition: P = MR = MC (horizontal)
         mr = demandPrice
         mc = mcConstant
-        atc = (fixedCost / q) + mcConstant
+        atc = fixedCost / q + mcConstant
       } else if (marketType === 'monopoly') {
         // Monopoly: MR = a - 2bq
         mr = demandIntercept - 2 * demandSlope * q
         mc = mcConstant
-        atc = (fixedCost / q) + mcConstant
+        atc = fixedCost / q + mcConstant
       } else if (marketType === 'monopolistic') {
         // Monopolistic competition: similar to monopoly but with lower barriers
         mr = demandIntercept - 2 * demandSlope * q * 0.8
         mc = mcConstant
-        atc = (fixedCost / q) + mcConstant
+        atc = fixedCost / q + mcConstant
       } else if (marketType === 'oligopoly') {
         // Oligopoly: kinked demand curve
         if (q <= oligopolyKink) {
@@ -85,7 +99,7 @@ export function MarketStructures() {
           mr = demandIntercept - 3 * demandSlope * q
         }
         mc = mcConstant
-        atc = (fixedCost / q) + mcConstant
+        atc = fixedCost / q + mcConstant
       }
 
       data.push({
@@ -231,18 +245,24 @@ export function MarketStructures() {
             <BarChart3 className="h-5 w-5" />
             {t('market.title')}
           </CardTitle>
-          <CardDescription>
-            {t('market.description')}
-          </CardDescription>
+          <CardDescription>{t('market.description')}</CardDescription>
         </CardHeader>
       </Card>
 
       {/* Market Type Selector */}
-      <Tabs value={marketType} onValueChange={(v) => { setMarketType(v as MarketType); awardXP(); }}>
+      <Tabs
+        value={marketType}
+        onValueChange={(v) => {
+          setMarketType(v as MarketType)
+          awardXP()
+        }}
+      >
         <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full">
           <TabsTrigger value="perfect" className="flex items-center gap-1.5">
             <Users className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">{t('market.structure.perfect').slice(0, 10)}...</span>
+            <span className="hidden sm:inline">
+              {t('market.structure.perfect').slice(0, 10)}...
+            </span>
             <span className="sm:hidden">СК</span>
           </TabsTrigger>
           <TabsTrigger value="monopoly" className="flex items-center gap-1.5">
@@ -252,7 +272,9 @@ export function MarketStructures() {
           </TabsTrigger>
           <TabsTrigger value="monopolistic" className="flex items-center gap-1.5">
             <Store className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">{t('market.structure.monopolistic').slice(0, 10)}...</span>
+            <span className="hidden sm:inline">
+              {t('market.structure.monopolistic').slice(0, 10)}...
+            </span>
             <span className="sm:hidden">МК</span>
           </TabsTrigger>
           <TabsTrigger value="oligopoly" className="flex items-center gap-1.5">
@@ -279,7 +301,9 @@ export function MarketStructures() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                   {marketInfo[type].features.map((feature, i) => (
                     <div key={i} className="flex items-start gap-2 text-sm">
-                      <div className={`h-5 w-5 rounded-full ${marketInfo[type].bg} flex items-center justify-center shrink-0 mt-0.5`}>
+                      <div
+                        className={`h-5 w-5 rounded-full ${marketInfo[type].bg} flex items-center justify-center shrink-0 mt-0.5`}
+                      >
                         <span className="text-xs font-bold">{i + 1}</span>
                       </div>
                       <span>{feature}</span>
@@ -294,24 +318,40 @@ export function MarketStructures() {
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">{t('market.chartTitle')}</CardTitle>
                 <CardDescription>
-                  {type === 'perfect' ? t('market.chartDesc.perfect') :
-                   type === 'monopoly' ? t('market.chartDesc.monopoly') :
-                   type === 'monopolistic' ? t('market.chartDesc.monopolistic') :
-                   t('market.chartDesc.oligopoly')}
+                  {type === 'perfect'
+                    ? t('market.chartDesc.perfect')
+                    : type === 'monopoly'
+                      ? t('market.chartDesc.monopoly')
+                      : type === 'monopolistic'
+                        ? t('market.chartDesc.monopolistic')
+                        : t('market.chartDesc.oligopoly')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-[400px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
+                    <ComposedChart
+                      data={chartData}
+                      margin={{ top: 10, right: 30, left: 10, bottom: 10 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                       <XAxis
                         dataKey="quantity"
-                        label={{ value: t('market.quantityLabel'), position: 'insideBottom', offset: -5, fontSize: 12 }}
+                        label={{
+                          value: t('market.quantityLabel'),
+                          position: 'insideBottom',
+                          offset: -5,
+                          fontSize: 12,
+                        }}
                         fontSize={11}
                       />
                       <YAxis
-                        label={{ value: t('market.priceCost'), angle: -90, position: 'insideLeft', fontSize: 12 }}
+                        label={{
+                          value: t('market.priceCost'),
+                          angle: -90,
+                          position: 'insideLeft',
+                          fontSize: 12,
+                        }}
                         fontSize={11}
                         domain={[0, demandIntercept * 1.1]}
                       />
@@ -341,18 +381,48 @@ export function MarketStructures() {
                       />
 
                       {/* Demand */}
-                      <Line type="monotone" dataKey="demand" stroke="#3b82f6" strokeWidth={2.5} dot={false} name="demand" />
+                      <Line
+                        type="monotone"
+                        dataKey="demand"
+                        stroke={CHART_COLORS.primary}
+                        strokeWidth={2.5}
+                        dot={false}
+                        name="demand"
+                      />
 
                       {/* MR (except perfect competition) */}
                       {type !== 'perfect' && (
-                        <Line type="monotone" dataKey="mr" stroke="#f59e0b" strokeWidth={2} dot={false} strokeDasharray="5 5" name="mr" />
+                        <Line
+                          type="monotone"
+                          dataKey="mr"
+                          stroke={CHART_COLORS.accent}
+                          strokeWidth={2}
+                          dot={false}
+                          strokeDasharray="5 5"
+                          name="mr"
+                        />
                       )}
 
                       {/* MC */}
-                      <Line type="monotone" dataKey="mc" stroke="#ef4444" strokeWidth={2} dot={false} name="mc" />
+                      <Line
+                        type="monotone"
+                        dataKey="mc"
+                        stroke={CHART_COLORS.demand}
+                        strokeWidth={2}
+                        dot={false}
+                        name="mc"
+                      />
 
                       {/* ATC */}
-                      <Line type="monotone" dataKey="atc" stroke="#8b5cf6" strokeWidth={1.5} dot={false} strokeDasharray="3 3" name="atc" />
+                      <Line
+                        type="monotone"
+                        dataKey="atc"
+                        stroke={CHART_COLORS.purple}
+                        strokeWidth={1.5}
+                        dot={false}
+                        strokeDasharray="3 3"
+                        name="atc"
+                      />
 
                       {/* Equilibrium point */}
                       {equilibrium.q > 0 && equilibrium.p > 0 && (
@@ -360,24 +430,34 @@ export function MarketStructures() {
                           x={Math.round(equilibrium.q)}
                           y={Math.round(equilibrium.p * 100) / 100}
                           r={7}
-                          fill="#22c55e"
+                          fill={CHART_COLORS.success}
                           stroke="#fff"
                           strokeWidth={2}
                           label={{
                             value: `E: Q=${Math.round(equilibrium.q)}, P=${equilibrium.p.toFixed(1)}`,
                             position: 'top',
                             fontSize: 11,
-                            fill: '#22c55e',
+                            fill: CHART_COLORS.success,
                           }}
                         />
                       )}
 
                       {/* Reference lines */}
                       {equilibrium.q > 0 && (
-                        <ReferenceLine x={Math.round(equilibrium.q)} stroke="#22c55e" strokeDasharray="4 4" strokeWidth={1} />
+                        <ReferenceLine
+                          x={Math.round(equilibrium.q)}
+                          stroke={CHART_COLORS.success}
+                          strokeDasharray="4 4"
+                          strokeWidth={1}
+                        />
                       )}
                       {equilibrium.p > 0 && (
-                        <ReferenceLine y={Math.round(equilibrium.p * 100) / 100} stroke="#22c55e" strokeDasharray="4 4" strokeWidth={1} />
+                        <ReferenceLine
+                          y={Math.round(equilibrium.p * 100) / 100}
+                          stroke={CHART_COLORS.success}
+                          strokeDasharray="4 4"
+                          strokeWidth={1}
+                        />
                       )}
                     </ComposedChart>
                   </ResponsiveContainer>
@@ -389,28 +469,41 @@ export function MarketStructures() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <Card className="border-2 border-blue-200 dark:border-blue-900">
                 <CardContent className="p-3 text-center">
-                  <div className="text-xs text-muted-foreground">{t('market.equilibriumPrice')}</div>
-                  <div className="text-xl font-mono font-bold text-blue-600">{equilibrium.p.toFixed(1)}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {t('market.equilibriumPrice')}
+                  </div>
+                  <div className="text-xl font-mono font-bold text-blue-600">
+                    {equilibrium.p.toFixed(1)}
+                  </div>
                 </CardContent>
               </Card>
               <Card className="border-2 border-blue-200 dark:border-blue-900">
                 <CardContent className="p-3 text-center">
-                  <div className="text-xs text-muted-foreground">{t('market.equilibriumQuantity')}</div>
-                  <div className="text-xl font-mono font-bold text-blue-600">{Math.round(equilibrium.q)}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {t('market.equilibriumQuantity')}
+                  </div>
+                  <div className="text-xl font-mono font-bold text-blue-600">
+                    {Math.round(equilibrium.q)}
+                  </div>
                 </CardContent>
               </Card>
               <Card className="border-2 border-green-200 dark:border-green-900">
                 <CardContent className="p-3 text-center">
                   <div className="text-xs text-muted-foreground">{t('market.profit')}</div>
-                  <div className={`text-xl font-mono font-bold ${equilibrium.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {equilibrium.profit > 0 ? '+' : ''}{formatNumberLocale(locale, Math.round(equilibrium.profit))}
+                  <div
+                    className={`text-xl font-mono font-bold ${equilibrium.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {equilibrium.profit > 0 ? '+' : ''}
+                    {formatNumberLocale(locale, Math.round(equilibrium.profit))}
                   </div>
                 </CardContent>
               </Card>
               <Card className="border-2 border-orange-200 dark:border-orange-900">
                 <CardContent className="p-3 text-center">
                   <div className="text-xs text-muted-foreground">{t('market.consumerSurplus')}</div>
-                  <div className="text-xl font-mono font-bold text-orange-600">{formatNumberLocale(locale, surpluses.cs)}</div>
+                  <div className="text-xl font-mono font-bold text-orange-600">
+                    {formatNumberLocale(locale, surpluses.cs)}
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -425,11 +518,10 @@ export function MarketStructures() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
-                  <p className="mb-2">
-                    {t('market.csDescription')}
-                  </p>
+                  <p className="mb-2">{t('market.csDescription')}</p>
                   <div className="p-2 bg-green-50 dark:bg-green-950/30 rounded font-mono text-center">
-                    CS = ½ × (P<sub>max</sub> − P*) × Q* = {formatNumberLocale(locale, surpluses.cs)}
+                    CS = ½ × (P<sub>max</sub> − P*) × Q* ={' '}
+                    {formatNumberLocale(locale, surpluses.cs)}
                   </div>
                 </CardContent>
               </Card>
@@ -442,9 +534,7 @@ export function MarketStructures() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
-                  <p className="mb-2">
-                    {t('market.psDescription')}
-                  </p>
+                  <p className="mb-2">{t('market.psDescription')}</p>
                   <div className="p-2 bg-blue-50 dark:bg-blue-950/30 rounded font-mono text-center">
                     PS = (P* − MC) × Q* = {formatNumberLocale(locale, surpluses.ps)}
                   </div>
@@ -464,10 +554,10 @@ export function MarketStructures() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
-                  <p className="mb-2">
-                    {t('market.dwlDescription')}
-                  </p>
-                  <div className={`p-2 rounded font-mono text-center ${surpluses.dwl > 0 ? 'bg-red-50 dark:bg-red-950/30' : 'bg-green-50 dark:bg-green-950/30'}`}>
+                  <p className="mb-2">{t('market.dwlDescription')}</p>
+                  <div
+                    className={`p-2 rounded font-mono text-center ${surpluses.dwl > 0 ? 'bg-red-50 dark:bg-red-950/30' : 'bg-green-50 dark:bg-green-950/30'}`}
+                  >
                     DWL = {formatNumberLocale(locale, surpluses.dwl)}
                   </div>
                   {type === 'perfect' && (
@@ -494,7 +584,16 @@ export function MarketStructures() {
                 <Label>{t('market.maxPrice')}</Label>
                 <Badge variant="secondary">{demandIntercept}</Badge>
               </div>
-              <Slider value={[demandIntercept]} min={50} max={200} step={5} onValueChange={(v) => { awardXP(); setDemandIntercept(v[0]) }} />
+              <Slider
+                value={[demandIntercept]}
+                min={50}
+                max={200}
+                step={5}
+                onValueChange={(v) => {
+                  awardXP()
+                  setDemandIntercept(v[0])
+                }}
+              />
             </div>
 
             <div className="space-y-2">
@@ -502,7 +601,16 @@ export function MarketStructures() {
                 <Label>{t('market.demandSlope')}</Label>
                 <Badge variant="secondary">{demandSlope.toFixed(1)}</Badge>
               </div>
-              <Slider value={[demandSlope]} min={0.5} max={3} step={0.1} onValueChange={(v) => { awardXP(); setDemandSlope(v[0]) }} />
+              <Slider
+                value={[demandSlope]}
+                min={0.5}
+                max={3}
+                step={0.1}
+                onValueChange={(v) => {
+                  awardXP()
+                  setDemandSlope(v[0])
+                }}
+              />
             </div>
 
             <div className="space-y-2">
@@ -510,7 +618,16 @@ export function MarketStructures() {
                 <Label>{t('market.mcConstant')}</Label>
                 <Badge variant="secondary">{mcConstant}</Badge>
               </div>
-              <Slider value={[mcConstant]} min={5} max={80} step={5} onValueChange={(v) => { awardXP(); setMcConstant(v[0]) }} />
+              <Slider
+                value={[mcConstant]}
+                min={5}
+                max={80}
+                step={5}
+                onValueChange={(v) => {
+                  awardXP()
+                  setMcConstant(v[0])
+                }}
+              />
             </div>
 
             <div className="space-y-2">
@@ -518,7 +635,16 @@ export function MarketStructures() {
                 <Label>{t('market.fixedCost')}</Label>
                 <Badge variant="secondary">{fixedCost}</Badge>
               </div>
-              <Slider value={[fixedCost]} min={0} max={2000} step={100} onValueChange={(v) => { awardXP(); setFixedCost(v[0]) }} />
+              <Slider
+                value={[fixedCost]}
+                min={0}
+                max={2000}
+                step={100}
+                onValueChange={(v) => {
+                  awardXP()
+                  setFixedCost(v[0])
+                }}
+              />
             </div>
 
             {marketType === 'oligopoly' && (
@@ -527,7 +653,16 @@ export function MarketStructures() {
                   <Label>{t('market.kinkPoint')}</Label>
                   <Badge variant="secondary">{oligopolyKink}</Badge>
                 </div>
-                <Slider value={[oligopolyKink]} min={10} max={100} step={5} onValueChange={(v) => { awardXP(); setOligopolyKink(v[0]) }} />
+                <Slider
+                  value={[oligopolyKink]}
+                  min={10}
+                  max={100}
+                  step={5}
+                  onValueChange={(v) => {
+                    awardXP()
+                    setOligopolyKink(v[0])
+                  }}
+                />
               </div>
             )}
           </div>
@@ -545,9 +680,15 @@ export function MarketStructures() {
               <thead>
                 <tr className="border-b">
                   <th className="text-left p-2">{t('market.characteristic')}</th>
-                  <th className="text-center p-2 text-green-600">{t('market.structure.perfect').slice(0, 8)}.</th>
-                  <th className="text-center p-2 text-amber-600">{t('market.structure.monopolistic').slice(0, 8)}.</th>
-                  <th className="text-center p-2 text-purple-600">{t('market.structure.oligopoly')}</th>
+                  <th className="text-center p-2 text-green-600">
+                    {t('market.structure.perfect').slice(0, 8)}.
+                  </th>
+                  <th className="text-center p-2 text-amber-600">
+                    {t('market.structure.monopolistic').slice(0, 8)}.
+                  </th>
+                  <th className="text-center p-2 text-purple-600">
+                    {t('market.structure.oligopoly')}
+                  </th>
                   <th className="text-center p-2 text-red-600">{t('market.structure.monopoly')}</th>
                 </tr>
               </thead>
@@ -590,9 +731,13 @@ export function MarketStructures() {
                 <tr className="border-b">
                   <td className="p-2 font-medium">{t('market.table.efficiency')}</td>
                   <td className="text-center p-2 text-green-600">{t('market.table.high')}</td>
-                  <td className="text-center p-2 text-yellow-600">{t('market.table.excessCapacity')}</td>
+                  <td className="text-center p-2 text-yellow-600">
+                    {t('market.table.excessCapacity')}
+                  </td>
                   <td className="text-center p-2 text-orange-600">{t('market.table.depends')}</td>
-                  <td className="text-center p-2 text-red-600">{t('market.table.low')} (DWL {'>'} 0)</td>
+                  <td className="text-center p-2 text-red-600">
+                    {t('market.table.low')} (DWL {'>'} 0)
+                  </td>
                 </tr>
                 <tr>
                   <td className="p-2 font-medium">{t('market.examples')}</td>

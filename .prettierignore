@@ -1,0 +1,6 @@
+.next
+out
+node_modules
+*.md
+prisma/**/*.db
+public/sw.js
