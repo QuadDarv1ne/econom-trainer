@@ -9,7 +9,7 @@ import { useEconomicsStore } from "@/store/economics-store";
  */
 export async function signOutAndClearStore(options?: SignOutParams<true>) {
   // Clear the persisted Zustand store before signing out
-  useEconomicsStore.persist.clearStore();
+  useEconomicsStore.persist.clearStorage();
 
   // Sign out with NextAuth
   await signOut(options);

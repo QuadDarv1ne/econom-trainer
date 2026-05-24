@@ -22,7 +22,7 @@ const USER_PROFILE_SELECT = {
 } as const;
 
 // GET - Get user profile
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {

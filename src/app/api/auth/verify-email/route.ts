@@ -26,8 +26,9 @@ export async function POST(req: Request) {
       return NextResponse.redirect(BASE_URL + '/auth/verify-email?status=invalid');
     }
   } else {
-    token = parsed.token || '';
-    email = (parsed.email || '').toLowerCase();
+    const data = parsed as { token?: string; email?: string };
+    token = data.token || '';
+    email = (data.email || '').toLowerCase();
   }
 
   const baseUrl = BASE_URL;

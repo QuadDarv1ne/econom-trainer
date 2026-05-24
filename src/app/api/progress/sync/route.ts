@@ -8,7 +8,7 @@ import { getLevelFromXP } from '@/lib/xp-utils';
 import { logError } from '@/lib/log-error';
 
 // GET - Get user progress from server
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
