@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useEconomicsStore } from "@/store/economics-store";
 
 const SYNC_DEBOUNCE_MS = 3000;
@@ -11,7 +11,7 @@ const SYNC_DEBOUNCE_MS = 3000;
  */
 export function useAutoSync() {
   const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const hasSyncedRef = useRef(false);
+  const [hasSynced, setHasSynced] = useState(false);
 
   const performSync = useCallback(async () => {
     if (!navigator.onLine) return;
@@ -46,7 +46,7 @@ export function useAutoSync() {
         return;
       }
 
-      hasSyncedRef.current = true;
+      setHasSynced(true);
     } catch {
       // Silently fail - will retry on next online event
     }
@@ -73,5 +73,5 @@ export function useAutoSync() {
     };
   }, [performSync]);
 
-  return { hasSynced: hasSyncedRef.current };
+  return { hasSynced };
 }

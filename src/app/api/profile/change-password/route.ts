@@ -9,13 +9,14 @@ import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
 import { BCRYPT_SALT_ROUNDS } from '@/lib/constants';
+import { withSecurityHeaders } from '@/lib/security-headers';
 
 // POST - Change password
 export async function POST(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
     }
 
     if (!validateOriginStrict(req)) {
@@ -33,15 +34,15 @@ export async function POST(req: Request) {
     const { currentPassword, newPassword } = parsed;
 
     if (!currentPassword || !newPassword) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Fill in all fields' },
         { status: 400 }
-      );
+      ));
     }
 
     const strength = validatePasswordStrength(newPassword);
     if (!strength.valid) {
-      return NextResponse.json({ error: strength.error }, { status: 400 });
+      return withSecurityHeaders(NextResponse.json({ error: strength.error }, { status: 400 }));
     }
 
     const user = await prisma.user.findUnique({
@@ -50,18 +51,18 @@ export async function POST(req: Request) {
     });
 
     if (!user?.passwordHash) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Cannot change password for this account' },
         { status: 400 }
-      );
+      ));
     }
 
     const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
     if (!isValid) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Incorrect current password' },
         { status: 400 }
-      );
+      ));
     }
 
     const newHash = await bcrypt.hash(newPassword, BCRYPT_SALT_ROUNDS);
@@ -72,9 +73,9 @@ export async function POST(req: Request) {
       data: { passwordHash: newHash, sessionHash: newSessionHash },
     });
 
-    return NextResponse.json({ message: 'Password changed' });
+    return withSecurityHeaders(NextResponse.json({ message: 'Password changed' }));
   } catch (error) {
     logError('change-password', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return withSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }));
   }
 }

@@ -5,13 +5,14 @@ import { randomBytes } from 'crypto';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { logError } from '@/lib/log-error';
+import { withSecurityHeaders } from '@/lib/security-headers';
 
 // POST - Sign out from all other sessions by updating user's sessionHash
 export async function POST(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
     }
 
     if (!validateOriginStrict(req)) {
@@ -32,9 +33,9 @@ export async function POST(req: Request) {
       data: { sessionHash: newSessionHash },
     });
 
-    return NextResponse.json({ message: 'All other sessions revoked' });
+    return withSecurityHeaders(NextResponse.json({ message: 'All other sessions revoked' }));
   } catch (error) {
     logError('revoke-sessions', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return withSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }));
   }
 }

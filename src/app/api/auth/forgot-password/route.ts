@@ -32,6 +32,13 @@ export async function POST(req: Request) {
       ));
     }
 
+    if (typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return withSecurityHeaders(NextResponse.json(
+        { error: 'Invalid email format' },
+        { status: 400 }
+      ));
+    }
+
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
     });

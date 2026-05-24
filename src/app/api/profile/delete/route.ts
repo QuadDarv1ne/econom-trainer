@@ -6,13 +6,14 @@ import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
+import { withSecurityHeaders } from '@/lib/security-headers';
 
 // DELETE - Delete user account
 export async function DELETE(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
     }
 
     if (!validateOriginStrict(req)) {
@@ -30,10 +31,10 @@ export async function DELETE(req: Request) {
     const { password } = parsed;
 
     if (!password) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Password required to confirm deletion' },
         { status: 400 }
-      );
+      ));
     }
 
     const user = await prisma.user.findUnique({
@@ -42,18 +43,18 @@ export async function DELETE(req: Request) {
     });
 
     if (!user?.passwordHash) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Cannot delete this account' },
         { status: 400 }
-      );
+      ));
     }
 
     const isValid = await bcrypt.compare(password, user.passwordHash);
     if (!isValid) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Incorrect password' },
         { status: 400 }
-      );
+      ));
     }
 
     // Delete user (cascade handles related records)
@@ -61,9 +62,9 @@ export async function DELETE(req: Request) {
       where: { id: session.user.id },
     });
 
-    return NextResponse.json({ message: 'Account deleted' });
+    return withSecurityHeaders(NextResponse.json({ message: 'Account deleted' }));
   } catch (error) {
     logError('delete-account', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return withSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }));
   }
 }
