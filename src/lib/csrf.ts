@@ -15,13 +15,18 @@ function getAllowedOrigins(): string[] {
 /**
  * Check if the request's Origin header matches an allowed origin.
  * Falls back to Referer if Origin is not set (e.g., some older browsers).
- * Returns true if the origin is valid, false otherwise.
+ *
+ * @param req - The incoming Request object
+ * @param options - Optional configuration
+ * @param options.strict - When true, rejects requests with no Origin/Referer header.
+ *   Use strict mode for public POST endpoints where legitimate requests always
+ *   originate from the app's own JavaScript (which always sends Origin).
+ *   Default: false (allows missing origin for same-origin requests).
  */
-export function validateOrigin(req: Request): boolean {
+export function validateOrigin(req: Request, options?: { strict?: boolean }): boolean {
+  const strict = options?.strict ?? false;
   const allowedOrigins = getAllowedOrigins();
   if (allowedOrigins.length === 0) {
-    // If no origins are configured, only skip validation in development.
-    // In production, fail-closed to prevent CSRF bypass from misconfiguration.
     if (process.env.NODE_ENV === 'production') {
       console.error('[CSRF] No allowed origins configured in production — rejecting request');
       return false;
@@ -32,60 +37,25 @@ export function validateOrigin(req: Request): boolean {
   const origin = req.headers.get('origin') || req.headers.get('referer');
 
   if (!origin) {
-    // No origin header — likely a same-origin request or non-browser client
-    // Allow it, but this could also be a CSRF attempt with a crafted client
+    if (strict) return false;
     return true;
   }
 
   try {
     const originUrl = new URL(origin);
-    // Strip trailing slash for comparison
     const requestOrigin = originUrl.origin.replace(/\/$/, '');
-
-    return allowedOrigins.some((allowed) => {
-      const allowedOrigin = allowed.replace(/\/$/, '');
-      return requestOrigin === allowedOrigin;
-    });
+    return allowedOrigins.some((allowed) => requestOrigin === allowed.replace(/\/$/, ''));
   } catch {
-    // Invalid URL — reject
     return false;
   }
 }
 
 /**
  * Strict origin validation — rejects requests with no Origin/Referer header.
- * Use for public POST endpoints where legitimate requests always originate from
- * the app's own JavaScript (which always sends the Origin header).
+ * @deprecated Use validateOrigin(req, { strict: true }) instead.
  */
 export function validateOriginStrict(req: Request): boolean {
-  const allowedOrigins = getAllowedOrigins();
-  if (allowedOrigins.length === 0) {
-    if (process.env.NODE_ENV === 'production') {
-      console.error('[CSRF] No allowed origins configured in production — rejecting request');
-      return false;
-    }
-    return true;
-  }
-
-  const origin = req.headers.get('origin') || req.headers.get('referer');
-
-  if (!origin) {
-    // Reject requests with no origin header — legitimate browser fetch/XHR
-    // requests from the app will always include an Origin header.
-    return false;
-  }
-
-  try {
-    const originUrl = new URL(origin);
-    const requestOrigin = originUrl.origin.replace(/\/$/, '');
-
-    return allowedOrigins.some((allowed) => {
-      const allowedOrigin = allowed.replace(/\/$/, '');
-      return requestOrigin === allowedOrigin;
-    });
-  } catch {
-    return false;
-  }
+  return validateOrigin(req, { strict: true });
 }
 
 /**

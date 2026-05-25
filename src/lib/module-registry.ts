@@ -1,5 +1,6 @@
 import type React from 'react'
 import dynamic from 'next/dynamic'
+import { Loader2 } from 'lucide-react'
 import {
   Calculator,
   ArrowRightLeft,
@@ -28,33 +29,41 @@ import { modules as baseModules, tabItems as baseTabItems, categoryBreaks as bas
 export type { ModuleMeta as ModuleDefinition, TabMeta as TabItem } from '@/lib/module-data'
 export { modules, tabItems, categoryBreaks } from '@/lib/module-data'
 
-// Lazy-load all module components for performance
-const GDPCalculator = dynamic(() => import('@/components/economics/gdp-calculator').then(m => ({ default: m.GDPCalculator })), { ssr: false })
-const SupplyDemand = dynamic(() => import('@/components/economics/supply-demand').then(m => ({ default: m.SupplyDemand })), { ssr: false })
-const ElasticityCalculator = dynamic(() => import('@/components/economics/elasticity-calculator').then(m => ({ default: m.ElasticityCalculator })), { ssr: false })
-const KeynesianCross = dynamic(() => import('@/components/economics/keynesian-cross').then(m => ({ default: m.KeynesianCross })), { ssr: false })
-const InflationCalculator = dynamic(() => import('@/components/economics/inflation-calculator').then(m => ({ default: m.InflationCalculator })), { ssr: false })
-const PhillipsCurve = dynamic(() => import('@/components/economics/phillips-curve').then(m => ({ default: m.PhillipsCurve })), { ssr: false })
-const LorenzCurve = dynamic(() => import('@/components/economics/lorenz-curve').then(m => ({ default: m.LorenzCurve })), { ssr: false })
-const PPFCurve = dynamic(() => import('@/components/economics/ppf').then(m => ({ default: m.PPFCurve })), { ssr: false })
-const CostAnalysis = dynamic(() => import('@/components/economics/cost-analysis').then(m => ({ default: m.CostAnalysis })), { ssr: false })
-const ComparativeAdvantage = dynamic(() => import('@/components/economics/comparative-advantage').then(m => ({ default: m.ComparativeAdvantage })), { ssr: false })
-const BreakEvenAnalysis = dynamic(() => import('@/components/economics/break-even').then(m => ({ default: m.BreakEvenAnalysis })), { ssr: false })
-const TaxCalculator = dynamic(() => import('@/components/economics/tax-calculator').then(m => ({ default: m.TaxCalculator })), { ssr: false })
-const GameTheory = dynamic(() => import('@/components/economics/game-theory').then(m => ({ default: m.GameTheory })), { ssr: false })
-const EconomicsQuiz = dynamic(() => import('@/components/economics/quiz').then(m => ({ default: m.EconomicsQuiz })), { ssr: false })
-const FinancialMath = dynamic(() => import('@/components/economics/financial-math').then(m => ({ default: m.FinancialMath })), { ssr: false })
-const Glossary = dynamic(() => import('@/components/economics/glossary').then(m => ({ default: m.Glossary })), { ssr: false })
-const Achievements = dynamic(() => import('@/components/economics/achievements').then(m => ({ default: m.Achievements })), { ssr: false })
-const ProgressTracker = dynamic(() => import('@/components/economics/progress-tracker').then(m => ({ default: m.ProgressTracker })), { ssr: false })
-const ISLMModel = dynamic(() => import('@/components/economics/is-lm').then(m => ({ default: m.ISLMModel })), { ssr: false })
-const MarketStructures = dynamic(() => import('@/components/economics/market-structures').then(m => ({ default: m.MarketStructures })), { ssr: false })
-const CurrencyCalculator = dynamic(() => import('@/components/economics/currency-calculator').then(m => ({ default: m.CurrencyCalculator })), { ssr: false })
-const PriceIndices = dynamic(() => import('@/components/economics/price-indices').then(m => ({ default: m.PriceIndices })), { ssr: false })
-const EconomicCrises = dynamic(() => import('@/components/economics/economic-crises').then(m => ({ default: m.EconomicCrises })), { ssr: false })
-const MonetaryPolicy = dynamic(() => import('@/components/economics/monetary-policy').then(m => ({ default: m.MonetaryPolicy })), { ssr: false })
-const ADASModel = dynamic(() => import('@/components/economics/adas-model').then(m => ({ default: m.ADASModel })), { ssr: false })
-export const ThemeToggle = dynamic(() => import('@/components/economics/theme-toggle').then(m => ({ default: m.ThemeToggle })), { ssr: false })
+// Shared loading skeleton for lazy-loaded modules
+const ModuleLoading = () => (
+  <div className="flex items-center justify-center py-16">
+    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+  </div>
+)
+
+// Lazy-load all module components with loading states
+const dynamicOpts = { ssr: false, loading: () => <ModuleLoading /> } as const
+const GDPCalculator = dynamic(() => import('@/components/economics/gdp-calculator').then(m => ({ default: m.GDPCalculator })), dynamicOpts)
+const SupplyDemand = dynamic(() => import('@/components/economics/supply-demand').then(m => ({ default: m.SupplyDemand })), dynamicOpts)
+const ElasticityCalculator = dynamic(() => import('@/components/economics/elasticity-calculator').then(m => ({ default: m.ElasticityCalculator })), dynamicOpts)
+const KeynesianCross = dynamic(() => import('@/components/economics/keynesian-cross').then(m => ({ default: m.KeynesianCross })), dynamicOpts)
+const InflationCalculator = dynamic(() => import('@/components/economics/inflation-calculator').then(m => ({ default: m.InflationCalculator })), dynamicOpts)
+const PhillipsCurve = dynamic(() => import('@/components/economics/phillips-curve').then(m => ({ default: m.PhillipsCurve })), dynamicOpts)
+const LorenzCurve = dynamic(() => import('@/components/economics/lorenz-curve').then(m => ({ default: m.LorenzCurve })), dynamicOpts)
+const PPFCurve = dynamic(() => import('@/components/economics/ppf').then(m => ({ default: m.PPFCurve })), dynamicOpts)
+const CostAnalysis = dynamic(() => import('@/components/economics/cost-analysis').then(m => ({ default: m.CostAnalysis })), dynamicOpts)
+const ComparativeAdvantage = dynamic(() => import('@/components/economics/comparative-advantage').then(m => ({ default: m.ComparativeAdvantage })), dynamicOpts)
+const BreakEvenAnalysis = dynamic(() => import('@/components/economics/break-even').then(m => ({ default: m.BreakEvenAnalysis })), dynamicOpts)
+const TaxCalculator = dynamic(() => import('@/components/economics/tax-calculator').then(m => ({ default: m.TaxCalculator })), dynamicOpts)
+const GameTheory = dynamic(() => import('@/components/economics/game-theory').then(m => ({ default: m.GameTheory })), dynamicOpts)
+const EconomicsQuiz = dynamic(() => import('@/components/economics/quiz').then(m => ({ default: m.EconomicsQuiz })), dynamicOpts)
+const FinancialMath = dynamic(() => import('@/components/economics/financial-math').then(m => ({ default: m.FinancialMath })), dynamicOpts)
+const Glossary = dynamic(() => import('@/components/economics/glossary').then(m => ({ default: m.Glossary })), dynamicOpts)
+const Achievements = dynamic(() => import('@/components/economics/achievements').then(m => ({ default: m.Achievements })), dynamicOpts)
+const ProgressTracker = dynamic(() => import('@/components/economics/progress-tracker').then(m => ({ default: m.ProgressTracker })), dynamicOpts)
+const ISLMModel = dynamic(() => import('@/components/economics/is-lm').then(m => ({ default: m.ISLMModel })), dynamicOpts)
+const MarketStructures = dynamic(() => import('@/components/economics/market-structures').then(m => ({ default: m.MarketStructures })), dynamicOpts)
+const CurrencyCalculator = dynamic(() => import('@/components/economics/currency-calculator').then(m => ({ default: m.CurrencyCalculator })), dynamicOpts)
+const PriceIndices = dynamic(() => import('@/components/economics/price-indices').then(m => ({ default: m.PriceIndices })), dynamicOpts)
+const EconomicCrises = dynamic(() => import('@/components/economics/economic-crises').then(m => ({ default: m.EconomicCrises })), dynamicOpts)
+const MonetaryPolicy = dynamic(() => import('@/components/economics/monetary-policy').then(m => ({ default: m.MonetaryPolicy })), dynamicOpts)
+const ADASModel = dynamic(() => import('@/components/economics/adas-model').then(m => ({ default: m.ADASModel })), dynamicOpts)
+export const ThemeToggle = dynamic(() => import('@/components/economics/theme-toggle').then(m => ({ default: m.ThemeToggle })), dynamicOpts)
 
 // Icon map for client-side module rendering
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {

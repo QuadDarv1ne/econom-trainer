@@ -247,15 +247,18 @@ export function EconomicCrises() {
           <CardTitle>{t('crises.selectScenario')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div role="radiogroup" aria-label={t('crises.selectScenario')} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {scenarios.map((scenario) => (
               <button
                 key={scenario.id}
+                type="button"
+                role="radio"
+                aria-checked={selectedScenario === scenario.id}
                 onClick={() => {
                   setSelectedScenario(scenario.id)
                   setResults(null)
                 }}
-                className={`p-4 rounded-lg border-2 text-left transition-colors ${
+                className={`p-4 rounded-lg border-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                   selectedScenario === scenario.id
                     ? 'border-primary bg-primary/5'
                     : 'border-border hover:border-primary/50'

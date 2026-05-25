@@ -1,10 +1,48 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, StateStorage } from 'zustand/middleware'
 import { t, getCurrentLocale, type Locale } from '@/lib/i18n'
 import { generateId } from '@/lib/utils'
 import { getLevelFromXP } from '@/lib/xp-utils'
 
 export { getLevelFromXP }
+
+/**
+ * Debounced localStorage storage wrapper for Zustand persist.
+ * Prevents excessive synchronous writes on every state change by
+ * buffering updates and flushing after `delayMs` of inactivity.
+ */
+function createDebouncedStorage(delayMs: number = 500): StateStorage {
+  let pendingWrite: { key: string; value: string } | null = null
+  let flushTimer: ReturnType<typeof setTimeout> | null = null
+
+  const scheduleFlush = () => {
+    if (!pendingWrite) return
+    if (flushTimer) clearTimeout(flushTimer)
+    flushTimer = setTimeout(() => {
+      if (pendingWrite) {
+        localStorage.setItem(pendingWrite.key, pendingWrite.value)
+        pendingWrite = null
+      }
+      flushTimer = null
+    }, delayMs)
+  }
+
+  return {
+    getItem: (name: string): string | null => {
+      return localStorage.getItem(name)
+    },
+    setItem: (name: string, value: string): void => {
+      pendingWrite = { key: name, value }
+      scheduleFlush()
+    },
+    removeItem: (name: string): void => {
+      pendingWrite = null
+      if (flushTimer) clearTimeout(flushTimer)
+      flushTimer = null
+      localStorage.removeItem(name)
+    },
+  }
+}
 
 export interface QuizResult {
   id: string
@@ -422,6 +460,7 @@ export const useEconomicsStore = create<EconomicsState>()(
     }),
     {
       name: 'economics-trainer-data',
+      storage: createDebouncedStorage(300),
       partialize: (state) => ({
         quizResults: state.quizResults,
         gdpResults: state.gdpResults,

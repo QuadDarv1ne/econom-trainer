@@ -95,17 +95,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
 
             if (matchedIndex !== -1) {
-              // Atomically remove used code
-              backupCodes.splice(matchedIndex, 1);
-              await prisma.twoFactorConfirmation.update({
-                where: { userId: user.id },
-                data: { backupCodes: JSON.stringify(backupCodes) },
+              // Atomically remove used code with optimistic concurrency control
+              const updatedCodes = backupCodes.filter((_, i) => i !== matchedIndex);
+              const result = await prisma.twoFactorConfirmation.updateMany({
+                where: { userId: user.id, backupCodes: twoFactorConf.backupCodes },
+                data: { backupCodes: JSON.stringify(updatedCodes) },
               });
-              backupUsed = true;
+              if (result.count > 0) {
+                backupUsed = true;
+              }
             }
 
             if (!backupUsed) {
-              return null; // Invalid code
+              return null; // Invalid code or concurrent use detected
             }
           }
         }

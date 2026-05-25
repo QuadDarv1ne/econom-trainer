@@ -1,8 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import jsPDF from 'jspdf'
-import 'jspdf-autotable'
 import { useEconomicsStore, getLevelTitle, getModuleDisplayName } from '@/store/economics-store'
 import { downloadProgressCSV, downloadProgressJSON, importProgressFromFile } from '@/lib/export-progress'
 import { useI18n } from '@/lib/i18n-provider'
@@ -12,7 +10,11 @@ import { Download, Upload, Copy, Check, Share2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { COPY_FEEDBACK_MS } from '@/lib/constants'
 
-export function exportProgressToPDF() {
+export async function exportProgressToPDF() {
+  const jsPDFModule = await import('jspdf')
+  await import('jspdf-autotable')
+
+  const jsPDF = jsPDFModule.default
   const doc = new jsPDF()
   const progress = useEconomicsStore.getState().getFullProgress()
   const locale = getCurrentLocale()
@@ -234,7 +236,10 @@ export function ExportProgressButton() {
 
   return (
     <div className="flex gap-2 flex-wrap">
-      <Button onClick={exportProgressToPDF} variant="outline" size="sm">
+      <Button onClick={() => exportProgressToPDF().catch((err) => {
+        const message = err instanceof Error ? err.message : 'Unknown error'
+        toast.error(t('export.importFailed') ?? `Failed to export PDF: ${message}`)
+      })} variant="outline" size="sm">
         <Download className="h-4 w-4 mr-2" />
         PDF
       </Button>
