@@ -37,6 +37,8 @@ export const translations = {
     'common.error': 'Ошибка',
     'common.success': 'Успешно',
     'common.currency.rub': 'руб.',
+    'common.password.show': 'Показать пароль',
+    'common.password.hide': 'Скрыть пароль',
     
     // Homepage
     'home.title': 'Экономический тренажёр',
@@ -2002,6 +2004,8 @@ export const translations = {
     'common.error': 'Error',
     'common.success': 'Success',
     'common.currency.rub': 'RUB',
+    'common.password.show': 'Show password',
+    'common.password.hide': 'Hide password',
     
     // Elasticity
     'elasticity.title': 'Elasticity Calculator',
@@ -3982,6 +3986,8 @@ export const translations = {
     'common.error': '错误',
     'common.success': '成功',
     'common.currency.rub': '卢布',
+    'common.password.show': '显示密码',
+    'common.password.hide': '隐藏密码',
     'elasticity.title': '弹性计算器',
     'elasticity.description': '计算价格弹性、收入弹性和交叉弹性。',
     'elasticity.price': '价格',

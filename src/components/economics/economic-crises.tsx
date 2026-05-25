@@ -116,7 +116,12 @@ export function EconomicCrises() {
 
   const updateIndicator = (field: string, value: string) => {
     setIndicators((prev) => ({ ...prev, [field]: parseFloat(value) || 0 }))
-    setResults(null)
+  }
+
+  // Helper to safely extract numeric values from row data
+  const getNum = (row: Record<string, number | string>, key: string): number => {
+    const val = row[key]
+    return typeof val === 'number' ? val : 0
   }
 
   const runSimulation = useCallback(() => {
@@ -365,14 +370,14 @@ export function EconomicCrises() {
                   </thead>
                   <tbody>
                     {results.map((row, idx) => (
-                      <tr key={idx} className="border-b last:border-0">
+                      <tr key={`crisis-row-${idx}`} className="border-b last:border-0">
                         <td className="py-2 px-3">{row.year}</td>
-                        <td className={`text-right py-2 px-3 font-mono ${(row.gdpGrowth as number) < 0 ? 'text-red-600' : 'text-green-600'}`}>
-                          {(row.gdpGrowth as number).toFixed(1)}%
+                        <td className={`text-right py-2 px-3 font-mono ${getNum(row, 'gdpGrowth') < 0 ? 'text-red-600' : 'text-green-600'}`}>
+                          {getNum(row, 'gdpGrowth').toFixed(1)}%
                         </td>
-                        <td className="text-right py-2 px-3 font-mono">{(row.unemployment as number).toFixed(1)}%</td>
-                        <td className={`text-right py-2 px-3 font-mono ${(row.inflation as number) > 10 ? 'text-red-600' : ''}`}>
-                          {(row.inflation as number).toFixed(1)}%
+                        <td className="text-right py-2 px-3 font-mono">{getNum(row, 'unemployment').toFixed(1)}%</td>
+                        <td className={`text-right py-2 px-3 font-mono ${getNum(row, 'inflation') > 10 ? 'text-red-600' : ''}`}>
+                          {getNum(row, 'inflation').toFixed(1)}%
                         </td>
                       </tr>
                     ))}

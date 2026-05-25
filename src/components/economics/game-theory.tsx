@@ -502,7 +502,7 @@ function PrisonersDilemma() {
                   </thead>
                   <tbody>
                     {rounds.map((r, i) => (
-                      <tr key={i} className="border-t border-border">
+                      <tr key={`game-round-${i}`} className="border-t border-border">
                         <td className="p-2">{i + 1}</td>
                         <td className="p-2">
                           {r.playerChoice === 'cooperate' ? '🤝' : '🗡️'}
@@ -823,7 +823,7 @@ function BattleOfTheSexes() {
                   </thead>
                   <tbody>
                     {rounds.map((r, i) => (
-                      <tr key={i} className="border-t border-border">
+                      <tr key={`game-round-${i}`} className="border-t border-border">
                         <td className="p-2">{i + 1}</td>
                         <td className="p-2">{r.player1Choice === 'opera' ? '🎭' : '⚽'}</td>
                         <td className="p-2">{r.player2Choice === 'opera' ? '🎭' : '⚽'}</td>

@@ -525,7 +525,7 @@ export function PPFCurve() {
       {/* Theory Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {theoryCards.map((card, i) => (
-          <Card key={i}>
+          <Card key={`theory-card-${i}`}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
                 {card.icon}

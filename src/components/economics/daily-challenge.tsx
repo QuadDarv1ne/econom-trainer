@@ -253,7 +253,7 @@ export function DailyChallenge() {
               }
               return (
                 <Button
-                  key={idx}
+                  key={`challenge-option-${idx}`}
                   variant={btnVariant}
                   className="justify-start text-left h-auto py-3 px-4 whitespace-normal"
                   onClick={() => handleAnswer(idx)}

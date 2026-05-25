@@ -1674,7 +1674,7 @@ export function EconomicsQuiz() {
               }
 
               return (
-                <div key={idx} className={optionClass}>
+                <div key={`quiz-option-${idx}`} className={optionClass}>
                   <div className="flex items-center gap-3">
                     <RadioGroupItem value={idx.toString()} id={`option-${idx}`} />
                     <Label htmlFor={`option-${idx}`} className="cursor-pointer flex-1">
