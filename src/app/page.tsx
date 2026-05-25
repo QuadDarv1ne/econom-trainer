@@ -2,17 +2,11 @@ import { auth } from '@/auth';
 import { t, formatNumber, type Locale } from '@/lib/i18n';
 import { modules, tabItems, categoryBreaks } from '@/lib/module-data';
 import { HomeClient } from '@/app/home-client';
-import { cookies as nextCookies } from 'next/headers';
+import { getServerLocale as getServerLocaleRaw } from '@/lib/server-locale';
 
 async function getServerLocale(): Promise<Locale> {
-  try {
-    const cookieStore = await nextCookies();
-    const cookieLocale = cookieStore.get('locale')?.value;
-    if (cookieLocale === 'en' || cookieLocale === 'zh') return cookieLocale;
-  } catch {
-    // cookies() may not be available in all contexts
-  }
-  return 'ru';
+  const locale = await getServerLocaleRaw();
+  return locale as Locale;
 }
 
 export default async function HomePage() {

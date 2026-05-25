@@ -56,7 +56,7 @@ export async function POST(req: Request) {
 
     // Atomically mark token as used AND update password in transaction
     // The updateMany with used=false prevents race condition: only first request succeeds
-    const [updatedToken, userUpdate] = await prisma.$transaction([
+    const [updatedToken, _userUpdate] = await prisma.$transaction([
       prisma.passwordResetToken.updateMany({
         where: { id: resetToken.id, used: false },
         data: { used: true },

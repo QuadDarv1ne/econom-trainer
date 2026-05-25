@@ -1,7 +1,7 @@
 import type React from "react";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { cookies } from "next/headers";
+import { getServerLocale } from '@/lib/server-locale';
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -82,17 +82,6 @@ export const metadata: Metadata = {
     },
   },
 };
-
-async function getServerLocale(): Promise<string> {
-  try {
-    const cookieStore = await cookies();
-    const cookieLocale = cookieStore.get("locale")?.value;
-    if (cookieLocale === "en" || cookieLocale === "zh") return cookieLocale;
-  } catch {
-    // cookies() may not be available in all contexts
-  }
-  return "ru";
-}
 
 export default async function RootLayout({
   children,

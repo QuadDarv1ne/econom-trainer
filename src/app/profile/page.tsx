@@ -36,7 +36,7 @@ import { formatDate as formatLocaleDate } from '@/lib/i18n';
 import { checkPasswordStrength } from '@/lib/password-strength';
 import { useProfile, useProgressSync } from '@/hooks/use-profile';
 import { useAutoDismiss } from '@/hooks/use-auto-dismiss';
-import { ALERT_AUTO_DISMISS_MS, RESEND_COOLDOWN_SECONDS } from '@/lib/constants';
+import { RESEND_COOLDOWN_SECONDS } from '@/lib/constants';
 import { AlertBanner } from '@/components/ui/alert-banner';
 import { safeErrorMessage } from '@/lib/safe-error';
 import { AppHeader } from '@/components/shared/app-header';

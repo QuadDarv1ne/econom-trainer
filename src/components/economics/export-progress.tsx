@@ -61,7 +61,6 @@ export async function exportProgressToPDF() {
     [t('module.elasticity.title', locale), '-', `${progress.elasticityCount}`],
   ]
 
-  // @ts-expect-error - jspdf-autotable adds this method dynamically
   doc.autoTable({
     startY: 90,
     head: [[t('export.pdf.tableHeaders.module', locale), t('export.pdf.tableHeaders.accuracy', locale), t('export.pdf.tableHeaders.solved', locale)]],
@@ -90,7 +89,6 @@ export async function exportProgressToPDF() {
     ])
 
   if (moduleData.length > 0) {
-    // @ts-expect-error - jspdf-autotable adds this method dynamically
     doc.autoTable({
       startY: finalY + 5,
       head: [[t('export.pdf.tableHeaders.module', locale), t('export.pdf.tableHeaders.interactions', locale)]],

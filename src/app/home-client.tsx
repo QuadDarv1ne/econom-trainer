@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useMemo, useEffect, Suspense } from 'react'
+import type React from 'react'
+import { useState, useMemo, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { signOutAndClearStore } from '@/lib/sign-out'
 import { useRouter } from 'next/navigation'
@@ -40,7 +41,6 @@ import {
   LayoutGrid,
   LogIn,
   UserCircle,
-  Shield,
   LogOut,
   Lock,
 } from 'lucide-react'
@@ -53,7 +53,7 @@ import {
   moduleComponents,
   ThemeToggle,
 } from '@/lib/module-registry'
-import { modules, tabItems } from '@/lib/module-data'
+import { modules } from '@/lib/module-data'
 import type { ModuleMeta, TabMeta } from '@/lib/module-data'
 
 interface HomeClientProps {
@@ -95,11 +95,10 @@ export function HomeClient({
 
   const session = clientSession ?? serverSession
 
-  const [hydrated, setHydrated] = useState(false)
-  useEffect(() => { setHydrated(true) }, [])
+  const hydrated = typeof window !== 'undefined'
 
   const t = hydrated ? clientT : serverT
-  const locale = hydrated ? clientLocale : serverLocale
+  const _locale = hydrated ? clientLocale : serverLocale
   const visibleModules = hydrated
     ? (session ? modulesWithIcons : modulesWithIcons.filter((m) => m.public))
     : serverVisibleModules.map(m => ({ ...m, icon: iconMap[m.id] ?? GraduationCap }))
@@ -178,15 +177,10 @@ export function HomeClient({
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+                  <DropdownMenuItem onClick={() => router.push('/profile')}>
                     <UserCircle className="mr-2 h-4 w-4" />
                     {t('dashboard.title')}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push('/profile')}>
-                    <Shield className="mr-2 h-4 w-4" />
-                    {t('dashboard.tab.security')}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => signOutAndClearStore({ callbackUrl: '/' })}>
                     <LogOut className="mr-2 h-4 w-4" />
                     {t('dashboard.signOut')}
@@ -282,12 +276,9 @@ export function HomeClient({
                       animate="visible"
                       whileHover={{ y: -4, transition: { duration: 0.15 } }}
                     >
-                      <Card
-                        className="cursor-pointer hover:shadow-lg transition-shadow duration-200 h-full"
+                      <button
+                        className="w-full text-left cursor-pointer hover:shadow-lg transition-shadow duration-200 h-full rounded-xl border bg-card p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                         onClick={() => setActiveTab(mod.id)}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveTab(mod.id); } }}
-                        role="button"
-                        tabIndex={0}
                         aria-label={t(mod.titleKey)}
                       >
                         <CardHeader className="pb-3">
@@ -329,7 +320,7 @@ export function HomeClient({
                             </div>
                           )}
                         </CardContent>
-                      </Card>
+                      </button>
                     </motion.div>
                   )
                 })}

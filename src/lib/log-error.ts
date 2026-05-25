@@ -31,10 +31,12 @@ function containsSensitiveData(str: string): boolean {
  * Sanitize an error object for safe logging.
  * Returns a safe message that doesn't leak sensitive data.
  */
-function sanitizeError(error: unknown): string {
+function sanitizeError(error: unknown, depth = 0): string {
+  // Prevent infinite recursion on circular references
+  if (depth > 3) return '[redacted: deep nesting]';
+
   if (error instanceof Error) {
     const message = error.message;
-    // If the error message contains sensitive patterns, log a generic message
     if (containsSensitiveData(message)) {
       return "Sensitive error occurred";
     }
@@ -46,15 +48,20 @@ function sanitizeError(error: unknown): string {
     }
     return error;
   }
-  // For objects, check keys and values
   if (error && typeof error === "object") {
     const obj = error as Record<string, unknown>;
     for (const [key, value] of Object.entries(obj)) {
-      if (
-        SENSITIVE_PATTERNS.some((p) => p.test(key)) ||
-        (typeof value === "string" && containsSensitiveData(value))
-      ) {
+      if (SENSITIVE_PATTERNS.some((p) => p.test(key))) {
         return "Sensitive error occurred";
+      }
+      if (typeof value === "string" && containsSensitiveData(value)) {
+        return "Sensitive error occurred";
+      }
+      if (typeof value === "object" && value !== null) {
+        const nested = sanitizeError(value, depth + 1);
+        if (nested === "Sensitive error occurred" || nested.startsWith("[redacted")) {
+          return "Sensitive error occurred";
+        }
       }
     }
     return JSON.stringify(error).slice(0, 200);

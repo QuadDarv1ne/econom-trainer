@@ -1,3 +1,4 @@
+import type { Session } from 'next-auth'
 import type React from 'react'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
@@ -31,7 +32,7 @@ interface UseProfileReturn {
   setProfile: React.Dispatch<React.SetStateAction<UserProfile | null>>
   fetchProfile: () => Promise<void>
   updateProfile: (updateName?: string, updatePhone?: string) => Promise<void>
-  update: () => Promise<unknown>
+  update: () => Promise<Session | undefined>
   name: string
   setName: React.Dispatch<React.SetStateAction<string>>
   phone: string
