@@ -65,6 +65,10 @@ const nextConfig: NextConfig = {
             value: "DENY",
           },
           {
+            key: "X-XSS-Protection",
+            value: "0",
+          },
+          {
             key: "Referrer-Policy",
             value: "strict-origin-when-cross-origin",
           },
@@ -91,6 +95,7 @@ const nextConfig: NextConfig = {
               "base-uri 'self'",
               "form-action 'self'",
               "frame-ancestors 'none'",
+              "upgrade-insecure-requests",
             ].join("; "),
           },
         ],
