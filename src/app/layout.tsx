@@ -1,6 +1,7 @@
 import type React from "react";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { cookies } from "next/headers";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -82,13 +83,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+async function getServerLocale(): Promise<string> {
+  try {
+    const cookieStore = await cookies();
+    const cookieLocale = cookieStore.get("locale")?.value;
+    if (cookieLocale === "en" || cookieLocale === "zh") return cookieLocale;
+  } catch {
+    // cookies() may not be available in all contexts
+  }
+  return "ru";
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const lang = await getServerLocale();
   return (
-    <html lang="ru" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >

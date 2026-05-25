@@ -224,15 +224,25 @@ export function importProgressFromJSON(jsonString: string): void {
 
   // Build imported data BEFORE resetting progress
   const state = useEconomicsStore.getState()
+
+  // Validate array elements have at least basic expected structure
+  function validateArrayItems(arr: unknown[], requiredKeys: string[]): unknown[] {
+    return arr.filter((item) => {
+      if (!item || typeof item !== 'object') return false;
+      const obj = item as Record<string, unknown>;
+      return requiredKeys.every((key) => key in obj);
+    });
+  }
+
   const importedData: Partial<EconomicsState> = {
-    quizResults: ((data.quizResults ?? []) as unknown as QuizResult[]),
-    gdpResults: ((data.gdpResults ?? []) as unknown as GDPResult[]),
-    financeResults: ((data.financeResults ?? []) as unknown as FinanceResult[]),
-    elasticityResults: ((data.elasticityResults ?? []) as unknown as ElasticityResult[]),
-    moduleInteractions: ((data.moduleInteractions ?? []) as unknown as ModuleInteraction[]),
-    unlockedAchievements: (data.unlockedAchievements as string[] | undefined) ?? [],
+    quizResults: validateArrayItems(data.quizResults ?? [], ['question', 'correct']) as QuizResult[],
+    gdpResults: validateArrayItems(data.gdpResults ?? [], ['nominalGDP']) as GDPResult[],
+    financeResults: validateArrayItems(data.financeResults ?? [], ['payment']) as FinanceResult[],
+    elasticityResults: validateArrayItems(data.elasticityResults ?? [], ['coefficient']) as ElasticityResult[],
+    moduleInteractions: validateArrayItems(data.moduleInteractions ?? [], ['moduleId', 'xpEarned']) as ModuleInteraction[],
+    unlockedAchievements: (data.unlockedAchievements as string[] | undefined)?.filter((id) => typeof id === 'string') ?? [],
     totalXP: data.totalXP as number,
-    dailyChallenges: ((data.dailyChallenges ?? []) as unknown as DailyChallenge[]),
+    dailyChallenges: validateArrayItems(data.dailyChallenges ?? [], ['date']) as DailyChallenge[],
     streakState: (data.streakState as typeof state.streakState | undefined) ?? { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
   }
 

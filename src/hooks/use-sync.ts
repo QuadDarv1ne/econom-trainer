@@ -59,7 +59,9 @@ export function useAutoSync() {
       }
 
       syncTimerRef.current = setTimeout(() => {
-        performSync();
+        performSync().catch(() => {
+          // Silently fail - will retry on next online event
+        });
       }, SYNC_DEBOUNCE_MS);
     };
 

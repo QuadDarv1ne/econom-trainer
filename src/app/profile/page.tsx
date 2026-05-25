@@ -35,6 +35,7 @@ import { useI18n } from '@/lib/i18n-provider';
 import { formatDate as formatLocaleDate } from '@/lib/i18n';
 import { checkPasswordStrength } from '@/lib/password-strength';
 import { useProfile, useProgressSync } from '@/hooks/use-profile';
+import { useAutoDismiss } from '@/hooks/use-auto-dismiss';
 import { ALERT_AUTO_DISMISS_MS, RESEND_COOLDOWN_SECONDS } from '@/lib/constants';
 import { AlertBanner } from '@/components/ui/alert-banner';
 import { safeErrorMessage } from '@/lib/safe-error';
@@ -102,17 +103,8 @@ export default function ProfilePage() {
   }, [resendCooldown]);
 
   // Auto-dismiss alerts
-  useEffect(() => {
-    if (!error) return;
-    const timer = setTimeout(() => setError(''), ALERT_AUTO_DISMISS_MS);
-    return () => clearTimeout(timer);
-  }, [error, setError]);
-
-  useEffect(() => {
-    if (!success) return;
-    const timer = setTimeout(() => setSuccess(''), ALERT_AUTO_DISMISS_MS);
-    return () => clearTimeout(timer);
-  }, [success, setSuccess]);
+  useAutoDismiss(error, () => setError(''));
+  useAutoDismiss(success, () => setSuccess(''));
 
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];

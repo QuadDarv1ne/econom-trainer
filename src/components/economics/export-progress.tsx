@@ -118,7 +118,7 @@ export function exportProgressToPDF() {
     `• ${t('export.csv.quizAccuracy', locale)}: ${progress.quizStats.accuracy}%`,
     `• ${t('finance.accuracy', locale)}: ${progress.financeStats.accuracy}%`,
     '',
-    locale === 'ru' ? 'Продолжайте тренироваться, чтобы достичь новых уровней!' : 'Keep training to reach new levels!',
+    locale === 'ru' ? 'Продолжайте тренироваться, чтобы достичь новых уровней!' : locale === 'zh' ? '继续训练，达到新的水平！' : 'Keep training to reach new levels!',
   ]
 
   let y = finalY + 8

@@ -11,7 +11,7 @@ import { User, Mail, Phone, Shield, Loader2, BarChart3 } from 'lucide-react';
 import { useEconomicsStore } from '@/store/economics-store';
 import { useI18n } from '@/lib/i18n-provider';
 import { useProfile, useProgressSync } from '@/hooks/use-profile';
-import { ALERT_AUTO_DISMISS_MS } from '@/lib/constants';
+import { useAutoDismiss } from '@/hooks/use-auto-dismiss';
 import { AlertBanner } from '@/components/ui/alert-banner';
 import { AppHeader } from '@/components/shared/app-header';
 import { TwoFAManagement } from '@/components/shared/two-fa-management';
@@ -43,17 +43,8 @@ export default function DashboardPage() {
   const moduleInteractionsCount = useEconomicsStore((s) => s.moduleInteractions.length);
 
   // Auto-dismiss alerts
-  useEffect(() => {
-    if (!error) return;
-    const timer = setTimeout(() => setError(''), ALERT_AUTO_DISMISS_MS);
-    return () => clearTimeout(timer);
-  }, [error, setError]);
-
-  useEffect(() => {
-    if (!success) return;
-    const timer = setTimeout(() => setSuccess(''), ALERT_AUTO_DISMISS_MS);
-    return () => clearTimeout(timer);
-  }, [success, setSuccess]);
+  useAutoDismiss(error, () => setError(''));
+  useAutoDismiss(success, () => setSuccess(''));
 
   if (status === 'loading' || loading) {
     return (
