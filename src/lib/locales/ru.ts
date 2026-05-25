@@ -1967,4 +1967,9 @@ export const ru: Record<string, string> = {
     'globalError.description': 'Произошла серьёзная ошибка при загрузке приложения. Попробуйте перезагрузить страницу.',
     'globalError.reload': 'Перезагрузить',
     'globalError.goHome': 'На главную',
+
+    // PWA
+    'pwa.updateAvailable': 'Доступна новая версия',
+    'pwa.updateMessage': 'Перезагрузите страницу для получения последних функций',
+    'pwa.updateReload': 'Перезагрузить',
   }

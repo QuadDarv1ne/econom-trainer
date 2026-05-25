@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { GraduationCap, Home, User, BarChart3, LogOut } from 'lucide-react'
+import { GraduationCap, Home, User, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useI18n } from '@/lib/i18n-provider'
 import { signOutAndClearStore } from '@/lib/sign-out'
@@ -25,7 +25,7 @@ export function AppHeader({ title, variant = 'simple' }: AppHeaderProps) {
   const navLinks: NavLink[] = variant === 'full'
     ? [
         { href: '/', label: t('dashboard.home'), icon: <Home className="h-4 w-4 mr-2" />, showLabel: true },
-        { href: '/dashboard', label: t('dashboard.title'), icon: <BarChart3 className="h-4 w-4 mr-2" />, showLabel: true },
+        { href: '/profile', label: t('dashboard.title'), icon: <User className="h-4 w-4 mr-2" />, showLabel: true },
       ]
     : [
         { href: '/', label: t('dashboard.home'), icon: <Home className="h-4 w-4" /> },

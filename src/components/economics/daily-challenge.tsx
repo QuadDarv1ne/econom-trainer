@@ -236,7 +236,7 @@ export function DailyChallenge() {
               </Badge>
               <div className={`flex items-center gap-1 font-mono font-bold ${timerColor}`}>
                 <Clock className="h-3.5 w-3.5" />
-                {timeLeft}s
+                {timeLeft}{t('quiz.secondsSuffix')}
               </div>
             </div>
           </div>

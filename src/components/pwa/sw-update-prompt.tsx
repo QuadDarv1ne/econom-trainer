@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { RefreshCw } from 'lucide-react'
+import { useI18n } from '@/lib/i18n-provider'
 
 /**
  * Shows a toast-like notification when a new service worker is available.
@@ -10,6 +11,7 @@ import { RefreshCw } from 'lucide-react'
  */
 export function ServiceWorkerUpdatePrompt() {
   const [updateAvailable, setUpdateAvailable] = useState(false)
+  const { t } = useI18n()
 
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return
@@ -44,12 +46,12 @@ export function ServiceWorkerUpdatePrompt() {
     <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 z-50 animate-in slide-in-from-bottom-4 fade-in-50 duration-300">
       <div className="bg-card border border-border rounded-lg shadow-lg p-4 flex items-center justify-between gap-3 max-w-sm mx-auto sm:mx-0">
         <div className="flex-1">
-          <p className="text-sm font-medium">New version available</p>
-          <p className="text-xs text-muted-foreground">Reload to get the latest features</p>
+          <p className="text-sm font-medium">{t('pwa.updateAvailable') || 'New version available'}</p>
+          <p className="text-xs text-muted-foreground">{t('pwa.updateMessage') || 'Reload to get the latest features'}</p>
         </div>
         <Button size="sm" onClick={handleReload} className="shrink-0">
           <RefreshCw className="h-4 w-4 mr-1" />
-          Reload
+          {t('pwa.updateReload') || 'Reload'}
         </Button>
       </div>
     </div>

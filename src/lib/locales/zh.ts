@@ -1836,4 +1836,9 @@ export const zh: Record<string, string> = {
     'globalError.description': '加载应用程序时发生严重错误。请尝试重新加载页面。',
     'globalError.reload': '重新加载',
     'globalError.goHome': '返回首页',
+
+    // PWA
+    'pwa.updateAvailable': '新版本可用',
+    'pwa.updateMessage': '重新加载以获取最新功能',
+    'pwa.updateReload': '重新加载',
 }

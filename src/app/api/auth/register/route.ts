@@ -8,6 +8,7 @@ import { getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validatePasswordStrength } from '@/lib/validate-password';
 import { logError } from '@/lib/log-error';
+import { sanitizeInput } from '@/lib/sanitize-input';
 import { BCRYPT_SALT_ROUNDS, VERIFICATION_TOKEN_EXPIRY_MS, BASE_URL, ENUMERATION_DELAY_MS } from '@/lib/constants';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { withSecurityHeaders } from '@/lib/security-headers';
@@ -82,10 +83,10 @@ export async function POST(req: Request) {
     const user = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const created = await tx.user.create({
         data: {
-          name,
+          name: sanitizeInput(name),
           email: userEmail,
           passwordHash,
-          phone: phone || null,
+          phone: phone ? sanitizeInput(phone) : null,
         },
       });
 

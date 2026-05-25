@@ -59,3 +59,18 @@ export const ENUMERATION_DELAY_MS = 1500;
  * Copy-to-clipboard feedback toast duration in ms (2 seconds).
  */
 export const COPY_FEEDBACK_MS = 2000;
+
+/**
+ * Maximum number of quiz results to keep in localStorage (per category).
+ */
+export const MAX_QUIZ_RESULTS = 50;
+
+/**
+ * Maximum number of module interaction records to keep in localStorage.
+ */
+export const MAX_MODULE_INTERACTIONS = 500;
+
+/**
+ * Maximum number of daily challenge records to keep in localStorage.
+ */
+export const MAX_DAILY_CHALLENGES = 30;

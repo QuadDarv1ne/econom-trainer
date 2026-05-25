@@ -1983,4 +1983,9 @@ export const en: Record<string, string> = {
     'globalError.description': 'A serious error occurred while loading the application. Try reloading the page.',
     'globalError.reload': 'Reload',
     'globalError.goHome': 'Go to home',
+
+    // PWA
+    'pwa.updateAvailable': 'New version available',
+    'pwa.updateMessage': 'Reload to get the latest features',
+    'pwa.updateReload': 'Reload',
   }

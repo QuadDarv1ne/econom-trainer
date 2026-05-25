@@ -5,16 +5,9 @@ import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { logError } from '@/lib/log-error';
+import { sanitizeInput } from '@/lib/sanitize-input';
 import { AVATAR_MAX_BYTES } from '@/lib/constants';
 import { withSecurityHeaders } from '@/lib/security-headers';
-
-// Strip HTML tags and control characters from user input
-function sanitizeInput(value: string): string {
-  return value
-    .replace(/<[^>]*>/g, '')
-    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-    .trim();
-}
 
 // Shared select clause for user profile queries — avoid duplication between GET and PATCH
 const USER_PROFILE_SELECT = {
