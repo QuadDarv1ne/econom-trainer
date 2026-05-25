@@ -235,10 +235,10 @@ export function importProgressFromJSON(jsonString: string): void {
   }
 
   const importedData: Partial<EconomicsState> = {
-    quizResults: validateArrayItems(Array.isArray(data.quizResults) ? data.quizResults : [], ['question', 'correct']) as QuizResult[],
+    quizResults: validateArrayItems(Array.isArray(data.quizResults) ? data.quizResults : [], ['id', 'topic', 'score', 'total', 'date']) as QuizResult[],
     gdpResults: validateArrayItems(Array.isArray(data.gdpResults) ? data.gdpResults : [], ['nominalGDP']) as GDPResult[],
-    financeResults: validateArrayItems(Array.isArray(data.financeResults) ? data.financeResults : [], ['payment']) as FinanceResult[],
-    elasticityResults: validateArrayItems(Array.isArray(data.elasticityResults) ? data.elasticityResults : [], ['coefficient']) as ElasticityResult[],
+    financeResults: validateArrayItems(Array.isArray(data.financeResults) ? data.financeResults : [], ['id', 'problemType', 'correct', 'date']) as FinanceResult[],
+    elasticityResults: validateArrayItems(Array.isArray(data.elasticityResults) ? data.elasticityResults : [], ['id', 'elasticityType', 'value', 'date']) as ElasticityResult[],
     moduleInteractions: validateArrayItems(Array.isArray(data.moduleInteractions) ? data.moduleInteractions : [], ['moduleId', 'xpEarned']) as ModuleInteraction[],
     unlockedAchievements: (data.unlockedAchievements as string[] | undefined)?.filter((id) => typeof id === 'string') ?? [],
     totalXP: data.totalXP as number,

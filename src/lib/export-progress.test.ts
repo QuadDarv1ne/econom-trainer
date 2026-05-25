@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { exportToCSV, exportToJSON } from './export-progress'
+import { exportToCSV, exportToJSON, importProgressFromJSON } from './export-progress'
 import { useEconomicsStore } from '@/store/economics-store'
 
 // Mock localStorage
@@ -159,5 +159,110 @@ describe('exportToJSON', () => {
     expect(data.quizStats.correct).toBe(8)
     expect(data.quizStats.total).toBe(10)
     expect(data.quizStats.accuracy).toBe(80)
+  })
+})
+
+describe('importProgressFromJSON', () => {
+  beforeEach(() => {
+    localStorageMock.clear()
+    const state = useEconomicsStore.getState()
+    state.resetProgress()
+  })
+
+  it('rejects invalid JSON', () => {
+    expect(() => importProgressFromJSON('not json')).toThrow('Invalid JSON format')
+  })
+
+  it('rejects non-object data', () => {
+    expect(() => importProgressFromJSON('"hello"')).toThrow('Invalid progress data')
+  })
+
+  it('rejects missing totalXP', () => {
+    expect(() => importProgressFromJSON(JSON.stringify({}))).toThrow('totalXP')
+  })
+
+  it('accepts valid quiz results with correct interface fields', () => {
+    const validData = JSON.stringify({
+      totalXP: 100,
+      quizResults: [
+        { id: '1', topic: 'macro', score: 8, total: 10, date: '2025-01-01' },
+      ],
+      gdpResults: [],
+      financeResults: [],
+      elasticityResults: [],
+      moduleInteractions: [],
+      dailyChallenges: [],
+      streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
+    })
+
+    importProgressFromJSON(validData)
+    const state = useEconomicsStore.getState()
+    expect(state.quizResults).toHaveLength(1)
+    expect(state.quizResults[0].topic).toBe('macro')
+    expect(state.quizResults[0].score).toBe(8)
+  })
+
+  it('accepts valid finance results with correct interface fields', () => {
+    const validData = JSON.stringify({
+      totalXP: 50,
+      quizResults: [],
+      gdpResults: [],
+      financeResults: [
+        { id: '1', problemType: 'compound', correct: true, userAnswer: 100, correctAnswer: 100, date: '2025-01-01' },
+      ],
+      elasticityResults: [],
+      moduleInteractions: [],
+      dailyChallenges: [],
+      streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
+    })
+
+    importProgressFromJSON(validData)
+    const state = useEconomicsStore.getState()
+    expect(state.financeResults).toHaveLength(1)
+    expect(state.financeResults[0].problemType).toBe('compound')
+    expect(state.financeResults[0].correct).toBe(true)
+  })
+
+  it('accepts valid elasticity results with correct interface fields', () => {
+    const validData = JSON.stringify({
+      totalXP: 50,
+      quizResults: [],
+      gdpResults: [],
+      financeResults: [],
+      elasticityResults: [
+        { id: '1', elasticityType: 'price', value: -1.5, interpretation: 'elastic', category: 'normal', date: '2025-01-01' },
+      ],
+      moduleInteractions: [],
+      dailyChallenges: [],
+      streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
+    })
+
+    importProgressFromJSON(validData)
+    const state = useEconomicsStore.getState()
+    expect(state.elasticityResults).toHaveLength(1)
+    expect(state.elasticityResults[0].elasticityType).toBe('price')
+    expect(state.elasticityResults[0].value).toBe(-1.5)
+  })
+
+  it('rejects quiz results with wrong structure (old bug behavior)', () => {
+    // This used to be the buggy validation: ['question', 'correct']
+    // which didn't match QuizResult interface and filtered all items
+    const invalidQuizData = JSON.stringify({
+      totalXP: 100,
+      quizResults: [
+        { question: 'What is GDP?', correct: true }, // Wrong structure
+      ],
+      gdpResults: [],
+      financeResults: [],
+      elasticityResults: [],
+      moduleInteractions: [],
+      dailyChallenges: [],
+      streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
+    })
+
+    importProgressFromJSON(invalidQuizData)
+    const state = useEconomicsStore.getState()
+    // Should be filtered out because it doesn't match QuizResult structure
+    expect(state.quizResults).toHaveLength(0)
   })
 })

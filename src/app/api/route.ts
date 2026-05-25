@@ -7,7 +7,7 @@ export async function GET() {
     name: "Экономический тренажёр API",
     version: "7.2.0",
     status: "ok",
-    modules: 24,
+    modules: 25,
     quizQuestions: 45,
     glossaryTerms: 40,
     achievements: 19,
