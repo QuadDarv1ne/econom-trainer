@@ -376,6 +376,7 @@ export const translations = {
     'quiz.good': 'Неплохо',
     'quiz.needsImprovement': 'Нужно подтянуть',
     'quiz.topicEconomicTheory': 'Экономическая теория',
+    'quiz.answerOptions': 'Варианты ответа',
     
     // Progress
     'progress.title': 'Прогресс',
@@ -2363,6 +2364,7 @@ export const translations = {
     'quiz.good': 'Good',
     'quiz.needsImprovement': 'Needs Improvement',
     'quiz.topicEconomicTheory': 'Economic Theory',
+    'quiz.answerOptions': 'Answer Options',
     
     // Progress
     'progress.title': 'Progress',
@@ -4313,6 +4315,7 @@ export const translations = {
     'quiz.good': '良好',
     'quiz.needsImprovement': '需要提高',
     'quiz.topicEconomicTheory': '经济理论',
+    'quiz.answerOptions': '答案选项',
     'progress.title': '进度',
     'progress.totalXP': '总XP',
     'progress.sessions': '会话',

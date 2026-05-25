@@ -203,7 +203,7 @@ export function HomeClient({
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6 flex-1">
+      <main id="main-content" className="container mx-auto px-4 py-6 flex-1">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="mb-6 -mx-4 px-4">
             <ScrollArea className="w-full whitespace-nowrap">

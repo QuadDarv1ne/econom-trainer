@@ -1651,6 +1651,8 @@ export function EconomicsQuiz() {
         </CardHeader>
         <CardContent className="space-y-3">
           <RadioGroup
+            role="radiogroup"
+            aria-label={t('quiz.answerOptions')}
             value={selectedAnswer !== null ? selectedAnswer.toString() : ''}
             onValueChange={(v) => {
               if (quizState === 'active') handleAnswer(parseInt(v))
@@ -1658,7 +1660,7 @@ export function EconomicsQuiz() {
             disabled={quizState === 'answered'}
           >
             {question.options.map((option, idx) => {
-              let optionClass = 'border-2 rounded-lg p-3 transition-all cursor-pointer'
+              let optionClass = 'border-2 rounded-lg p-3 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
               if (quizState === 'answered') {
                 if (idx === question.correctAnswer) {
                   optionClass += ' border-green-500 bg-green-50 dark:bg-green-950/30'
@@ -1674,7 +1676,20 @@ export function EconomicsQuiz() {
               }
 
               return (
-                <div key={`quiz-option-${idx}`} className={optionClass}>
+                <div
+                  key={`quiz-option-${idx}`}
+                  className={optionClass}
+                  tabIndex={quizState === 'answered' ? -1 : 0}
+                  role="radio"
+                  aria-checked={selectedAnswer === idx}
+                  aria-label={option}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      if (quizState === 'active') handleAnswer(idx)
+                    }
+                  }}
+                >
                   <div className="flex items-center gap-3">
                     <RadioGroupItem value={idx.toString()} id={`option-${idx}`} />
                     <Label htmlFor={`option-${idx}`} className="cursor-pointer flex-1">

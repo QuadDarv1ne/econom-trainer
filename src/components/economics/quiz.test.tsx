@@ -53,6 +53,7 @@ vi.mock('@/lib/i18n-provider', () => ({
         'quiz.good': 'Хорошо',
         'quiz.needsImprovement': 'Нужно улучшить',
         'quiz.playAgain': 'Сыграть снова',
+        'quiz.answerOptions': 'Варианты ответа',
       }
       return map[key] || key
     },
@@ -120,7 +121,7 @@ describe('Quiz gameplay', () => {
 
     await user.click(screen.getByText('Начать тест'))
 
-    const radioItems = document.querySelectorAll('[role="radio"]')
+    const radioItems = document.querySelectorAll('div[role="radio"]')
     expect(radioItems.length).toBe(4)
   })
 
@@ -130,14 +131,19 @@ describe('Quiz gameplay', () => {
 
     await user.click(screen.getByText('Начать тест'))
 
-    const radioItems = document.querySelectorAll('[role="radio"]')
-    await user.click(radioItems[0])
+    // Select option wrapper divs (role="radio" on a div, not a button)
+    const radioItems = document.querySelectorAll('div[role="radio"]')
+    expect(radioItems.length).toBe(4)
+
+    // Click the actual radio button inside the first option wrapper
+    const radioBtn = radioItems[0].querySelector('button[role="radio"]')
+    await user.click(radioBtn as HTMLElement)
 
     expect(screen.getByText('Следующий вопрос')).toBeDefined()
 
     await user.click(screen.getByText('Следующий вопрос'))
 
-    const radioItems2 = document.querySelectorAll('[role="radio"]')
+    const radioItems2 = document.querySelectorAll('div[role="radio"]')
     expect(radioItems2.length).toBe(4)
   })
 
@@ -148,9 +154,11 @@ describe('Quiz gameplay', () => {
     await user.click(screen.getByText('Начать тест'))
 
     for (let q = 0; q < 10; q++) {
-      const items = document.querySelectorAll('[role="radio"]')
+      const items = document.querySelectorAll('div[role="radio"]')
       expect(items.length).toBe(4)
-      await user.click(items[0])
+      // Click the actual radio button inside the option wrapper
+      const radioBtn = items[0].querySelector('button[role="radio"]')
+      await user.click(radioBtn as HTMLElement)
 
       if (q < 9) {
         const nextBtn = screen.getByText('Следующий вопрос')
