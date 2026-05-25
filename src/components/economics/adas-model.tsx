@@ -43,7 +43,7 @@ export function ADASModel() {
   const awardXp = useCallback(() => {
     if (!xpAwardedRef.current) {
       xpAwardedRef.current = true
-      addModuleInteraction({ moduleId: 'adas', action: 'explore', xpEarned: MODULE_XP['adas'] })
+      addModuleInteraction({ moduleId: 'adas', action: 'explore', xpEarned: MODULE_XP['adas'] ?? 0 })
     }
   }, [addModuleInteraction])
 
@@ -179,7 +179,7 @@ export function ADASModel() {
             </div>
             <Badge variant="outline" className="text-xs">
               <Zap className="h-3 w-3 text-yellow-500 mr-1" />
-              +{MODULE_XP['adas']} XP
+              +{MODULE_XP['adas'] ?? 0} XP
             </Badge>
           </div>
         </CardHeader>

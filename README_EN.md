@@ -1,6 +1,6 @@
 <div align="center">
 
-# EconTrainer v7.0
+# EconTrainer v7.2.0
 
 ### Interactive Platform for Economic Thinking Practice
 
@@ -23,13 +23,13 @@
 
 ## About the Project
 
-**EconTrainer** is a comprehensive web platform for interactive study of microeconomics, macroeconomics, financial mathematics, and game theory. The project is designed as a full-featured educational application that combines 21 thematic modules, a testing system, a reference glossary, gamification with XP progression, and an achievement system. The platform is intended for economics students, educators, and anyone who wants to deepen their knowledge of economics through practical exercises and visualization of economic models.
+**EconTrainer** is a comprehensive web platform for interactive study of microeconomics, macroeconomics, financial mathematics, and game theory. The project is designed as a full-featured educational application that combines 25 thematic modules, a testing system, a reference glossary, gamification with XP progression, and an achievement system. The platform is intended for economics students, educators, and anyone who wants to deepen their knowledge of economics through practical exercises and visualization of economic models.
 
 The project runs entirely on the client side — all calculations, computations, and visualizations are performed in the user's browser without the need for server infrastructure. This ensures high performance, data privacy, and the possibility of autonomous use.
 
 ## Key Features
 
-- **21 interactive modules** — from GDP calculation to game theory, each module includes visualizations, formulas, and practical exercises
+- **25 interactive modules** — from GDP calculation to game theory, each module includes visualizations, formulas, and practical exercises
 - **45 quiz questions** with a timer, detailed explanations, and a scoring system
 - **41 economic terms** in the glossary with formulas, definitions, and search functionality
 - **19 achievements** — from first steps to mastery, motivational badges for progress
@@ -278,6 +278,6 @@ This project is the intellectual property of Dupley Maxim Igorevich. Terms of us
 
 <div align="center">
 
-**EconTrainer v7.0** — © 2025 Dupley Maxim Igorevich
+**EconTrainer v7.2.0** — © 2025 Dupley Maxim Igorevich
 
 </div>

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist, StateStorage } from 'zustand/middleware'
+import { persist, type PersistStorage } from 'zustand/middleware'
 import { t, getCurrentLocale, type Locale } from '@/lib/i18n'
 import { generateId } from '@/lib/utils'
 import { getLevelFromXP } from '@/lib/xp-utils'
@@ -11,7 +11,7 @@ export { getLevelFromXP }
  * Prevents excessive synchronous writes on every state change by
  * buffering updates and flushing after `delayMs` of inactivity.
  */
-function createDebouncedStorage(delayMs: number = 500): StateStorage {
+function createDebouncedStorage<T>(delayMs: number = 500): PersistStorage<T> {
   let pendingWrite: { key: string; value: string } | null = null
   let flushTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -28,11 +28,12 @@ function createDebouncedStorage(delayMs: number = 500): StateStorage {
   }
 
   return {
-    getItem: (name: string): string | null => {
-      return localStorage.getItem(name)
+    getItem: (name: string) => {
+      const item = localStorage.getItem(name)
+      return item ? JSON.parse(item) : null
     },
-    setItem: (name: string, value: string): void => {
-      pendingWrite = { key: name, value }
+    setItem: (name: string, value: { state: T }): void => {
+      pendingWrite = { key: name, value: JSON.stringify(value) }
       scheduleFlush()
     },
     removeItem: (name: string): void => {
@@ -111,6 +112,10 @@ export interface XPState {
   xpInCurrentLevel: number
 }
 
+/**
+ * Returns the localized level title based on user's current level.
+ * Levels range from Student (1-2) to Academician (20+).
+ */
 export function getLevelTitle(level: number): string {
   const locale = getCurrentLocale()
   if (level >= 20) return t('level.academician', locale)
@@ -122,6 +127,10 @@ export function getLevelTitle(level: number): string {
   return t('level.student', locale)
 }
 
+/**
+ * Returns the Tailwind CSS color class for a given level.
+ * Higher levels get more prestigious colors (yellow > purple > blue > etc.).
+ */
 export function getLevelColor(level: number): string {
   if (level >= 20) return 'text-yellow-500'
   if (level >= 15) return 'text-purple-500'
@@ -174,6 +183,10 @@ export const MODULE_XP: Record<ModuleId, number> = {
   'progress': 0,
 }
 
+/**
+ * Counts the number of interactions for a specific module.
+ * Used to track user progress and completion percentage.
+ */
 export function getModuleInteractionCount(interactions: ModuleInteraction[], moduleId: string): number {
   return interactions.filter((i) => i.moduleId === moduleId).length
 }

@@ -128,7 +128,7 @@ export function HomeClient({
     return visibleModules.filter((m) => moduleProgress[m.id] > 0).length
   }, [moduleProgress, visibleModules])
 
-  const ActiveModule = activeTab !== 'home' ? moduleComponents[activeTab] : null
+  const ActiveModule = activeTab !== 'home' && activeTab in moduleComponents ? moduleComponents[activeTab as keyof typeof moduleComponents] : null
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
