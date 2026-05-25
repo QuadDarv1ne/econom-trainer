@@ -47,8 +47,8 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
               <div className="rounded-md bg-muted p-3">
-                <p className="break-all text-sm font-mono text-muted-foreground">
-                  {error.message || t('error.unknown', locale)}
+                <p className="text-sm text-muted-foreground">
+                  {t('error.unknown', locale)}
                 </p>
               </div>
               <div className="flex gap-2">

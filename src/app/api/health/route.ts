@@ -11,7 +11,7 @@ export async function GET() {
   } catch (error) {
     checks.database = {
       status: "error",
-      details: error instanceof Error ? error.message : "Unknown error",
+      details: "Database connection failed",
     };
   }
 
