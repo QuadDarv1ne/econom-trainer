@@ -16,16 +16,26 @@ function createDebouncedStorage<T>(delayMs: number = 500): PersistStorage<T> {
   let pendingWrite: { key: string; value: string } | null = null
   let flushTimer: ReturnType<typeof setTimeout> | null = null
 
+  const flush = () => {
+    if (pendingWrite) {
+      if (flushTimer) clearTimeout(flushTimer)
+      flushTimer = null
+      localStorage.setItem(pendingWrite.key, pendingWrite.value)
+      pendingWrite = null
+    }
+  }
+
   const scheduleFlush = () => {
     if (!pendingWrite) return
     if (flushTimer) clearTimeout(flushTimer)
     flushTimer = setTimeout(() => {
-      if (pendingWrite) {
-        localStorage.setItem(pendingWrite.key, pendingWrite.value)
-        pendingWrite = null
-      }
-      flushTimer = null
+      flush()
     }, delayMs)
+  }
+
+  // Flush pending writes before page unload to prevent data loss
+  if (typeof window !== 'undefined') {
+    window.addEventListener('beforeunload', flush)
   }
 
   return {

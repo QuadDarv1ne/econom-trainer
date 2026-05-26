@@ -267,10 +267,16 @@ export function importProgressFromFile(): Promise<void> {
     input.accept = '.json,application/json'
     input.style.display = 'none'
 
+    const cleanup = () => {
+      if (document.body.contains(input)) {
+        document.body.removeChild(input)
+      }
+    }
+
     input.onchange = async () => {
       const file = input.files?.[0]
       if (!file) {
-        document.body.removeChild(input)
+        cleanup()
         reject(new Error('No file selected'))
         return
       }
@@ -282,11 +288,18 @@ export function importProgressFromFile(): Promise<void> {
       } catch (err) {
         reject(err)
       } finally {
-        document.body.removeChild(input)
+        cleanup()
       }
     }
 
     document.body.appendChild(input)
     input.click()
+
+    // Clean up if the file picker is dismissed without selection
+    setTimeout(() => {
+      if (!input.files?.length && document.body.contains(input)) {
+        cleanup()
+      }
+    }, 60000)
   })
 }
