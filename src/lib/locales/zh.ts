@@ -7,6 +7,7 @@ export const zh: Record<string, string> = {
     'common.save': '保存',
     'common.cancel': '取消',
     'common.close': '关闭',
+    'common.skipToContent': '跳转到主要内容',
     'common.confirm': '确认',
     'common.delete': '删除',
     'common.edit': '编辑',

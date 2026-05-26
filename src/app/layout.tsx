@@ -1,7 +1,7 @@
 import type React from "react";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { getServerLocale } from '@/lib/server-locale';
+import { getServerLocale, t as serverT } from '@/lib/server-locale';
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -98,7 +98,7 @@ export default async function RootLayout({
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-background focus:text-foreground focus:border-2 focus:border-primary focus:rounded-lg focus:shadow-lg focus:outline-none"
         >
-          Перейти к основному содержимому
+          {serverT('common.skipToContent', lang)}
         </a>
         <Providers>{children}</Providers>
       </body>

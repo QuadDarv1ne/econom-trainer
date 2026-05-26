@@ -8,6 +8,7 @@ export const ru: Record<string, string> = {
     'common.save': 'Сохранить',
     'common.cancel': 'Отмена',
     'common.close': 'Закрыть',
+    'common.skipToContent': 'Перейти к основному содержимому',
     'common.confirm': 'Подтвердить',
     'common.delete': 'Удалить',
     'common.edit': 'Редактировать',

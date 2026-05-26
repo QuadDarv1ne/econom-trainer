@@ -8,6 +8,7 @@ export const en: Record<string, string> = {
     'common.save': 'Save',
     'common.cancel': 'Cancel',
     'common.close': 'Close',
+    'common.skipToContent': 'Skip to main content',
     'common.confirm': 'Confirm',
     'common.delete': 'Delete',
     'common.edit': 'Edit',
