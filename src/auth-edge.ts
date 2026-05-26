@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import type { NextAuthConfig } from "next-auth";
-import { validateJwtSession } from "@/lib/validate-jwt-session";
 
 export const authConfig: NextAuthConfig = {
   providers: [],
@@ -21,12 +20,8 @@ export const authConfig: NextAuthConfig = {
       if (trigger === "update" && session) {
         return { ...token, ...session };
       }
-
-      // Validate sessionHash against database with caching
-      if (token.id && token.sessionHash) {
-        return validateJwtSession(token);
-      }
-
+      // Note: Full sessionHash validation against DB happens in auth.ts (server-side).
+      // Edge middleware only checks token presence for routing — no DB access here.
       return token;
     },
     async session({ session, token }) {

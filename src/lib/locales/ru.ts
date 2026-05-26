@@ -1557,6 +1557,14 @@ export const ru: Record<string, string> = {
     'export.csv.longestStreak': 'Лучшая серия (дней)',
     'export.csv.dailyChallenges': 'Ежедневных вызовов',
     'export.csv.achievements': 'Достижений',
+    'export.continueTraining': 'Продолжайте тренироваться, чтобы достичь новых уровней!',
+    'export.continueTrainingShort': 'Продолжайте тренироваться!',
+    'export.unknownError': 'Неизвестная ошибка',
+    'export.exportFailed': 'Ошибка экспорта PDF',
+    'export.exporting': 'Экспорт...',
+    'export.pdfLabel': 'PDF',
+    'export.csvLabel': 'CSV',
+    'export.jsonLabel': 'JSON',
 
     // Homepage header
     'home.header.subtitle': 'Интерактивный тренажёр для экономистов',

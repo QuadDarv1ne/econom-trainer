@@ -62,8 +62,15 @@ export function validateOriginStrict(req: Request): boolean {
  * Return a 403 response for invalid CSRF origins
  */
 export function csrfErrorResponse() {
-  return new Response(JSON.stringify({ error: 'Forbidden' }), {
+  const response = new Response(JSON.stringify({ error: 'Forbidden' }), {
     status: 403,
     headers: { 'Content-Type': 'application/json' },
   });
+  // Add security headers — same set as withSecurityHeaders for consistency
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-XSS-Protection', '0');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  return response;
 }

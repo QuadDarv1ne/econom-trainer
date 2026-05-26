@@ -1573,6 +1573,14 @@ export const en: Record<string, string> = {
     'export.csv.longestStreak': 'Best Streak (days)',
     'export.csv.dailyChallenges': 'Daily Challenges',
     'export.csv.achievements': 'Achievements',
+    'export.continueTraining': 'Keep training to reach new levels!',
+    'export.continueTrainingShort': 'Keep training!',
+    'export.unknownError': 'Unknown error',
+    'export.exportFailed': 'Failed to export PDF',
+    'export.exporting': 'Exporting...',
+    'export.pdfLabel': 'PDF',
+    'export.csvLabel': 'CSV',
+    'export.jsonLabel': 'JSON',
 
     // Homepage header
     'home.header.subtitle': 'Interactive trainer for economists',

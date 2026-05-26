@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useEconomicsStore, getLevelTitle, getModuleDisplayName } from '@/store/economics-store'
 import { downloadProgressCSV, downloadProgressJSON, importProgressFromFile } from '@/lib/export-progress'
 import { useI18n } from '@/lib/i18n-provider'
@@ -118,7 +118,7 @@ export async function exportProgressToPDF() {
     `• ${t('export.csv.quizAccuracy', locale)}: ${progress.quizStats.accuracy}%`,
     `• ${t('finance.accuracy', locale)}: ${progress.financeStats.accuracy}%`,
     '',
-    locale === 'ru' ? 'Продолжайте тренироваться, чтобы достичь новых уровней!' : locale === 'zh' ? '继续训练，达到新的水平！' : 'Keep training to reach new levels!',
+    t('export.continueTraining', locale),
   ]
 
   let y = finalY + 8
@@ -154,7 +154,7 @@ export function exportProgressToText(): string {
   const sessionsLabel = t('progress.sessions', locale)
   const statsLabel = t('export.pdf.moduleStats', locale)
   const activityLabel = t('export.pdf.moduleActivity', locale)
-  const continueText = locale === 'ru' ? 'Продолжайте тренироваться!' : 'Keep training!'
+  const continueText = t('export.continueTrainingShort', locale)
 
   const lines = [
     `📊 ${title} — ${reportTitle}`,
@@ -183,13 +183,10 @@ export function exportProgressToText(): string {
 export function ExportProgressButton() {
   const totalXP = useEconomicsStore((s) => s.totalXP)
   const [copied, setCopied] = useState(false)
+  const [exporting, setExporting] = useState(false)
   const { t } = useI18n()
 
-  if (totalXP === 0) {
-    return null
-  }
-
-  const handleCopy = async () => {
+  const handleCopy = useCallback(async () => {
     try {
       const text = exportProgressToText()
       await navigator.clipboard.writeText(text)
@@ -197,11 +194,11 @@ export function ExportProgressButton() {
       setTimeout(() => setCopied(false), COPY_FEEDBACK_MS)
       toast.success(t('export.copied'))
     } catch {
-      toast.error(t('export.copyFailed') ?? 'Failed to copy to clipboard')
+      toast.error(t('export.copyFailed'))
     }
-  }
+  }, [t])
 
-  const handleShare = async () => {
+  const handleShare = useCallback(async () => {
     const text = exportProgressToText()
 
     try {
@@ -212,7 +209,6 @@ export function ExportProgressButton() {
         })
         toast.success(t('export.shareSuccess'))
       } else {
-        // Fallback to copy
         await handleCopy()
         toast.success(t('export.shareFallback'))
       }
@@ -220,38 +216,51 @@ export function ExportProgressButton() {
       if (err instanceof DOMException && err.name === 'AbortError') return
       toast.error(t('export.shareFailed'))
     }
-  }
+  }, [t, handleCopy])
 
-  const handleImport = async () => {
+  const handleImport = useCallback(async () => {
     try {
       await importProgressFromFile()
-      toast.success(t('export.importSuccess') ?? 'Progress imported successfully')
+      toast.success(t('export.importSuccess'))
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error'
-      toast.error(t('export.importFailed') ?? `Failed to import: ${message}`)
+      const message = err instanceof Error ? err.message : t('export.unknownError')
+      toast.error(`${t('export.importFailed')}: ${message}`)
     }
+  }, [t])
+
+  const handleExportPDF = useCallback(async () => {
+    setExporting(true)
+    try {
+      await exportProgressToPDF()
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t('export.exportFailed')
+      toast.error(`${t('export.exportFailed')}: ${message}`)
+    } finally {
+      setExporting(false)
+    }
+  }, [t])
+
+  if (totalXP === 0) {
+    return null
   }
 
   return (
     <div className="flex gap-2 flex-wrap">
-      <Button onClick={() => exportProgressToPDF().catch((err) => {
-        const message = err instanceof Error ? err.message : 'Unknown error'
-        toast.error(t('export.importFailed') ?? `Failed to export PDF: ${message}`)
-      })} variant="outline" size="sm">
+      <Button onClick={handleExportPDF} variant="outline" size="sm" disabled={exporting}>
         <Download className="h-4 w-4 mr-2" />
-        PDF
+        {exporting ? t('export.exporting') : t('export.pdfLabel')}
       </Button>
-      <Button onClick={() => downloadProgressCSV()} variant="outline" size="sm">
+      <Button onClick={downloadProgressCSV} variant="outline" size="sm">
         <Download className="h-4 w-4 mr-2" />
-        CSV
+        {t('export.csvLabel')}
       </Button>
-      <Button onClick={() => downloadProgressJSON()} variant="outline" size="sm">
+      <Button onClick={downloadProgressJSON} variant="outline" size="sm">
         <Download className="h-4 w-4 mr-2" />
-        JSON
+        {t('export.jsonLabel')}
       </Button>
       <Button onClick={handleImport} variant="outline" size="sm">
         <Upload className="h-4 w-4 mr-2" />
-        {t('export.import') ?? 'Import'}
+        {t('export.import')}
       </Button>
       <Button onClick={handleCopy} variant="outline" size="sm">
         {copied ? <Check className="h-4 w-4 mr-2 text-green-500" /> : <Copy className="h-4 w-4 mr-2" />}

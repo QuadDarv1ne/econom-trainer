@@ -11,7 +11,6 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   serverExternalPackages: ["@prisma/client", "prisma"],
-  turbopack: {},
   async headers() {
     return [
       // PWA and Service Worker headers
