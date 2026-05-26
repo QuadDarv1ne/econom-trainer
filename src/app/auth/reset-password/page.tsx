@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
-import { AlertCircle, Loader2, KeyRound, CheckCircle2, Check, X } from 'lucide-react';
+import { AlertCircle, Loader2, KeyRound, CheckCircle2 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n-provider';
 import { PasswordInput } from '@/components/ui/password-input';
+import { PasswordStrengthMeter } from '@/components/shared/password-strength-meter';
 import { checkPasswordStrength } from '@/lib/password-strength';
 import { REDIRECT_DELAY_MS } from '@/lib/constants';
 import { safeErrorMessage } from '@/lib/safe-error';
@@ -124,39 +124,7 @@ function ResetPasswordForm() {
                 autoComplete="new-password"
               />
 
-              {password && (
-                <div className="space-y-2 pt-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">{t('passwordStrength.label')}</span>
-                    <span className="text-xs font-medium">{t(passwordStrength.label)}</span>
-                  </div>
-                  <Progress
-                    value={(passwordStrength.score / 4) * 100}
-                    className={`h-1 ${passwordStrength.color}`}
-                  />
-
-                  <div className="grid grid-cols-2 gap-1 pt-1">
-                    {[
-                      { key: 'passwordStrength.minLength', met: passwordStrength.requirements.minLength },
-                      { key: 'passwordStrength.hasUpper', met: passwordStrength.requirements.hasUpper },
-                      { key: 'passwordStrength.hasLower', met: passwordStrength.requirements.hasLower },
-                      { key: 'passwordStrength.hasNumber', met: passwordStrength.requirements.hasNumber },
-                      { key: 'passwordStrength.hasSpecial', met: passwordStrength.requirements.hasSpecial },
-                    ].map(({ key, met }) => (
-                      <div key={key} className="flex items-center gap-1 text-xs">
-                        {met ? (
-                          <Check className="h-3 w-3 text-green-500" />
-                        ) : (
-                          <X className="h-3 w-3 text-muted-foreground" />
-                        )}
-                        <span className={met ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'}>
-                          {t(key)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <PasswordStrengthMeter password={password} t={t} />
             </div>
 
             <div className="space-y-2">
