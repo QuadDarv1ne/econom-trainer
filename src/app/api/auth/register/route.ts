@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('register', ip);
     if (!limit.ok) {
-      return rateLimitResponse('register', ip, req);
+      return withSecurityHeaders(rateLimitResponse('register', ip, req));
     }
 
     if (!validateOriginStrict(req)) {
@@ -31,30 +31,30 @@ export async function POST(req: Request) {
 
     // Validation
     if (!name || !email || !password) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'All required fields must be filled' },
         { status: 400 }
-      );
+      ));
     }
 
     if (typeof name !== 'string' || name.length > 100) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Name must be a string up to 100 characters' },
         { status: 400 }
-      );
+      ));
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (typeof email !== 'string' || !emailRegex.test(email)) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Invalid email format' },
         { status: 400 }
-      );
+      ));
     }
 
     const strength = validatePasswordStrength(password);
     if (!strength.valid) {
-      return NextResponse.json({ error: strength.error }, { status: 400 });
+      return withSecurityHeaders(NextResponse.json({ error: strength.error }, { status: 400 }));
     }
 
     // Check if user already exists
@@ -65,10 +65,10 @@ export async function POST(req: Request) {
     if (existingUser) {
       // Use constant-time delay to prevent timing-based email enumeration
       await new Promise((resolve) => setTimeout(resolve, ENUMERATION_DELAY_MS));
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { message: 'If this email is not registered, you can create an account' },
         { status: 200 }
-      );
+      ));
     }
 
     // Hash password
