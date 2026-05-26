@@ -3,7 +3,7 @@ import { persist, type PersistStorage } from 'zustand/middleware'
 import { t, getCurrentLocale, type Locale } from '@/lib/i18n'
 import { generateId } from '@/lib/utils'
 import { getLevelFromXP } from '@/lib/xp-utils'
-import { MAX_QUIZ_RESULTS, MAX_MODULE_INTERACTIONS, MAX_DAILY_CHALLENGES } from '@/lib/constants'
+import { MAX_QUIZ_RESULTS, MAX_GDP_RESULTS, MAX_FINANCE_RESULTS, MAX_ELASTICITY_RESULTS, MAX_MODULE_INTERACTIONS, MAX_DAILY_CHALLENGES } from '@/lib/constants'
 
 export { getLevelFromXP }
 
@@ -337,7 +337,7 @@ export const useEconomicsStore = create<EconomicsState>()(
       addGDPResult: (result) => {
         const today = new Date().toISOString().split('T')[0]
         set((state) => ({
-          gdpResults: [result, ...state.gdpResults].slice(0, MAX_QUIZ_RESULTS),
+          gdpResults: [result, ...state.gdpResults].slice(0, MAX_GDP_RESULTS),
           totalXP: state.totalXP + MODULE_XP['gdp'],
           streakState: updateStreakState(state.streakState, today),
         }))
@@ -347,7 +347,7 @@ export const useEconomicsStore = create<EconomicsState>()(
         const today = new Date().toISOString().split('T')[0]
         const xpEarned = result.correct ? 20 : 5
         set((state) => ({
-          financeResults: [result, ...state.financeResults].slice(0, MAX_QUIZ_RESULTS),
+          financeResults: [result, ...state.financeResults].slice(0, MAX_FINANCE_RESULTS),
           totalXP: state.totalXP + xpEarned,
           streakState: updateStreakState(state.streakState, today),
         }))
@@ -356,7 +356,7 @@ export const useEconomicsStore = create<EconomicsState>()(
       addElasticityResult: (result) => {
         const today = new Date().toISOString().split('T')[0]
         set((state) => ({
-          elasticityResults: [result, ...state.elasticityResults].slice(0, MAX_QUIZ_RESULTS),
+          elasticityResults: [result, ...state.elasticityResults].slice(0, MAX_ELASTICITY_RESULTS),
           totalXP: state.totalXP + MODULE_XP['elasticity'],
           streakState: updateStreakState(state.streakState, today),
         }))

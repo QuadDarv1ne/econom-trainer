@@ -66,6 +66,21 @@ export const COPY_FEEDBACK_MS = 2000;
 export const MAX_QUIZ_RESULTS = 50;
 
 /**
+ * Maximum number of GDP simulation results to keep in localStorage.
+ */
+export const MAX_GDP_RESULTS = 50;
+
+/**
+ * Maximum number of finance quiz results to keep in localStorage.
+ */
+export const MAX_FINANCE_RESULTS = 50;
+
+/**
+ * Maximum number of elasticity simulation results to keep in localStorage.
+ */
+export const MAX_ELASTICITY_RESULTS = 50;
+
+/**
  * Maximum number of module interaction records to keep in localStorage.
  */
 export const MAX_MODULE_INTERACTIONS = 500;

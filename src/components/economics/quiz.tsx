@@ -1625,7 +1625,7 @@ export function EconomicsQuiz() {
         </div>
       </div>
 
-      <Progress value={(currentQuestion / shuffledQuestions.length) * 100} className="h-2" />
+      <Progress value={((currentQuestion + 1) / shuffledQuestions.length) * 100} className="h-2" />
 
       {isTimeUp && (
         <Card className="border-red-500 bg-red-50 dark:bg-red-950/30">
