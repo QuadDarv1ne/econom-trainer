@@ -12,6 +12,7 @@ import { Calculator, RotateCcw, TrendingUp, TrendingDown, Minus } from 'lucide-r
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
 import { generateId } from '@/lib/utils'
+import { toLocale } from '@/lib/i18n'
 
 interface GDPComponent {
   name: string
@@ -183,7 +184,7 @@ export function GDPCalculator() {
             <CardHeader className="pb-2">
               <CardDescription>{t('gdp.nominal')}</CardDescription>
               <CardTitle className="text-2xl font-mono">
-                {nominalGDP.toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US', { maximumFractionDigits: 1 })}
+                {nominalGDP.toLocaleString(toLocale(locale), { maximumFractionDigits: 1 })}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -197,7 +198,7 @@ export function GDPCalculator() {
             <CardHeader className="pb-2">
               <CardDescription>{t('gdp.real')}</CardDescription>
               <CardTitle className="text-2xl font-mono">
-                {realGDP.toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US', { maximumFractionDigits: 1 })}
+                {realGDP.toLocaleString(toLocale(locale), { maximumFractionDigits: 1 })}
               </CardTitle>
             </CardHeader>
             <CardContent>
