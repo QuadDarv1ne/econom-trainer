@@ -27,14 +27,14 @@ export async function GET(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
     }
 
     // Rate limit authenticated reads to prevent enumeration
     // Use session.user.id as identifier to prevent shared bucket across users
     const limit = checkRateLimit('profileRead', session.user.id);
     if (!limit.ok) {
-      return rateLimitResponse('profileRead', session.user.id, req);
+      return withSecurityHeaders(rateLimitResponse('profileRead', session.user.id, req));
     }
 
     const user = await prisma.user.findUnique({
@@ -43,7 +43,7 @@ export async function GET(req: Request) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return withSecurityHeaders(NextResponse.json({ error: 'User not found' }, { status: 404 }));
     }
 
     return withSecurityHeaders(NextResponse.json(user));
@@ -58,7 +58,7 @@ export async function PATCH(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
     }
 
     if (!validateOriginStrict(req)) {
@@ -68,7 +68,7 @@ export async function PATCH(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('profileUpdate', ip);
     if (!limit.ok) {
-      return rateLimitResponse('profileUpdate', ip, req);
+      return withSecurityHeaders(rateLimitResponse('profileUpdate', ip, req));
     }
 
     const parsed = await safeJson<{ name?: string; phone?: string | null; image?: string | null }>(req);
@@ -78,30 +78,30 @@ export async function PATCH(req: Request) {
     // Validate name
     if (name !== undefined) {
       if (typeof name !== 'string' || name.length > 100) {
-        return NextResponse.json({ error: 'Name must be a string up to 100 characters' }, { status: 400 });
+        return withSecurityHeaders(NextResponse.json({ error: 'Name must be a string up to 100 characters' }, { status: 400 }));
       }
     }
 
     // Validate phone
     if (phone !== undefined && phone !== null) {
       if (typeof phone !== 'string' || phone.length > 20) {
-        return NextResponse.json({ error: 'Phone number must be a string up to 20 characters' }, { status: 400 });
+        return withSecurityHeaders(NextResponse.json({ error: 'Phone number must be a string up to 20 characters' }, { status: 400 }));
       }
       if (phone !== '' && !/^\+?[0-9\s()-]+$/.test(phone)) {
-        return NextResponse.json({ error: 'Invalid phone number format' }, { status: 400 });
+        return withSecurityHeaders(NextResponse.json({ error: 'Invalid phone number format' }, { status: 400 }));
       }
     }
 
     // Validate image (data URL)
     if (image !== undefined && image !== null) {
       if (typeof image !== 'string' || image.length > AVATAR_MAX_BYTES) {
-        return NextResponse.json({ error: 'Image must not exceed 5 MB' }, { status: 400 });
+        return withSecurityHeaders(NextResponse.json({ error: 'Image must not exceed 5 MB' }, { status: 400 }));
       }
       // Validate data URL MIME type is an image
       if (image.startsWith('data:')) {
         const match = image.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+)/);
         if (!match || !match[1].startsWith('image/')) {
-          return NextResponse.json({ error: 'Unsupported image format' }, { status: 400 });
+          return withSecurityHeaders(NextResponse.json({ error: 'Unsupported image format' }, { status: 400 }));
         }
       }
     }
