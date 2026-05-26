@@ -20,7 +20,7 @@ export async function GET(req: Request) {
     // Use session.user.id as identifier to prevent shared bucket across users
     const limit = checkRateLimit('progressRead', session.user.id);
     if (!limit.ok) {
-      return rateLimitResponse('progressRead', session.user.id, req);
+      return withSecurityHeaders(rateLimitResponse('progressRead', session.user.id, req));
     }
 
     const progress = await prisma.userProgress.findUnique({
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('progressSync', ip);
     if (!limit.ok) {
-      return rateLimitResponse('progressSync', ip, req);
+      return withSecurityHeaders(rateLimitResponse('progressSync', ip, req));
     }
 
     const parsed = await safeJson<{

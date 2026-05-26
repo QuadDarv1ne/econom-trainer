@@ -27,7 +27,6 @@ import {
   Clock,
   Monitor,
   AlertTriangle,
-  X,
   LogOut,
 } from 'lucide-react';
 import { useEconomicsStore } from '@/store/economics-store';

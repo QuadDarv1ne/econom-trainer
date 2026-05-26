@@ -27,7 +27,7 @@ function ResetPasswordForm() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const passwordStrength = useMemo(() => checkPasswordStrength(password), [password]);
+  const _passwordStrength = useMemo(() => checkPasswordStrength(password), [password]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
