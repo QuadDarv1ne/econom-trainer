@@ -9,6 +9,7 @@ import { randomBytes } from 'crypto';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
 import { BCRYPT_SALT_ROUNDS_BACKUP } from '@/lib/constants';
+import { withSecurityHeaders } from '@/lib/security-headers';
 
 export async function POST(req: Request) {
   try {
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
 
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
     }
 
     if (!validateOriginStrict(req)) {
@@ -32,12 +33,12 @@ export async function POST(req: Request) {
     const { code } = parsed;
 
     if (!code) {
-      return NextResponse.json({ error: 'Code is required' }, { status: 400 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Code is required' }, { status: 400 }));
     }
 
     // 2FA codes are 6 digits; reject overly long inputs
     if (typeof code !== 'string' || code.length > 10) {
-      return NextResponse.json({ error: 'Invalid code format' }, { status: 400 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Invalid code format' }, { status: 400 }));
     }
 
     const user = await prisma.user.findUnique({
@@ -46,7 +47,7 @@ export async function POST(req: Request) {
     });
 
     if (!user || !user.twoFactorConf) {
-      return NextResponse.json({ error: '2FA not set up' }, { status: 400 });
+      return withSecurityHeaders(NextResponse.json({ error: '2FA not set up' }, { status: 400 }));
     }
 
     // Verify TOTP code
@@ -56,7 +57,7 @@ export async function POST(req: Request) {
     });
 
     if (!isValid) {
-      return NextResponse.json({ error: 'Invalid code' }, { status: 400 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Invalid code' }, { status: 400 }));
     }
 
     // Generate cryptographically secure backup codes
@@ -80,12 +81,12 @@ export async function POST(req: Request) {
       data: { backupCodes: JSON.stringify(hashedBackupCodes) },
     });
 
-    return NextResponse.json({
+    return withSecurityHeaders(NextResponse.json({
       message: '2FA enabled successfully',
       backupCodes,
-    });
+    }));
   } catch (error) {
     logError('two-factor-verify', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return withSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }));
   }
 }

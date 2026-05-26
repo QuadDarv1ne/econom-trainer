@@ -7,13 +7,14 @@ import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
 import { BASE_URL, VERIFICATION_TOKEN_EXPIRY_MS } from '@/lib/constants';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
+import { withSecurityHeaders } from '@/lib/security-headers';
 
 // POST - Send email verification
 export async function POST(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
     }
 
     if (!validateOriginStrict(req)) {
@@ -32,11 +33,11 @@ export async function POST(req: Request) {
     });
 
     if (!user?.email) {
-      return NextResponse.json({ error: 'Email not set' }, { status: 400 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Email not set' }, { status: 400 }));
     }
 
     if (user.emailVerified) {
-      return NextResponse.json({ error: 'Email already verified' }, { status: 400 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Email already verified' }, { status: 400 }));
     }
 
     // Generate verification token
@@ -68,15 +69,15 @@ export async function POST(req: Request) {
     });
 
     if (!emailSent) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Failed to send verification email. Please try again later.' },
         { status: 500 }
-      );
+      ));
     }
 
-    return NextResponse.json({ message: 'Verification email sent' });
+    return withSecurityHeaders(NextResponse.json({ message: 'Verification email sent' }));
   } catch (error) {
     logError('verify-email-send', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return withSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }));
   }
 }

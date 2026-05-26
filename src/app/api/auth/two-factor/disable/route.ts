@@ -7,12 +7,13 @@ import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { randomBytes } from 'crypto';
 import { logError } from '@/lib/log-error';
+import { withSecurityHeaders } from '@/lib/security-headers';
 
 export async function POST(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
     }
 
     if (!validateOriginStrict(req)) {
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
     if (isErrorResponse(parsed)) return parsed;
     const { password } = parsed;
     if (!password) {
-      return NextResponse.json({ error: 'Password required' }, { status: 400 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Password required' }, { status: 400 }));
     }
 
     const user = await prisma.user.findUnique({
@@ -38,12 +39,12 @@ export async function POST(req: Request) {
     });
 
     if (!user?.passwordHash) {
-      return NextResponse.json({ error: 'Password required' }, { status: 400 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Password required' }, { status: 400 }));
     }
 
     const isValid = await bcrypt.compare(password, user.passwordHash);
     if (!isValid) {
-      return NextResponse.json({ error: 'Incorrect password' }, { status: 401 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Incorrect password' }, { status: 401 }));
     }
 
     const newSessionHash = randomBytes(32).toString('hex');
@@ -57,9 +58,9 @@ export async function POST(req: Request) {
       where: { userId: session.user.id },
     });
 
-    return NextResponse.json({ message: '2FA disabled' });
+    return withSecurityHeaders(NextResponse.json({ message: '2FA disabled' }));
   } catch (error) {
     logError('two-factor-disable', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return withSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }));
   }
 }

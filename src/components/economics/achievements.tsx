@@ -405,7 +405,7 @@ export function Achievements() {
                     <Icon className={`h-5 w-5 ${ach.color}`} />
                   </div>
                   {ach.unlocked && (
-                    <Badge className="bg-yellow-500 text-white text-xs">
+                    <Badge className="bg-yellow-500 text-yellow-950 text-xs">
                       +{ach.xpReward} XP
                     </Badge>
                   )}

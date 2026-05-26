@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
+import { withSecurityHeaders } from '@/lib/security-headers';
 
 // Generate TOTP secret and QR code
 export async function POST(req: Request) {
@@ -18,7 +19,7 @@ export async function POST(req: Request) {
 
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return withSecurityHeaders(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
     }
 
     if (!validateOriginStrict(req)) {
@@ -30,11 +31,11 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return withSecurityHeaders(NextResponse.json({ error: 'User not found' }, { status: 404 }));
     }
 
     if (user.twoFactorEnabled) {
-      return NextResponse.json({ error: '2FA is already enabled' }, { status: 400 });
+      return withSecurityHeaders(NextResponse.json({ error: '2FA is already enabled' }, { status: 400 }));
     }
 
     // Generate secret
@@ -58,9 +59,9 @@ export async function POST(req: Request) {
       update: { secret },
     });
 
-    return NextResponse.json({ secret, qrCode });
+    return withSecurityHeaders(NextResponse.json({ secret, qrCode }));
   } catch (error) {
     logError('two-factor-setup', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return withSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }));
   }
 }

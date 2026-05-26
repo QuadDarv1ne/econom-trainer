@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useEconomicsStore, computeQuizAndFinanceStats } from '@/store/economics-store'
@@ -37,34 +38,37 @@ export function ProgressTracker() {
 
   const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeQuizAndFinanceStats(quizResults, financeResults)
 
-  const quizPieData = [
+  const quizPieData = useMemo(() => [
     { name: t('progress.chart.correct'), value: quizCorrect },
     { name: t('progress.chart.incorrect'), value: quizTotal - quizCorrect },
-  ]
+  ], [t, quizCorrect, quizTotal])
 
-  const financePieData = [
+  const financePieData = useMemo(() => [
     { name: t('progress.chart.correct'), value: financeCorrect },
     { name: t('progress.chart.incorrect'), value: financeTotal - financeCorrect },
-  ]
+  ], [t, financeCorrect, financeTotal])
 
-  const quizBarData = quizResults.slice(0, 8).reverse().map((r, i) => ({
-    name: `#${i + 1}`,
-    score: r.total > 0 ? Math.round((r.score / r.total) * 100) : 0,
-  }))
+  const quizBarData = useMemo(() =>
+    quizResults.slice(0, 8).reverse().map((r, i) => ({
+      name: `#${i + 1}`,
+      score: r.total > 0 ? Math.round((r.score / r.total) * 100) : 0,
+    })), [quizResults])
 
-  const financeLineData = financeResults.slice(0, 15).reverse().map((r, i) => ({
-    name: i + 1,
-    result: r.correct ? 1 : 0,
-  }))
+  const financeLineData = useMemo(() =>
+    financeResults.slice(0, 15).reverse().map((r, i) => ({
+      name: i + 1,
+      result: r.correct ? 1 : 0,
+    })), [financeResults])
 
-  const cumulativeCorrect = financeLineData.reduce(
-    (acc, d) => {
-      const last = acc.length > 0 ? acc[acc.length - 1].cumulative : 0
-      acc.push({ ...d, cumulative: last + d.result })
-      return acc
-    },
-    [] as { name: number; result: number; cumulative: number }[]
-  )
+  const cumulativeCorrect = useMemo(() =>
+    financeLineData.reduce(
+      (acc, d) => {
+        const last = acc.length > 0 ? acc[acc.length - 1].cumulative : 0
+        acc.push({ ...d, cumulative: last + d.result })
+        return acc
+      },
+      [] as { name: number; result: number; cumulative: number }[]
+    ), [financeLineData])
 
   return (
     <div className="space-y-6">
