@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('revokeSessions', ip);
     if (!limit.ok) {
-      return rateLimitResponse('revokeSessions', ip, req);
+      return withSecurityHeaders(rateLimitResponse('revokeSessions', ip, req));
     }
 
     // Generate a new session hash to invalidate all other JWTs

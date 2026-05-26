@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('twoFactorSetup', ip);
     if (!limit.ok) {
-      return rateLimitResponse('twoFactorSetup', ip, req);
+      return withSecurityHeaders(rateLimitResponse('twoFactorSetup', ip, req));
     }
 
     const session = await auth();

@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('resetPass', ip);
     if (!limit.ok) {
-      return rateLimitResponse('resetPass', ip, req);
+      return withSecurityHeaders(rateLimitResponse('resetPass', ip, req));
     }
 
     if (!validateOriginStrict(req)) {

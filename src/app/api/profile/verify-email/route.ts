@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('verifyEmail', ip);
     if (!limit.ok) {
-      return rateLimitResponse('verifyEmail', ip, req);
+      return withSecurityHeaders(rateLimitResponse('verifyEmail', ip, req));
     }
 
     const user = await prisma.user.findUnique({
