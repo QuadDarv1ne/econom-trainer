@@ -342,7 +342,7 @@ export const useEconomicsStore = create<EconomicsState>()(
       streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
 
       addQuizResult: (result) => {
-        const today = new Date().toISOString().split('T')[0]
+        const today = new Date().toLocaleDateString('en-CA') // YYYY-MM-DD in local timezone
         const xpEarned = result.score * 10
         set((state) => ({
           quizResults: [result, ...state.quizResults].slice(0, MAX_QUIZ_RESULTS),
@@ -352,7 +352,7 @@ export const useEconomicsStore = create<EconomicsState>()(
       },
 
       addGDPResult: (result) => {
-        const today = new Date().toISOString().split('T')[0]
+        const today = new Date().toLocaleDateString('en-CA') // YYYY-MM-DD in local timezone
         set((state) => ({
           gdpResults: [result, ...state.gdpResults].slice(0, MAX_GDP_RESULTS),
           totalXP: state.totalXP + MODULE_XP['gdp'],
@@ -361,7 +361,7 @@ export const useEconomicsStore = create<EconomicsState>()(
       },
 
       addFinanceResult: (result) => {
-        const today = new Date().toISOString().split('T')[0]
+        const today = new Date().toLocaleDateString('en-CA') // YYYY-MM-DD in local timezone
         const xpEarned = result.correct ? 20 : 5
         set((state) => ({
           financeResults: [result, ...state.financeResults].slice(0, MAX_FINANCE_RESULTS),
@@ -371,7 +371,7 @@ export const useEconomicsStore = create<EconomicsState>()(
       },
 
       addElasticityResult: (result) => {
-        const today = new Date().toISOString().split('T')[0]
+        const today = new Date().toLocaleDateString('en-CA') // YYYY-MM-DD in local timezone
         set((state) => ({
           elasticityResults: [result, ...state.elasticityResults].slice(0, MAX_ELASTICITY_RESULTS),
           totalXP: state.totalXP + MODULE_XP['elasticity'],
@@ -380,7 +380,7 @@ export const useEconomicsStore = create<EconomicsState>()(
       },
 
       addModuleInteraction: (interaction) => {
-        const today = new Date().toISOString().split('T')[0]
+        const today = new Date().toLocaleDateString('en-CA') // YYYY-MM-DD in local timezone
         const newInteraction: ModuleInteraction = {
           ...interaction,
           id: generateId(),
@@ -394,7 +394,7 @@ export const useEconomicsStore = create<EconomicsState>()(
       },
 
       completeDailyChallenge: (result) => {
-        const today = new Date().toISOString().split('T')[0]
+        const today = new Date().toLocaleDateString('en-CA') // YYYY-MM-DD in local timezone
         const xpEarned = 30 + result.score * 10
         set((state) => ({
           dailyChallenges: [result, ...state.dailyChallenges].slice(0, MAX_DAILY_CHALLENGES),
@@ -404,7 +404,7 @@ export const useEconomicsStore = create<EconomicsState>()(
       },
 
       recordActivity: () => {
-        const today = new Date().toISOString().split('T')[0]
+        const today = new Date().toLocaleDateString('en-CA') // YYYY-MM-DD in local timezone
         set((state) => ({
           streakState: updateStreakState(state.streakState, today),
         }))
