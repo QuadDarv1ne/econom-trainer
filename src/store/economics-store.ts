@@ -11,8 +11,14 @@ export { getLevelFromXP }
  * Debounced localStorage storage wrapper for Zustand persist.
  * Prevents excessive synchronous writes on every state change by
  * buffering updates and flushing after `delayMs` of inactivity.
+ *
+ * Returns a cleanup function that should be called to remove
+ * the beforeunload listener and prevent memory leaks during HMR.
  */
-function createDebouncedStorage<T>(delayMs: number = 500): PersistStorage<T> {
+function createDebouncedStorage<T>(delayMs: number = 500): {
+  storage: PersistStorage<T>
+  cleanup: () => void
+} {
   let pendingWrite: { key: string; value: string } | null = null
   let flushTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -34,25 +40,34 @@ function createDebouncedStorage<T>(delayMs: number = 500): PersistStorage<T> {
   }
 
   // Flush pending writes before page unload to prevent data loss
+  const cleanup = () => {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('beforeunload', flush)
+    }
+  }
+
   if (typeof window !== 'undefined') {
     window.addEventListener('beforeunload', flush)
   }
 
   return {
-    getItem: (name: string) => {
-      const item = localStorage.getItem(name)
-      return item ? JSON.parse(item) : null
+    storage: {
+      getItem: (name: string) => {
+        const item = localStorage.getItem(name)
+        return item ? JSON.parse(item) : null
+      },
+      setItem: (name: string, value: { state: T }): void => {
+        pendingWrite = { key: name, value: JSON.stringify(value) }
+        scheduleFlush()
+      },
+      removeItem: (name: string): void => {
+        pendingWrite = null
+        if (flushTimer) clearTimeout(flushTimer)
+        flushTimer = null
+        localStorage.removeItem(name)
+      },
     },
-    setItem: (name: string, value: { state: T }): void => {
-      pendingWrite = { key: name, value: JSON.stringify(value) }
-      scheduleFlush()
-    },
-    removeItem: (name: string): void => {
-      pendingWrite = null
-      if (flushTimer) clearTimeout(flushTimer)
-      flushTimer = null
-      localStorage.removeItem(name)
-    },
+    cleanup,
   }
 }
 
@@ -311,6 +326,8 @@ export interface EconomicsState {
   }
 }
 
+const debouncedStorage = createDebouncedStorage<EconomicsState>(300)
+
 export const useEconomicsStore = create<EconomicsState>()(
   persist(
     (set, get) => ({
@@ -484,7 +501,7 @@ export const useEconomicsStore = create<EconomicsState>()(
     }),
     {
       name: 'economics-trainer-data',
-      storage: createDebouncedStorage(300),
+      storage: debouncedStorage.storage,
       partialize: (state) => ({
         quizResults: state.quizResults,
         gdpResults: state.gdpResults,
@@ -499,3 +516,10 @@ export const useEconomicsStore = create<EconomicsState>()(
     },
   ),
 )
+
+// Cleanup function for HMR - call this when the module is disposed
+if (typeof window !== 'undefined' && module.hot) {
+  module.hot.dispose(() => {
+    debouncedStorage.cleanup()
+  })
+}
