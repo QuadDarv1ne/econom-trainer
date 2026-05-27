@@ -16,6 +16,7 @@ declare module 'next-auth' {
     id: string;
     twoFactorEnabled?: boolean;
     sessionHash?: string | null;
+    rememberMe?: boolean;
   }
 }
 

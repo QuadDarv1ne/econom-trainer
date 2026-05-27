@@ -501,7 +501,8 @@ export const useEconomicsStore = create<EconomicsState>()(
     }),
     {
       name: 'economics-trainer-data',
-      storage: debouncedStorage.storage,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      storage: debouncedStorage.storage as any,
       partialize: (state) => ({
         quizResults: state.quizResults,
         gdpResults: state.gdpResults,
@@ -518,6 +519,7 @@ export const useEconomicsStore = create<EconomicsState>()(
 )
 
 // Cleanup function for HMR - call this when the module is disposed
+declare const module: NodeJS.Module & { hot?: { dispose: (cb: () => void) => void } };
 if (typeof window !== 'undefined' && module.hot) {
   module.hot.dispose(() => {
     debouncedStorage.cleanup()

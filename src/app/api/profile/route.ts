@@ -5,7 +5,7 @@ import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { logError } from '@/lib/log-error';
-import { sanitizeInput } from '@/lib/sanitize-input';
+import { sanitizePlainText } from '@/lib/sanitize-input';
 import { AVATAR_MAX_BYTES } from '@/lib/constants';
 import { withSecurityHeaders } from '@/lib/security-headers';
 
@@ -109,8 +109,8 @@ export async function PATCH(req: Request) {
     const user = await prisma.user.update({
       where: { id: session.user.id },
       data: {
-        ...(name !== undefined && { name: sanitizeInput(name) }),
-        ...(phone !== undefined && { phone: phone === '' ? null : sanitizeInput(phone ?? '') }),
+        ...(name !== undefined && { name: sanitizePlainText(name) }),
+        ...(phone !== undefined && { phone: phone === '' ? null : sanitizePlainText(phone ?? '') }),
         ...(image !== undefined && { image: image === '' ? null : image }),
       },
       select: USER_PROFILE_SELECT,
