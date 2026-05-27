@@ -56,6 +56,7 @@ function LoginForm() {
         email,
         password,
         twoFactorCode: show2FA ? twoFactorCode : undefined,
+        rememberMe,
         redirect: false,
         callbackUrl,
       });

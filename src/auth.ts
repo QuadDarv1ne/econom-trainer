@@ -16,6 +16,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
         twoFactorCode: { label: "2FA Code", type: "text", optional: true },
+        rememberMe: { label: "Remember Me", type: "checkbox", optional: true },
       },
       async authorize(credentials, ctx) {
         // Rate limiting: check before any DB work
@@ -33,6 +34,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const email = credentials.email;
         const password = credentials.password;
         const twoFactorCode = credentials.twoFactorCode;
+        const rememberMe = credentials.rememberMe === 'true' || credentials.rememberMe === true;
 
         if (typeof email !== "string" || typeof password !== "string") {
           return null;
@@ -119,6 +121,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           image: user.image,
           twoFactorEnabled: user.twoFactorEnabled,
           sessionHash: user.sessionHash,
+          rememberMe,
         };
       },
     }),
@@ -147,9 +150,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id = user.id;
         token.twoFactorEnabled = user.twoFactorEnabled;
         token.sessionHash = user.sessionHash;
+        if (user.rememberMe) {
+          token.rememberMe = true;
+        }
       }
       if (trigger === "update" && session) {
         return { ...token, ...session };
+      }
+
+      // Extended session duration for remembered sessions (30 days vs default)
+      if (token.rememberMe && !token.exp) {
+        token.exp = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
       }
 
       // Validate sessionHash against database with caching
