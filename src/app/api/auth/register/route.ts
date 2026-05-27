@@ -116,8 +116,8 @@ export async function POST(req: Request) {
     });
 
     if (!emailSent) {
-      // Log warning but don't fail registration — user can request verification email later
-      console.warn('[register] Failed to send verification email, user can resend via profile');
+      // Log but don't fail registration — user can request verification email later
+      logError('register-email-send', new Error('Failed to send verification email'));
     }
 
     return withSecurityHeaders(NextResponse.json(
