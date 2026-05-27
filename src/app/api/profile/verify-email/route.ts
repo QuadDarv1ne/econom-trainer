@@ -55,7 +55,7 @@ export async function POST(req: Request) {
     });
 
     // Send verification email
-    const verificationUrl = `${BASE_URL}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(user.email)}`;
+    const verificationUrl = `${BASE_URL}/auth/verify-email?token=${token}&email=${encodeURIComponent(user.email)}`;
     const locale = getLocaleFromRequest(req);
     const html = getEmailVerificationEmailHtml(user.name || (locale === 'en' ? 'User' : 'Пользователь'), verificationUrl, locale);
 

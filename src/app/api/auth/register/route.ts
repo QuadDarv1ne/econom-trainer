@@ -102,7 +102,7 @@ export async function POST(req: Request) {
     });
 
     // Send verification email (outside transaction — failure doesn't prevent registration)
-    const verificationUrl = `${BASE_URL}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(userEmail)}`;
+    const verificationUrl = `${BASE_URL}/auth/verify-email?token=${token}&email=${encodeURIComponent(userEmail)}`;
     const locale = getLocaleFromRequest(req);
     const verificationHtml = getEmailVerificationEmailHtml(user.name || (locale === 'en' ? 'User' : 'Пользователь'), verificationUrl, locale);
 
