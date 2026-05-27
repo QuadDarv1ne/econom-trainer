@@ -46,7 +46,7 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions): 
   const resendApiKey = process.env.RESEND_API_KEY;
 
   if (!resendApiKey) {
-    console.warn('[Email] RESEND_API_KEY not configured. Email not sent.');
+    logError('email-config', new Error('RESEND_API_KEY not configured. Email not sent.'));
     return false;
   }
 
