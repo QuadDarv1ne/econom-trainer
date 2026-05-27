@@ -267,7 +267,6 @@ export function importProgressFromFile(): Promise<void> {
     input.accept = '.json,application/json'
     input.style.display = 'none'
 
-    let timeoutId: ReturnType<typeof setTimeout>
     const cleanup = () => {
       clearTimeout(timeoutId)
       if (document.body.contains(input)) {
@@ -295,13 +294,14 @@ export function importProgressFromFile(): Promise<void> {
     }
 
     document.body.appendChild(input)
-    input.click()
 
     // Clean up if the file picker is dismissed without selection
-    timeoutId = setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       if (!input.files?.length && document.body.contains(input)) {
         cleanup()
       }
     }, 60000)
+
+    input.click()
   })
 }

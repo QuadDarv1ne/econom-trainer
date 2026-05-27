@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist, type PersistStorage } from 'zustand/middleware'
+import { persist } from 'zustand/middleware'
 import { t, getCurrentLocale, type Locale } from '@/lib/i18n'
 import { generateId } from '@/lib/utils'
 import { getLevelFromXP } from '@/lib/xp-utils'
@@ -8,15 +8,16 @@ import { MAX_QUIZ_RESULTS, MAX_GDP_RESULTS, MAX_FINANCE_RESULTS, MAX_ELASTICITY_
 export { getLevelFromXP }
 
 /**
- * Debounced localStorage storage wrapper for Zustand persist.
- * Prevents excessive synchronous writes on every state change by
- * buffering updates and flushing after `delayMs` of inactivity.
- *
- * Returns a cleanup function that should be called to remove
- * the beforeunload listener and prevent memory leaks during HMR.
+ * Debounced localStorage storage for Zustand persist middleware.
+ * Matches zustand/middleware's Storage interface:
+ * getItem returns StateReflection | null, setItem/removeItem are void.
  */
 function createDebouncedStorage<T>(delayMs: number = 500): {
-  storage: PersistStorage<T>
+  storage: {
+    getItem: (name: string) => { state: T } | null
+    setItem: (name: string, value: { state: T }) => void
+    removeItem: (name: string) => void
+  }
   cleanup: () => void
 } {
   let pendingWrite: { key: string; value: string } | null = null
@@ -501,8 +502,7 @@ export const useEconomicsStore = create<EconomicsState>()(
     }),
     {
       name: 'economics-trainer-data',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      storage: debouncedStorage.storage as any,
+      storage: debouncedStorage.storage,
       partialize: (state) => ({
         quizResults: state.quizResults,
         gdpResults: state.gdpResults,
@@ -513,15 +513,7 @@ export const useEconomicsStore = create<EconomicsState>()(
         totalXP: state.totalXP,
         dailyChallenges: state.dailyChallenges,
         streakState: state.streakState,
-      }),
+      }) as unknown as EconomicsState,
     },
   ),
 )
-
-// Cleanup function for HMR - call this when the module is disposed
-declare const module: NodeJS.Module & { hot?: { dispose: (cb: () => void) => void } };
-if (typeof window !== 'undefined' && module.hot) {
-  module.hot.dispose(() => {
-    debouncedStorage.cleanup()
-  })
-}
