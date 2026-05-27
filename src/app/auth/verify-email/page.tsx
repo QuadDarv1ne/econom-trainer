@@ -24,6 +24,8 @@ function VerifyEmailContent() {
     if (!token || !email || status || submittedRef.current) return
     submittedRef.current = true
 
+    let cancelled = false
+
     ;(async () => {
       try {
         const res = await fetch('/api/auth/verify-email', {
@@ -32,6 +34,8 @@ function VerifyEmailContent() {
           body: JSON.stringify({ token, email }),
         })
 
+        if (cancelled) return
+
         // The endpoint redirects, but if it fails without redirect, handle it
         if (res.ok) {
           // Redirect happened via Response.redirect, but in case it didn't:
@@ -39,6 +43,7 @@ function VerifyEmailContent() {
             logError('verify-email-json', e)
             return null
           })
+          if (cancelled) return
           if (data?.error) {
             setStatus('error')
           }
@@ -46,9 +51,15 @@ function VerifyEmailContent() {
           setStatus('error')
         }
       } catch {
-        setStatus('error')
+        if (!cancelled) {
+          setStatus('error')
+        }
       }
     })()
+
+    return () => {
+      cancelled = true
+    }
   }, [token, email, status, router])
 
   if (status === 'success') {
