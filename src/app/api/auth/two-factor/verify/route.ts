@@ -36,8 +36,8 @@ export async function POST(req: Request) {
       return withSecurityHeaders(NextResponse.json({ error: 'Code is required' }, { status: 400 }));
     }
 
-    // 2FA codes are 6 digits; reject overly long inputs
-    if (typeof code !== 'string' || code.length > 10) {
+    // TOTP codes are exactly 6 digits
+    if (typeof code !== 'string' || !/^\d{6}$/.test(code)) {
       return withSecurityHeaders(NextResponse.json({ error: 'Invalid code format' }, { status: 400 }));
     }
 
