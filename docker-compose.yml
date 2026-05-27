@@ -1,0 +1,25 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://econom:secretpass@db:5432/econom
+      - AUTH_SECRET=change-me-generate-with-openssl-rand-base64-32
+      - TRUST_PROXY=true
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=econom
+      - POSTGRES_PASSWORD=secretpass
+      - POSTGRES_DB=econom
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres-data:

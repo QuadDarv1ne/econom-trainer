@@ -1,0 +1,15 @@
+.git
+.github
+.vscode
+.next
+node_modules
+*.md
+!README.md
+.env
+.env.local
+public/screenshots
+e2e
+tests
+**/*.test.*
+**/*.spec.*
+playwright.config.*
