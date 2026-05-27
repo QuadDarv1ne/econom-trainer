@@ -92,15 +92,41 @@ export function useProfile(): UseProfileReturn {
   }, [])
 
   useEffect(() => {
+    let cancelled = false
     if (status === 'unauthenticated') {
       router.push('/auth/login')
       return
     }
 
     if (status === 'authenticated') {
-      queueMicrotask(() => fetchProfile())
+      queueMicrotask(async () => {
+        try {
+          const res = await fetch('/api/profile')
+          if (cancelled) return
+          if (res.ok) {
+            const data = await res.json()
+            setProfile(data)
+            setName(data.name || '')
+            setPhone(data.phone || '')
+          } else {
+            const data = await res.json().catch((e) => {
+              logError('fetch-profile-json', e)
+              return null
+            })
+            setError(safeErrorMessage(data, tRef.current('dashboard.profile.fetchError')))
+          }
+        } catch (e) {
+          if (!cancelled) {
+            logError('fetch-profile', e)
+            setError(tRef.current('dashboard.profile.fetchError'))
+          }
+        } finally {
+          if (!cancelled) setLoading(false)
+        }
+      })
     }
-  }, [status, router, fetchProfile])
+    return () => { cancelled = true }
+  }, [status, router])
 
   const updateProfile = useCallback(
     async (updateName?: string, updatePhone?: string) => {
@@ -160,14 +186,21 @@ export function useProfile(): UseProfileReturn {
 
 /**
  * Shared hook for syncing local zustand progress to server.
+ * Automatically syncs on:
+ * - Mount (if authenticated and has local progress)
+ * - Browser 'online' event with debounce
+ * - Periodic background sync every 5 minutes
+ * - Manual trigger via syncProgress()
  */
 export function useProgressSync(): UseProgressSyncReturn {
   const { t } = useI18n()
   const [syncing, setSyncing] = useState(false)
   const [syncError, setSyncError] = useState('')
   const [syncSuccess, setSyncSuccess] = useState('')
+  const lastSyncedAtRef = useRef(0)
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const syncProgress = useCallback(async () => {
+  const doSync = useCallback(async () => {
     setSyncing(true)
     setSyncError('')
     setSyncSuccess('')
@@ -192,7 +225,10 @@ export function useProgressSync(): UseProgressSyncReturn {
         if (serverData.totalXP !== undefined) {
           useEconomicsStore.setState({ totalXP: serverData.totalXP })
         }
+        lastSyncedAtRef.current = Date.now()
         setSyncSuccess(t('dashboard.progress.synced'))
+      } else {
+        setSyncError(t('dashboard.progress.syncError'))
       }
     } catch {
       setSyncError(t('dashboard.progress.syncError'))
@@ -200,6 +236,56 @@ export function useProgressSync(): UseProgressSyncReturn {
       setSyncing(false)
     }
   }, [t])
+
+  // Debounced sync to prevent rapid-fire requests
+  const scheduleSync = useCallback(() => {
+    const now = Date.now()
+    if (now - lastSyncedAtRef.current < 30_000) return // skip if synced within 30s
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
+    debounceTimerRef.current = setTimeout(() => {
+      doSync()
+      debounceTimerRef.current = null
+    }, 2000)
+  }, [doSync])
+
+  // Auto-sync on online event and periodic background sync
+  useEffect(() => {
+    // Initial sync after a short delay (let store hydrate from localStorage)
+    const initialTimer = setTimeout(() => {
+      const store = useEconomicsStore.getState()
+      const hasProgress =
+        store.totalXP > 0 ||
+        store.quizResults.length > 0 ||
+        store.moduleInteractions.length > 0
+      if (hasProgress) {
+        doSync()
+      }
+    }, 3000)
+
+    // Sync on reconnect
+    window.addEventListener('online', scheduleSync)
+
+    // Periodic background sync every 5 minutes
+    const periodicTimer = setInterval(() => {
+      const hasProgress = useEconomicsStore.getState().totalXP > 0
+      if (hasProgress && !syncing) {
+        scheduleSync()
+      }
+    }, 5 * 60 * 1000)
+
+    return () => {
+      clearTimeout(initialTimer)
+      clearInterval(periodicTimer)
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
+      window.removeEventListener('online', scheduleSync)
+    }
+  }, [doSync, scheduleSync, syncing])
+
+  // Expose manual sync for explicit user action
+  const syncProgress = useCallback(() => {
+    lastSyncedAtRef.current = 0 // bypass debounce
+    return doSync()
+  }, [doSync])
 
   return { syncing, syncError, syncSuccess, setSyncError, setSyncSuccess, syncProgress }
 }
