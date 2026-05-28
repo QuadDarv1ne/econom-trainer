@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>PWA Screenshot Generator</title></head>
+<body>
+<canvas id="desktop" width="1280" height="720"></canvas>
+<canvas id="mobile" width="750" height="1334"></canvas>
+<script>
+// Desktop screenshot
+(function() {
+  const c = document.getElementById('desktop');
+  const ctx = c.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#f8fafc';
+  ctx.fillRect(0, 0, 1280, 720);
+
+  // Header
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, 1280, 64);
+  ctx.fillStyle = '#0f172a';
+  ctx.font = 'bold 20px sans-serif';
+  ctx.fillText('Экономический тренажёр', 24, 40);
+
+  // XP Badge
+  ctx.fillStyle = '#fef3c7';
+  ctx.fillRect(1000, 16, 120, 32);
+  ctx.fillStyle = '#d97706';
+  ctx.font = '14px sans-serif';
+  ctx.fillText('⚡ Level 5 • 450 XP', 1010, 36);
+
+  // Hero
+  ctx.fillStyle = '#0f172a';
+  ctx.font = 'bold 36px sans-serif';
+  ctx.fillText('Изучайте экономику играючи', 340, 140);
+  ctx.fillStyle = '#64748b';
+  ctx.font = '18px sans-serif';
+  ctx.fillText('25 интерактивных модулей • Квизы • XP система', 380, 175);
+
+  // Module cards grid (4x3)
+  const modules = [
+    { title: 'Расчёт ВВП', color: '#3b82f6', icon: '📊' },
+    { title: 'Спрос и предложение', color: '#10b981', icon: '📈' },
+    { title: 'Эластичность', color: '#8b5cf6', icon: '📐' },
+    { title: 'Кейнсианство', color: '#f59e0b', icon: '🏛️' },
+    { title: 'Инфляция', color: '#ef4444', icon: '💰' },
+    { title: 'Кривая Филлипса', color: '#06b6d4', icon: '📉' },
+    { title: 'Кривая Лоренца', color: '#ec4899', icon: '📊' },
+    { title: 'IS-LM модель', color: '#6366f1', icon: '🔗' },
+    { title: 'ППФ', color: '#14b8a6', icon: '📐' },
+    { title: 'Издержки', color: '#f97316', icon: '💵' },
+    { title: 'Сравнительные преимущества', color: '#a855f7', icon: '⚖️' },
+    { title: 'Точка безубыточности', color: '#22c55e', icon: '📊' },
+  ];
+
+  modules.forEach((mod, i) => {
+    const col = i % 4;
+    const row = Math.floor(i / 4);
+    const x = 80 + col * 290;
+    const y = 220 + row * 160;
+
+    // Card background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x, y, 260, 130);
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.strokeRect(x, y, 260, 130);
+
+    // Icon circle
+    ctx.fillStyle = mod.color + '20';
+    ctx.beginPath();
+    ctx.arc(x + 32, y + 32, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.font = '20px sans-serif';
+    ctx.fillText(mod.icon, x + 22, y + 38);
+
+    // Title
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 16px sans-serif';
+    ctx.fillText(mod.title, x + 64, y + 30);
+
+    // Progress bar
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(x + 20, y + 90, 220, 8);
+    const progress = Math.random() * 80 + 10;
+    ctx.fillStyle = mod.color;
+    ctx.fillRect(x + 20, y + 90, 220 * (progress / 100), 8);
+    ctx.fillStyle = '#64748b';
+    ctx.font = '12px sans-serif';
+    ctx.fillText(`${Math.round(progress)}%`, x + 200, y + 110);
+  });
+})();
+
+// Mobile screenshot
+(function() {
+  const c = document.getElementById('mobile');
+  const ctx = c.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#f8fafc';
+  ctx.fillRect(0, 0, 750, 1334);
+
+  // Header
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, 750, 64);
+  ctx.fillStyle = '#0f172a';
+  ctx.font = 'bold 18px sans-serif';
+  ctx.fillText('☰ Экономический тренажёр', 24, 40);
+
+  // XP Badge
+  ctx.fillStyle = '#fef3c7';
+  ctx.fillRect(560, 16, 170, 32);
+  ctx.fillStyle = '#d97706';
+  ctx.font = '14px sans-serif';
+  ctx.fillText('⚡ Level 5 • 450 XP', 570, 36);
+
+  // Hero
+  ctx.fillStyle = '#0f172a';
+  ctx.font = 'bold 28px sans-serif';
+  ctx.fillText('Изучайте экономику', 100, 120);
+  ctx.fillText('играючи', 240, 155);
+  ctx.fillStyle = '#64748b';
+  ctx.font = '16px sans-serif';
+  ctx.fillText('25 модулей • Квизы • XP', 160, 190);
+
+  // Module cards (single column)
+  const modules = [
+    { title: 'Расчёт ВВП', desc: 'Вычисление номинального и реального ВВП', color: '#3b82f6', icon: '📊' },
+    { title: 'Спрос и предложение', desc: 'Равновесная цена и рыночные силы', color: '#10b981', icon: '📈' },
+    { title: 'Эластичность', desc: 'Ценовая эластичность спроса', color: '#8b5cf6', icon: '📐' },
+    { title: 'Кейнсианство', desc: 'Кейнсианский крест и мультипликатор', color: '#f59e0b', icon: '🏛️' },
+    { title: 'Инфляция', desc: 'Индекс потребительских цен', color: '#ef4444', icon: '💰' },
+    { title: 'Кривая Филлипса', desc: 'Взаимосвязь инфляции и безработицы', color: '#06b6d4', icon: '📉' },
+    { title: 'IS-LM модель', desc: 'Равновесие на товарном и денежном рынках', color: '#6366f1', icon: '🔗' },
+    { title: 'Финансовая математика', desc: 'NPV, IRR, аннуитеты', color: '#22c55e', icon: '📊' },
+  ];
+
+  modules.forEach((mod, i) => {
+    const x = 40;
+    const y = 230 + i * 130;
+
+    // Card background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x, y, 670, 110);
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.strokeRect(x, y, 670, 110);
+
+    // Icon circle
+    ctx.fillStyle = mod.color + '20';
+    ctx.beginPath();
+    ctx.arc(x + 40, y + 40, 28, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.font = '24px sans-serif';
+    ctx.fillText(mod.icon, x + 28, y + 48);
+
+    // Title
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 18px sans-serif';
+    ctx.fillText(mod.title, x + 80, y + 36);
+
+    // Description
+    ctx.fillStyle = '#64748b';
+    ctx.font = '14px sans-serif';
+    ctx.fillText(mod.desc, x + 80, y + 58);
+
+    // Progress bar
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(x + 80, y + 76, 550, 10);
+    const progress = Math.random() * 70 + 15;
+    ctx.fillStyle = mod.color;
+    ctx.fillRect(x + 80, y + 76, 550 * (progress / 100), 10);
+  });
+})();
+</script>
+</body>
+</html>

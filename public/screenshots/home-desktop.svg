@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8fafc"/>
+      <stop offset="100%" style="stop-color:#e2e8f0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <!-- Header -->
+  <rect y="0" width="1280" height="64" fill="#ffffff"/>
+  <rect y="64" width="1280" height="1" fill="#e2e8f0"/>
+  <!-- Logo circle -->
+  <circle cx="40" cy="32" r="16" fill="#0f172a"/>
+  <text x="36" y="38" fill="#ffffff" font-size="14" font-family="sans-serif">E</text>
+  <!-- Title -->
+  <text x="70" y="38" fill="#0f172a" font-size="20" font-weight="bold" font-family="sans-serif">Экономический тренажёр</text>
+  <!-- XP Badge -->
+  <rect x="1020" y="16" width="130" height="32" rx="16" fill="#fef3c7"/>
+  <text x="1035" y="36" fill="#d97706" font-size="14" font-family="sans-serif">⚡ Level 5 • 450 XP</text>
+  <!-- Hero section -->
+  <text x="640" y="140" fill="#0f172a" font-size="36" font-weight="bold" text-anchor="middle" font-family="sans-serif">Изучайте экономику играючи</text>
+  <text x="640" y="170" fill="#64748b" font-size="18" text-anchor="middle" font-family="sans-serif">25 интерактивных модулей • Квизы • XP система</text>
+  <!-- Module cards - Row 1 -->
+  <rect x="80" y="220" width="260" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="120" cy="260" r="22" fill="#3b82f620"/>
+  <text x="112" y="266" font-size="20" font-family="sans-serif">📊</text>
+  <text x="155" y="256" fill="#0f172a" font-size="16" font-weight="bold" font-family="sans-serif">Расчёт ВВП</text>
+  <rect x="100" y="310" width="220" height="8" rx="4" fill="#e2e8f0"/>
+  <rect x="100" y="310" width="132" height="8" rx="4" fill="#3b82f6"/>
+  <text x="280" y="340" fill="#64748b" font-size="12" font-family="sans-serif">60%</text>
+
+  <rect x="370" y="220" width="260" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="410" cy="260" r="22" fill="#10b98120"/>
+  <text x="402" y="266" font-size="20" font-family="sans-serif">📈</text>
+  <text x="445" y="256" fill="#0f172a" font-size="16" font-weight="bold" font-family="sans-serif">Спрос и предложение</text>
+  <rect x="390" y="310" width="220" height="8" rx="4" fill="#e2e8f0"/>
+  <rect x="390" y="310" width="176" height="8" rx="4" fill="#10b981"/>
+  <text x="570" y="340" fill="#64748b" font-size="12" font-family="sans-serif">80%</text>
+
+  <rect x="660" y="220" width="260" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="700" cy="260" r="22" fill="#8b5cf620"/>
+  <text x="692" y="266" font-size="20" font-family="sans-serif">📐</text>
+  <text x="735" y="256" fill="#0f172a" font-size="16" font-weight="bold" font-family="sans-serif">Эластичность</text>
+  <rect x="680" y="310" width="220" height="8" rx="4" fill="#e2e8f0"/>
+  <rect x="680" y="310" width="88" height="8" rx="4" fill="#8b5cf6"/>
+  <text x="860" y="340" fill="#64748b" font-size="12" font-family="sans-serif">40%</text>
+
+  <rect x="950" y="220" width="260" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="990" cy="260" r="22" fill="#f59e0b20"/>
+  <text x="982" y="266" font-size="20" font-family="sans-serif">🏛️</text>
+  <text x="1025" y="256" fill="#0f172a" font-size="16" font-weight="bold" font-family="sans-serif">Кейнсианство</text>
+  <rect x="970" y="310" width="220" height="8" rx="4" fill="#e2e8f0"/>
+  <rect x="970" y="310" width="154" height="8" rx="4" fill="#f59e0b"/>
+  <text x="1150" y="340" fill="#64748b" font-size="12" font-family="sans-serif">70%</text>
+
+  <!-- Module cards - Row 2 -->
+  <rect x="80" y="380" width="260" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="120" cy="420" r="22" fill="#ef444420"/>
+  <text x="112" y="426" font-size="20" font-family="sans-serif">💰</text>
+  <text x="155" y="416" fill="#0f172a" font-size="16" font-weight="bold" font-family="sans-serif">Инфляция</text>
+  <rect x="100" y="470" width="220" height="8" rx="4" fill="#e2e8f0"/>
+  <rect x="100" y="470" width="44" height="8" rx="4" fill="#ef4444"/>
+  <text x="280" y="500" fill="#64748b" font-size="12" font-family="sans-serif">20%</text>
+
+  <rect x="370" y="380" width="260" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="410" cy="420" r="22" fill="#06b6d420"/>
+  <text x="402" y="426" font-size="20" font-family="sans-serif">📉</text>
+  <text x="445" y="416" fill="#0f172a" font-size="16" font-weight="bold" font-family="sans-serif">Кривая Филлипса</text>
+  <rect x="390" y="470" width="220" height="8" rx="4" fill="#e2e8f0"/>
+  <rect x="390" y="470" width="110" height="8" rx="4" fill="#06b6d4"/>
+  <text x="570" y="500" fill="#64748b" font-size="12" font-family="sans-serif">50%</text>
+
+  <rect x="660" y="380" width="260" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="700" cy="420" r="22" fill="#6366f120"/>
+  <text x="692" y="426" font-size="20" font-family="sans-serif">🔗</text>
+  <text x="735" y="416" fill="#0f172a" font-size="16" font-weight="bold" font-family="sans-serif">IS-LM модель</text>
+  <rect x="680" y="470" width="220" height="8" rx="4" fill="#e2e8f0"/>
+  <rect x="680" y="470" width="22" height="8" rx="4" fill="#6366f1"/>
+  <text x="860" y="500" fill="#64748b" font-size="12" font-family="sans-serif">10%</text>
+
+  <rect x="950" y="380" width="260" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="990" cy="420" r="22" fill="#22c55e20"/>
+  <text x="982" y="426" font-size="20" font-family="sans-serif">📊</text>
+  <text x="1025" y="416" fill="#0f172a" font-size="16" font-weight="bold" font-family="sans-serif">Финансовая математика</text>
+  <rect x="970" y="470" width="220" height="8" rx="4" fill="#e2e8f0"/>
+  <rect x="970" y="470" width="198" height="8" rx="4" fill="#22c55e"/>
+  <text x="1150" y="500" fill="#64748b" font-size="12" font-family="sans-serif">90%</text>
+
+  <!-- Module cards - Row 3 -->
+  <rect x="80" y="540" width="260" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="120" cy="580" r="22" fill="#14b8a620"/>
+  <text x="112" y="586" font-size="20" font-family="sans-serif">📐</text>
+  <text x="155" y="576" fill="#0f172a" font-size="16" font-weight="bold" font-family="sans-serif">ППФ</text>
+  <rect x="100" y="630" width="220" height="8" rx="4" fill="#e2e8f0"/>
+  <rect x="100" y="630" width="66" height="8" rx="4" fill="#14b8a6"/>
+  <text x="280" y="660" fill="#64748b" font-size="12" font-family="sans-serif">30%</text>
+
+  <rect x="370" y="540" width="260" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="410" cy="580" r="22" fill="#f9731620"/>
+  <text x="402" y="586" font-size="20" font-family="sans-serif">💵</text>
+  <text x="445" y="576" fill="#0f172a" font-size="16" font-weight="bold" font-family="sans-serif">Издержки</text>
+  <rect x="390" y="630" width="220" height="8" rx="4" fill="#e2e8f0"/>
+  <rect x="390" y="630" width="154" height="8" rx="4" fill="#f97316"/>
+  <text x="570" y="660" fill="#64748b" font-size="12" font-family="sans-serif">70%</text>
+
+  <rect x="660" y="540" width="260" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="700" cy="580" r="22" fill="#a855f720"/>
+  <text x="692" y="586" font-size="20" font-family="sans-serif">⚖️</text>
+  <text x="735" y="576" fill="#0f172a" font-size="16" font-weight="bold" font-family="sans-serif">Сравнительные преим.</text>
+  <rect x="680" y="630" width="220" height="8" rx="4" fill="#e2e8f0"/>
+  <rect x="680" y="630" width="88" height="8" rx="4" fill="#a855f7"/>
+  <text x="860" y="660" fill="#64748b" font-size="12" font-family="sans-serif">40%</text>
+
+  <rect x="950" y="540" width="260" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="990" cy="580" r="22" fill="#ec489920"/>
+  <text x="982" y="586" font-size="20" font-family="sans-serif">📊</text>
+  <text x="1025" y="576" fill="#0f172a" font-size="16" font-weight="bold" font-family="sans-serif">Кривая Лоренца</text>
+  <rect x="970" y="630" width="220" height="8" rx="4" fill="#e2e8f0"/>
+  <rect x="970" y="630" width="44" height="8" rx="4" fill="#ec4899"/>
+  <text x="1150" y="660" fill="#64748b" font-size="12" font-family="sans-serif">20%</text>
+</svg>
