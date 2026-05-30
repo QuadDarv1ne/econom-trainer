@@ -92,28 +92,28 @@ export function ProgressTracker() {
         <Card className="border-2 border-primary/20">
           <CardContent className="p-4 text-center">
             <Target className="h-6 w-6 mx-auto mb-2 text-green-500" />
-            <div className="text-2xl font-bold">{scores.quizzes}%</div>
+            <div className="text-2xl font-bold">{scores.quizAccuracy}%</div>
             <div className="text-xs text-muted-foreground">{t('progress.quizzes')}</div>
           </CardContent>
         </Card>
         <Card className="border-2 border-primary/20">
           <CardContent className="p-4 text-center">
             <BarChart3 className="h-6 w-6 mx-auto mb-2 text-blue-500" />
-            <div className="text-2xl font-bold">{scores.gdp}</div>
+            <div className="text-2xl font-bold">{scores.gdpCount}</div>
             <div className="text-xs text-muted-foreground">{t('progress.gdpCalculations')}</div>
           </CardContent>
         </Card>
         <Card className="border-2 border-primary/20">
           <CardContent className="p-4 text-center">
             <Flame className="h-6 w-6 mx-auto mb-2 text-orange-500" />
-            <div className="text-2xl font-bold">{scores.finance}%</div>
+            <div className="text-2xl font-bold">{scores.financeAccuracy}%</div>
             <div className="text-xs text-muted-foreground">{t('progress.financeTasks')}</div>
           </CardContent>
         </Card>
         <Card className="border-2 border-primary/20 col-span-2 sm:col-span-1">
           <CardContent className="p-4 text-center">
             <Gauge className="h-6 w-6 mx-auto mb-2 text-cyan-500" />
-            <div className="text-2xl font-bold">{scores.elasticity}</div>
+            <div className="text-2xl font-bold">{scores.elasticityCount}</div>
             <div className="text-xs text-muted-foreground">{t('progress.elasticity')}</div>
           </CardContent>
         </Card>
@@ -137,7 +137,7 @@ export function ProgressTracker() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg">{t('progress.quizResultsTitle')}</CardTitle>
                   <CardDescription>
-                    {t('progress.quizAvgScore')}: {scores.quizzes}% | {t('progress.quizTotalQuestions')}: {quizTotal}
+                    {t('progress.quizAvgScore')}: {scores.quizAccuracy}% | {t('progress.quizTotalQuestions')}: {quizTotal}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -186,7 +186,7 @@ export function ProgressTracker() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg">{t('progress.financeTitle')}</CardTitle>
                   <CardDescription>
-                    {t('progress.accuracy')}: {scores.finance}% | {t('progress.solved')}: {financeTotal} {t('progress.tasks')}
+                    {t('progress.accuracy')}: {scores.financeAccuracy}% | {t('progress.solved')}: {financeTotal} {t('progress.tasks')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

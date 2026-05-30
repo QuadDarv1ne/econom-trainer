@@ -221,16 +221,16 @@ describe("Store actions", () => {
     })
 
     const scores = store.getTotalScore()
-    expect(scores.quizzes).toBe(75) // (7+8)/(10+10) = 15/20 = 75%
+    expect(scores.quizAccuracy).toBe(75) // (7+8)/(10+10) = 15/20 = 75%
   })
 
   it("getTotalScore returns 0 for empty state", () => {
     const store = useEconomicsStore.getState()
     const scores = store.getTotalScore()
     
-    expect(scores.quizzes).toBe(0)
-    expect(scores.gdp).toBe(0)
-    expect(scores.finance).toBe(0)
-    expect(scores.elasticity).toBe(0)
+    expect(scores.quizAccuracy).toBe(0)
+    expect(scores.gdpCount).toBe(0)
+    expect(scores.financeAccuracy).toBe(0)
+    expect(scores.elasticityCount).toBe(0)
   })
 })

@@ -339,7 +339,7 @@ export interface EconomicsState {
   recordActivity: () => void
   unlockAchievement: (id: string, xpReward?: number) => void
   addXP: (amount: number) => void
-  getTotalScore: () => { quizzes: number; gdp: number; finance: number; elasticity: number }
+  getTotalScore: () => { quizAccuracy: number; gdpCount: number; financeAccuracy: number; elasticityCount: number }
   computeStats: () => { quizCorrect: number; quizTotal: number; financeCorrect: number; financeTotal: number }
   getXPState: () => XPState
   resetProgress: () => void
@@ -354,6 +354,11 @@ export interface EconomicsState {
     gdpCount: number
     elasticityCount: number
   }
+  syncStatus: SyncStatus
+  markSynced: () => void
+  markSyncError: (error: string) => void
+  setSyncConflict: (conflict: import('@/store/economics-store').SyncConflict | null) => void
+  incrementPendingChanges: () => void
 }
 
 const debouncedStorage = createDebouncedStorage<EconomicsState>(300)
@@ -370,6 +375,7 @@ export const useEconomicsStore = create<EconomicsState>()(
       totalXP: 0,
       dailyChallenges: [],
       streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
+      syncStatus: { status: 'idle' as const, lastSyncAt: null, error: null, pendingChanges: 0 },
 
       addQuizResult: (result) => {
         const today = new Date().toLocaleDateString('en-CA') // YYYY-MM-DD in local timezone
@@ -461,10 +467,10 @@ export const useEconomicsStore = create<EconomicsState>()(
         const gdpTotal = state.gdpResults.length
         const elasticityTotal = state.elasticityResults.length
         return {
-          quizzes: quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 0,
-          gdp: gdpTotal,
-          finance: financeTotal > 0 ? Math.round((financeCorrect / financeTotal) * 100) : 0,
-          elasticity: elasticityTotal,
+          quizAccuracy: quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 0,
+          gdpCount: gdpTotal,
+          financeAccuracy: financeTotal > 0 ? Math.round((financeCorrect / financeTotal) * 100) : 0,
+          elasticityCount: elasticityTotal,
         }
       },
 
@@ -480,7 +486,7 @@ export const useEconomicsStore = create<EconomicsState>()(
         return { totalXP: state.totalXP, level, xpToNextLevel, xpInCurrentLevel }
       },
 
-            markSynced: () => {
+      markSynced: () => {
         set(() => ({
           syncStatus: { status: 'success', lastSyncAt: new Date().toISOString(), error: null, pendingChanges: 0 },
         }))
@@ -520,6 +526,7 @@ export const useEconomicsStore = create<EconomicsState>()(
           totalXP: 0,
           dailyChallenges: [],
           streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
+          syncStatus: { status: 'idle' as const, lastSyncAt: null, error: null, pendingChanges: 0 },
         }
         set(newState)
       },
