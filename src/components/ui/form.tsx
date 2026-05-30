@@ -142,7 +142,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
     const msg = error?.message
     body = typeof msg === 'string' ? msg : msg ? JSON.stringify(msg) : ""
   } else {
-    body = props.children ?? ""
+    body = typeof props.children === "string" ? props.children : ""
   }
 
   if (!body) {

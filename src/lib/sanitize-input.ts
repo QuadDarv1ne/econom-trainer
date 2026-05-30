@@ -17,9 +17,7 @@ export function sanitizeHtml(value: string): string {
       a: ['href', 'title'],
     },
     allowedSchemes: ['http', 'https', 'mailto'],
-    allowedSchemesApplyToAttributes: {
-      href: ['http', 'https', 'mailto', 'tel'],
-    },
+    allowedSchemesAppliedToAttributes: ['href'],
     disallowedTagsMode: 'discard',
   }).trim();
 }
