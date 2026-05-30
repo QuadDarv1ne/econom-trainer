@@ -51,6 +51,9 @@ export async function POST(req: Request) {
       return withSecurityHeaders(NextResponse.json({ message: 'If this email is registered, we will send a reset link' }));
     }
 
+    // Apply same delay in the user-found branch to prevent timing side-channel
+    await new Promise((resolve) => setTimeout(resolve, ENUMERATION_DELAY_MS));
+
     // Generate reset token
     const token = randomBytes(32).toString('hex');
     const expires = new Date(Date.now() + RESET_TOKEN_EXPIRY_MS); // 1 hour

@@ -83,7 +83,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                 variant="ghost"
                 size="sm"
                 className="w-full text-muted-foreground"
-                onClick={() => window.open('https://github.com/QuadDarv1ne/econom-trainer/issues/new', '_blank')}
+                onClick={() => window.open('https://github.com/QuadDarv1ne/econom-trainer/issues/new', '_blank', 'noopener,noreferrer')}
               >
                 <Github className="mr-2 h-4 w-4" />
                 Report this bug on GitHub

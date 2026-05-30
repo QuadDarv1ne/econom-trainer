@@ -9,6 +9,7 @@ import { logError } from '@/lib/log-error';
 import { BCRYPT_SALT_ROUNDS } from '@/lib/constants';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { withSecurityHeaders } from '@/lib/security-headers';
+import { invalidateSessionCache } from '@/lib/session-cache';
 
 export async function POST(req: Request) {
   try {
@@ -56,7 +57,7 @@ export async function POST(req: Request) {
 
     // Atomically mark token as used AND update password in transaction
     // The updateMany with used=false prevents race condition: only first request succeeds
-    const [updatedToken, _userUpdate] = await prisma.$transaction([
+    const [updatedToken, updatedUser] = await prisma.$transaction([
       prisma.passwordResetToken.updateMany({
         where: { id: resetToken.id, used: false },
         data: { used: true },
@@ -74,6 +75,8 @@ export async function POST(req: Request) {
         { status: 400 }
       ));
     }
+
+    invalidateSessionCache(updatedUser.id || '');
 
     return withSecurityHeaders(NextResponse.json({ message: 'Password successfully changed' }));
   } catch (error) {
