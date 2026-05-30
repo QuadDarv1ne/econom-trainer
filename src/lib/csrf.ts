@@ -34,7 +34,9 @@ export function validateOrigin(req: Request, options?: { strict?: boolean }): bo
     return true;
   }
 
-  const origin = req.headers.get('origin') || req.headers.get('referer');
+  const originHeader = req.headers.get('origin');
+  if (strict && !originHeader) return false;
+  const origin = originHeader || req.headers.get('referer');
 
   if (!origin) {
     if (strict) return false;

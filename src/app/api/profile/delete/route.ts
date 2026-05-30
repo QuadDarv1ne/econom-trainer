@@ -7,6 +7,7 @@ import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
 import { withSecurityHeaders } from '@/lib/security-headers';
+import { invalidateSessionCache } from '@/lib/session-cache';
 
 // DELETE - Delete user account
 export async function DELETE(req: Request) {
@@ -59,6 +60,7 @@ export async function DELETE(req: Request) {
 
     // Delete user (cascade handles related records)
     await prisma.user.delete({
+    invalidateSessionCache(session.user.id);
       where: { id: session.user.id },
     });
 

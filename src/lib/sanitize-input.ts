@@ -4,11 +4,11 @@ import sanitizeHtmlLib from 'sanitize-html';
  * Strip HTML tags and control characters from user input.
  * Used as a lightweight fallback when sanitize-html is unavailable.
  */
-export function sanitizeInput(value: string): string {
-  return value
-    .replace(/<[^>]*>/g, '')
-    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-    .trim();
+/**
+ * @deprecated Use sanitizePlainText instead. This regex-based approach is vulnerable to SVG XSS.
+ */
+export function sanitizeInput(input: string): string {
+  return sanitizePlainText(input)
 }
 
 /**
@@ -22,6 +22,9 @@ export function sanitizeHtml(value: string): string {
       a: ['href', 'title'],
     },
     allowedSchemes: ['http', 'https', 'mailto'],
+    allowedSchemesApplyToAttributes: {
+      href: ['http', 'https', 'mailto', 'tel'],
+    },
     disallowedTagsMode: 'discard',
   }).trim();
 }

@@ -64,7 +64,11 @@ function sanitizeError(error: unknown, depth = 0): string {
         }
       }
     }
-    return JSON.stringify(error).slice(0, 200);
+    try {
+      return JSON.stringify(error).slice(0, 200);
+    } catch {
+      return '[Object - serialization failed]';
+    }
   }
   return String(error);
 }
