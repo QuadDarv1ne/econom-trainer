@@ -424,6 +424,7 @@ export const useEconomicsStore = create<EconomicsState>()(
       },
 
       addXP: (amount) => {
+        if (amount < 0) return
         set((state) => ({ totalXP: state.totalXP + amount }))
       },
 
