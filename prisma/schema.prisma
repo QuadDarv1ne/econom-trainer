@@ -96,14 +96,19 @@ model UserProgress {
   userId           String   @unique
   totalXP          Int      @default(0)
   level            Int      @default(1)
-  quizResults      String?  // JSON: QuizResult[]
-  moduleHistory    String?  // JSON: ModuleInteraction[]
-  achievements     String?  // JSON: string[] (achievement IDs)
-  settings         String?  // JSON: { theme, language, notifications }
+  // Legacy JSON fields (kept for migration compatibility, will be deprecated)
+  quizResults      String?  // JSON: QuizResult[] - DEPRECATED, use QuizAttempt
+  moduleHistory    String?  // JSON: ModuleInteraction[] - DEPRECATED, use ModuleSession
+  achievements     String?  // JSON: string[] - DEPRECATED, use UserAchievement
+  settings         String?  // JSON: { theme, language, notifications } - DEPRECATED, use UserSetting
   lastSyncAt       DateTime @updatedAt
   createdAt        DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizAttempts QuizAttempt[]
+  moduleSessions ModuleSession[]
+  achievementsList UserAchievement[]
+  settingsList UserSetting[]
 
   @@index([userId])
   @@index([totalXP])
@@ -117,6 +122,78 @@ model TwoFactorConfirmation {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
+}
+
+
+// ===== Normalized Progress Tables =====
+
+model QuizAttempt {
+  id        String   @id @default(cuid())
+  userId    String
+  topic     String
+  score     Int
+  total     Int
+  accuracy  Float    // score / total for quick queries
+  date      DateTime @default(now())
+  details   String?  // Optional JSON for question-by-question breakdown
+
+  userProgress UserProgress @relation(fields: [userProgressId], references: [id], onDelete: Cascade)
+  userProgressId String
+
+  @@index([userId])
+  @@index([topic])
+  @@index([date])
+  @@index([accuracy])
+}
+
+model ModuleSession {
+  id           String   @id @default(cuid())
+  userId       String
+  moduleId     String   // gdp, supply-demand, quiz, finance, etc.
+  action       String   // calculate, answer, explore, practice
+  xpEarned     Int
+  date         DateTime @default(now())
+  score        Float?   // Optional: score for graded activities
+  duration     Int?     // Optional: time spent in seconds
+  details      String?  // Optional JSON for module-specific data
+
+  userProgress UserProgress @relation(fields: [userProgressId], references: [id], onDelete: Cascade)
+  userProgressId String
+
+  @@index([userId])
+  @@index([moduleId])
+  @@index([date])
+  @@index([xpEarned])
+}
+
+model UserAchievement {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String   // achievement identifier
+  unlockedAt DateTime @default(now())
+  xpReward  Int      @default(0)
+  metadata  String?  // Optional JSON for achievement details
+
+  userProgress UserProgress @relation(fields: [userProgressId], references: [id], onDelete: Cascade)
+  userProgressId String
+
+  @@index([userId])
+  @@index([name])
+  @@index([unlockedAt])
+}
+
+model UserSetting {
+  id           String   @id @default(cuid())
+  userId       String
+  key          String   // theme, language, notifications, etc.
+  value        String   // setting value
+  updatedAt    DateTime @default(now()) @updatedAt
+
+  userProgress UserProgress @relation(fields: [userProgressId], references: [id], onDelete: Cascade)
+  userProgressId String
+
+  @@unique([userProgressId, key])
   @@index([userId])
 }
 
