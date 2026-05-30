@@ -94,20 +94,23 @@ export function checkRateLimit(key: string, ip: string | null): { ok: boolean; r
   // Remove timestamps outside the current window
   entry.timestamps = entry.timestamps.filter((t) => t > windowStart);
 
-  // Record this request first
+  const count = entry.timestamps.length;
+
+  // Check FIRST if we've exceeded the limit, before recording this request
+  if (count >= config.max) {
+    const resetAt = entry.timestamps.length > 0
+      ? entry.timestamps[0] + config.windowMs
+      : now + config.windowMs;
+    return { ok: false, remaining: 0, resetAt };
+  }
+
+  // Now record this request (it is allowed)
   entry.timestamps.push(now);
 
-  const count = entry.timestamps.length;
-  const remaining = Math.max(0, config.max - count);
+  const remaining = Math.max(0, config.max - entry.timestamps.length);
   const resetAt = entry.timestamps.length > 0
     ? entry.timestamps[0] + config.windowMs
     : now + config.windowMs;
-
-  if (count > config.max) {
-    // Remove the request we just added since it exceeds the limit
-    entry.timestamps.pop();
-    return { ok: false, remaining: 0, resetAt };
-  }
 
   return { ok: true, remaining, resetAt };
 }
@@ -135,9 +138,6 @@ export function getClientIP(req: Request): string | null {
   }
 
   if (!trustProxy) {
-    // No proxy trust — only use headers that reverse proxies set directly
-    const realIP = req.headers.get('x-real-ip');
-    if (realIP) return sanitizeIP(realIP);
     return null;
   }
 

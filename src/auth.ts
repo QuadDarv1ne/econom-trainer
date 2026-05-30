@@ -159,8 +159,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
 
       // Extended session duration for remembered sessions (30 days vs default)
-      if (token.rememberMe && !token.exp) {
-        token.exp = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
+      if (token.rememberMe) {
+        const thirtyDays = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
+        token.exp = Math.max(token.exp ?? 0, thirtyDays);
       }
 
       // Validate sessionHash against database with caching

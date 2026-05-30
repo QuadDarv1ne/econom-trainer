@@ -79,7 +79,8 @@ export async function POST(req: Request) {
       return withSecurityHeaders(NextResponse.json({ error: result.error }, { status: 400 }));
     }
 
-    invalidateSessionCache(resetToken.email);
+    const user = await prisma.user.findUnique({ where: { email: resetToken.email }, select: { id: true } });
+    if (user) invalidateSessionCache(user.id);
 
     return withSecurityHeaders(NextResponse.json({ message: 'Password successfully changed' }));
   } catch (error) {

@@ -87,7 +87,17 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions): 
 const escapeHtml = (str: string) =>
   str.replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m] ?? m));
 
-const escapeUrl = (url: string) => escapeHtml(url).replace(/ /g, '%20');
+const escapeUrl = (url: string) => {
+  try {
+    const parsed = new URL(url);
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      return '#';
+    }
+    return escapeHtml(url).replace(/ /g, '%20');
+  } catch {
+    return '#';
+  }
+};
 
 const emailTranslations = {
   ru: {

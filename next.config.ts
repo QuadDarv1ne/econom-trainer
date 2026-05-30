@@ -84,7 +84,7 @@ const nextConfig: NextConfig = {
             value: [
               "default-src 'self'",
               // In development allow unsafe-eval for Next.js HMR; in production use strict-dynamic
-              `script-src 'self'${process.env.NODE_ENV !== 'production' ? " 'unsafe-inline' 'unsafe-eval'" : " 'strict-dynamic' https: http:"}`,
+              `script-src 'self'${process.env.NODE_ENV !== 'production' ? " 'unsafe-inline' 'unsafe-eval'" : " 'strict-dynamic'"}`,
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob:",
               "font-src 'self' data:",

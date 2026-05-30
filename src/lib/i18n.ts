@@ -49,6 +49,7 @@ export function getCurrentLocale(): Locale {
 // Set locale and save to localStorage
 export function setLocale(locale: Locale): void {
   if (typeof window === 'undefined') return;
+  if (!locales.includes(locale)) return;
   try {
     localStorage.setItem('locale', locale);
   } catch {

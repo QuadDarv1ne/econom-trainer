@@ -28,7 +28,10 @@ export const RESET_TOKEN_EXPIRY_MS = 60 * 60 * 1000;
  * Base URL for the application.
  * Falls back to localhost in development.
  */
-export const BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+export const BASE_URL = process.env.NEXT_PUBLIC_URL || 
+  (process.env.NODE_ENV === 'production' 
+    ? (() => { throw new Error('NEXT_PUBLIC_URL is required in production'); })() 
+    : "http://localhost:3000");
 
 /**
  * Maximum avatar image size in bytes (5 MB).
