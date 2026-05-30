@@ -10,6 +10,7 @@ import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
 import { BCRYPT_SALT_ROUNDS } from '@/lib/constants';
 import { withSecurityHeaders } from '@/lib/security-headers';
+import { invalidateSessionCache } from '@/lib/session-cache';
 
 // POST - Change password
 export async function POST(req: Request) {
@@ -72,6 +73,8 @@ export async function POST(req: Request) {
       where: { id: session.user.id },
       data: { passwordHash: newHash, sessionHash: newSessionHash },
     });
+
+    invalidateSessionCache(session.user.id);
 
     return withSecurityHeaders(NextResponse.json({ message: 'Password changed' }));
   } catch (error) {

@@ -6,6 +6,7 @@ import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { logError } from '@/lib/log-error';
 import { withSecurityHeaders } from '@/lib/security-headers';
+import { invalidateSessionCache } from '@/lib/session-cache';
 
 // POST - Sign out from all other sessions by updating user's sessionHash
 export async function POST(req: Request) {
@@ -32,6 +33,8 @@ export async function POST(req: Request) {
       where: { id: session.user.id },
       data: { sessionHash: newSessionHash },
     });
+
+    invalidateSessionCache(session.user.id);
 
     return withSecurityHeaders(NextResponse.json({ message: 'All other sessions revoked' }));
   } catch (error) {

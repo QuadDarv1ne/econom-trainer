@@ -17,6 +17,7 @@ export interface LevelInfo {
  * Uses a progressive scaling algorithm where each level requires more XP.
  */
 export function getLevelFromXP(totalXP: number): LevelInfo {
+  if (totalXP < 0) totalXP = 0;
   let level = 1;
   let xpNeeded = XP_PER_LEVEL;
   let remaining = totalXP;

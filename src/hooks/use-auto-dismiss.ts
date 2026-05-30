@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ALERT_AUTO_DISMISS_MS } from "@/lib/constants";
 
 /**
@@ -12,9 +12,14 @@ export function useAutoDismiss(
   onDismiss: () => void,
   durationMs: number = ALERT_AUTO_DISMISS_MS,
 ) {
+  const onDismissRef = useRef(onDismiss);
+  useEffect(() => {
+    onDismissRef.current = onDismiss;
+  }, [onDismiss]);
+
   useEffect(() => {
     if (!message) return;
-    const timer = setTimeout(() => onDismiss(), durationMs);
+    const timer = setTimeout(() => onDismissRef.current(), durationMs);
     return () => clearTimeout(timer);
-  }, [message, onDismiss, durationMs]);
+  }, [message, durationMs]);
 }

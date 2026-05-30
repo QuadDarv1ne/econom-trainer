@@ -8,6 +8,7 @@ import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { randomBytes } from 'crypto';
 import { logError } from '@/lib/log-error';
 import { withSecurityHeaders } from '@/lib/security-headers';
+import { invalidateSessionCache } from '@/lib/session-cache';
 
 export async function POST(req: Request) {
   try {
@@ -53,6 +54,8 @@ export async function POST(req: Request) {
       where: { id: session.user.id },
       data: { twoFactorEnabled: false, sessionHash: newSessionHash },
     });
+
+    invalidateSessionCache(session.user.id);
 
     await prisma.twoFactorConfirmation.deleteMany({
       where: { userId: session.user.id },
