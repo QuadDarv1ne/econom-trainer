@@ -141,7 +141,8 @@ export async function POST(req: Request) {
         try {
           const parsed = JSON.parse(serverData);
           if (Array.isArray(parsed)) serverArr = parsed;
-        } catch {
+        } catch (error) {
+          logError('sync-corrupt-server-data', error);
           // If server data is corrupt, use client data only
         }
       }
@@ -279,7 +280,8 @@ export async function PATCH(req: Request) {
         try {
           existingArr = JSON.parse(existingData);
           if (!Array.isArray(existingArr)) existingArr = [];
-        } catch {
+        } catch (error) {
+          logError('sync-corrupt-data', error);
           // Corrupt data, use new data only
         }
       }

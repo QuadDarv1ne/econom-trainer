@@ -5,7 +5,7 @@ import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { logError } from '@/lib/log-error';
-import { sanitizePlainText } from '@/lib/sanitize-input';
+import { sanitizePlainText, sanitizeImageUrl } from '@/lib/sanitize-input';
 import { AVATAR_MAX_BYTES } from '@/lib/constants';
 import { withSecurityHeaders } from '@/lib/security-headers';
 
@@ -111,7 +111,7 @@ export async function PATCH(req: Request) {
       data: {
         ...(name !== undefined && { name: sanitizePlainText(name) }),
         ...(phone !== undefined && { phone: phone === '' ? null : sanitizePlainText(phone ?? '') }),
-        ...(image !== undefined && { image: image === '' ? null : image }),
+        ...(image !== undefined && { image: image === '' ? null : sanitizeImageUrl(image) }),
       },
       select: USER_PROFILE_SELECT,
     });
