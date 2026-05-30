@@ -100,7 +100,9 @@ export default async function RootLayout({
         >
           {serverT('common.skipToContent', lang)}
         </a>
-        <Providers>{children}</Providers>
+        <Providers>
+        <div id="main-content">{children}</div>
+      </Providers>
       </body>
     </html>
   );

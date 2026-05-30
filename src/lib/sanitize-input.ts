@@ -1,9 +1,4 @@
 import sanitizeHtmlLib from 'sanitize-html';
-
-/**
- * Strip HTML tags and control characters from user input.
- * Used as a lightweight fallback when sanitize-html is unavailable.
- */
 /**
  * @deprecated Use sanitizePlainText instead. This regex-based approach is vulnerable to SVG XSS.
  */
