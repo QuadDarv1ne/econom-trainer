@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 import { t, getCurrentLocale, type Locale } from '@/lib/i18n'
 import { generateId } from '@/lib/utils'
 import { getLevelFromXP } from '@/lib/xp-utils'
+import { logError } from '@/lib/log-error'
 import { MAX_QUIZ_RESULTS, MAX_GDP_RESULTS, MAX_FINANCE_RESULTS, MAX_ELASTICITY_RESULTS, MAX_MODULE_INTERACTIONS, MAX_DAILY_CHALLENGES } from '@/lib/constants'
 
 export { getLevelFromXP }
@@ -64,7 +65,14 @@ function createDebouncedStorage<T>(delayMs: number = 500): {
           return JSON.parse(item)
         } catch {
           // Corrupted data — return null to reinitialize with defaults
-          console.warn(`[store] Failed to parse stored data for "${name}", resetting`)
+          // Backup corrupted data before removal for debugging
+          const backupKey = `${name}.backup.${Date.now()}`;
+          try {
+            localStorage.setItem(backupKey, item);
+            logError('store-corrupted-data', new Error(`Backed up corrupted data for "${name}" before removal`));
+          } catch (backupError) {
+            logError('store-corrupted-data', new Error(`Failed to backup corrupted data for "${name}"`));
+          }
           localStorage.removeItem(name)
           return null
         }
