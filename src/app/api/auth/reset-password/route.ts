@@ -57,26 +57,29 @@ export async function POST(req: Request) {
 
     // Atomically mark token as used AND update password in transaction
     // The updateMany with used=false prevents race condition: only first request succeeds
-    const [updatedToken, updatedUser] = await prisma.$transaction([
-      prisma.passwordResetToken.updateMany({
+    const result = await prisma.$transaction(async (tx) => {
+      const updated = await tx.passwordResetToken.updateMany({
         where: { id: resetToken.id, used: false },
         data: { used: true },
-      }),
-      prisma.user.update({
+      });
+
+      if (updated.count === 0) {
+        return { error: "Token has already been used" };
+      }
+
+      await tx.user.update({
         where: { email: resetToken.email },
         data: { passwordHash, sessionHash: newSessionHash },
-      }),
-    ]);
+      });
 
-    // If updateMany affected 0 rows, another request already used this token
-    if (updatedToken.count === 0) {
-      return withSecurityHeaders(NextResponse.json(
-        { error: 'Token has already been used' },
-        { status: 400 }
-      ));
+      return { success: true };
+    });
+
+    if ("error" in result) {
+      return withSecurityHeaders(NextResponse.json({ error: result.error }, { status: 400 }));
     }
 
-    invalidateSessionCache(updatedUser.id || '');
+    invalidateSessionCache(resetToken.email);
 
     return withSecurityHeaders(NextResponse.json({ message: 'Password successfully changed' }));
   } catch (error) {

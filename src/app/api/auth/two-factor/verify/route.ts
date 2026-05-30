@@ -9,6 +9,7 @@ import { randomBytes } from 'crypto';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
 import { BCRYPT_SALT_ROUNDS_BACKUP } from '@/lib/constants';
+import { invalidateSessionCache } from '@/lib/session-cache';
 import { withSecurityHeaders } from '@/lib/security-headers';
 
 export async function POST(req: Request) {
@@ -71,15 +72,18 @@ export async function POST(req: Request) {
     );
 
     // Enable 2FA
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { twoFactorEnabled: true },
-    });
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: user.id },
+        data: { twoFactorEnabled: true },
+      }),
+      prisma.twoFactorConfirmation.update({
+        where: { userId: user.id },
+        data: { backupCodes: JSON.stringify(hashedBackupCodes) },
+      }),
+    ]);
 
-    await prisma.twoFactorConfirmation.update({
-      where: { userId: user.id },
-      data: { backupCodes: JSON.stringify(hashedBackupCodes) },
-    });
+    invalidateSessionCache(user.id);
 
     return withSecurityHeaders(NextResponse.json({
       message: '2FA enabled successfully',

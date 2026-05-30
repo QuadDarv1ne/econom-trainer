@@ -60,9 +60,9 @@ export async function DELETE(req: Request) {
 
     // Delete user (cascade handles related records)
     await prisma.user.delete({
-    invalidateSessionCache(session.user.id);
       where: { id: session.user.id },
     });
+    invalidateSessionCache(session.user.id);
 
     return withSecurityHeaders(NextResponse.json({ message: 'Account deleted' }));
   } catch (error) {

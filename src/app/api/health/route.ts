@@ -11,7 +11,7 @@ export async function GET() {
   } catch {
     checks.database = {
       status: "error",
-      details: "Database connection failed",
+      ...(process.env.NODE_ENV === 'development' && { details: "Database connection failed" }),
     };
   }
 
