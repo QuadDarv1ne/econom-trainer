@@ -42,6 +42,10 @@ function createDebouncedStorage<T>(delayMs: number = 500): {
 
   // Flush pending writes before page unload to prevent data loss
   const cleanup = () => {
+    if (flushTimer) {
+      clearTimeout(flushTimer)
+      flushTimer = null
+    }
     if (typeof window !== 'undefined') {
       window.removeEventListener('beforeunload', flush)
     }
@@ -55,7 +59,15 @@ function createDebouncedStorage<T>(delayMs: number = 500): {
     storage: {
       getItem: (name: string) => {
         const item = localStorage.getItem(name)
-        return item ? JSON.parse(item) : null
+        if (!item) return null
+        try {
+          return JSON.parse(item)
+        } catch {
+          // Corrupted data — return null to reinitialize with defaults
+          console.warn(`[store] Failed to parse stored data for "${name}", resetting`)
+          localStorage.removeItem(name)
+          return null
+        }
       },
       setItem: (name: string, value: { state: T }): void => {
         pendingWrite = { key: name, value: JSON.stringify(value) }
@@ -503,6 +515,7 @@ export const useEconomicsStore = create<EconomicsState>()(
     {
       name: 'economics-trainer-data',
       storage: debouncedStorage.storage,
+      onRehydrateStorage: () => debouncedStorage.cleanup,
       partialize: (state) => ({
         quizResults: state.quizResults,
         gdpResults: state.gdpResults,
