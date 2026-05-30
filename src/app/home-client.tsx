@@ -3,6 +3,7 @@
 import type React from 'react'
 import { useState, useMemo, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
+import { SafeUserInitials, SafeUserContent } from '@/components/shared/safe-user-content'
 import { signOutAndClearStore } from '@/lib/sign-out'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -165,15 +166,15 @@ export function HomeClient({
                 <DropdownMenuTrigger asChild>
                   <Avatar className="h-8 w-8 cursor-pointer">
                     <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                      {userInitials}
+                      <SafeUserInitials name={session?.user?.name ?? null} />
                     </AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>
                     <div className="flex flex-col">
-                      <span className="font-medium">{session.user?.name || t('level.student')}</span>
-                      <span className="text-xs text-muted-foreground">{session.user?.email}</span>
+                      <span className="font-medium"><SafeUserContent>{session.user?.name || t('level.student')}</SafeUserContent></span>
+                      <span className="text-xs text-muted-foreground"><SafeUserContent>{session.user?.email}</SafeUserContent></span>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />

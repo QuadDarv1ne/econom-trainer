@@ -39,7 +39,8 @@ import { RESEND_COOLDOWN_SECONDS } from '@/lib/constants';
 import { AlertBanner } from '@/components/ui/alert-banner';
 import { safeErrorMessage } from '@/lib/safe-error';
 import { AppHeader } from '@/components/shared/app-header';
-import { TwoFAManagement } from '@/components/shared/two-fa-management';
+import { TwoFAManagement } from '@/components/shared/two-fa-management'
+import { SafeUserInitials, SafeUserContent, SafeAvatarImage } from '@/components/shared/safe-user-content';
 import { ProgressStats } from '@/components/shared/progress-stats';
 
 export default function ProfilePage() {
@@ -332,8 +333,8 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-6">
                   <div className="relative group">
                     <Avatar className="h-24 w-24">
-                      {profile?.image ? <AvatarImage src={profile.image} /> : null}
-                      <AvatarFallback className="text-2xl">{getInitials(profile?.name ?? null)}</AvatarFallback>
+                      <SafeAvatarImage src={profile?.image ?? null} />
+                      <AvatarFallback className="text-2xl"><SafeUserInitials name={profile?.name ?? null} /></AvatarFallback>
                     </Avatar>
                     <button
                       type="button"
@@ -353,8 +354,8 @@ export default function ProfilePage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <h3 className="text-xl font-semibold">{profile?.name || t('dashboard.progress.student')}</h3>
-                    <p className="text-muted-foreground">{profile?.email}</p>
+                    <h3 className="text-xl font-semibold"><SafeUserContent>{profile?.name || t('dashboard.progress.student')}</SafeUserContent></h3>
+                    <p className="text-muted-foreground"><SafeUserContent>{profile?.email}</SafeUserContent></p>
                     <div className="flex gap-2">
                       <Badge variant="secondary">{t('profile.role')}: {profile?.role}</Badge>
                       {profile?.emailVerified ? (
@@ -409,7 +410,7 @@ export default function ProfilePage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Mail className="h-4 w-4" />
-                        <span>{profile?.email}</span>
+                        <span><SafeUserContent>{profile?.email}</SafeUserContent></span>
                       </div>
                       {!profile?.emailVerified && (
                         <Button
