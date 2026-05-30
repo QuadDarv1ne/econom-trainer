@@ -66,6 +66,14 @@ export async function POST(req: Request) {
       ));
     }
 
+    const isSame = await bcrypt.compare(newPassword, user.passwordHash);
+    if (isSame) {
+      return withSecurityHeaders(NextResponse.json(
+        { error: 'New password must be different' },
+        { status: 400 }
+      ));
+    }
+
     const newHash = await bcrypt.hash(newPassword, BCRYPT_SALT_ROUNDS);
     const newSessionHash = randomBytes(32).toString('hex');
 

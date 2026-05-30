@@ -35,7 +35,10 @@ export default auth(async (req) => {
   // Page routes: redirect to login
   if (!session?.user?.id) {
     const loginUrl = new URL('/auth/login', req.url);
-    loginUrl.searchParams.set('callbackUrl', url.pathname);
+    const callbackUrl = url.pathname.startsWith('/') && !url.pathname.startsWith('//')
+      ? url.pathname
+      : '/dashboard';
+    loginUrl.searchParams.set('callbackUrl', callbackUrl);
     return NextResponse.redirect(loginUrl);
   }
 

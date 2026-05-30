@@ -32,15 +32,19 @@ export interface ExportData {
 function escapeCsvValue(value: string | number): string {
   const str = String(value);
   const dangerousPrefixes = ['=', '+', '-', '@'] as const;
-  const startsWithDangerous = dangerousPrefixes.some(prefix => str.startsWith(prefix));
-  const needsQuoting = startsWithDangerous || str.includes(',') || str.includes('"') || str.includes('\n');
+  const escaped = str
+    .replace(/\t/g, ' ')
+    .replace(/\n/g, ' ')
+    .replace(/\r/g, '');
+  const startsWithDangerous = dangerousPrefixes.some(prefix => escaped.startsWith(prefix));
+  const needsQuoting = startsWithDangerous || escaped.includes(',') || escaped.includes('"');
 
   if (needsQuoting) {
-    const escaped = str.replace(/"/g, '""');
+    const quoted = escaped.replace(/"/g, '""');
     // Prepend tab to neutralize formula injection while keeping value readable
-    return startsWithDangerous ? `"\t${escaped}"` : `"${escaped}"`;
+    return startsWithDangerous ? `"\t${quoted}"` : `"${quoted}"`;
   }
-  return str;
+  return escaped;
 }
 
 /**
