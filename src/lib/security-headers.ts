@@ -15,6 +15,8 @@ const SECURITY_HEADERS = {
 
 /**
  * Apply security headers to a NextResponse.
+ * Always adds Cache-Control: no-store to prevent browser caching of API responses,
+ * which may contain sensitive user data even on seemingly static endpoints.
  * Usage: return withSecurityHeaders(NextResponse.json({ data }));
  */
 export function withSecurityHeaders(response: NextResponse): NextResponse {
@@ -22,16 +24,10 @@ export function withSecurityHeaders(response: NextResponse): NextResponse {
     response.headers.set(key, value);
   });
 
-  // Add Cache-Control for sensitive authenticated responses
-  // Prevents browser caching of API responses containing user data
-  if (
-    response.headers.get('x-requires-auth') ||
-    response.headers.get('set-cookie')
-  ) {
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    response.headers.set('Pragma', 'no-cache');
-    response.headers.set('Expires', '0');
-  }
+  // Always prevent caching of API responses to avoid stale user data
+  response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  response.headers.set('Pragma', 'no-cache');
+  response.headers.set('Expires', '0');
 
   return response;
 }
