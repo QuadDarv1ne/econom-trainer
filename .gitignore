@@ -61,3 +61,6 @@ download/
 agent-ctx/
 .zscripts/
 bun.lock
+
+# Qoder CLI
+.qoder/
