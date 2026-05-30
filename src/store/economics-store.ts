@@ -303,6 +303,23 @@ function updateStreakState(streakState: StreakState, today: string): StreakState
   };
 }
 
+/** Sync status for tracking delta sync and conflict resolution */
+export interface SyncStatus {
+  status: 'idle' | 'syncing' | 'success' | 'error' | 'conflict'
+  lastSyncAt: string | null
+  error: string | null
+  pendingChanges: number
+}
+
+/** Sync conflict data when server data significantly differs from client */
+export interface SyncConflict {
+  serverXP: number
+  clientXP: number
+  serverLevel: number
+  clientLevel: number
+  discrepancy: number
+}
+
 export interface EconomicsState {
   quizResults: QuizResult[]
   gdpResults: GDPResult[]
@@ -461,6 +478,35 @@ export const useEconomicsStore = create<EconomicsState>()(
         const state = get()
         const { level, xpInCurrentLevel, xpToNextLevel } = getLevelFromXP(state.totalXP)
         return { totalXP: state.totalXP, level, xpToNextLevel, xpInCurrentLevel }
+      },
+
+            markSynced: () => {
+        set(() => ({
+          syncStatus: { status: 'success', lastSyncAt: new Date().toISOString(), error: null, pendingChanges: 0 },
+        }))
+      },
+
+      markSyncError: (error) => {
+        set((state) => ({
+          syncStatus: { ...state.syncStatus, status: 'error', error, lastSyncAt: new Date().toISOString() },
+        }))
+      },
+
+      setSyncConflict: (conflict) => {
+        set((state) => ({
+          syncStatus: {
+            status: conflict ? 'conflict' : 'idle',
+            lastSyncAt: state.syncStatus.lastSyncAt,
+            error: conflict ? `XP discrepancy: ${conflict.discrepancy}` : null,
+            pendingChanges: state.syncStatus.pendingChanges,
+          },
+        }))
+      },
+
+      incrementPendingChanges: () => {
+        set((state) => ({
+          syncStatus: { ...state.syncStatus, pendingChanges: state.syncStatus.pendingChanges + 1 },
+        }))
       },
 
       resetProgress: () => {

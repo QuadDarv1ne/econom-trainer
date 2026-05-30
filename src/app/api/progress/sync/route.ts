@@ -208,3 +208,120 @@ export async function POST(req: Request) {
     return withSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }));
   }
 }
+
+// PATCH - Delta sync: only send changed records since last sync
+// More efficient than full sync for frequent small updates
+export async function PATCH(req: Request) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return withSecurityHeaders(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
+    }
+
+    if (!validateOriginStrict(req)) {
+      return csrfErrorResponse();
+    }
+
+    const ip = getClientIP(req);
+    const limit = checkRateLimit('progressSync', ip);
+    if (!limit.ok) {
+      return withSecurityHeaders(rateLimitResponse('progressSync', ip, req));
+    }
+
+    const parsed = await safeJson<{
+      totalXP?: number;
+      newQuizResults?: unknown[];
+      newModuleInteractions?: unknown[];
+      newAchievements?: string[];
+      lastSyncAt?: string;
+    }>(req);
+    if (isErrorResponse(parsed)) return parsed;
+
+    const { totalXP, newQuizResults, newModuleInteractions, newAchievements, lastSyncAt: _lastSyncAt } = parsed;
+
+    // Validate totalXP
+    if (totalXP !== undefined && (typeof totalXP !== 'number' || totalXP < 0 || totalXP > 10_000_000)) {
+      return withSecurityHeaders(NextResponse.json({ error: 'Invalid XP value' }, { status: 400 }));
+    }
+
+    const existingProgress = await prisma.userProgress.findUnique({
+      where: { userId: session.user.id },
+    });
+
+    // XP merge: only accept client XP if it's within reasonable delta
+    const MAX_XP_DELTA = 1000;
+    let mergedXP = existingProgress?.totalXP ?? 0;
+
+    if (totalXP !== undefined && existingProgress) {
+      const serverXP = existingProgress.totalXP;
+      if (totalXP >= serverXP && totalXP <= serverXP + MAX_XP_DELTA) {
+        mergedXP = totalXP;
+      } else if (totalXP > serverXP + MAX_XP_DELTA) {
+        mergedXP = serverXP + MAX_XP_DELTA;
+      }
+    } else if (totalXP !== undefined && !existingProgress) {
+      mergedXP = totalXP <= 5000 ? totalXP : 5000;
+    }
+
+    const mergedLevel = getLevelFromXP(mergedXP).level;
+
+    // Helper to merge arrays from JSON strings
+    const mergeJsonArrays = (
+      newData: unknown[] | undefined,
+      existingData: string | null | undefined,
+      maxItems: number
+    ): string | null | undefined => {
+      if (!newData && !existingData) return null;
+      if (!newData || newData.length === 0) return existingData;
+
+      let existingArr: unknown[] = [];
+      if (existingData) {
+        try {
+          existingArr = JSON.parse(existingData);
+          if (!Array.isArray(existingArr)) existingArr = [];
+        } catch {
+          // Corrupt data, use new data only
+        }
+      }
+
+      // Prepend new items to existing array (newest first)
+      const merged = [...newData, ...existingArr].slice(0, maxItems);
+      return JSON.stringify(merged);
+    };
+
+    const mergedQuizResults = mergeJsonArrays(newQuizResults, existingProgress?.quizResults, 50);
+    const mergedModuleHistory = mergeJsonArrays(newModuleInteractions, existingProgress?.moduleHistory, 500);
+    const mergedAchievements = mergeJsonArrays(
+      newAchievements?.map((a: string) => ({ id: a, unlockedAt: new Date().toISOString() })),
+      existingProgress?.achievements,
+      50
+    );
+
+    const progress = await prisma.userProgress.upsert({
+      where: { userId: session.user.id },
+      create: {
+        userId: session.user.id,
+        totalXP: mergedXP,
+        level: mergedLevel,
+        quizResults: mergedQuizResults ?? null,
+        moduleHistory: mergedModuleHistory ?? null,
+        achievements: mergedAchievements ?? null,
+      },
+      update: {
+        totalXP: mergedXP,
+        level: mergedLevel,
+        ...(mergedQuizResults !== undefined && { quizResults: mergedQuizResults }),
+        ...(mergedModuleHistory !== undefined && { moduleHistory: mergedModuleHistory }),
+        ...(mergedAchievements !== undefined && { achievements: mergedAchievements }),
+      },
+    });
+
+    return withSecurityHeaders(NextResponse.json({
+      ...progress,
+      syncedAt: new Date().toISOString(),
+    }));
+  } catch (error) {
+    logError('progress-delta-sync', error);
+    return withSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }));
+  }
+}

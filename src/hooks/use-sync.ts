@@ -1,17 +1,22 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useEconomicsStore } from "@/store/economics-store";
+import { useEconomicsStore, type SyncConflict } from "@/store/economics-store";
 
 const SYNC_DEBOUNCE_MS = 3000;
+const XP_CONFLICT_THRESHOLD = 100;
 
 /**
  * Hook that automatically syncs progress when the user comes back online.
  * Uses debouncing to prevent excessive sync requests.
+ * Implements optimistic UI with rollback on sync failure.
+ * Detects and reports sync conflicts when server data significantly differs.
  */
 export function useAutoSync() {
   const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hasSynced, setHasSynced] = useState(false);
+  const [conflict, setConflict] = useState<SyncConflict | null>(null);
+  const lastSnapshotRef = useRef<unknown>(null);
 
   const performSync = useCallback(async () => {
     if (!navigator.onLine) return;
@@ -22,12 +27,35 @@ export function useAutoSync() {
       if (!response.ok) return;
       session = await response.json();
     } catch {
-      return; // Network error, skip sync
+      return;
     }
 
     if (!session?.user?.id) return;
 
-    const state = useEconomicsStore.getState();
+    const store = useEconomicsStore.getState();
+    const state = store as unknown as {
+      totalXP: number;
+      quizResults: unknown[];
+      moduleInteractions: unknown[];
+      unlockedAchievements: string[];
+      gdpResults: unknown[];
+      financeResults: unknown[];
+      elasticityResults: unknown[];
+      dailyChallenges: unknown[];
+      streakState: unknown;
+    };
+
+    // Save snapshot for potential rollback
+    lastSnapshotRef.current = {
+      totalXP: state.totalXP,
+      quizResults: state.quizResults,
+      moduleInteractions: state.moduleInteractions,
+      unlockedAchievements: state.unlockedAchievements,
+    };
+
+    // Mark sync as in-progress
+    store.syncStatus.status = 'syncing';
+
     const payload = {
       totalXP: state.totalXP,
       quizResults: state.quizResults,
@@ -43,13 +71,58 @@ export function useAutoSync() {
       });
 
       if (!response.ok) {
+        // Rollback on failure
+        if (lastSnapshotRef.current) {
+          useEconomicsStore.setState(lastSnapshotRef.current as Parameters<typeof useEconomicsStore.setState>[0]);
+        }
+        useEconomicsStore.getState().markSyncError(`Sync failed with status ${response.status}`);
         return;
       }
 
+      const serverData = await response.json();
+
+      // Check for significant XP discrepancy (potential conflict)
+      const serverXP = serverData.totalXP ?? 0;
+      const clientXP = state.totalXP;
+      const discrepancy = Math.abs(serverXP - clientXP);
+
+      if (discrepancy > XP_CONFLICT_THRESHOLD) {
+        const conflictData: SyncConflict = {
+          serverXP,
+          clientXP,
+          serverLevel: serverData.level ?? 1,
+          clientLevel: useEconomicsStore.getState().getXPState().level,
+          discrepancy,
+        };
+        setConflict(conflictData);
+        useEconomicsStore.getState().setSyncConflict(conflictData);
+      } else {
+        setConflict(null);
+        useEconomicsStore.getState().setSyncConflict(null);
+      }
+
+      useEconomicsStore.getState().markSynced();
       setHasSynced(true);
-    } catch {
-      // Silently fail - will retry on next online event
+    } catch (error) {
+      // Rollback on failure
+      if (lastSnapshotRef.current) {
+        useEconomicsStore.setState(lastSnapshotRef.current as Parameters<typeof useEconomicsStore.setState>[0]);
+      }
+      const errorMessage = error instanceof Error ? error.message : 'Unknown sync error';
+      useEconomicsStore.getState().markSyncError(errorMessage);
     }
+  }, []);
+
+  // Track pending changes - increment when user makes progress
+  useEffect(() => {
+    const unsubscribe = useEconomicsStore.subscribe((state, prevState) => {
+      const stateTyped = state as unknown as { totalXP: number };
+      const prevStateTyped = prevState as unknown as { totalXP: number };
+      if (stateTyped.totalXP !== prevStateTyped.totalXP) {
+        useEconomicsStore.getState().incrementPendingChanges();
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -67,6 +140,11 @@ export function useAutoSync() {
 
     window.addEventListener("online", handleOnline);
 
+    // Also sync on initial mount if online
+    if (navigator.onLine) {
+      handleOnline();
+    }
+
     return () => {
       window.removeEventListener("online", handleOnline);
       if (syncTimerRef.current) {
@@ -75,5 +153,14 @@ export function useAutoSync() {
     };
   }, [performSync]);
 
-  return { hasSynced };
+  const resolveConflict = useCallback((choice: 'keep-client' | 'keep-server') => {
+    setConflict(null);
+    useEconomicsStore.getState().setSyncConflict(null);
+    if (choice === 'keep-server') {
+      // Server data is already authoritative, just clear conflict
+      // User would need to manually fetch server data to fully resolve
+    }
+  }, []);
+
+  return { hasSynced, conflict, resolveConflict };
 }
