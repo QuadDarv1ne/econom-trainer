@@ -114,9 +114,9 @@ describe("localStorage persistence", () => {
 });
 
 describe("Store actions", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     const store = useEconomicsStore.getState()
-    store.resetProgress()
+    await store.resetProgress()
   })
 
   it("addQuizResult adds quiz result and updates XP", () => {
@@ -168,7 +168,7 @@ describe("Store actions", () => {
     expect(updatedStore.moduleInteractions.length).toBe(initialLength + 1)
   })
 
-  it("resetProgress clears all state", () => {
+  it("resetProgress clears all state", async () => {
     const store = useEconomicsStore.getState()
     
     // Add some data
@@ -190,7 +190,7 @@ describe("Store actions", () => {
     expect(useEconomicsStore.getState().moduleInteractions.length).toBeGreaterThan(0)
 
     // Reset
-    store.resetProgress()
+    await store.resetProgress()
 
     // Verify cleared
     const resetStore = useEconomicsStore.getState()

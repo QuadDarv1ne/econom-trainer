@@ -20,6 +20,7 @@ function createDebouncedStorage<T>(delayMs: number = 500): {
     removeItem: (name: string) => void
   }
   cleanup: () => void
+  flushSync: () => void
 } {
   let pendingWrite: { key: string; value: string } | null = null
   let flushTimer: ReturnType<typeof setTimeout> | null = null
@@ -97,6 +98,7 @@ function createDebouncedStorage<T>(delayMs: number = 500): {
       },
     },
     cleanup,
+    flushSync: flush,
   }
 }
 
@@ -561,6 +563,7 @@ export const useEconomicsStore = create<EconomicsState>()(
           streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
           syncStatus: { status: 'idle' as const, lastSyncAt: null, error: null, pendingChanges: 0 },
         }
+        debouncedStorage.flushSync()
         set(newState)
       },
 
