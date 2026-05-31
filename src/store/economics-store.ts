@@ -48,6 +48,8 @@ function createDebouncedStorage<T>(delayMs: number = 500): {
 
   // Flush pending writes before page unload to prevent data loss
   const cleanup = () => {
+    // Flush pending writes before cleanup to prevent data loss
+    flush()
     if (flushTimer) {
       clearTimeout(flushTimer)
       flushTimer = null
@@ -612,7 +614,6 @@ export const useEconomicsStore = create<EconomicsState>()(
     {
       name: 'economics-trainer-data',
       storage: debouncedStorage.storage,
-      onRehydrateStorage: () => debouncedStorage.cleanup,
       partialize: (state) => ({
         quizResults: state.quizResults,
         gdpResults: state.gdpResults,
