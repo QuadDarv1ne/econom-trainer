@@ -474,8 +474,8 @@ export function Achievements() {
             </DialogClose>
             <Button
               variant="destructive"
-              onClick={() => {
-                resetProgress()
+              onClick={async () => {
+                await resetProgress()
               }}
             >
               {t('achievements.resetConfirmButton')}

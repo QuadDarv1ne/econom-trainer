@@ -350,7 +350,7 @@ export interface EconomicsState {
   getTotalScore: () => { quizAccuracy: number; gdpCount: number; financeAccuracy: number; elasticityCount: number }
   computeStats: () => { quizCorrect: number; quizTotal: number; financeCorrect: number; financeTotal: number }
   getXPState: () => XPState
-  resetProgress: () => void
+  resetProgress: () => Promise<void>
   getFullProgress: () => {
     totalXP: number
     level: number
@@ -523,7 +523,24 @@ export const useEconomicsStore = create<EconomicsState>()(
         }))
       },
 
-      resetProgress: () => {
+      resetProgress: async () => {
+        // First, try to reset server-side progress
+        try {
+          const response = await fetch('/api/progress/reset', {
+            method: 'DELETE',
+            credentials: 'include',
+          });
+          if (!response.ok && response.status !== 401) {
+            // Log error but continue with client reset
+            const errorData = await response.json().catch(() => null);
+            logError('reset-progress-api', new Error(`Failed to reset server progress: ${response.status} ${JSON.stringify(errorData)}`));
+          }
+        } catch (error) {
+          // Network error — continue with client reset anyway
+          logError('reset-progress-api', error);
+        }
+
+        // Then reset client-side state
         const newState = {
           quizResults: [],
           gdpResults: [],
