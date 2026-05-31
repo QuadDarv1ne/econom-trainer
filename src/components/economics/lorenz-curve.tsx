@@ -30,25 +30,25 @@ interface QuintileConfig {
 }
 
 const QUINTILE_CONFIG: QuintileConfig[] = [
-  { key: 'q1', label: 'Q1', description: 'Poorest 20%', min: 0, max: 30, defaultValue: 5 },
-  { key: 'q2', label: 'Q2', description: 'Second 20%', min: 0, max: 30, defaultValue: 10 },
-  { key: 'q3', label: 'Q3', description: 'Middle 20%', min: 0, max: 30, defaultValue: 15 },
-  { key: 'q4', label: 'Q4', description: 'Fourth 20%', min: 0, max: 30, defaultValue: 25 },
-  { key: 'q5', label: 'Q5', description: 'Richest 20%', min: 0, max: 50, defaultValue: 45 },
+  { key: 'q1', label: 'Q1', description: t('lorenz.quintile.poorest'), min: 0, max: 30, defaultValue: 5 },
+  { key: 'q2', label: 'Q2', description: t('lorenz.quintile.second'), min: 0, max: 30, defaultValue: 10 },
+  { key: 'q3', label: 'Q3', description: t('lorenz.quintile.middle'), min: 0, max: 30, defaultValue: 15 },
+  { key: 'q4', label: 'Q4', description: t('lorenz.quintile.fourth'), min: 0, max: 30, defaultValue: 25 },
+  { key: 'q5', label: 'Q5', description: t('lorenz.quintile.richest'), min: 0, max: 50, defaultValue: 45 },
 ]
 
 const COUNTRY_COMPARISON = [
-  { country: 'Sweden', flag: '🇸🇪', gini: 0.27 },
-  { country: 'USA', flag: '🇺🇸', gini: 0.39 },
-  { country: 'Russia', flag: '🇷🇺', gini: 0.41 },
-  { country: 'Brazil', flag: '🇧🇷', gini: 0.53 },
-  { country: 'South Africa', flag: '🇿🇦', gini: 0.63 },
+  { country: t('lorenz.country.sweden'), flag: '🇸🇪', gini: 0.27 },
+  { country: t('lorenz.country.usa'), flag: '🇺🇸', gini: 0.39 },
+  { country: t('lorenz.country.russia'), flag: '🇷🇺', gini: 0.41 },
+  { country: t('lorenz.country.brazil'), flag: '🇧🇷', gini: 0.53 },
+  { country: t('lorenz.country.southAfrica'), flag: '🇿🇦', gini: 0.63 },
 ]
 
 function getGiniLevel(gini: number): { label: string; color: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' } {
-  if (gini < 0.3) return { label: 'Low inequality', color: 'text-emerald-600', variant: 'secondary' }
-  if (gini < 0.5) return { label: 'Moderate inequality', color: 'text-amber-600', variant: 'default' }
-  return { label: 'High inequality', color: 'text-red-600', variant: 'destructive' }
+  if (gini < 0.3) return { label: t('lorenz.lowInequality'), color: 'text-emerald-600', variant: 'secondary' }
+  if (gini < 0.5) return { label: t('lorenz.moderateInequality'), color: 'text-amber-600', variant: 'default' }
+  return { label: t('lorenz.highInequality'), color: 'text-red-600', variant: 'destructive' }
 }
 
 function getGiniBarColor(gini: number): string {

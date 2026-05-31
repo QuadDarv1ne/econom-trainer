@@ -264,7 +264,7 @@ export function TaxCalculator() {
           {/* Inputs */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">НДФЛ — Налог на доходы физических лиц</CardTitle>
+              <CardTitle className="text-lg">{t('tax.incomeTitle')}</CardTitle>
               <CardDescription>
                 Прогрессивная шкала с 2025 года: чем выше доход, тем выше ставка
               </CardDescription>
@@ -330,8 +330,8 @@ export function TaxCalculator() {
                   <thead>
                     <tr className="border-b">
                       <th className="text-left p-2">{t('tax.taxRate')}</th>
-                      <th className="text-left p-2">Диапазон</th>
-                      <th className="text-right p-2">Облагаемая сумма</th>
+                      <th className="text-left p-2">{t('tax.bracket')}</th>
+                      <th className="text-right p-2">{t('tax.taxableAmount')}</th>
                       <th className="text-right p-2">{t('tax.incomeTax')}</th>
                     </tr>
                   </thead>
@@ -355,7 +355,7 @@ export function TaxCalculator() {
                   </tbody>
                   <tfoot>
                     <tr className="font-bold">
-                      <td className="p-2" colSpan={2}>Итого</td>
+                      <td className="p-2" colSpan={2}>{t('tax.total')}</td>
                       <td className="p-2 text-right font-mono">{fmt(ndflResult.taxable)} ₽</td>
                       <td className="p-2 text-right font-mono text-red-600">{fmt(ndflResult.totalTax)} ₽</td>
                     </tr>
@@ -375,7 +375,7 @@ export function TaxCalculator() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground">Сумма НДФЛ к уплате</p>
+                <p className="text-xs text-muted-foreground">{t('tax.ndflPayable')}</p>
               </CardContent>
             </Card>
 
@@ -387,19 +387,19 @@ export function TaxCalculator() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground">Средняя ставка по всему доходу</p>
+                <p className="text-xs text-muted-foreground">{t('tax.avgRate')}</p>
               </CardContent>
             </Card>
 
             <Card className="border-2 border-primary/20">
               <CardHeader className="pb-2">
-                <CardDescription>Предельная ставка</CardDescription>
+                <CardDescription>{t('tax.marginalRate')}</CardDescription>
                 <CardTitle className="text-xl font-mono">
                   {fmtDec(ndflResult.marginalRate * 100)}%
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground">Ставка на следующий рубль дохода</p>
+                <p className="text-xs text-muted-foreground">{t('tax.marginalDesc')}</p>
               </CardContent>
             </Card>
 
@@ -411,7 +411,7 @@ export function TaxCalculator() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground">Доход после уплаты НДФЛ</p>
+                <p className="text-xs text-muted-foreground">{t('tax.netIncome')}</p>
               </CardContent>
             </Card>
           </div>
@@ -478,7 +478,7 @@ export function TaxCalculator() {
           {/* Inputs */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">НДС — Налог на добавленную стоимость</CardTitle>
+              <CardTitle className="text-lg">{t('tax.vatTitle')}</CardTitle>
               <CardDescription>
                 Косвенный налог, который включается в цену товара и фактически оплачивается покупателем
               </CardDescription>
@@ -486,7 +486,7 @@ export function TaxCalculator() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Цена с НДС (руб.)</Label>
+                  <Label>{t('tax.vatPrice')}</Label>
                   <Input
                     type="number"
                     value={ndsPriceWithVat}
@@ -495,7 +495,7 @@ export function TaxCalculator() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Ставка НДС</Label>
+                  <Label>{t('tax.vatRate')}</Label>
                   <div className="flex gap-2">
                     <Button
                       size="sm"
@@ -523,31 +523,31 @@ export function TaxCalculator() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Card className="border-2 border-primary/20">
               <CardHeader className="pb-2">
-                <CardDescription>Цена без НДС</CardDescription>
+                <CardDescription>{t('tax.vatWithoutTax')}</CardDescription>
                 <CardTitle className="text-xl font-mono">{fmt(ndsResult.base)} ₽</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground">Базовая стоимость товара / услуги</p>
+                <p className="text-xs text-muted-foreground">{t('tax.vatBaseCost')}</p>
               </CardContent>
             </Card>
 
             <Card className="border-2 border-red-500/20">
               <CardHeader className="pb-2">
-                <CardDescription>Сумма НДС</CardDescription>
+                <CardDescription>{t('tax.vatAmount')}</CardDescription>
                 <CardTitle className="text-xl font-mono text-red-600">{fmt(ndsResult.vatAmount)} ₽</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground">Налог, включённый в цену</p>
+                <p className="text-xs text-muted-foreground">{t('tax.vatIncluded')}</p>
               </CardContent>
             </Card>
 
             <Card className="border-2 border-primary/20">
               <CardHeader className="pb-2">
-                <CardDescription>Цена с НДС</CardDescription>
+                <CardDescription>{t('tax.vatWithTax')}</CardDescription>
                 <CardTitle className="text-xl font-mono">{fmt(ndsResult.total)} ₽</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground">Итоговая сумма к оплате</p>
+                <p className="text-xs text-muted-foreground">{t('tax.vatTotal')}</p>
               </CardContent>
             </Card>
           </div>
@@ -593,9 +593,9 @@ export function TaxCalculator() {
                   <thead>
                     <tr className="border-b">
                       <th className="text-left p-2">Ставка</th>
-                      <th className="text-right p-2">Цена без НДС</th>
-                      <th className="text-right p-2">Сумма НДС</th>
-                      <th className="text-right p-2">Цена с НДС</th>
+                      <th className="text-right p-2">{t('tax.vatWithoutTax')}</th>
+                      <th className="text-right p-2">{t('tax.vatAmount')}</th>
+                      <th className="text-right p-2">{t('tax.vatWithTax')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -660,7 +660,7 @@ export function TaxCalculator() {
           {/* Inputs */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Налог на прибыль организаций</CardTitle>
+              <CardTitle className="text-lg">{t('tax.profitTitle')}</CardTitle>
               <CardDescription>
                 Базовая ставка 20%: 3% — федеральный бюджет, 17% — бюджет субъекта РФ
               </CardDescription>
@@ -689,7 +689,7 @@ export function TaxCalculator() {
               <Separator />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Федеральная ставка (%)</Label>
+                  <Label>{t('tax.federalRate')}</Label>
                   <Input
                     type="number"
                     value={profitFederalRate}
@@ -698,7 +698,7 @@ export function TaxCalculator() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Региональная ставка (%)</Label>
+                  <Label>{t('tax.regionalRate')}</Label>
                   <Input
                     type="number"
                     value={profitRegionalRate}
@@ -718,13 +718,13 @@ export function TaxCalculator() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="border-2 border-primary/20">
               <CardHeader className="pb-2">
-                <CardDescription>Прибыль</CardDescription>
+                <CardDescription>{t('tax.profit')}</CardDescription>
                 <CardTitle className={`text-xl font-mono ${profitResult.profit >= 0 ? 'text-green-700 dark:text-green-400' : 'text-red-600'}`}>
                   {fmt(profitResult.profit)} ₽
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground">Выручка − Расходы</p>
+                <p className="text-xs text-muted-foreground">{t('tax.profitFormula')}</p>
               </CardContent>
             </Card>
 
@@ -768,7 +768,7 @@ export function TaxCalculator() {
           {/* Federal vs Regional breakdown */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Распределение по бюджетам</CardTitle>
+              <CardTitle className="text-lg">{t('tax.distribution')}</CardTitle>
               <CardDescription>Разбивка налога между федеральным и региональным бюджетами</CardDescription>
             </CardHeader>
             <CardContent>
