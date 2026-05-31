@@ -32,7 +32,7 @@ const eslintConfig = [
       // General JavaScript rules
       'prefer-const': 'error',
       'no-unused-vars': 'off',
-      'no-console': 'off',
+      'no-console': 'warn',
       'no-debugger': 'error',
       'no-empty': 'error',
       'no-irregular-whitespace': 'error',

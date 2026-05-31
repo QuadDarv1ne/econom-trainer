@@ -1,10 +1,4 @@
 import sanitizeHtmlLib from 'sanitize-html';
-/**
- * @deprecated Use sanitizePlainText instead. This regex-based approach is vulnerable to SVG XSS.
- */
-export function sanitizeInput(input: string): string {
-  return sanitizePlainText(input)
-}
 
 /**
  * Sanitize user-provided HTML strings using sanitize-html.
