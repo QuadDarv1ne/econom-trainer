@@ -169,19 +169,19 @@ describe('importProgressFromJSON', () => {
     state.resetProgress()
   })
 
-  it('rejects invalid JSON', () => {
-    expect(() => importProgressFromJSON('not json')).toThrow('Invalid JSON format')
+  it('rejects invalid JSON', async () => {
+    await expect(importProgressFromJSON('not json')).rejects.toThrow('Invalid JSON format')
   })
 
-  it('rejects non-object data', () => {
-    expect(() => importProgressFromJSON('"hello"')).toThrow('Invalid progress data')
+  it('rejects non-object data', async () => {
+    await expect(importProgressFromJSON('"hello"')).rejects.toThrow('Invalid progress data')
   })
 
-  it('rejects missing totalXP', () => {
-    expect(() => importProgressFromJSON(JSON.stringify({}))).toThrow('totalXP')
+  it('rejects missing totalXP', async () => {
+    await expect(importProgressFromJSON(JSON.stringify({}))).rejects.toThrow('totalXP')
   })
 
-  it('accepts valid quiz results with correct interface fields', () => {
+  it('accepts valid quiz results with correct interface fields', async () => {
     const validData = JSON.stringify({
       totalXP: 100,
       quizResults: [
@@ -195,14 +195,14 @@ describe('importProgressFromJSON', () => {
       streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
     })
 
-    importProgressFromJSON(validData)
+    await importProgressFromJSON(validData)
     const state = useEconomicsStore.getState()
     expect(state.quizResults).toHaveLength(1)
     expect(state.quizResults[0].topic).toBe('macro')
     expect(state.quizResults[0].score).toBe(8)
   })
 
-  it('accepts valid finance results with correct interface fields', () => {
+  it('accepts valid finance results with correct interface fields', async () => {
     const validData = JSON.stringify({
       totalXP: 50,
       quizResults: [],
@@ -216,14 +216,14 @@ describe('importProgressFromJSON', () => {
       streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
     })
 
-    importProgressFromJSON(validData)
+    await importProgressFromJSON(validData)
     const state = useEconomicsStore.getState()
     expect(state.financeResults).toHaveLength(1)
     expect(state.financeResults[0].problemType).toBe('compound')
     expect(state.financeResults[0].correct).toBe(true)
   })
 
-  it('accepts valid elasticity results with correct interface fields', () => {
+  it('accepts valid elasticity results with correct interface fields', async () => {
     const validData = JSON.stringify({
       totalXP: 50,
       quizResults: [],
@@ -237,14 +237,14 @@ describe('importProgressFromJSON', () => {
       streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
     })
 
-    importProgressFromJSON(validData)
+    await importProgressFromJSON(validData)
     const state = useEconomicsStore.getState()
     expect(state.elasticityResults).toHaveLength(1)
     expect(state.elasticityResults[0].elasticityType).toBe('price')
     expect(state.elasticityResults[0].value).toBe(-1.5)
   })
 
-  it('rejects quiz results with wrong structure (old bug behavior)', () => {
+  it('rejects quiz results with wrong structure (old bug behavior)', async () => {
     // This used to be the buggy validation: ['question', 'correct']
     // which didn't match QuizResult interface and filtered all items
     const invalidQuizData = JSON.stringify({

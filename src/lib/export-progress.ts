@@ -185,7 +185,7 @@ export function downloadProgressJSON() {
  * Validate and import progress data from a JSON string.
  * Throws on failure so errors can be properly caught by callers.
  */
-export function importProgressFromJSON(jsonString: string): void {
+export async function importProgressFromJSON(jsonString: string): Promise<void> {
   if (typeof window === 'undefined') {
     throw new Error('Import is not available in server environment')
   }
@@ -251,7 +251,7 @@ export function importProgressFromJSON(jsonString: string): void {
   }
 
   // Now reset and import atomically
-  state.resetProgress()
+  await state.resetProgress()
   useEconomicsStore.setState(importedData)
 }
 
