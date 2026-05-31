@@ -55,7 +55,7 @@ export function sanitizeUserUrl(url: string | null | undefined): string | null {
     const lowerUrl = url.toLowerCase();
     for (const protocol of dangerousProtocols) {
       if (lowerUrl.startsWith(protocol)) {
-        console.warn(`[sanitizeUserUrl] Blocked dangerous URL: ${url}`);
+        // Blocked dangerous protocol - silently reject without logging sensitive URL
         return null;
       }
     }

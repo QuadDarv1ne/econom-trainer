@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { logError } from "@/lib/log-error";
 import { useEconomicsStore, type SyncConflict } from "@/store/economics-store";
 
 const SYNC_DEBOUNCE_MS = 3000;
@@ -132,8 +133,9 @@ export function useAutoSync() {
       }
 
       syncTimerRef.current = setTimeout(() => {
-        performSync().catch(() => {
-          // Silently fail - will retry on next online event
+        performSync().catch((error) => {
+          // Log sync failure for debugging, will retry on next online event
+          logError('auto-sync', error);
         });
       }, SYNC_DEBOUNCE_MS);
     };

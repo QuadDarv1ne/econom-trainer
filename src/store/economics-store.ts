@@ -28,7 +28,11 @@ function createDebouncedStorage<T>(delayMs: number = 500): {
     if (pendingWrite) {
       if (flushTimer) clearTimeout(flushTimer)
       flushTimer = null
-      localStorage.setItem(pendingWrite.key, pendingWrite.value)
+      try {
+        localStorage.setItem(pendingWrite.key, pendingWrite.value)
+      } catch (error) {
+        logError('store-flush', error)
+      }
       pendingWrite = null
     }
   }
@@ -85,7 +89,11 @@ function createDebouncedStorage<T>(delayMs: number = 500): {
         pendingWrite = null
         if (flushTimer) clearTimeout(flushTimer)
         flushTimer = null
-        localStorage.removeItem(name)
+        try {
+          localStorage.removeItem(name)
+        } catch (error) {
+          logError('store-remove', error)
+        }
       },
     },
     cleanup,
