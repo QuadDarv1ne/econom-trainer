@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { t, getCurrentLocale, setLocale, defaultLocale, translations } from './i18n'
 
+// Mock navigator.language to default to Russian for tests
+Object.defineProperty(global, 'navigator', {
+  value: { language: 'ru-RU' },
+  writable: true,
+});
+
 // Mock localStorage
 const localStorageMock = (() => {
   let store: Record<string, string> = {}

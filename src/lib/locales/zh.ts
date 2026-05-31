@@ -1659,6 +1659,7 @@ export const zh: Record<string, string> = {
     'auth.login.signUp': '注册',
     'auth.login.backToHome': '返回首页',
     'auth.login.or': '或使用以下方式继续',
+    'auth.email': '电子邮件',
     'auth.register.title': '创建账号',
     'auth.register.subtitle': '注册以保存你的学习进度',
     'auth.register.name': '姓名',

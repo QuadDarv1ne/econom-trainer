@@ -671,7 +671,7 @@ export function CostAnalysis() {
             <Card className="border-2 border-gray-200 dark:border-gray-700">
               <CardContent className="p-3 text-center">
                 <div className="text-xs text-muted-foreground">AFC</div>
-                <div className="text-lg font-mono font-bold text-gray-500">{currentCosts.afc}</div>
+                <div className="text-lg font-mono font-bold text-muted-foreground">{currentCosts.afc}</div>
                 <div className="text-xs text-muted-foreground">FC/Q</div>
               </CardContent>
             </Card>

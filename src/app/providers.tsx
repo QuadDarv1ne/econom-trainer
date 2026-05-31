@@ -19,6 +19,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       defaultTheme="system"
       enableSystem
       disableTransitionOnChange
+      storageKey="econom-trainer-theme"
     >
       <I18nProvider>
         <AuthProvider>

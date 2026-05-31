@@ -1790,6 +1790,7 @@ export const en: Record<string, string> = {
     'auth.login.signUp': 'Sign Up',
     'auth.login.backToHome': 'Back to Home',
     'auth.login.or': 'Or continue with',
+    'auth.email': 'Email',
 
     'auth.register.title': 'Create Account',
     'auth.register.subtitle': 'Sign up to save your learning progress',

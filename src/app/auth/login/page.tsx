@@ -106,7 +106,7 @@ function LoginForm() {
             {!show2FA ? (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t('auth.email')}</Label>
                   <Input
                     id="email"
                     type="email"

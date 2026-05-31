@@ -1656,6 +1656,7 @@ export const ru: Record<string, string> = {
     'auth.login.signUp': 'Зарегистрироваться',
     'auth.login.backToHome': 'На главную',
     'auth.login.or': 'Или войти через',
+    'auth.email': 'Электронная почта',
 
     'auth.register.title': 'Регистрация',
     'auth.register.subtitle': 'Создайте аккаунт для сохранения прогресса',

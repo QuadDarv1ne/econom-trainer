@@ -183,7 +183,7 @@ export function TwoFAManagement({ twoFactorEnabled, onTwoFactorChange, setError,
                 <Separator />
                 <div className="text-center space-y-2">
                   <h4 className="font-semibold">{t('dashboard.security.scanQr')}</h4>
-                  <div className="inline-block p-4 bg-white rounded-lg">
+                  <div className="inline-block p-4 bg-background rounded-lg">
                     <img src={qrCode} alt={t('dashboard.security.qrCodeAlt') || 'QR Code'} className="w-48 h-48" />
                   </div>
                 </div>

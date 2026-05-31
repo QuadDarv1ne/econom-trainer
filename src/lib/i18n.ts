@@ -28,6 +28,19 @@ export const translations = {
 } as const;
 
 /** Get a translation by key for the current or specified locale */
+
+/**
+ * Detect initial locale based on browser language preference.
+ * Falls back to 'ru' if browser language is not supported.
+ */
+function detectInitialLocale(): Locale {
+  if (typeof window === 'undefined') return 'ru';
+  // navigator.language may not be available in all environments
+  const browserLang = typeof navigator !== 'undefined' && navigator.language ? navigator.language.split('-')[0] : null;
+  if (browserLang === 'en' || browserLang === 'zh') return browserLang as Locale;
+  return 'ru';
+}
+
 export function t(key: string, locale?: Locale): string {
   if (locale && !locales.includes(locale)) return key;
   const l = locale ?? getCurrentLocale();
@@ -43,7 +56,7 @@ export function getCurrentLocale(): Locale {
   } catch {
     // localStorage may be unavailable in private browsing
   }
-  return defaultLocale;
+  return detectInitialLocale();
 }
 
 // Set locale and save to localStorage
