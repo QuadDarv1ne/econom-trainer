@@ -6,6 +6,7 @@ import { useEconomicsStore, getLevelTitle, getModuleDisplayName, computeQuizAndF
 import type { QuizResult, GDPResult, FinanceResult, ElasticityResult, ModuleInteraction, DailyChallenge } from '@/store/economics-store'
 import { getLevelFromXP } from '@/lib/xp-utils'
 import { getCurrentLocale, t } from '@/lib/i18n'
+import { logError } from '@/lib/log-error'
 
 export interface ExportData {
   totalXP: number
@@ -145,7 +146,7 @@ export function exportToJSON(): string {
  */
 export function downloadFile(content: string, filename: string, mimeType: string) {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
-    console.warn('downloadFile: not available in server environment')
+    logError('export-progress', new Error('downloadFile: not available in server environment'))
     return
   }
   const blob = new Blob([content], { type: mimeType })
@@ -261,7 +262,7 @@ export async function importProgressFromJSON(jsonString: string): Promise<void> 
  */
 export function importProgressFromFile(): Promise<void> {
   if (typeof window === 'undefined') {
-    console.warn('importProgressFromFile: not available in server environment')
+    logError('export-progress', new Error('importProgressFromFile: not available in server environment'))
     return Promise.resolve()
   }
 
