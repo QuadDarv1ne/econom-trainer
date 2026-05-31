@@ -1,3 +1,5 @@
+import { logError } from './log-error';
+
 /**
  * CSRF protection utility
  * Validates that the request Origin/Referer matches the app's host
@@ -28,7 +30,7 @@ export function validateOrigin(req: Request, options?: { strict?: boolean }): bo
   const allowedOrigins = getAllowedOrigins();
   if (allowedOrigins.length === 0) {
     if (process.env.NODE_ENV === 'production') {
-      console.error('[CSRF] No allowed origins configured in production — rejecting request');
+      logError('csrf-config', new Error('No allowed origins configured in production'));
       return false;
     }
     return true;

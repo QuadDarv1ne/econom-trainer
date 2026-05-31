@@ -23,11 +23,11 @@ export function resetRateLimitStore(): void {
 
 // Cleanup interval: prune expired entries every 5 minutes
 const CLEANUP_INTERVAL = 5 * 60 * 1000;
-let cleanupTimer: ReturnType<typeof setInterval> | null = null;
+let cleanupTimeout: ReturnType<typeof setTimeout> | null = null;
 
-function ensureCleanup() {
-  if (cleanupTimer) return;
-  cleanupTimer = setInterval(() => {
+function scheduleCleanup() {
+  if (cleanupTimeout) return;
+  cleanupTimeout = setTimeout(() => {
     const now = Date.now();
     const configValues = Array.from(configs.values());
     const maxWindow = configValues.length > 0
@@ -40,8 +40,13 @@ function ensureCleanup() {
         store.delete(key);
       }
     }
+    // Reschedule for next cleanup
+    cleanupTimeout = null;
+    scheduleCleanup();
   }, CLEANUP_INTERVAL);
-  cleanupTimer.unref();
+  if (cleanupTimeout && typeof cleanupTimeout.unref === 'function') {
+    cleanupTimeout.unref();
+  }
 }
 
 interface RateLimitConfig {
@@ -72,7 +77,7 @@ export const RATE_LIMITS = {
 
 export function configureRateLimit(key: string, config: RateLimitConfig) {
   configs.set(key, config);
-  ensureCleanup();
+  scheduleCleanup();
 }
 
 export function checkRateLimit(key: string, ip: string | null): { ok: boolean; remaining: number; resetAt: number } {
