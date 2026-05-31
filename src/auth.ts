@@ -7,6 +7,7 @@ import { authenticator } from "otplib";
 import { checkRateLimit, getClientIP } from "@/lib/rate-limit";
 import { validateJwtSession } from "@/lib/validate-jwt-session";
 
+import { REMEMBER_ME_SESSION_SECONDS } from '@/lib/constants';
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -160,7 +161,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       // Extended session duration for remembered sessions (30 days vs default)
       if (token.rememberMe) {
-        const thirtyDays = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
+        const thirtyDays = Math.floor(Date.now() / 1000) + REMEMBER_ME_SESSION_SECONDS;
         token.exp = Math.max(token.exp ?? 0, thirtyDays);
       }
 

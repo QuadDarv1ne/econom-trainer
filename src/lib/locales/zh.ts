@@ -2,6 +2,7 @@
 // Auto-extracted from i18n.ts - do not edit manually
 
 export const zh: Record<string, string> = {
+    'common.userAvatar': '用户头像',
     'common.calculate': '计算',
     'common.reset': '重置',
     'common.save': '保存',

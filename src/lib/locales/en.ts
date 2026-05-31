@@ -3,6 +3,7 @@
 
 export const en: Record<string, string> = {
     // Common
+    'common.userAvatar': 'User avatar',
     'common.calculate': 'Calculate',
     'common.reset': 'Reset',
     'common.save': 'Save',

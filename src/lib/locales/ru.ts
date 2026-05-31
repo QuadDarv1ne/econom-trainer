@@ -3,6 +3,7 @@
 
 export const ru: Record<string, string> = {
     // Common
+    'common.userAvatar': 'Аватар пользователя',
     'common.calculate': 'Рассчитать',
     'common.reset': 'Сбросить',
     'common.save': 'Сохранить',
