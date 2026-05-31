@@ -70,12 +70,19 @@ function createDebouncedStorage<T>(delayMs: number = 500): {
           return JSON.parse(item)
         } catch {
           // Corrupted data â€” return null to reinitialize with defaults
-          // Backup corrupted data before removal for debugging
-          const backupKey = `${name}.backup.${Date.now()}`;
+          // Backup corrupted data before removal, but clean up old backups to prevent storage quota issues
+          const backupKey = `${name}.backup`;
           try {
+            // Remove any old timestamped backup keys to prevent storage quota issues
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+              const key = localStorage.key(i);
+              if (key && key.startsWith(`${name}.backup.`)) {
+                localStorage.removeItem(key);
+              }
+            }
             localStorage.setItem(backupKey, item);
             logError('store-corrupted-data', new Error(`Backed up corrupted data for "${name}" before removal`));
-          } catch (backupError) {
+          } catch {
             logError('store-corrupted-data', new Error(`Failed to backup corrupted data for "${name}"`));
           }
           localStorage.removeItem(name)
@@ -546,7 +553,7 @@ export const useEconomicsStore = create<EconomicsState>()(
             logError('reset-progress-api', new Error(`Failed to reset server progress: ${response.status} ${JSON.stringify(errorData)}`));
           }
         } catch (error) {
-          // Network error — continue with client reset anyway
+          // Network error ï¿½ continue with client reset anyway
           logError('reset-progress-api', error);
         }
 

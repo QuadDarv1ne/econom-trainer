@@ -85,7 +85,8 @@ export async function POST(req: Request) {
     // Send email
     const resetUrl = `${BASE_URL}/auth/reset-password?token=${token}`;
     const locale = getLocaleFromRequest(req);
-    const userName = user.name || (locale === 'en' ? 'User' : locale === 'zh' ? '用户' : 'Студент');
+    const defaultNames = { en: 'User', zh: '用户', ru: 'Студент' };
+    const userName = user.name || defaultNames[locale] || defaultNames.ru;
     const html = getPasswordResetEmailHtml(userName, resetUrl, locale);
     const subject = locale === 'en'
       ? 'Password Reset — Economic Trainer'

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { withSecurityHeaders } from "@/lib/security-headers";
 
 export async function GET() {
   const checks: Record<string, { status: string; details?: string }> = {};
@@ -17,12 +18,12 @@ export async function GET() {
 
   const isHealthy = Object.values(checks).every((c) => c.status === "ok");
 
-  return NextResponse.json(
+  return withSecurityHeaders(NextResponse.json(
     {
       status: isHealthy ? "healthy" : "degraded",
       timestamp: new Date().toISOString(),
       checks,
     },
     { status: isHealthy ? 200 : 503 }
-  );
+  ));
 }
