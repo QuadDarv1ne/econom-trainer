@@ -48,7 +48,7 @@ describe('CSV Formula Injection Protection', () => {
 
   it('produces valid CSV structure with protection enabled', () => {
     const csv = exportToCSV()
-    expect(csv).toContain('Метрика,Значение')
+    expect(csv).toContain('Metric,Value')
     // Verify basic structure is intact
     expect(csv.split('\n').length).toBeGreaterThan(5)
   })
@@ -64,27 +64,27 @@ describe('exportToCSV', () => {
 
   it('produces CSV with headers', () => {
     const csv = exportToCSV()
-    expect(csv).toContain('Метрика,Значение')
+    expect(csv).toContain('Metric,Value')
   })
 
   it('includes total XP row', () => {
     const csv = exportToCSV()
-    expect(csv).toContain('Общий XP')
+    expect(csv).toContain('Total XP')
   })
 
   it('includes level row', () => {
     const csv = exportToCSV()
-    expect(csv).toContain('Уровень')
+    expect(csv).toContain('Level')
   })
 
   it('includes quiz results row', () => {
     const csv = exportToCSV()
-    expect(csv).toContain('Результатов квизов')
+    expect(csv).toContain('Quiz Results')
   })
 
   it('includes finance tasks row', () => {
     const csv = exportToCSV()
-    expect(csv).toContain('Фин. задач')
+    expect(csv).toContain('Finance Tasks Correct')
   })
 })
 

@@ -23,7 +23,7 @@ describe('logError', () => {
   it('sanitizes errors containing token in message', () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    logError('session', new Error('Invalid token abc123'));
+    logError('session', new Error('Invalid session-token abc123'));
 
     expect(spy).toHaveBeenCalledWith('[session] Sensitive error occurred');
     spy.mockRestore();
