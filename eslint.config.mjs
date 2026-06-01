@@ -52,6 +52,12 @@ const eslintConfig = [
     },
   },
   {
+    files: ['e2e/**/*.{ts,tsx}', 'src/lib/log-error.ts'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
     ignores: [
       'node_modules/**',
       '.next/**',
