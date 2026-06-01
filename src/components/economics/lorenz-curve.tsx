@@ -23,29 +23,28 @@ import { Scale, Info, AlertTriangle } from 'lucide-react'
 interface QuintileConfig {
   key: string
   label: string
-  description: string
   min: number
   max: number
   defaultValue: number
 }
 
 const QUINTILE_CONFIG: QuintileConfig[] = [
-  { key: 'q1', label: 'Q1', description: t('lorenz.quintile.poorest'), min: 0, max: 30, defaultValue: 5 },
-  { key: 'q2', label: 'Q2', description: t('lorenz.quintile.second'), min: 0, max: 30, defaultValue: 10 },
-  { key: 'q3', label: 'Q3', description: t('lorenz.quintile.middle'), min: 0, max: 30, defaultValue: 15 },
-  { key: 'q4', label: 'Q4', description: t('lorenz.quintile.fourth'), min: 0, max: 30, defaultValue: 25 },
-  { key: 'q5', label: 'Q5', description: t('lorenz.quintile.richest'), min: 0, max: 50, defaultValue: 45 },
+  { key: 'q1', label: 'Q1', min: 0, max: 30, defaultValue: 5 },
+  { key: 'q2', label: 'Q2', min: 0, max: 30, defaultValue: 10 },
+  { key: 'q3', label: 'Q3', min: 0, max: 30, defaultValue: 15 },
+  { key: 'q4', label: 'Q4', min: 0, max: 30, defaultValue: 25 },
+  { key: 'q5', label: 'Q5', min: 0, max: 50, defaultValue: 45 },
 ]
 
-const COUNTRY_COMPARISON = [
-  { country: t('lorenz.country.sweden'), flag: '🇸🇪', gini: 0.27 },
-  { country: t('lorenz.country.usa'), flag: '🇺🇸', gini: 0.39 },
-  { country: t('lorenz.country.russia'), flag: '🇷🇺', gini: 0.41 },
-  { country: t('lorenz.country.brazil'), flag: '🇧🇷', gini: 0.53 },
-  { country: t('lorenz.country.southAfrica'), flag: '🇿🇦', gini: 0.63 },
+const COUNTRY_GINI = [
+  { key: 'sweden', flag: '🇸🇪', gini: 0.27 },
+  { key: 'usa', flag: '🇺🇸', gini: 0.39 },
+  { key: 'russia', flag: '🇷🇺', gini: 0.41 },
+  { key: 'brazil', flag: '🇧🇷', gini: 0.53 },
+  { key: 'southAfrica', flag: '🇿🇦', gini: 0.63 },
 ]
 
-function getGiniLevel(gini: number): { label: string; color: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' } {
+function getGiniLevel(gini: number, t: (key: string) => string): { label: string; color: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' } {
   if (gini < 0.3) return { label: t('lorenz.lowInequality'), color: 'text-emerald-600', variant: 'secondary' }
   if (gini < 0.5) return { label: t('lorenz.moderateInequality'), color: 'text-amber-600', variant: 'default' }
   return { label: t('lorenz.highInequality'), color: 'text-red-600', variant: 'destructive' }
@@ -67,6 +66,20 @@ export function LorenzCurve() {
   const [xpAwarded, setXpAwarded] = useState(false)
 
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
+
+  const quintileDescriptions = [
+    t('lorenz.quintile.poorest'),
+    t('lorenz.quintile.second'),
+    t('lorenz.quintile.middle'),
+    t('lorenz.quintile.fourth'),
+    t('lorenz.quintile.richest'),
+  ]
+
+  const countryComparison = COUNTRY_GINI.map(c => ({
+    country: t(`lorenz.country.${c.key}`),
+    flag: c.flag,
+    gini: c.gini,
+  }))
 
   const awardXp = useCallback(() => {
     if (!xpAwarded) {
@@ -110,7 +123,7 @@ export function LorenzCurve() {
   }
   const gini = Math.max(0, Math.min(1, 1 - 2 * areaB))
 
-  const giniLevel = getGiniLevel(gini)
+  const giniLevel = getGiniLevel(gini, t)
 
   const formatTooltip = (value: number, name: string) => {
     const labels: Record<string, string> = {
@@ -249,7 +262,7 @@ export function LorenzCurve() {
                       <span className="inline-flex items-center justify-center w-8 h-6 rounded text-xs font-bold bg-primary/10 text-primary">
                         {config.label}
                       </span>
-                      <span className="text-sm text-muted-foreground">{config.description}</span>
+                      <span className="text-sm text-muted-foreground">{quintileDescriptions[index]}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <span className="font-mono text-muted-foreground">{rawValues[index]}%</span>
@@ -363,7 +376,7 @@ export function LorenzCurve() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {COUNTRY_COMPARISON.map(({ country, flag, gini: countryGini }) => {
+                {countryComparison.map(({ country, flag, gini: countryGini }) => {
                   const diff = gini - countryGini
                   const isClose = Math.abs(diff) < 0.03
                   return (

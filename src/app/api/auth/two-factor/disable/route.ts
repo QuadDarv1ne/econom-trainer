@@ -5,6 +5,7 @@ import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit
 import bcrypt from 'bcryptjs';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
+import { randomBytes } from 'crypto';
 import { logError } from '@/lib/log-error';
 import { withSecurityHeaders } from '@/lib/security-headers';
 import { invalidateSessionCache } from '@/lib/session-cache';

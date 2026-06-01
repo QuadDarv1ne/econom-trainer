@@ -75,5 +75,5 @@ export function SafeAvatarImage({ src, alt }: { src: string | null | undefined; 
   
   if (!safeUrl) return null;
   
-  return <img src={safeUrl} alt={alt || t('common.userAvatar')} className="h-full w-full object-cover" />;
+  return <img src={safeUrl} alt={alt || 'User avatar'} className="h-full w-full object-cover" />;
 }

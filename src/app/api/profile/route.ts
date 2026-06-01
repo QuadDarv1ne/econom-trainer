@@ -111,7 +111,7 @@ export async function PATCH(req: Request) {
       data: {
         ...(name !== undefined && { name: sanitizePlainText(name) }),
         ...(phone !== undefined && { phone: phone === '' ? null : sanitizePlainText(phone ?? '') }),
-        ...(image !== undefined && { image: image === '' ? null : sanitizeImageUrl(image) }),
+        ...(image !== undefined && image !== null && { image: image === '' ? null : sanitizeImageUrl(image) }),
       },
       select: USER_PROFILE_SELECT,
     });

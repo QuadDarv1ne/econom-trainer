@@ -41,7 +41,7 @@ export function sanitizeImageUrl(url: string): string {
   
   // Allow data: image URLs with proper validation
   if (trimmed.startsWith('data:')) {
-    const match = trimmed.match(/^data:(image/[a-zA-Z0-9-.+]+);base64,/);
+    const match = trimmed.match(/^data:(image\/[a-zA-Z0-9-.+]+);base64,/);
     if (match && match[1]) {
       return trimmed;
     }
