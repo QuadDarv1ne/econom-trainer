@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { PasswordInput } from '@/components/ui/password-input';
 import { PasswordStrengthMeter } from '@/components/shared/password-strength-meter';
 import {
@@ -259,15 +259,6 @@ export default function ProfilePage() {
     }
   }
 
-  function getInitials(name: string | null) {
-    if (!name) return '?';
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  }
 
   function formatDate(date: Date | null) {
     if (!date) return '';

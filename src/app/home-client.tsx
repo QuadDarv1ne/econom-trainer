@@ -111,9 +111,6 @@ export function HomeClient({
     : serverVisibleCategoryBreaks
   const fmt = hydrated ? (v: number) => formatNumber(v, clientLocale) : serverFmt
 
-  const userInitials = (session?.user?.name && session.user.name.trim())
-    ? session.user.name.split(' ').map(n => n[0]).join('').toUpperCase()
-    : session?.user?.email?.[0]?.toUpperCase() || '?'
 
   const moduleProgress = useMemo(() => {
     const progress: Record<string, number> = {}
