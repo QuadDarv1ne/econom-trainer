@@ -289,7 +289,7 @@ export function LorenzCurve() {
               <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm text-amber-700 dark:text-amber-400">
                 <AlertTriangle className="h-4 w-4 shrink-0" />
                 <span>
-                  {t('lorenz.incomeShare').replace('{pct}', String(totalRaw))} (≠ 100%). {t('lorenz.interpretation')}.
+                  {t('lorenz.sumWarning').replace('{total}', String(totalRaw))}
                 </span>
               </div>
             )}
