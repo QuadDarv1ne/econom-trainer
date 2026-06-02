@@ -111,6 +111,14 @@ describe('translations structure', () => {
       expect(enKeys).toContain(key)
       expect(zhKeys).toContain(key)
     }
+    for (const key of enKeys) {
+      expect(ruKeys).toContain(key)
+      expect(zhKeys).toContain(key)
+    }
+    for (const key of zhKeys) {
+      expect(ruKeys).toContain(key)
+      expect(enKeys).toContain(key)
+    }
   })
 
   it('has non-empty values', () => {
