@@ -23,6 +23,7 @@ import {
 import { TrendingUp, RotateCcw, Info, Zap } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
+import { CHART_COLORS } from '@/lib/chart-colors'
 
 export function ADASModel() {
   const { t } = useI18n()
@@ -237,21 +238,21 @@ export function ADASModel() {
                         return value
                       }}
                     />
-                    <Line type="monotone" dataKey="ad" stroke="CHART_COLORS.blue" strokeWidth={2.5} dot={false} />
-                    <Line type="monotone" dataKey="sras" stroke="CHART_COLORS.red" strokeWidth={2.5} dot={false} />
+                    <Line type="monotone" dataKey="ad" stroke={CHART_COLORS.primary} strokeWidth={2.5} dot={false} />
+                    <Line type="monotone" dataKey="sras" stroke={CHART_COLORS.demand} strokeWidth={2.5} dot={false} />
                     <Line type="monotone" dataKey="lras" stroke="CHART_COLORS.green" strokeWidth={2} dot={false} strokeDasharray="5 5" />
                     <ReferenceDot
                       x={equilibrium.price}
                       y={equilibrium.output}
                       r={5}
-                      fill="CHART_COLORS.yellow"
+                      fill={CHART_COLORS.accent}
                       stroke="#d97706"
                       strokeWidth={2}
                       label={{ value: 'E', position: 'top', fill: 'CHART_COLORS.yellow', fontSize: 14, fontWeight: 'bold' }}
                     />
                     <ReferenceLine
                       y={potentialGDP}
-                      stroke="CHART_COLORS.green"
+stroke={CHART_COLORS.supply}
                       strokeDasharray="3 3"
                       label={{ value: t('adas.chart.potentialGDP'), position: 'right', fill: 'CHART_COLORS.green', fontSize: 11 }}
                     />
