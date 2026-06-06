@@ -100,33 +100,12 @@ export function useProfile(): UseProfileReturn {
 
     if (status === 'authenticated') {
       queueMicrotask(async () => {
-        try {
-          const res = await fetch('/api/profile')
-          if (cancelled) return
-          if (res.ok) {
-            const data = await res.json()
-            setProfile(data)
-            setName(data.name || '')
-            setPhone(data.phone || '')
-          } else {
-            const data = await res.json().catch((e) => {
-              logError('fetch-profile-json', e)
-              return null
-            })
-            setError(safeErrorMessage(data, tRef.current('dashboard.profile.fetchError')))
-          }
-        } catch (e) {
-          if (!cancelled) {
-            logError('fetch-profile', e)
-            setError(tRef.current('dashboard.profile.fetchError'))
-          }
-        } finally {
-          if (!cancelled) setLoading(false)
-        }
+        if (cancelled) return
+        await fetchProfile()
       })
     }
     return () => { cancelled = true }
-  }, [status, router])
+  }, [status, router, fetchProfile])
 
   const updateProfile = useCallback(
     async (updateName?: string, updatePhone?: string) => {
