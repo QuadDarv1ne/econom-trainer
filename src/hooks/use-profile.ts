@@ -200,6 +200,9 @@ export function useProgressSync(): UseProgressSyncReturn {
   const lastSyncedAtRef = useRef(0)
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  const syncingRef = useRef(syncing)
+  useEffect(() => { syncingRef.current = syncing }, [syncing])
+
   const doSync = useCallback(async () => {
     setSyncing(true)
     setSyncError('')
@@ -268,7 +271,7 @@ export function useProgressSync(): UseProgressSyncReturn {
     // Periodic background sync every 5 minutes
     const periodicTimer = setInterval(() => {
       const hasProgress = useEconomicsStore.getState().totalXP > 0
-      if (hasProgress && !syncing) {
+      if (hasProgress && !syncingRef.current) {
         scheduleSync()
       }
     }, 5 * 60 * 1000)
@@ -279,7 +282,7 @@ export function useProgressSync(): UseProgressSyncReturn {
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
       window.removeEventListener('online', scheduleSync)
     }
-  }, [doSync, scheduleSync, syncing])
+  }, [doSync, scheduleSync])
 
   // Expose manual sync for explicit user action
   const syncProgress = useCallback(() => {
