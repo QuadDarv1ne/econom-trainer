@@ -55,7 +55,7 @@ export function useAutoSync() {
     };
 
     // Mark sync as in-progress
-    store.syncStatus.status = 'syncing';
+    useEconomicsStore.setState({ syncStatus: { ...useEconomicsStore.getState().syncStatus, status: 'syncing' as const } });
 
     const payload = {
       totalXP: state.totalXP,
