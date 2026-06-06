@@ -384,7 +384,7 @@ export interface EconomicsState {
   syncStatus: SyncStatus
   markSynced: () => void
   markSyncError: (error: string) => void
-  setSyncConflict: (conflict: import('@/store/economics-store').SyncConflict | null) => void
+  setSyncConflict: (conflict: SyncConflict | null) => void
   incrementPendingChanges: () => void
 }
 
@@ -624,7 +624,7 @@ export const useEconomicsStore = create<EconomicsState>()(
         totalXP: state.totalXP,
         dailyChallenges: state.dailyChallenges,
         streakState: state.streakState,
-      }) as unknown as EconomicsState,
+      }      ) as unknown as EconomicsState,
     },
   ),
 )

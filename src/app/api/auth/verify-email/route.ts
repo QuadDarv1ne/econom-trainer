@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { logError } from '@/lib/log-error';
 import { BASE_URL } from '@/lib/constants';
-import { safeJson } from '@/lib/safe-json';
+import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { withSecurityHeaders } from '@/lib/security-headers';
 
@@ -21,8 +21,12 @@ export async function POST(req: Request) {
 
   // Try JSON parsing first, fallback to form data
   const parsed = await safeJson<{ token?: string; email?: string }>(req);
-  if ('status' in parsed && parsed.status === 400) {
-    // JSON parse failed, try form data
+  if (isErrorResponse(parsed)) {
+    const contentType = req.headers.get('content-type')?.toLowerCase() || '';
+    if (contentType.includes('application/json')) {
+      // JSON body was already consumed by safeJson; cannot fallback to formData
+      return withSecurityHeaders(NextResponse.redirect(BASE_URL + '/auth/verify-email?status=invalid'));
+    }
     try {
       const formData = await req.formData();
       const tokenVal = formData.get('token');
@@ -33,9 +37,8 @@ export async function POST(req: Request) {
       return withSecurityHeaders(NextResponse.redirect(BASE_URL + '/auth/verify-email?status=invalid'));
     }
   } else {
-    const data = parsed as { token?: string; email?: string };
-    token = data.token || '';
-    email = (data.email || '').toLowerCase();
+    token = parsed.token || '';
+    email = (parsed.email || '').toLowerCase();
   }
 
   const baseUrl = BASE_URL;
