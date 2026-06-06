@@ -1655,7 +1655,7 @@ export function EconomicsQuiz() {
             aria-label={t('quiz.answerOptions')}
             value={selectedAnswer !== null ? selectedAnswer.toString() : ''}
             onValueChange={(v) => {
-              if (quizState === 'active') handleAnswer(parseInt(v))
+              if (quizState === 'active') handleAnswer(parseInt(v, 10))
             }}
             disabled={quizState === 'answered'}
           >

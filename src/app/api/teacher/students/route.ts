@@ -29,7 +29,8 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const page = Math.max(1, parseInt(url.searchParams.get('page') ?? '1', 10) || 1);
     const limitNum = Math.min(50, Math.max(1, parseInt(url.searchParams.get('limit') ?? '20', 10) || 20));
-    const search = url.searchParams.get('search')?.trim() || '';
+    const rawSearch = url.searchParams.get('search')?.trim() || '';
+    const search = rawSearch.slice(0, 100).replace(/[%_\\]/g, '\\$&');
 
     const where: Record<string, unknown> = { role: 'student' };
     if (search) {

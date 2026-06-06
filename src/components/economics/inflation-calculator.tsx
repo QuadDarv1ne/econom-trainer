@@ -101,8 +101,8 @@ export function InflationCalculator() {
   const result = useMemo(() => {
     const amount = parseFloat(initialAmount)
     const rate = parseFloat(inflationRate)
-    const startYear = parseInt(initialYear)
-    const endYear = parseInt(finalYear)
+    const startYear = parseInt(initialYear, 10)
+    const endYear = parseInt(finalYear, 10)
     // Validate inputs: must be finite numbers
     if (!isFinite(amount) || !isFinite(rate) || !isFinite(startYear) || !isFinite(endYear)) {
       return null
