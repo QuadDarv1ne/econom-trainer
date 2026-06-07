@@ -55,7 +55,7 @@ export function useAutoSync() {
     };
 
     // Mark sync as in-progress
-    useEconomicsStore.setState({ syncStatus: { ...useEconomicsStore.getState().syncStatus, status: 'syncing' as const } });
+    useEconomicsStore.setState((s) => ({ syncStatus: { ...s.syncStatus, status: 'syncing' as const } }));
 
     const payload = {
       totalXP: state.totalXP,

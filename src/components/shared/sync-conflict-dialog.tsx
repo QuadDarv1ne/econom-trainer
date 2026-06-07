@@ -14,7 +14,7 @@ import { AlertTriangle, ArrowRightLeft } from "lucide-react";
 import { useI18n } from "@/lib/i18n-provider";
 
 interface SyncConflictDialogProps {
-  conflict: SyncConflict;
+  conflict: SyncConflict | null;
   onResolve: (choice: "keep-client" | "keep-server") => void;
   onForceSync?: () => void;
 }
@@ -22,6 +22,7 @@ interface SyncConflictDialogProps {
 export function SyncConflictDialog({ conflict, onResolve, onForceSync }: SyncConflictDialogProps) {
   const { t } = useI18n();
   const open = conflict !== null;
+  if (!conflict) return null;
 
   const handleKeepClient = () => {
     onResolve("keep-client");

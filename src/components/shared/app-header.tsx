@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { GraduationCap, Home, User, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -10,7 +10,7 @@ import { signOutAndClearStore } from '@/lib/sign-out'
 interface NavLink {
   href: string
   label: string
-  icon: React.ReactNode
+  icon: ReactNode
   showLabel?: boolean
 }
 

@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
@@ -18,8 +19,6 @@ function createPrismaClient(): PrismaClient {
   const provider = detectProvider(databaseUrl);
 
   if (provider === "sqlite") {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3");
     const url = databaseUrl || `file:${process.cwd()}/prisma/dev.db`;
     const adapter = new PrismaBetterSqlite3({ url });
     return new PrismaClient({
