@@ -35,7 +35,7 @@ const COLORS = {
 
 // Custom tooltip — defined outside render to avoid re-creation
 function CostTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ dataKey: string; value: number; color: string }>; label?: number }) {
-  if (!active || !payload || !label) return null
+  if (!active || !payload || label === undefined) return null
   return (
     <div className="bg-card border border-border rounded-lg p-3 shadow-lg text-sm">
       <p className="font-semibold mb-1">Q = {label}</p>

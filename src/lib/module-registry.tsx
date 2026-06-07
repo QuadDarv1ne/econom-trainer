@@ -172,5 +172,4 @@ export const moduleComponents: Record<string, React.ComponentType> = {
   'glossary': Glossary,
   'achievements': Achievements,
   'progress': ProgressTracker,
-  'theme-toggle': ThemeToggle,
 }

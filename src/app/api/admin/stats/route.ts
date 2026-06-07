@@ -12,7 +12,7 @@ export async function GET(req: Request) {
       return withSecurityHeaders(NextResponse.json({ error: auth.error.message }, { status: auth.error.status }));
     }
 
-    const limit = checkRateLimit('profileRead', auth.userId);
+    const limit = checkRateLimit('adminStats', auth.userId);
     if (!limit.ok) {
       return withSecurityHeaders(rateLimitResponse('profileRead', auth.userId, req));
     }

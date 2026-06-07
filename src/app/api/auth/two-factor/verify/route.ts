@@ -75,7 +75,7 @@ export async function POST(req: Request) {
     await prisma.$transaction([
       prisma.user.update({
         where: { id: user.id },
-        data: { twoFactorEnabled: true },
+        data: { twoFactorEnabled: true, sessionHash: randomBytes(32).toString('hex') },
       }),
       prisma.twoFactorConfirmation.update({
         where: { userId: user.id },

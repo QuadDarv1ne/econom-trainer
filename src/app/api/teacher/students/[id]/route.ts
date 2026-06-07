@@ -12,9 +12,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       return withSecurityHeaders(NextResponse.json({ error: auth.error.message }, { status: auth.error.status }));
     }
 
-    const limit = checkRateLimit('profileRead', auth.userId);
+    const limit = checkRateLimit('teacherStudentProgress', auth.userId);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('profileRead', auth.userId, req));
+      return withSecurityHeaders(rateLimitResponse('teacherStudentProgress', auth.userId, req));
     }
 
     const { id } = await params;

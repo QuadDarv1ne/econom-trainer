@@ -67,20 +67,19 @@ export async function POST(req: Request) {
         return { error: "Token has already been used" };
       }
 
-      await tx.user.update({
+      const updatedUser = await tx.user.update({
         where: { email: resetToken.email },
         data: { passwordHash, sessionHash: newSessionHash },
       });
 
-      return { success: true };
+      return { success: true, userId: updatedUser.id };
     });
 
     if ("error" in result) {
       return withSecurityHeaders(NextResponse.json({ error: result.error }, { status: 400 }));
     }
 
-    const user = await prisma.user.findUnique({ where: { email: resetToken.email }, select: { id: true } });
-    if (user) invalidateSessionCache(user.id);
+    invalidateSessionCache(result.userId);
 
     return withSecurityHeaders(NextResponse.json({ message: 'Password successfully changed' }));
   } catch (error) {

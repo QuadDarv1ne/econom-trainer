@@ -50,16 +50,17 @@ export async function POST(req: Request) {
 
     const newSessionHash = randomBytes(32).toString('hex');
 
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: { twoFactorEnabled: false, sessionHash: newSessionHash },
-    });
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: session.user.id },
+        data: { twoFactorEnabled: false, sessionHash: newSessionHash },
+      }),
+      prisma.twoFactorConfirmation.deleteMany({
+        where: { userId: session.user.id },
+      }),
+    ]);
 
     invalidateSessionCache(session.user.id);
-
-    await prisma.twoFactorConfirmation.deleteMany({
-      where: { userId: session.user.id },
-    });
 
     return withSecurityHeaders(NextResponse.json({ message: '2FA disabled' }));
   } catch (error) {

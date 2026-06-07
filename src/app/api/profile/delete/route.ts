@@ -27,35 +27,31 @@ export async function DELETE(req: Request) {
       return withSecurityHeaders(rateLimitResponse('deleteAcc', ip, req));
     }
 
-    const parsed = await safeJson<{ password: string }>(req);
+    const parsed = await safeJson<{ password?: string }>(req);
     if (isErrorResponse(parsed)) return parsed;
     const { password } = parsed;
-
-    if (!password) {
-      return withSecurityHeaders(NextResponse.json(
-        { error: 'Password required to confirm deletion' },
-        { status: 400 }
-      ));
-    }
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { passwordHash: true },
     });
 
-    if (!user?.passwordHash) {
-      return withSecurityHeaders(NextResponse.json(
-        { error: 'Cannot delete this account' },
-        { status: 400 }
-      ));
-    }
+    // OAuth-only users skip password check (already authenticated via provider)
+    if (user?.passwordHash) {
+      if (!password) {
+        return withSecurityHeaders(NextResponse.json(
+          { error: 'Password required to confirm deletion' },
+          { status: 400 }
+        ));
+      }
 
-    const isValid = await bcrypt.compare(password, user.passwordHash);
-    if (!isValid) {
-      return withSecurityHeaders(NextResponse.json(
-        { error: 'Incorrect password' },
-        { status: 400 }
-      ));
+      const isValid = await bcrypt.compare(password, user.passwordHash);
+      if (!isValid) {
+        return withSecurityHeaders(NextResponse.json(
+          { error: 'Incorrect password' },
+          { status: 400 }
+        ));
+      }
     }
 
     // Delete user (cascade handles related records)

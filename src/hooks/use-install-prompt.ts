@@ -50,12 +50,10 @@ export function useInstallPrompt() {
     if (!deferredPrompt) return
 
     deferredPrompt.prompt()
-    const { outcome } = await deferredPrompt.userChoice
+    await deferredPrompt.userChoice
 
-    if (outcome === 'accepted') {
-      setDeferredPrompt(null)
-      setIsInstallable(false)
-    }
+    setDeferredPrompt(null)
+    setIsInstallable(false)
   }, [deferredPrompt])
 
   return { isInstallable, isInstalled, triggerInstall }
