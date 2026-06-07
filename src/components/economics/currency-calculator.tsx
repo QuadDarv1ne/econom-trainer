@@ -76,11 +76,11 @@ export function CurrencyCalculator() {
   // Effective rates (custom or default)
   const getRate = useCallback((code: string) => customRates[code] ?? CURRENCIES.find((c) => c.code === code)?.rateToUSD ?? 1, [customRates])
 
-  // Cross rate
+  // Cross rate (guarded against zero fromRate from custom rates)
   const crossRate = useMemo(() => {
     const fromRate = getRate(fromCurrency)
     const toRate = getRate(toCurrency)
-    return toRate / fromRate
+    return fromRate > 0 ? toRate / fromRate : 0
   }, [fromCurrency, toCurrency, getRate])
 
   // Converted amount
@@ -338,7 +338,8 @@ export function CurrencyCalculator() {
                       {row.code}
                     </td>
                     {matrixCurrencies.map((col) => {
-                      const rate = getRate(col.code) / getRate(row.code)
+                      const rowRate = getRate(row.code)
+                      const rate = rowRate > 0 ? getRate(col.code) / rowRate : 0
                       const isDiagonal = row.code === col.code
                       return (
                         <td
@@ -383,10 +384,11 @@ export function CurrencyCalculator() {
                     <Input
                       type="number"
                       step={0.001}
+                      min={0.001}
                       value={current}
                       onChange={(e) => {
                         awardXP()
-                        setCustomRates((prev) => ({ ...prev, [c.code]: Number(e.target.value) }))
+                        setCustomRates((prev) => ({ ...prev, [c.code]: Math.max(0.001, Number(e.target.value) || 0.001) }))
                       }}
                       className="text-sm h-8"
                     />

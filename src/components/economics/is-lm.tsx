@@ -265,21 +265,11 @@ export function ISLMModel() {
     setGovSpending(250)
     setAutonomousInvestment(250)
     awardXP()
-    addModuleInteraction({
-      moduleId: 'is-lm',
-      action: 'preset',
-      xpEarned: MODULE_XP['is-lm'] ?? 20,
-    })
   }
 
   const applyContractionaryMonetary = () => {
     setMoneySupply(800)
     awardXP()
-    addModuleInteraction({
-      moduleId: 'is-lm',
-      action: 'preset',
-      xpEarned: MODULE_XP['is-lm'] ?? 20,
-    })
   }
 
   return (

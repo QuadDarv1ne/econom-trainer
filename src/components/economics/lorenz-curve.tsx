@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -63,7 +63,7 @@ export function LorenzCurve() {
   const [q3, setQ3] = useState(15)
   const [q4, setQ4] = useState(25)
   const [q5, setQ5] = useState(45)
-  const [xpAwarded, setXpAwarded] = useState(false)
+  const xpAwardedRef = useRef(false)
 
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
 
@@ -82,11 +82,11 @@ export function LorenzCurve() {
   }))
 
   const awardXp = useCallback(() => {
-    if (!xpAwarded) {
-      setXpAwarded(true)
+    if (!xpAwardedRef.current) {
+      xpAwardedRef.current = true
       addModuleInteraction({ moduleId: 'lorenz', action: 'calculate', xpEarned: MODULE_XP['lorenz'] })
     }
-  }, [xpAwarded, addModuleInteraction])
+  }, [addModuleInteraction])
 
   const setters = [setQ1, setQ2, setQ3, setQ4, setQ5]
   const rawValues = [q1, q2, q3, q4, q5]

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { useI18n } from '@/lib/i18n-provider'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -38,16 +38,16 @@ export function PPFCurve() {
   const [efficiency, setEfficiency] = useState(1.0)
   const [position, setPosition] = useState(50)
   const [isLinear, setIsLinear] = useState(false)
-  const [xpAwarded, setXpAwarded] = useState(false)
+  const xpAwardedRef = useRef(false)
 
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
 
   const awardSliderXp = useCallback(() => {
-    if (!xpAwarded) {
-      setXpAwarded(true)
+    if (!xpAwardedRef.current) {
+      xpAwardedRef.current = true
       addModuleInteraction({ moduleId: 'ppf', action: 'calculate', xpEarned: MODULE_XP['ppf'] })
     }
-  }, [xpAwarded, addModuleInteraction])
+  }, [addModuleInteraction])
 
   // Generate PPF data points
   const ppfData: PPFPoint[] = useMemo(() => {
@@ -129,8 +129,8 @@ export function PPFCurve() {
     setEfficiency(1.0)
     setIsLinear(false)
     setPosition(50)
-    addModuleInteraction({ moduleId: 'ppf', action: 'calculate', xpEarned: MODULE_XP['ppf'] })
-  }, [addModuleInteraction])
+    awardSliderXp()
+  }, [awardSliderXp])
 
   const handleTechBreakthrough = useCallback(() => {
     setMaxA(100)
@@ -138,8 +138,8 @@ export function PPFCurve() {
     setEfficiency(1.0)
     setIsLinear(false)
     setPosition(50)
-    addModuleInteraction({ moduleId: 'ppf', action: 'calculate', xpEarned: MODULE_XP['ppf'] })
-  }, [addModuleInteraction])
+    awardSliderXp()
+  }, [awardSliderXp])
 
   const handleReset = useCallback(() => {
     setGoodAName('Масло')

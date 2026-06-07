@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useRef } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import {
   Card,
@@ -82,16 +82,16 @@ export function PhillipsCurve() {
   const [alpha, setAlpha] = useState(0.5)
   const [supplyShock, setSupplyShock] = useState(0)
   const [actualUnemployment, setActualUnemployment] = useState(5)
-  const [xpAwarded, setXpAwarded] = useState(false)
+  const xpAwardedRef = useRef(false)
 
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
 
   const awardSliderXp = useCallback(() => {
-    if (!xpAwarded) {
-      setXpAwarded(true)
+    if (!xpAwardedRef.current) {
+      xpAwardedRef.current = true
       addModuleInteraction({ moduleId: 'phillips', action: 'calculate', xpEarned: MODULE_XP['phillips'] })
     }
-  }, [xpAwarded, addModuleInteraction])
+  }, [addModuleInteraction])
 
   // Generate chart data dynamically
   const chartData = useMemo(() =>
@@ -136,7 +136,7 @@ export function PhillipsCurve() {
     setAlpha(0.6)
     setSupplyShock(3)
     setActualUnemployment(8)
-    addModuleInteraction({ moduleId: 'phillips', action: 'preset', xpEarned: MODULE_XP['phillips'] })
+    awardSliderXp()
   }
 
   const applyDisinflationPreset = () => {
@@ -145,7 +145,7 @@ export function PhillipsCurve() {
     setAlpha(0.5)
     setSupplyShock(0)
     setActualUnemployment(8)
-    addModuleInteraction({ moduleId: 'phillips', action: 'preset', xpEarned: MODULE_XP['phillips'] })
+    awardSliderXp()
   }
 
   const applyDefaultPreset = () => {
