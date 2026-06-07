@@ -181,16 +181,18 @@ export interface XPState {
 /**
  * Returns the localized level title based on user's current level.
  * Levels range from Student (1-2) to Academician (20+).
+ * @param level - The user's level
+ * @param locale - Optional locale (defaults to current locale on client, 'ru' on server)
  */
-export function getLevelTitle(level: number): string {
-  const locale = getCurrentLocale()
-  if (level >= 20) return t('level.academician', locale)
-  if (level >= 15) return t('level.professor', locale)
-  if (level >= 10) return t('level.associate', locale)
-  if (level >= 7) return t('level.phd', locale)
-  if (level >= 5) return t('level.analyst', locale)
-  if (level >= 3) return t('level.specialist', locale)
-  return t('level.student', locale)
+export function getLevelTitle(level: number, locale?: Locale): string {
+  const l = locale ?? getCurrentLocale()
+  if (level >= 20) return t('level.academician', l)
+  if (level >= 15) return t('level.professor', l)
+  if (level >= 10) return t('level.associate', l)
+  if (level >= 7) return t('level.phd', l)
+  if (level >= 5) return t('level.analyst', l)
+  if (level >= 3) return t('level.specialist', l)
+  return t('level.student', l)
 }
 
 /**
@@ -558,7 +560,8 @@ export const useEconomicsStore = create<EconomicsState>()(
       getFullProgress: () => {
         const state = get()
         const { level } = getLevelFromXP(state.totalXP)
-        const levelTitle = getLevelTitle(level)
+        const locale = getCurrentLocale()
+        const levelTitle = getLevelTitle(level, locale)
 
         const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeQuizAndFinanceStats(state.quizResults, state.financeResults)
 

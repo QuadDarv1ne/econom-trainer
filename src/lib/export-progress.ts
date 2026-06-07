@@ -63,7 +63,7 @@ export function exportToCSV(): string {
   // Basic stats
   csv += `${escapeCsvValue(t('export.csv.totalXP', locale))},${escapeCsvValue(state.totalXP)}\n`
   csv += `${escapeCsvValue(t('export.csv.level', locale))},${escapeCsvValue(level.level)}\n`
-  csv += `${escapeCsvValue(t('export.csv.levelName', locale))},${escapeCsvValue(getLevelTitle(level.level))}\n`
+  csv += `${escapeCsvValue(t('export.csv.levelName', locale))},${escapeCsvValue(getLevelTitle(level.level, locale))}\n`
   csv += `${escapeCsvValue(t('export.csv.interactions', locale))},${escapeCsvValue(state.moduleInteractions.length)}\n`
   csv += `${escapeCsvValue(t('export.csv.created', locale))},${escapeCsvValue(timestamp)}\n`
   csv += `\n`
@@ -103,6 +103,7 @@ export function exportToJSON(): string {
   const state = useEconomicsStore.getState()
   const level = getLevelFromXP(state.totalXP)
   const timestamp = new Date().toISOString()
+  const locale = getCurrentLocale()
 
   const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeQuizAndFinanceStats(state.quizResults, state.financeResults)
 
@@ -115,7 +116,7 @@ export function exportToJSON(): string {
   const data: ExportData = {
     totalXP: state.totalXP,
     level: level.level,
-    levelTitle: getLevelTitle(level.level),
+    levelTitle: getLevelTitle(level.level, locale),
     moduleInteractions: moduleCounts,
     totalSessions: state.quizResults.length + state.gdpResults.length + state.financeResults.length + state.elasticityResults.length,
     quizStats: {
