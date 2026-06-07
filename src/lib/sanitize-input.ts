@@ -45,14 +45,14 @@ export function sanitizeImageUrl(url: string): string {
     if (match && match[1]) {
       return trimmed;
     }
-    throw new Error('Invalid data: URL format');
+    return '';
   }
   
   // Block dangerous protocols
   const dangerousProtocols = ['javascript:', 'vbscript:', 'data:text/html'];
   for (const protocol of dangerousProtocols) {
     if (trimmed.toLowerCase().startsWith(protocol)) {
-      throw new Error(`Blocked dangerous protocol: ${protocol}`);
+      return '';
     }
   }
   
@@ -62,11 +62,10 @@ export function sanitizeImageUrl(url: string): string {
       new URL(trimmed);
       return trimmed;
     } catch {
-      throw new Error('Invalid URL format');
+      return '';
     }
   }
   
-  // Block everything else by default
-  throw new Error('URL protocol not allowed: only http:, https:, and data: image URLs are allowed');
+  return '';
 }
 

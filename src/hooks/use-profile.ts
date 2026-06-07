@@ -53,7 +53,7 @@ interface UseProgressSyncReturn {
  * Used by both dashboard and profile pages.
  */
 export function useProfile(): UseProfileReturn {
-  const { data: _session, status, update } = useSession()
+  const { status, update } = useSession()
   const { t } = useI18n()
   const router = useRouter()
   const [profile, setProfile] = useState<UserProfile | null>(null)

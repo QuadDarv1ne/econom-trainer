@@ -258,9 +258,14 @@ function LoginForm() {
   );
 }
 
+function LoginFallback() {
+  const { t } = useI18n();
+  return <div className="w-full max-w-md mx-auto p-8 text-center text-muted-foreground">{t('common.loading')}</div>;
+}
+
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="w-full max-w-md mx-auto p-8 text-center text-muted-foreground">Loading...</div>}>
+    <Suspense fallback={<LoginFallback />}>
       <LoginForm />
     </Suspense>
   );
