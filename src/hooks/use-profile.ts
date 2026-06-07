@@ -63,10 +63,19 @@ export function useProfile(): UseProfileReturn {
   const [success, setSuccess] = useState('')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+
   const tRef = useRef(t)
+  const nameRef = useRef(name)
+  const phoneRef = useRef(phone)
   useEffect(() => {
     tRef.current = t
   }, [t])
+  useEffect(() => {
+    nameRef.current = name
+  }, [name])
+  useEffect(() => {
+    phoneRef.current = phone
+  }, [phone])
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -111,8 +120,8 @@ export function useProfile(): UseProfileReturn {
       setError('')
       setSuccess('')
 
-      const bodyName = updateName !== undefined ? updateName : name
-      const bodyPhone = updatePhone !== undefined ? updatePhone : phone
+      const bodyName = updateName !== undefined ? updateName : nameRef.current
+      const bodyPhone = updatePhone !== undefined ? updatePhone : phoneRef.current
 
       try {
         const res = await fetch('/api/profile', {
@@ -138,7 +147,7 @@ export function useProfile(): UseProfileReturn {
         setSaving(false)
       }
     },
-    [t, update, name, phone]
+    [t, update]
   )
 
   return {
