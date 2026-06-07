@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { useState, Suspense, useMemo } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -11,7 +11,6 @@ import { AlertCircle, Loader2, KeyRound, CheckCircle2 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n-provider';
 import { PasswordInput } from '@/components/ui/password-input';
 import { PasswordStrengthMeter } from '@/components/shared/password-strength-meter';
-import { checkPasswordStrength } from '@/lib/password-strength';
 import { REDIRECT_DELAY_MS } from '@/lib/constants';
 import { safeErrorMessage } from '@/lib/safe-error';
 
@@ -26,8 +25,6 @@ function ResetPasswordForm() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const _passwordStrength = useMemo(() => checkPasswordStrength(password), [password]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();

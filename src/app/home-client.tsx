@@ -76,7 +76,7 @@ for (const t of tabItemsWithIcons) { tabIconMap[t.value] = t.icon; }
 
 export function HomeClient({
   session: serverSession,
-  locale: serverLocale,
+  locale: _serverLocale,
   visibleModules: serverVisibleModules,
   visibleTabItems: serverVisibleTabItems,
   visibleCategoryBreaks: serverVisibleCategoryBreaks,
@@ -99,7 +99,6 @@ export function HomeClient({
   const hydrated = typeof window !== 'undefined'
 
   const t = hydrated ? clientT : serverT
-  const _locale = hydrated ? clientLocale : serverLocale
   const visibleModules = hydrated
     ? (session ? modulesWithIcons : modulesWithIcons.filter((m) => m.public))
     : serverVisibleModules.map(m => ({ ...m, icon: iconMap[m.id] ?? GraduationCap }))

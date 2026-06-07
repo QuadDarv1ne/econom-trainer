@@ -298,21 +298,21 @@ export function TaxCalculator() {
                   variant={ndflDeductionType === 'standard' ? 'default' : 'outline'}
                   onClick={() => { awardXP(); handleDeductionType('standard') }}
                 >
-                  Стандартный (0 ₽)
+                  {t('tax.standardDeduction')}
                 </Button>
                 <Button
                   size="sm"
                   variant={ndflDeductionType === 'social' ? 'default' : 'outline'}
                   onClick={() => { awardXP(); handleDeductionType('social') }}
                 >
-                  Социальный (до 120 000 ₽)
+                  {t('tax.socialDeduction')}
                 </Button>
                 <Button
                   size="sm"
                   variant={ndflDeductionType === 'property' ? 'default' : 'outline'}
                   onClick={() => { awardXP(); handleDeductionType('property') }}
                 >
-                  Имущественный (до 260 000 ₽)
+                  {t('tax.propertyDeduction')}
                 </Button>
               </div>
             </CardContent>
@@ -322,7 +322,7 @@ export function TaxCalculator() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Расчёт по прогрессивным ставкам</CardTitle>
-              <CardDescription>Налоговая база после вычета: {fmt(ndflResult.taxable)} ₽</CardDescription>
+              <CardDescription>{t('tax.taxableBaseAfter').replace('{amount}', fmt(ndflResult.taxable))}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
@@ -555,23 +555,23 @@ export function TaxCalculator() {
           {/* Formulas */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Формулы расчёта</CardTitle>
+              <CardTitle className="text-lg">{t('tax.formulasCalc')}</CardTitle>
             </CardHeader>
             <CardContent className="text-sm space-y-3">
               <div className="p-3 bg-muted/50 rounded-lg font-mono space-y-1">
-                <div>Цена без НДС = Цена с НДС / (1 + Ставка)</div>
+                <div>{t('tax.formula.priceNoVat')}</div>
                 <div className="text-muted-foreground">
                   {fmt(ndsResult.total)} / (1 + {ndsRate}) = {fmt(ndsResult.base)} ₽
                 </div>
               </div>
               <div className="p-3 bg-muted/50 rounded-lg font-mono space-y-1">
-                <div>Сумма НДС = Цена с НДС − Цена без НДС</div>
+                <div>{t('tax.formula.vatSum')}</div>
                 <div className="text-muted-foreground">
                   {fmt(ndsResult.total)} − {fmt(ndsResult.base)} = {fmt(ndsResult.vatAmount)} ₽
                 </div>
               </div>
               <div className="p-3 bg-muted/50 rounded-lg font-mono space-y-1">
-                <div>Цена с НДС = Цена без НДС × (1 + Ставка)</div>
+                <div>{t('tax.formula.priceWithVat')}</div>
                 <div className="text-muted-foreground">
                   {fmt(ndsResult.base)} × {fmtDec(1 + ndsRate)} = {fmt(ndsResult.base * (1 + ndsRate))} ₽
                 </div>
@@ -582,9 +582,9 @@ export function TaxCalculator() {
           {/* Comparison table */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Сравнение ставок НДС</CardTitle>
+              <CardTitle className="text-lg">{t('tax.vatComparison')}</CardTitle>
               <CardDescription>
-                Для базовой цены {fmt(ndsResult.base)} ₽
+                {t('tax.forBasePrice').replace('{amount}', fmt(ndsResult.base))}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -592,7 +592,7 @@ export function TaxCalculator() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left p-2">Ставка</th>
+                      <th className="text-left p-2">{t('tax.vatRateHeader')}</th>
                       <th className="text-right p-2">{t('tax.vatWithoutTax')}</th>
                       <th className="text-right p-2">{t('tax.vatAmount')}</th>
                       <th className="text-right p-2">{t('tax.vatWithTax')}</th>
@@ -622,32 +622,22 @@ export function TaxCalculator() {
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Info className="h-4 w-4 text-primary" />
-                Механика НДС и экономические эффекты
+                {t('tax.vatMechanics')}
               </CardTitle>
             </CardHeader>
             <CardContent className="text-sm space-y-3">
               <div className="p-3 bg-muted/50 rounded-lg">
-                <strong>Кто платит НДС?</strong> Формально налогоплательщик — продавец, но фактически
-                НДС оплачивает покупатель, так как налог включён в цену. Продавец является лишь
-                налоговым агентом, перечисляющим НДС в бюджет.
+                <strong>{t('tax.whoPaysVat')}</strong> {t('tax.whoPaysVatText')}
               </div>
               <div className="p-3 bg-primary/5 rounded-lg">
-                <strong>Механика зачёта:</strong> Продавец уплачивает в бюджет разницу между
-                НДС, полученным от покупателей (исходящий НДС), и НДС, уплаченным поставщикам
-                (входящий НДС). Это избегает каскадного эффекта — налог взимается только с
-                добавленной стоимости на каждом этапе.
+                <strong>{t('tax.offsetMechanism')}</strong> {t('tax.offsetMechanismText')}
               </div>
               <Separator />
               <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
-                <strong>Регрессивный характер НДС:</strong> Чем ниже доход, тем большую долю
-                расходования составляет потребление, а значит — уплата НДС. Для
-                низкодоходных групп НДС составляет более значительную часть дохода, чем для
-                высокодоходных, которые могут сберегать значительную часть заработка.
+                <strong>{t('tax.regressiveNature')}</strong> {t('tax.regressiveNatureText')}
               </div>
               <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
-                <strong>Льготные ставки:</strong> Ставка 10% применяется к социально значимым
-                товарам (продукты питания, детские товары, медикаменты, печатная продукция).
-                Ставка 0% — при экспорте для обеспечения конкурентоспособности на мировых рынках.
+                <strong>{t('tax.reducedRates')}</strong> {t('tax.reducedRatesText')}
               </div>
             </CardContent>
           </Card>
@@ -662,7 +652,7 @@ export function TaxCalculator() {
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">{t('tax.profitTitle')}</CardTitle>
               <CardDescription>
-                Базовая ставка 20%: 3% — федеральный бюджет, 17% — бюджет субъекта РФ
+                {t('tax.profitDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -708,8 +698,7 @@ export function TaxCalculator() {
                 </div>
               </div>
               <div className="p-3 bg-muted/50 rounded-lg text-sm">
-                Общая ставка: <strong>{fmtDec(profitResult.totalRate * 100)}%</strong> (
-                {profitFederalRate}% фед. + {profitRegionalRate}% рег.)
+                {t('tax.totalRate').replace('{rate}', fmtDec(profitResult.totalRate * 100)).replace('{fed}', profitFederalRate).replace('{reg}', profitRegionalRate)}
               </div>
             </CardContent>
           </Card>
@@ -736,7 +725,7 @@ export function TaxCalculator() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground">Прибыль × {fmtDec(profitResult.totalRate * 100)}%</p>
+                <p className="text-xs text-muted-foreground">{t('tax.profitTimesRate').replace('{rate}', fmtDec(profitResult.totalRate * 100))}</p>
               </CardContent>
             </Card>
 
@@ -748,7 +737,7 @@ export function TaxCalculator() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground">Прибыль после уплаты налога</p>
+                <p className="text-xs text-muted-foreground">{t('tax.profitAfterTax')}</p>
               </CardContent>
             </Card>
 
@@ -760,7 +749,7 @@ export function TaxCalculator() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground">Налог / Выручка</p>
+                <p className="text-xs text-muted-foreground">{t('tax.taxOverRevenue')}</p>
               </CardContent>
             </Card>
           </div>
@@ -769,7 +758,7 @@ export function TaxCalculator() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">{t('tax.distribution')}</CardTitle>
-              <CardDescription>Разбивка налога между федеральным и региональным бюджетами</CardDescription>
+              <CardDescription>{t('tax.distributionDesc')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -777,7 +766,7 @@ export function TaxCalculator() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="flex items-center gap-2">
                       <span className="inline-block h-3 w-3 rounded-full bg-blue-500" />
-                      Федеральный бюджет ({profitFederalRate}%)
+                      {t('tax.federalBudget').replace('{rate}', profitFederalRate)}
                     </span>
                     <span className="font-mono font-medium">{fmt(profitResult.federalTax)} ₽</span>
                   </div>
@@ -794,7 +783,7 @@ export function TaxCalculator() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="flex items-center gap-2">
                       <span className="inline-block h-3 w-3 rounded-full bg-orange-500" />
-                      Региональный бюджет ({profitRegionalRate}%)
+                      {t('tax.regionalBudget').replace('{rate}', profitRegionalRate)}
                     </span>
                     <span className="font-mono font-medium">{fmt(profitResult.regionalTax)} ₽</span>
                   </div>
@@ -812,10 +801,7 @@ export function TaxCalculator() {
 
                 {/* Marginal effective rate */}
                 <div className="p-3 bg-muted/50 rounded-lg text-sm">
-                  <strong>Маржинальная эффективная ставка:</strong> на каждый дополнительный рубль
-                  прибыли компания платит {fmtDec(profitResult.totalRate * 100)}% налога. С учётом
-                  расходов эффективная ставка по выручке составляет{' '}
-                  <strong>{fmtDec(profitResult.effectiveRate * 100)}%</strong>.
+                  {t('tax.marginalEffective').replace('{rate}', fmtDec(profitResult.totalRate * 100))}
                 </div>
               </div>
             </CardContent>
@@ -824,8 +810,8 @@ export function TaxCalculator() {
           {/* Chart */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Структура доходов и расходов</CardTitle>
-              <CardDescription>Сравнение выручки, расходов, налога и чистой прибыли</CardDescription>
+              <CardTitle className="text-lg">{t('tax.structureTitle')}</CardTitle>
+              <CardDescription>{t('tax.structureDesc')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-[300px]">
@@ -837,7 +823,7 @@ export function TaxCalculator() {
                     <Tooltip
                       content={<ChartTooltipContent formatter={(v) => `${fmt(v)} ₽`} />}
                     />
-                    <Bar dataKey="value" radius={[4, 4, 0, 0]} name="Сумма">
+                    <Bar dataKey="value" radius={[4, 4, 0, 0]} name={t('tax.chartSum')}>
                       {profitChartData.map((entry, index) => (
                         <Cell key={index} fill={entry.fill} />
                       ))}
@@ -853,29 +839,19 @@ export function TaxCalculator() {
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Info className="h-4 w-4 text-primary" />
-                Переложение налога на прибыль и Кривая Лаффера
+                {t('tax.taxIncidence')}
               </CardTitle>
             </CardHeader>
             <CardContent className="text-sm space-y-3">
               <div className="p-3 bg-muted/50 rounded-lg">
-                <strong>Переложение налога на прибыль (tax incidence):</strong> Хотя номинальным
-                плательщиком выступает компания, фактически часть налога может перекладываться на:
-                работников (через более низкую зарплату), потребителей (через более высокие цены),
-                или собственников капитала (через более низкую доходность). Распределение
-                налогового бремени зависит от эластичности спроса и предложения.
+                <strong>{t('tax.taxIncidence')}</strong> {t('tax.taxIncidenceText')}
               </div>
               <div className="p-3 bg-primary/5 rounded-lg">
-                <strong>Федеральная + региональная часть:</strong> Разделение ставки обеспечивает
-                поступления как в федеральный, так и в региональный бюджет. Субъекты РФ могут
-                снижать региональную ставку для отдельных категорий налогоплательщиков (не ниже
-                13,5% в 2025 году), стимулируя инвестиции.
+                <strong>{t('tax.fedRegSplit')}</strong> {t('tax.fedRegSplitText')}
               </div>
               <Separator />
               <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
-                <strong>Кривая Лаффера для налога на прибыль:</strong> При чрезмерно высокой
-                ставке компании теряют стимулы к инвестициям, а при слишком низкой — бюджет не
-                получает достаточно средств. Оптимальная ставка зависит от экономической
-                конъюнктуры, но обычно для налога на прибыль она оценивается в диапазоне 20–30%.
+                <strong>{t('tax.lafferCurve')}</strong> {t('tax.lafferCurveText')}
               </div>
             </CardContent>
           </Card>

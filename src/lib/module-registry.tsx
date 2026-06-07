@@ -27,7 +27,7 @@ import {
   Coins,
   AlertTriangle,
 } from 'lucide-react'
-import { modules as baseModules, tabItems as baseTabItems, categoryBreaks as _baseCategoryBreaks } from '@/lib/module-data'
+import { modules as baseModules, tabItems as baseTabItems } from '@/lib/module-data'
 export type { ModuleMeta as ModuleDefinition, TabMeta as TabItem } from '@/lib/module-data'
 export { modules, tabItems, categoryBreaks } from '@/lib/module-data'
 

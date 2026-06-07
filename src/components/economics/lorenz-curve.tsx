@@ -433,45 +433,39 @@ export function LorenzCurve() {
             <div className="space-y-3">
               <h3 className="font-semibold text-base">{t('lorenz.graph')}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                The Lorenz curve is a graphical representation of income (or wealth) distribution in a society.
-                The X axis shows the cumulative share of population (from poorest to richest),
-                and the Y axis shows the cumulative share of income received by that population.
+                {t('lorenz.theory.lorenzCurve')}
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                <strong>Line of absolute equality</strong> (diagonal) means that every percent of population
-                receives the same percent of income. The more the Lorenz curve deviates from the diagonal,
-                the higher the inequality in society.
+                <strong>{t('lorenz.equalityLine')}</strong> {t('lorenz.theory.equalityLine')}
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                <strong>Line of absolute inequality</strong> — the X axis and a vertical line at 100% population,
-                meaning one person receives all income while others receive nothing.
+                <strong>{t('lorenz.inequality')}</strong> {t('lorenz.theory.inequalityLine')}
               </p>
             </div>
 
             <div className="space-y-3">
               <h3 className="font-semibold text-base">{t('lorenz.gini')}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                The Gini coefficient is a numerical measure of inequality, equal to the ratio of the area between
-                the line of equality and the Lorenz curve (area A) to the total area A + B:
+                {t('lorenz.giniExplanation')}
               </p>
               <div className="p-3 rounded-lg bg-muted/50 text-center font-mono text-base">
                 G = A / (A + B)
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                The coefficient ranges from 0 to 1:
+                {t('lorenz.giniRange')}
               </p>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-start gap-2">
                   <Badge variant="secondary" className="mt-0.5 text-[10px] px-1.5 py-0 bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">0–0.3</Badge>
-                  <span className="text-muted-foreground">Low inequality — incomes are distributed relatively evenly (Scandinavian countries)</span>
+                  <span className="text-muted-foreground">{t('lorenz.giniLow')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Badge variant="default" className="mt-0.5 text-[10px] px-1.5 py-0">0.3–0.5</Badge>
-                  <span className="text-muted-foreground">Moderate inequality — typical for most developed countries</span>
+                  <span className="text-muted-foreground">{t('lorenz.giniModerate')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Badge variant="destructive" className="mt-0.5 text-[10px] px-1.5 py-0">{'>'} 0.5</Badge>
-                  <span className="text-muted-foreground">High inequality — significant gap between rich and poor (South Africa, Brazil)</span>
+                  <span className="text-muted-foreground">{t('lorenz.giniHigh')}</span>
                 </li>
               </ul>
             </div>
@@ -485,11 +479,7 @@ export function LorenzCurve() {
               {t('lorenz.gini')} {t('lorenz.interpretation').toLowerCase()}
             </h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              The Gini coefficient does not account for the structure of inequality — two countries with the same G
-              may have different income distributions (e.g., different middle class sizes).
-              It is also sensitive to changes in the middle of the distribution and less sensitive
-              to changes at the extremes. For a more complete picture, additional
-              indicators are used: decile coefficient, Palma index, top-10% income share, and others.
+              {t('lorenz.giniLimitation')}
             </p>
           </div>
         </CardContent>

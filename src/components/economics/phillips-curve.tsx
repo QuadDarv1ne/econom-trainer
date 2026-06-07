@@ -672,4 +672,3 @@ export function PhillipsCurve() {
   )
 }
 
-export default PhillipsCurve

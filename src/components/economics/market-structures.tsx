@@ -233,9 +233,6 @@ export function MarketStructures() {
     },
   }
 
-  const currentMarket = marketInfo[marketType]
-  const _MarketIcon = currentMarket.icon
-
   return (
     <div className="space-y-6">
       {/* Header */}
