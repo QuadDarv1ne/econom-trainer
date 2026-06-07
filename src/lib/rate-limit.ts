@@ -182,7 +182,12 @@ function sanitizeIP(ip: string): string {
  */
 export function rateLimitResponse(key: string, _ip: string | null, locale?: 'en' | 'ru' | 'zh' | Request) {
   const config = configs.get(key);
-  if (!config) throw new Error(`Unknown rate limit config key: ${key}`);
+  if (!config) {
+    return NextResponse.json(
+      { error: 'Rate limit configuration error' },
+      { status: 500 }
+    );
+  }
 
   // Calculate actual time until the oldest request in the window expires
   const identifier = `${_ip ?? 'unknown'}:${key}`;

@@ -240,7 +240,7 @@ export function ADASModel() {
                     />
                     <Line type="monotone" dataKey="ad" stroke={CHART_COLORS.primary} strokeWidth={2.5} dot={false} />
                     <Line type="monotone" dataKey="sras" stroke={CHART_COLORS.demand} strokeWidth={2.5} dot={false} />
-                    <Line type="monotone" dataKey="lras" stroke="CHART_COLORS.green" strokeWidth={2} dot={false} strokeDasharray="5 5" />
+                    <Line type="monotone" dataKey="lras" stroke={CHART_COLORS.supply} strokeWidth={2} dot={false} strokeDasharray="5 5" />
                     <ReferenceDot
                       x={equilibrium.price}
                       y={equilibrium.output}
@@ -248,13 +248,13 @@ export function ADASModel() {
                       fill={CHART_COLORS.accent}
                       stroke="#d97706"
                       strokeWidth={2}
-                      label={{ value: 'E', position: 'top', fill: 'CHART_COLORS.yellow', fontSize: 14, fontWeight: 'bold' }}
+                      label={{ value: 'E', position: 'top', fill: CHART_COLORS.accent, fontSize: 14, fontWeight: 'bold' }}
                     />
                     <ReferenceLine
                       y={potentialGDP}
 stroke={CHART_COLORS.supply}
                       strokeDasharray="3 3"
-                      label={{ value: t('adas.chart.potentialGDP'), position: 'right', fill: 'CHART_COLORS.green', fontSize: 11 }}
+                      label={{ value: t('adas.chart.potentialGDP'), position: 'right', fill: CHART_COLORS.supply, fontSize: 11 }}
                     />
                   </ComposedChart>
                 </ResponsiveContainer>

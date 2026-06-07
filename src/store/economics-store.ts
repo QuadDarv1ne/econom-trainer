@@ -363,11 +363,8 @@ export interface EconomicsState {
   addElasticityResult: (result: ElasticityResult) => void
   addModuleInteraction: (interaction: Omit<ModuleInteraction, 'id' | 'date'>) => void
   completeDailyChallenge: (result: DailyChallenge) => void
-  recordActivity: () => void
   unlockAchievement: (id: string, xpReward?: number) => void
-  addXP: (amount: number) => void
   getTotalScore: () => { quizAccuracy: number; gdpCount: number; financeAccuracy: number; elasticityCount: number }
-  computeStats: () => { quizCorrect: number; quizTotal: number; financeCorrect: number; financeTotal: number }
   getXPState: () => XPState
   resetProgress: () => Promise<void>
   getFullProgress: () => {
@@ -466,18 +463,6 @@ export const useEconomicsStore = create<EconomicsState>()(
         }))
       },
 
-      recordActivity: () => {
-        const today = new Date().toLocaleDateString('en-CA') // YYYY-MM-DD in local timezone
-        set((state) => ({
-          streakState: updateStreakState(state.streakState, today),
-        }))
-      },
-
-      addXP: (amount) => {
-        if (amount < 0) return
-        set((state) => ({ totalXP: state.totalXP + amount }))
-      },
-
       unlockAchievement: (id, xpReward = 0) => {
         set((state) => {
           if (state.unlockedAchievements.includes(id)) return state
@@ -499,12 +484,6 @@ export const useEconomicsStore = create<EconomicsState>()(
           financeAccuracy: financeTotal > 0 ? Math.round((financeCorrect / financeTotal) * 100) : 0,
           elasticityCount: elasticityTotal,
         }
-      },
-
-      computeStats: () => {
-        const state = get()
-        const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeQuizAndFinanceStats(state.quizResults, state.financeResults)
-        return { quizCorrect, quizTotal, financeCorrect, financeTotal }
       },
 
       getXPState: () => {

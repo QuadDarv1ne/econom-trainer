@@ -1,4 +1,5 @@
 import { auth } from '@/auth';
+import { prisma } from '@/lib/prisma';
 
 export type Role = 'student' | 'teacher' | 'admin';
 
@@ -24,7 +25,6 @@ export async function requireRole(requiredRole: Role): Promise<
     return { authorized: false, error: { status: 401, message: 'Unauthorized' } };
   }
 
-  const { prisma } = await import('@/lib/prisma');
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { id: true, role: true },

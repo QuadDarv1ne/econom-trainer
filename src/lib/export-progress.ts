@@ -289,7 +289,7 @@ export function importProgressFromFile(): Promise<void> {
 
       try {
         const text = await file.text()
-        importProgressFromJSON(text)
+        await importProgressFromJSON(text)
         resolve()
       } catch (err) {
         reject(err)
@@ -304,6 +304,7 @@ export function importProgressFromFile(): Promise<void> {
     const timeoutId = setTimeout(() => {
       if (!input.files?.length && document.body.contains(input)) {
         cleanup()
+        reject(new Error('File selection cancelled'))
       }
     }, 60000)
 

@@ -7,7 +7,7 @@
 // Patterns that indicate sensitive values in error messages or stack traces
 const SENSITIVE_PATTERNS = [
   /password/i,
-  /(?:access[_s-]?token|auth[_s-]?token|reset[_s-]?token|session[_s-]?token|bearer[_s-]?token|api[_s-]?key)/i,
+  /(?:access[_\s-]?token|auth[_\s-]?token|reset[_\s-]?token|session[_\s-]?token|bearer[_\s-]?token|api[_\s-]?key)/i,
   /secret/i,
   /authorization/i,
   /cookie/i,

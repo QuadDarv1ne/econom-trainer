@@ -409,7 +409,6 @@ export function MonetaryPolicy() {
             </CardHeader>
             <CardContent>
               <ChartContainer config={chartConfig} className="h-72 w-full">
-                <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="metric" />
@@ -419,7 +418,6 @@ export function MonetaryPolicy() {
                     <Bar dataKey="current" fill="var(--color-current)" name={t('monetary.chart.current')} radius={[4, 4, 0, 0]} />
                     <Bar dataKey="predicted" fill="var(--color-predicted)" name={t('monetary.chart.predicted')} radius={[4, 4, 0, 0]} />
                   </BarChart>
-                </ResponsiveContainer>
               </ChartContainer>
             </CardContent>
           </Card>

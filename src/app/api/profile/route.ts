@@ -110,7 +110,7 @@ export async function PATCH(req: Request) {
       where: { id: session.user.id },
       data: {
         ...(name !== undefined && { name: sanitizePlainText(name) }),
-        ...(phone !== undefined && { phone: phone === '' ? null : sanitizePlainText(phone ?? '') }),
+        ...(phone !== undefined && { phone: phone === '' || phone === null ? null : sanitizePlainText(phone) }),
         ...(image !== undefined && image !== null && { image: image === '' ? null : sanitizeImageUrl(image) }),
       },
       select: USER_PROFILE_SELECT,

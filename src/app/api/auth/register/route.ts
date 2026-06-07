@@ -66,7 +66,7 @@ export async function POST(req: Request) {
       // Use constant-time delay to prevent timing-based email enumeration
       await new Promise((resolve) => setTimeout(resolve, ENUMERATION_DELAY_MS));
       return withSecurityHeaders(NextResponse.json(
-        { message: 'If this email is not registered, you can create an account' },
+        { message: 'Registration successful' },
         { status: 200 }
       ));
     }
@@ -126,7 +126,7 @@ export async function POST(req: Request) {
         userId: user.id,
         emailVerificationSent: emailSent,
       },
-      { status: 201 }
+      { status: 200 }
     ));
   } catch (error) {
     logError('register', error);
