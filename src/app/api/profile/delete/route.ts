@@ -24,7 +24,7 @@ export async function DELETE(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('deleteAcc', ip);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('deleteAcc', ip, req));
+      return withSecurityHeaders(rateLimitResponse('deleteAcc', ip, limit.resetAt, req));
     }
 
     const parsed = await safeJson<{ password?: string }>(req);

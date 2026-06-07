@@ -40,35 +40,33 @@ export function ComparativeAdvantage() {
   const c2Name = t('comparative.countryB')
 
   const analysis = useMemo(() => {
-    // Opportunity cost: how many B per 1 A, and how many A per 1 B
-    const c1OcA = country1.goodA / country1.goodB // cost of A in terms of B
-    const c1OcB = country1.goodB / country1.goodA // cost of B in terms of A
-    const c2OcA = country2.goodA / country2.goodB
-    const c2OcB = country2.goodB / country2.goodA
+    const safeDiv = (a: number, b: number): number => (b !== 0 ? a / b : 0)
+
+    const c1OcA = safeDiv(country1.goodA, country1.goodB)
+    const c1OcB = safeDiv(country1.goodB, country1.goodA)
+    const c2OcA = safeDiv(country2.goodA, country2.goodB)
+    const c2OcB = safeDiv(country2.goodB, country2.goodA)
 
     const advA = c1OcA < c2OcA ? c1Name : c1OcA > c2OcA ? c2Name : t('comparative.noAdvantage')
     const advB = c1OcB < c2OcB ? c1Name : c1OcB > c2OcB ? c2Name : t('comparative.noAdvantage')
 
-    // Absolute advantage
     const absAdvA = country1.goodA < country2.goodA ? c1Name : country1.goodA > country2.goodA ? c2Name : t('comparative.noAdvantage')
     const absAdvB = country1.goodB < country2.goodB ? c1Name : country1.goodB > country2.goodB ? c2Name : t('comparative.noAdvantage')
 
-    // Gains from trade (specialization)
-    // Assume each country has 24 hours
     const hours = 24
 
-    // Before trade: each produces both
-    const c1ProdA_before = Math.floor(hours / 2 / country1.goodA * 10) / 10
-    const c1ProdB_before = Math.floor(hours / 2 / country1.goodB * 10) / 10
-    const c2ProdA_before = Math.floor(hours / 2 / country2.goodA * 10) / 10
-    const c2ProdB_before = Math.floor(hours / 2 / country2.goodB * 10) / 10
+    const safeProd = (hrs: number, perUnit: number) => perUnit > 0 ? Math.floor(hrs / perUnit * 10) / 10 : 0
 
-    // After trade: each specializes in comparative advantage good
+    const c1ProdA_before = safeProd(hours / 2, country1.goodA)
+    const c1ProdB_before = safeProd(hours / 2, country1.goodB)
+    const c2ProdA_before = safeProd(hours / 2, country2.goodA)
+    const c2ProdB_before = safeProd(hours / 2, country2.goodB)
+
     const c1SpecializesA = c1OcA < c2OcA
-    const c1ProdA_after = c1SpecializesA ? Math.floor(hours / country1.goodA * 10) / 10 : 0
-    const c1ProdB_after = !c1SpecializesA ? Math.floor(hours / country1.goodB * 10) / 10 : 0
-    const c2ProdA_after = !c1SpecializesA ? Math.floor(hours / country2.goodA * 10) / 10 : 0
-    const c2ProdB_after = c1SpecializesA ? Math.floor(hours / country2.goodB * 10) / 10 : 0
+    const c1ProdA_after = c1SpecializesA ? safeProd(hours, country1.goodA) : 0
+    const c1ProdB_after = !c1SpecializesA ? safeProd(hours, country1.goodB) : 0
+    const c2ProdA_after = !c1SpecializesA ? safeProd(hours, country2.goodA) : 0
+    const c2ProdB_after = c1SpecializesA ? safeProd(hours, country2.goodB) : 0
 
     const chartData = [
       {
@@ -141,9 +139,11 @@ export function ComparativeAdvantage() {
                   <Label className="text-xs">{t('comparative.goodA')}</Label>
                   <Input
                     type="number"
+                    min={0.1}
+                    step={0.1}
                     value={country1.goodA || ''}
                     onChange={(e) => {
-                      setCountry1({ ...country1, goodA: parseFloat(e.target.value) || 0 })
+                      setCountry1({ ...country1, goodA: Math.max(0.1, parseFloat(e.target.value) || 0.1) })
                       setShowResult(false)
                     }}
                     className="font-mono"
@@ -153,9 +153,11 @@ export function ComparativeAdvantage() {
                   <Label className="text-xs">{t('comparative.goodB')}</Label>
                   <Input
                     type="number"
+                    min={0.1}
+                    step={0.1}
                     value={country1.goodB || ''}
                     onChange={(e) => {
-                      setCountry1({ ...country1, goodB: parseFloat(e.target.value) || 0 })
+                      setCountry1({ ...country1, goodB: Math.max(0.1, parseFloat(e.target.value) || 0.1) })
                       setShowResult(false)
                     }}
                     className="font-mono"
@@ -172,9 +174,11 @@ export function ComparativeAdvantage() {
                   <Label className="text-xs">{t('comparative.goodA')}</Label>
                   <Input
                     type="number"
+                    min={0.1}
+                    step={0.1}
                     value={country2.goodA || ''}
                     onChange={(e) => {
-                      setCountry2({ ...country2, goodA: parseFloat(e.target.value) || 0 })
+                      setCountry2({ ...country2, goodA: Math.max(0.1, parseFloat(e.target.value) || 0.1) })
                       setShowResult(false)
                     }}
                     className="font-mono"
@@ -184,9 +188,11 @@ export function ComparativeAdvantage() {
                   <Label className="text-xs">{t('comparative.goodB')}</Label>
                   <Input
                     type="number"
+                    min={0.1}
+                    step={0.1}
                     value={country2.goodB || ''}
                     onChange={(e) => {
-                      setCountry2({ ...country2, goodB: parseFloat(e.target.value) || 0 })
+                      setCountry2({ ...country2, goodB: Math.max(0.1, parseFloat(e.target.value) || 0.1) })
                       setShowResult(false)
                     }}
                     className="font-mono"

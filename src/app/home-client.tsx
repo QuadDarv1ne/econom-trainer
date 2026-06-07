@@ -402,7 +402,7 @@ export function HomeClient({
             </Card>
           </TabsContent>
 
-          {ActiveModule && <TabsContent value={activeTab}><Suspense fallback={<ModuleSkeleton />}><ActiveModule /></Suspense></TabsContent>}
+          {ActiveModule && <TabsContent value={activeTab}><Suspense key={activeTab} fallback={<ModuleSkeleton />}><ActiveModule /></Suspense></TabsContent>}
         </Tabs>
       </main>
 

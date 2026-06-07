@@ -18,7 +18,7 @@ export async function GET(req: Request) {
 
     const limit = checkRateLimit('progressRead', session.user.id);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('progressRead', session.user.id, req));
+      return withSecurityHeaders(rateLimitResponse('progressRead', session.user.id, limit.resetAt, req));
     }
 
     const progress = await prisma.userProgress.findUnique({
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('progressSync', ip);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('progressSync', ip, req));
+      return withSecurityHeaders(rateLimitResponse('progressSync', ip, limit.resetAt, req));
     }
 
     const parsed = await safeJson<{

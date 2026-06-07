@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('twoFactorVerify', ip);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('twoFactorVerify', ip, req));
+      return withSecurityHeaders(rateLimitResponse('twoFactorVerify', ip, limit.resetAt, req));
     }
 
     const session = await auth();

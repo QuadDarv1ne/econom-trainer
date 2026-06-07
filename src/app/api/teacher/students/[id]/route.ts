@@ -14,7 +14,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
     const limit = checkRateLimit('teacherStudentProgress', auth.userId);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('teacherStudentProgress', auth.userId, req));
+      return withSecurityHeaders(rateLimitResponse('teacherStudentProgress', auth.userId, limit.resetAt, req));
     }
 
     const { id } = await params;

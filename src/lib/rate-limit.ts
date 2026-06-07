@@ -177,10 +177,11 @@ function sanitizeIP(ip: string): string {
 
 /**
  * Helper to create a rate-limited response.
- * Accepts an optional locale ('en' | 'ru' | 'zh') or Request object to determine response language.
+ * Accepts the resetAt timestamp from checkRateLimit for accurate Retry-After,
+ * plus an optional locale ('en' | 'ru' | 'zh') or Request object for the response language.
  * Falls back to Russian if no locale is provided.
  */
-export function rateLimitResponse(key: string, _ip: string | null, locale?: 'en' | 'ru' | 'zh' | Request) {
+export function rateLimitResponse(key: string, _ip: string | null, resetAt: number, locale?: 'en' | 'ru' | 'zh' | Request) {
   const config = configs.get(key);
   if (!config) {
     return NextResponse.json(
@@ -189,12 +190,7 @@ export function rateLimitResponse(key: string, _ip: string | null, locale?: 'en'
     );
   }
 
-  // Calculate actual time until the oldest request in the window expires
-  const identifier = `${_ip ?? 'unknown'}:${key}`;
-  const entry = store.get(identifier);
-  const retryAfter = entry && entry.timestamps.length > 0
-    ? Math.ceil((entry.timestamps[0] + config.windowMs - Date.now()) / 1000)
-    : Math.ceil(config.windowMs / 1000);
+  const retryAfter = Math.ceil(Math.max(1, resetAt - Date.now()) / 1000);
 
   // Resolve locale from Request object or direct locale string
   let resolvedLocale: 'en' | 'ru' | 'zh' = 'ru';

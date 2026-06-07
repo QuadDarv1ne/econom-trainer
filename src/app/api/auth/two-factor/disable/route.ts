@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('twoFactorDisable', ip);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('twoFactorDisable', ip, req));
+      return withSecurityHeaders(rateLimitResponse('twoFactorDisable', ip, limit.resetAt, req));
     }
 
     const parsed = await safeJson<{ password: string }>(req);

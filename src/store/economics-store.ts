@@ -534,7 +534,7 @@ export const useEconomicsStore = create<EconomicsState>()(
             logError('reset-progress-api', new Error(`Failed to reset server progress: ${response.status} ${JSON.stringify(errorData)}`));
           }
         } catch (error) {
-          // Network error � continue with client reset anyway
+          // Network error — continue with client reset anyway
           logError('reset-progress-api', error);
         }
 

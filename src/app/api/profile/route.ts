@@ -34,7 +34,7 @@ export async function GET(req: Request) {
     // Use session.user.id as identifier to prevent shared bucket across users
     const limit = checkRateLimit('profileRead', session.user.id);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('profileRead', session.user.id, req));
+      return withSecurityHeaders(rateLimitResponse('profileRead', session.user.id, limit.resetAt, req));
     }
 
     const user = await prisma.user.findUnique({
@@ -68,7 +68,7 @@ export async function PATCH(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('profileUpdate', ip);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('profileUpdate', ip, req));
+      return withSecurityHeaders(rateLimitResponse('profileUpdate', ip, limit.resetAt, req));
     }
 
     const parsed = await safeJson<{ name?: string; phone?: string | null; image?: string | null }>(req);
@@ -103,6 +103,9 @@ export async function PATCH(req: Request) {
         if (!match || !match[1].startsWith('image/')) {
           return withSecurityHeaders(NextResponse.json({ error: 'Unsupported image format' }, { status: 400 }));
         }
+      }
+      if (image !== '' && image !== null && !sanitizeImageUrl(image)) {
+        return withSecurityHeaders(NextResponse.json({ error: 'Invalid image URL' }, { status: 400 }));
       }
     }
 
