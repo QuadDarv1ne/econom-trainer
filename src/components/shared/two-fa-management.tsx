@@ -243,7 +243,7 @@ export function TwoFAManagement({ twoFactorEnabled, onTwoFactorChange, setError,
                 </Alert>
 
                 <div className="grid grid-cols-2 gap-2">
-                  {backupCodes.map((code, i) => (
+                  {backupCodes.map((code) => (
                     <div
                       key={code}
                       className="flex items-center justify-between bg-muted px-3 py-2 rounded"

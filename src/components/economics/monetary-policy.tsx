@@ -23,7 +23,6 @@ import {
   YAxis,
   CartesianGrid,
   Legend,
-  ResponsiveContainer,
 } from 'recharts'
 
 const chartConfig = {

@@ -91,17 +91,18 @@ export function useProfile(): UseProfileReturn {
     }
   }, [])
 
+  const hasFetchedRef = useRef(false)
+
   useEffect(() => {
-    let cancelled = false
     if (status === 'unauthenticated') {
       router.push('/auth/login')
       return
     }
 
-    if (status === 'authenticated') {
+    if (status === 'authenticated' && !hasFetchedRef.current) {
+      hasFetchedRef.current = true
       fetchProfile()
     }
-    return () => { cancelled = true }
   }, [status, router, fetchProfile])
 
   const updateProfile = useCallback(
