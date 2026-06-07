@@ -29,7 +29,7 @@ export function checkPasswordStrength(password: string): PasswordStrengthResult 
   const metCount = Object.values(requirements).filter(Boolean).length;
   let score = Math.max(0, Math.min(4, metCount - 1));
   if (password.length >= 12 && metCount >= 4) score = Math.max(score, 3);
-  if (password.length >= 16 && metCount >= 5) score = 4;
+  if (password.length >= 16 && metCount >= 5) score = Math.max(score, 4);
 
   const labels = ['passwordStrength.weak', 'passwordStrength.weak', 'passwordStrength.fair', 'passwordStrength.good', 'passwordStrength.strong'];
   const colors = ['bg-red-500', 'bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500'];

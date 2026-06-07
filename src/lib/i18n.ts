@@ -35,8 +35,7 @@ export const translations = {
  */
 function detectInitialLocale(): Locale {
   if (typeof window === 'undefined') return 'ru';
-  // navigator.language may not be available in all environments
-  const browserLang = typeof navigator !== 'undefined' && navigator.language ? navigator.language.split('-')[0] : null;
+  const browserLang = navigator.language ? navigator.language.split('-')[0] : null;
   if (browserLang === 'en' || browserLang === 'zh') return browserLang as Locale;
   return 'ru';
 }

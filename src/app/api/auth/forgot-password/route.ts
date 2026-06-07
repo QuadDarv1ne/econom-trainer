@@ -23,24 +23,26 @@ export async function POST(req: Request) {
 
     const parsed = await safeJson<{ email: string }>(req);
     if (isErrorResponse(parsed)) return parsed;
-    const { email } = parsed;
+    const { email: rawEmail } = parsed;
 
-    if (!email) {
+    if (!rawEmail) {
       return withSecurityHeaders(NextResponse.json(
         { error: 'Email is required' },
         { status: 400 }
       ));
     }
 
-    if (typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (typeof rawEmail !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)) {
       return withSecurityHeaders(NextResponse.json(
         { error: 'Invalid email format' },
         { status: 400 }
       ));
     }
 
+    const email = rawEmail.toLowerCase();
+
     const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
+      where: { email },
     });
 
     if (!user || !user.email) {
@@ -60,7 +62,7 @@ export async function POST(req: Request) {
 
     // Delete existing tokens for this user
     await prisma.passwordResetToken.deleteMany({
-      where: { email: email.toLowerCase() },
+      where: { email },
     });
 
     // Clean up expired tokens globally (background maintenance)
@@ -76,7 +78,7 @@ export async function POST(req: Request) {
     // Create new token
     await prisma.passwordResetToken.create({
       data: {
-        email: email.toLowerCase(),
+        email,
         token,
         expires,
       },

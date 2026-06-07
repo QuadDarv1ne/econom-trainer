@@ -30,6 +30,7 @@ export function useServiceWorker() {
         .catch((error) => {
           if (!cancelled) {
             logError('service-worker', error)
+            registeredRef.current = false
           }
         })
     }

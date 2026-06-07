@@ -603,7 +603,7 @@ export const useEconomicsStore = create<EconomicsState>()(
         totalXP: state.totalXP,
         dailyChallenges: state.dailyChallenges,
         streakState: state.streakState,
-      }      ) as unknown as EconomicsState,
+      }) as EconomicsState,
     },
   ),
 )

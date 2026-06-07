@@ -65,7 +65,7 @@ export function ProgressStats({
           </Card>
         </div>
 
-        <Button onClick={onSync} disabled={syncing} className="w-full">
+        <Button onClick={onSync} disabled={syncing} className="w-full" type="button">
           {syncing ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : null}

@@ -93,7 +93,7 @@ const escapeUrl = (url: string) => {
     if (!['http:', 'https:'].includes(parsed.protocol)) {
       return '#';
     }
-    return escapeHtml(url).replace(/ /g, '%20');
+    return escapeHtml(parsed.href);
   } catch {
     return '#';
   }

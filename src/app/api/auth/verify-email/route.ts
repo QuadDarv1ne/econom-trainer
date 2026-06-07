@@ -41,10 +41,8 @@ export async function POST(req: Request) {
     email = (parsed.email || '').toLowerCase();
   }
 
-  const baseUrl = BASE_URL;
-
   if (!token || !email) {
-    return withSecurityHeaders(NextResponse.redirect(baseUrl + '/auth/verify-email?status=invalid'));
+    return withSecurityHeaders(NextResponse.redirect(BASE_URL + '/auth/verify-email?status=invalid'));
   }
 
   try {
@@ -53,14 +51,14 @@ export async function POST(req: Request) {
     });
 
     if (!verificationToken) {
-      return withSecurityHeaders(NextResponse.redirect(baseUrl + '/auth/verify-email?status=invalid'));
+      return withSecurityHeaders(NextResponse.redirect(BASE_URL + '/auth/verify-email?status=invalid'));
     }
 
     if (verificationToken.expires < new Date()) {
       await prisma.verificationToken.delete({
         where: { identifier_token: { identifier: email, token } },
       });
-      return withSecurityHeaders(NextResponse.redirect(baseUrl + '/auth/verify-email?status=expired'));
+      return withSecurityHeaders(NextResponse.redirect(BASE_URL + '/auth/verify-email?status=expired'));
     }
 
     // Verify email and delete token in a transaction
@@ -74,9 +72,9 @@ export async function POST(req: Request) {
       }),
     ]);
 
-    return withSecurityHeaders(NextResponse.redirect(baseUrl + '/auth/verify-email?status=success'));
+    return withSecurityHeaders(NextResponse.redirect(BASE_URL + '/auth/verify-email?status=success'));
   } catch (error) {
     logError('verify-email', error);
-    return withSecurityHeaders(NextResponse.redirect(baseUrl + '/auth/verify-email?status=error'));
+    return withSecurityHeaders(NextResponse.redirect(BASE_URL + '/auth/verify-email?status=error'));
   }
 }
