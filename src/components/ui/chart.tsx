@@ -80,7 +80,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 
   // Validate color values before injecting into style tag
   const isValidCssColor = (value: string): boolean => {
-    return /^#[0-9a-fA-F]{3,8}$|^(?:rgb|hsl)a?\(\s*\d+(?:\s*,\s*\d+(?:\.\d+)?%?){2,4}\s*\)$|^var\(--[\w-]+\)$/.test(value);
+    return /^#[0-9a-fA-F]{3,8}$|^(?:rgb|hsl)a?\(|^var\(--[\w-]+\)$|^(?:currentColor|transparent|inherit|initial|revert|unset)$|^[a-zA-Z]+$/.test(value);
   };
 
   // Validate key to prevent CSS injection via --color-{key}

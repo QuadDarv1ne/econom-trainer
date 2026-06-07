@@ -99,10 +99,7 @@ export function useProfile(): UseProfileReturn {
     }
 
     if (status === 'authenticated') {
-      queueMicrotask(async () => {
-        if (cancelled) return
-        await fetchProfile()
-      })
+      fetchProfile()
     }
     return () => { cancelled = true }
   }, [status, router, fetchProfile])

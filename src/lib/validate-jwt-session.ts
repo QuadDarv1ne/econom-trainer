@@ -10,12 +10,8 @@ import {
   scheduleCacheCleanup,
   getPendingValidation,
 } from "@/lib/session-cache";
+import { prisma } from "@/lib/prisma";
 import { logError } from "@/lib/log-error";
-
-async function getPrisma() {
-  const { prisma } = await import("@/lib/prisma");
-  return prisma;
-}
 
 /**
  * Validate the sessionHash in a JWT token against the database.
@@ -41,9 +37,8 @@ export async function validateJwtSession(token: JWT): Promise<JWT> {
   scheduleCacheCleanup();
 
   try {
-    const dbPrisma = await getPrisma();
     const dbUser = await getPendingValidation(userId, async () => {
-      return dbPrisma.user.findUnique({
+      return prisma.user.findUnique({
         where: { id: userId },
         select: { sessionHash: true },
       });

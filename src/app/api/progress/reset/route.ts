@@ -31,7 +31,7 @@ export async function DELETE(req: Request) {
     return withSecurityHeaders(NextResponse.json({ success: true, resetAt: new Date().toISOString() }));
   } catch (error) {
     // UserProgress may not exist — that's fine, treat as success
-    if ((error as { code?: string }).code === 'P2025') {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as Record<string, unknown>).code === 'P2025') {
       return withSecurityHeaders(NextResponse.json({ success: true, resetAt: new Date().toISOString() }));
     }
     logError('progress-reset', error);

@@ -260,7 +260,7 @@ describe('importProgressFromJSON', () => {
       streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
     })
 
-    importProgressFromJSON(invalidQuizData)
+    await importProgressFromJSON(invalidQuizData)
     const state = useEconomicsStore.getState()
     // Should be filtered out because it doesn't match QuizResult structure
     expect(state.quizResults).toHaveLength(0)
