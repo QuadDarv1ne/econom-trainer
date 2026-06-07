@@ -9,6 +9,7 @@ import { AuthProvider } from "@/components/auth/auth-provider";
 import { useServiceWorker } from "@/hooks/use-service-worker";
 import { ServiceWorkerUpdatePrompt } from "@/components/pwa/sw-update-prompt";
 import { InstallPWAButton } from "@/components/pwa/install-pwa-button";
+import { EnhancedToastProvider } from "@/components/shared/enhanced-toast";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   useServiceWorker();
@@ -23,9 +24,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     >
       <I18nProvider>
         <AuthProvider>
-          {children}
-          <OnlineStatusIndicator />
-          <InstallPWAButton />
+          <EnhancedToastProvider>
+            {children}
+            <OnlineStatusIndicator />
+            <InstallPWAButton />
+          </EnhancedToastProvider>
         </AuthProvider>
       </I18nProvider>
       <Toaster />

@@ -28,8 +28,12 @@ import {
   Monitor,
   AlertTriangle,
   LogOut,
+  Zap,
+  Trophy,
+  BookOpen,
+  Target,
 } from 'lucide-react';
-import { useEconomicsStore } from '@/store/economics-store';
+import { useEconomicsStore, getLevelFromXP } from '@/store/economics-store';
 import { useI18n } from '@/lib/i18n-provider';
 import { formatDate as formatLocaleDate } from '@/lib/i18n';
 import { checkPasswordStrength } from '@/lib/password-strength';
@@ -42,9 +46,12 @@ import { AppHeader } from '@/components/shared/app-header';
 import { TwoFAManagement } from '@/components/shared/two-fa-management'
 import { SafeUserInitials, SafeUserContent, SafeAvatarImage } from '@/components/shared/safe-user-content';
 import { ProgressStats } from '@/components/shared/progress-stats';
+import { StatsCard } from '@/components/shared/stats-card';
+import { useEnhancedToast } from '@/components/shared/enhanced-toast';
 
 export default function ProfilePage() {
   const { t, locale } = useI18n();
+  const { success: showToastSuccess, error: showToastError } = useEnhancedToast();
   const {
     status,
     profile,
@@ -105,6 +112,19 @@ export default function ProfilePage() {
   // Auto-dismiss alerts
   useAutoDismiss(error, () => setError(''));
   useAutoDismiss(success, () => setSuccess(''));
+
+  // Show toast notifications
+  useEffect(() => {
+    if (success) {
+      showToastSuccess(success);
+    }
+  }, [success, showToastSuccess]);
+
+  useEffect(() => {
+    if (error) {
+      showToastError(error);
+    }
+  }, [error, showToastError]);
 
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -293,15 +313,47 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background">
       <AppHeader title={t('profile.title')} variant="full" />
 
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+      <main className="container mx-auto px-4 py-8 max-w-6xl">
         <AlertBanner type="error" message={error} onDismiss={() => setError('')} closeLabel={t('auth.error.close') || 'Close'} />
         <AlertBanner type="success" message={success} onDismiss={() => setSuccess('')} closeLabel={t('auth.error.close') || 'Close'} />
 
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <StatsCard
+            icon={Zap}
+            title={t('home.header.xpLabel')}
+            value={totalXP.toLocaleString()}
+            gradient="orange"
+            delay={0}
+          />
+          <StatsCard
+            icon={Trophy}
+            title={t('profile.level')}
+            value={getLevelFromXP(totalXP).level.toString()}
+            gradient="purple"
+            delay={0.1}
+          />
+          <StatsCard
+            icon={BookOpen}
+            title={t('profile.modulesCompleted')}
+            value={moduleInteractionsCount}
+            gradient="blue"
+            delay={0.2}
+          />
+          <StatsCard
+            icon={Target}
+            title={t('profile.quizzesTaken')}
+            value={quizResultsCount}
+            gradient="green"
+            delay={0.3}
+          />
+        </div>
+
         <Tabs defaultValue="personal" className="space-y-6" onValueChange={() => { setError(''); setSuccess(''); }}>
-          <TabsList>
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="personal">
               <User className="h-4 w-4 mr-2" />
               {t('profile.personalInfo')}

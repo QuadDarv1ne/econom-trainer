@@ -1,8 +1,7 @@
 import { auth } from '@/auth';
-import { t, formatNumber, type Locale } from '@/lib/i18n';
 import { modules, tabItems, categoryBreaks } from '@/lib/module-data';
 import { HomeClient } from '@/app/home-client';
-import { getServerLocale as getServerLocaleRaw } from '@/lib/server-locale';
+import { getServerLocale as getServerLocaleRaw, type Locale } from '@/lib/server-locale';
 
 async function getServerLocale(): Promise<Locale> {
   const locale = await getServerLocaleRaw();
@@ -11,10 +10,7 @@ async function getServerLocale(): Promise<Locale> {
 
 export default async function HomePage() {
   const session = await auth();
-  const locale = await getServerLocale();
-
-  const tr = (key: string) => t(key, locale);
-  const fmt = (value: number) => formatNumber(value, locale);
+  await getServerLocale();
 
   const visibleModules = session ? modules : modules.filter((m) => m.public);
   const visibleTabItems = session
@@ -28,16 +24,24 @@ export default async function HomePage() {
 
   const totalModules = modules.length;
 
+  // Pass only serializable session data
+  const sessionData = session
+    ? {
+        user: {
+          name: session.user?.name ?? null,
+          email: session.user?.email ?? null,
+          image: session.user?.image ?? null,
+        },
+      }
+    : null;
+
   return (
     <HomeClient
-      session={session}
-      locale={locale}
+      session={sessionData}
       visibleModules={visibleModules}
       visibleTabItems={visibleTabItems}
       visibleCategoryBreaks={visibleCategoryBreaks}
       totalModules={totalModules}
-      t={tr}
-      fmt={fmt}
     />
   );
 }
