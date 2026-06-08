@@ -2009,12 +2009,17 @@ export const ru: Record<string, string> = {
     'error.retry': 'Попробовать снова',
     'error.goHome': 'На главную',
     'error.unknown': 'Неизвестная ошибка',
+    'error.details': 'Детали ошибки (только для разработки)',
+    'error.reportBug': 'Сообщить об ошибке на GitHub',
     'globalError.title': 'Критическая ошибка',
     'globalError.description': 'Произошла серьёзная ошибка при загрузке приложения. Попробуйте перезагрузить страницу.',
     'globalError.reload': 'Перезагрузить',
     'globalError.goHome': 'На главную',
+    'globalError.details': 'Детали ошибки (только для разработки)',
+    'globalError.reportBug': 'Сообщить об ошибке на GitHub',
 
     // PWA
+    'pwa.installApp': 'Установить приложение',
     'pwa.updateAvailable': 'Доступна новая версия',
     'pwa.updateMessage': 'Перезагрузите страницу для получения последних функций',
     'pwa.updateReload': 'Перезагрузить',

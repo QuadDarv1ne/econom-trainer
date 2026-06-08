@@ -2025,12 +2025,17 @@ export const en: Record<string, string> = {
     'error.retry': 'Try again',
     'error.goHome': 'Go to home',
     'error.unknown': 'Unknown error',
+    'error.details': 'Error details (development only)',
+    'error.reportBug': 'Report this bug on GitHub',
     'globalError.title': 'Critical error',
     'globalError.description': 'A serious error occurred while loading the application. Try reloading the page.',
     'globalError.reload': 'Reload',
     'globalError.goHome': 'Go to home',
+    'globalError.details': 'Error details (development only)',
+    'globalError.reportBug': 'Report this bug on GitHub',
 
     // PWA
+    'pwa.installApp': 'Install App',
     'pwa.updateAvailable': 'New version available',
     'pwa.updateMessage': 'Reload to get the latest features',
     'pwa.updateReload': 'Reload',

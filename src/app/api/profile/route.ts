@@ -34,7 +34,7 @@ export async function GET(req: Request) {
     // Use session.user.id as identifier to prevent shared bucket across users
     const limit = checkRateLimit('profileRead', session.user.id);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('profileRead', session.user.id, limit.resetAt, req));
+      return withSecurityHeaders(rateLimitResponse('profileRead', limit.resetAt, req));
     }
 
     const user = await prisma.user.findUnique({
@@ -68,7 +68,7 @@ export async function PATCH(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('profileUpdate', ip);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('profileUpdate', ip, limit.resetAt, req));
+      return withSecurityHeaders(rateLimitResponse('profileUpdate', limit.resetAt, req));
     }
 
     const parsed = await safeJson<{ name?: string; phone?: string | null; image?: string | null }>(req);

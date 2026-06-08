@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   const ip = getClientIP(req);
   const limit = checkRateLimit('verifyEmail', ip);
   if (!limit.ok) {
-    return withSecurityHeaders(rateLimitResponse('verifyEmail', ip, limit.resetAt, req));
+    return withSecurityHeaders(rateLimitResponse('verifyEmail', limit.resetAt, req));
   }
 
   let email = '';

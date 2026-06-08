@@ -21,7 +21,7 @@ export async function DELETE(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('progressSync', ip);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('progressSync', ip, limit.resetAt, req));
+      return withSecurityHeaders(rateLimitResponse('progressSync', limit.resetAt, req));
     }
 
     await prisma.userProgress.delete({

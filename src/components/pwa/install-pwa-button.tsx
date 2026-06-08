@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Download } from 'lucide-react'
 import { useInstallPrompt } from '@/hooks/use-install-prompt'
+import { useI18n } from '@/lib/i18n-provider'
 
 /**
  * Button that triggers PWA install prompt when app is installable.
@@ -10,6 +11,7 @@ import { useInstallPrompt } from '@/hooks/use-install-prompt'
  */
 export function InstallPWAButton() {
   const { isInstallable, isInstalled, triggerInstall } = useInstallPrompt()
+  const { t } = useI18n()
 
   if (!isInstallable || isInstalled) return null
 
@@ -21,7 +23,7 @@ export function InstallPWAButton() {
       className="gap-2"
     >
       <Download className="h-4 w-4" />
-      Install App
+      {t('pwa.installApp')}
     </Button>
   )
 }

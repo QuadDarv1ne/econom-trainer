@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, CheckCircle2, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -35,6 +35,11 @@ const typeConfig = {
 
 export function EnhancedToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const toastsRef = useRef(toasts);
+
+  useEffect(() => {
+    toastsRef.current = toasts;
+  }, [toasts]);
 
   const dismiss = useCallback((id: string) => {
     setToasts(prev => prev.filter(toast => toast.id !== id));
@@ -56,13 +61,13 @@ export function EnhancedToastProvider({ children }: { children: React.ReactNode 
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && toasts.length > 0) {
-        dismiss(toasts[0].id);
+      if (e.key === 'Escape' && toastsRef.current.length > 0) {
+        dismiss(toastsRef.current[0].id);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [toasts, dismiss]);
+  }, [dismiss]);
 
   return (
     <ToastContext.Provider value={{ showToast, success, error, info, warning, dismiss }}>

@@ -20,7 +20,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
     const limit = checkRateLimit('profileUpdate', getClientIP(req));
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('profileUpdate', getClientIP(req), limit.resetAt, req));
+      return withSecurityHeaders(rateLimitResponse('profileUpdate', limit.resetAt, req));
     }
 
     const { id } = await params;
@@ -76,7 +76,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
 
     const limit = checkRateLimit('deleteAcc', getClientIP(req));
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('deleteAcc', getClientIP(req), limit.resetAt, req));
+      return withSecurityHeaders(rateLimitResponse('deleteAcc', limit.resetAt, req));
     }
 
     const { id } = await params;

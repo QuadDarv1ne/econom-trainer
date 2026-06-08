@@ -41,7 +41,7 @@ export default function Error({ error, reset }: ErrorProps) {
           {isDevelopment && (
             <details className="rounded-md bg-muted p-3 text-sm">
               <summary className="cursor-pointer font-medium text-muted-foreground">
-                Error details (development only)
+                {t('error.details')}
               </summary>
               <pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-all text-xs font-mono text-destructive">
                 {error.message}
@@ -73,7 +73,7 @@ export default function Error({ error, reset }: ErrorProps) {
             onClick={() => window.open('https://github.com/QuadDarv1ne/econom-trainer/issues/new', '_blank', 'noopener,noreferrer')}
           >
             <Github className="mr-2 h-4 w-4" />
-            Report this bug on GitHub
+            {t('error.reportBug')}
           </Button>
         </CardContent>
       </Card>

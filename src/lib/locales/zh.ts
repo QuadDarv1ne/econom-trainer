@@ -1878,12 +1878,17 @@ export const zh: Record<string, string> = {
     'error.retry': '重试',
     'error.goHome': '返回首页',
     'error.unknown': '未知错误',
+    'error.details': '错误详情（仅开发模式）',
+    'error.reportBug': '在 GitHub 上报告此错误',
     'globalError.title': '严重错误',
     'globalError.description': '加载应用程序时发生严重错误。请尝试重新加载页面。',
     'globalError.reload': '重新加载',
     'globalError.goHome': '返回首页',
+    'globalError.details': '错误详情（仅开发模式）',
+    'globalError.reportBug': '在 GitHub 上报告此错误',
 
     // PWA
+    'pwa.installApp': '安装应用',
     'pwa.updateAvailable': '新版本可用',
     'pwa.updateMessage': '重新加载以获取最新功能',
     'pwa.updateReload': '重新加载',

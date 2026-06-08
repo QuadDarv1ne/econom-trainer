@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     const ip = getClientIP(req);
     const limit = checkRateLimit('changePass', ip);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('changePass', ip, limit.resetAt, req));
+      return withSecurityHeaders(rateLimitResponse('changePass', limit.resetAt, req));
     }
 
     const parsed = await safeJson<{ currentPassword: string; newPassword: string }>(req);

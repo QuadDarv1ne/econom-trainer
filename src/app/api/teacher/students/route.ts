@@ -21,9 +21,9 @@ export async function GET(req: Request) {
       return withSecurityHeaders(NextResponse.json({ error: auth.error.message }, { status: auth.error.status }));
     }
 
-    const limit = checkRateLimit('profileRead', auth.userId);
+    const limit = checkRateLimit('teacherStudentProgress', auth.userId);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('profileRead', auth.userId, limit.resetAt, req));
+      return withSecurityHeaders(rateLimitResponse('teacherStudentProgress', limit.resetAt, req));
     }
 
     const url = new URL(req.url);

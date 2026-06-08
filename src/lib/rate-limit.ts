@@ -73,6 +73,8 @@ export const RATE_LIMITS = {
   verifyEmail:    { windowMs: 60 * 60 * 1000, max: 3 }, // 3 verification emails per hour
   progressSync:   { windowMs: 60 * 1000, max: 30 },     // 30 syncs per min
   progressRead:   { windowMs: 60 * 1000, max: 30 },     // 30 progress reads per min
+  adminStats:     { windowMs: 60 * 1000, max: 10 },     // 10 admin stats requests per min
+  teacherStudentProgress: { windowMs: 60 * 1000, max: 30 }, // 30 teacher lookups per min
 } as const;
 
 export function configureRateLimit(key: string, config: RateLimitConfig) {
@@ -181,7 +183,7 @@ function sanitizeIP(ip: string): string {
  * plus an optional locale ('en' | 'ru' | 'zh') or Request object for the response language.
  * Falls back to Russian if no locale is provided.
  */
-export function rateLimitResponse(key: string, _ip: string | null, resetAt: number, locale?: 'en' | 'ru' | 'zh' | Request) {
+export function rateLimitResponse(key: string, resetAt: number, locale?: 'en' | 'ru' | 'zh' | Request) {
   const config = configs.get(key);
   if (!config) {
     return NextResponse.json(

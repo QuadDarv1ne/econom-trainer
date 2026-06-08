@@ -1,16 +1,9 @@
 import { auth } from '@/auth';
 import { modules, tabItems, categoryBreaks } from '@/lib/module-data';
 import { HomeClient } from '@/app/home-client';
-import { getServerLocale as getServerLocaleRaw, type Locale } from '@/lib/server-locale';
-
-async function getServerLocale(): Promise<Locale> {
-  const locale = await getServerLocaleRaw();
-  return locale as Locale;
-}
 
 export default async function HomePage() {
   const session = await auth();
-  await getServerLocale();
 
   const visibleModules = session ? modules : modules.filter((m) => m.public);
   const visibleTabItems = session
