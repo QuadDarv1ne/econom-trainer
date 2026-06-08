@@ -38,15 +38,9 @@ export async function safeJson<T = unknown>(
 
 /**
  * Type guard to check if the result is a NextResponse error.
- * Uses duck typing instead of instanceof to work across module boundaries.
  */
 export function isErrorResponse(
   result: unknown
 ): result is NextResponse<{ error: string }> {
-  return (
-    result instanceof Response &&
-    result.status >= 400 &&
-    'headers' in result &&
-    'body' in result
-  );
+  return result instanceof Response && result.status >= 400;
 }
