@@ -1,5 +1,7 @@
 import { request } from '@playwright/test';
 import type { FullConfig } from '@playwright/test';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const TEST_USER_EMAIL = `e2e-test-${Date.now()}@example.com`;
 const TEST_USER_PASSWORD = 'TestPass123!';
@@ -26,8 +28,6 @@ async function setup(config: FullConfig) {
   await apiContext.dispose();
 
   // Store credentials in a temp file for tests to read
-  const fs = await import('fs');
-  const path = await import('path');
   const credsPath = path.join(__dirname, '.e2e-credentials.json');
   fs.writeFileSync(credsPath, JSON.stringify({ email: TEST_USER_EMAIL, password: TEST_USER_PASSWORD }));
 }

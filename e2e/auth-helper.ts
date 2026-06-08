@@ -25,9 +25,9 @@ export async function setupAuthenticatedUser(page: Page) {
  */
 export async function loginUser(page: Page, email: string, password: string) {
   await page.goto('/auth/login');
-  await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Пароль', { exact: true }).fill(password);
-  await page.getByRole('button', { name: 'Войти' }).click();
+  await page.locator('#email').fill(email);
+  await page.locator('#password').fill(password);
+  await page.getByRole('button', { name: /войти|sign in|login/i }).click();
 
   await page.waitForURL((url) => !url.pathname.startsWith('/auth/login'), { timeout: 10000 });
 }
