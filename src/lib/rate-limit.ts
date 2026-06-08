@@ -88,7 +88,10 @@ export function checkRateLimit(key: string, ip: string | null): { ok: boolean; r
     return { ok: true, remaining: Infinity, resetAt: 0 };
   }
 
-  const identifier = `${ip ?? 'unknown'}:${key}`;
+  // When no proxy is configured (e.g., local dev), IP is null and all requests
+  // share a single bucket per key. This is acceptable for development — in
+  // production behind a reverse proxy, IP is always present.
+  const identifier = `${ip ?? 'no-proxy'}:${key}`;
   const now = Date.now();
   const windowStart = now - config.windowMs;
 

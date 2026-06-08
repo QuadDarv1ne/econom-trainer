@@ -57,6 +57,16 @@ export async function POST(req: Request) {
       return withSecurityHeaders(NextResponse.json({ error: strength.error }, { status: 400 }));
     }
 
+    // Validate phone format (optional field)
+    if (phone !== undefined && phone !== null && phone !== '') {
+      if (typeof phone !== 'string' || phone.length > 20) {
+        return withSecurityHeaders(NextResponse.json({ error: 'Phone number must be a string up to 20 characters' }, { status: 400 }));
+      }
+      if (!/^\+?[0-9\s()-]+$/.test(phone)) {
+        return withSecurityHeaders(NextResponse.json({ error: 'Invalid phone number format' }, { status: 400 }));
+      }
+    }
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
