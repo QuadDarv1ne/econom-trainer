@@ -1,31 +1,37 @@
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const content = fs.readFileSync('src/lib/i18n.ts', 'utf8');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const localesDir = path.resolve(__dirname, '../src/lib/locales');
 
-// Find section boundaries
-const ruStart = content.indexOf("ru: {") + 5;
-const enStart = content.indexOf("en: {");
-const zhStart = content.indexOf("zh: {");
-const end = content.indexOf("} as const");
-
-const ruSection = content.slice(ruStart, enStart);
-const enSection = content.slice(enStart + 5, zhStart);
-const zhSection = content.slice(zhStart + 5, end);
-
-// Extract keys
-const keyRegex = /'([^']+)'[ ]*:/g;
-const extractKeys = (section) => {
-  const keys = new Set();
-  let match;
-  while ((match = keyRegex.exec(section)) !== null) {
-    keys.add(match[1]);
-  }
-  return keys;
+const files = {
+  RU: path.join(localesDir, 'ru.ts'),
+  EN: path.join(localesDir, 'en.ts'),
+  ZH: path.join(localesDir, 'zh.ts'),
 };
 
-const ruKeys = extractKeys(ruSection);
-const enKeys = extractKeys(enSection);
-const zhKeys = extractKeys(zhSection);
+const keyRegex = /'([^']+)'\s*:/g;
+
+function extractKeys(filePath) {
+  const content = fs.readFileSync(filePath, 'utf-8');
+  const keys = new Set();
+  let match;
+  while ((match = keyRegex.exec(content)) !== null) {
+    const key = match[1];
+    // Skip non-translation keys like TypeScript annotations or imports
+    if (key.includes(' ') || key === '') continue;
+    keys.add(key);
+  }
+  return keys;
+}
+
+const ruKeys = extractKeys(files.RU);
+const enKeys = extractKeys(files.EN);
+const zhKeys = extractKeys(files.ZH);
+
+console.log('i18n key parity check');
+console.log(`RU: ${ruKeys.size} keys | EN: ${enKeys.size} keys | ZH: ${zhKeys.size} keys`);
 
 const reportMissing = (source, target, sourceKeys, targetKeys) => {
   const missing = [...sourceKeys].filter((k) => !targetKeys.has(k));
@@ -37,9 +43,18 @@ const reportMissing = (source, target, sourceKeys, targetKeys) => {
   }
 };
 
-console.log('i18n key parity check');
-console.log(`RU: ${ruKeys.size} keys | EN: ${enKeys.size} keys | ZH: ${zhKeys.size} keys`);
-
 reportMissing('RU', 'EN', ruKeys, enKeys);
 reportMissing('RU', 'ZH', ruKeys, zhKeys);
 reportMissing('EN', 'ZH', enKeys, zhKeys);
+
+// Report any extras (keys in target but not in source)
+const reportExtra = (target, source, targetKeys, sourceKeys) => {
+  const extra = [...targetKeys].filter((k) => !sourceKeys.has(k));
+  if (extra.length > 0) {
+    console.log(`\nExtra ${target} keys (not in ${source}): ${extra.length}`);
+    extra.forEach((k) => console.log(`  ${k}`));
+  }
+};
+
+reportExtra('RU', 'EN', ruKeys, enKeys);
+reportExtra('ZH', 'EN', zhKeys, enKeys);
