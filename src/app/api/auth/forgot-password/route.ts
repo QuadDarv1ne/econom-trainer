@@ -46,15 +46,11 @@ export async function POST(req: Request) {
     });
 
     if (!user || !user.email) {
-      // Constant-time delay to prevent timing-based email enumeration.
-      // Wait the same duration as a real email send operation (~1-2s)
-      // so attackers cannot distinguish registered vs unregistered emails.
       await new Promise((resolve) => setTimeout(resolve, ENUMERATION_DELAY_MS));
       return withSecurityHeaders(NextResponse.json({ message: 'If this email is registered, we will send a reset link' }));
     }
 
-    // Apply same delay in the user-found branch to prevent timing side-channel
-    await new Promise((resolve) => setTimeout(resolve, ENUMERATION_DELAY_MS));
+    const startTime = Date.now();
 
     // Generate reset token
     const token = randomBytes(32).toString('hex');
@@ -108,7 +104,11 @@ export async function POST(req: Request) {
       });
     }
 
-    // Always return success to prevent email enumeration
+    // Apply a uniform delay to prevent timing-based email enumeration.
+    // Ensures both found and not-found branches take ~ENUMERATION_DELAY_MS.
+    const elapsed = Date.now() - startTime;
+    await new Promise((resolve) => setTimeout(resolve, Math.max(0, ENUMERATION_DELAY_MS - elapsed)));
+
     return withSecurityHeaders(NextResponse.json({
       message: 'If this email is registered, we will send a password reset link',
     }));
