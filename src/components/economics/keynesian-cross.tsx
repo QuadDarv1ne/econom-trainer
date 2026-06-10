@@ -44,6 +44,7 @@ export function KeynesianCross() {
 
   const multiplier = useMemo(() => {
     const denominator = 1 - mpc * (1 - taxRate) + mpi
+    if (Math.abs(denominator) < 1e-9) return Infinity
     return 1 / denominator
   }, [mpc, taxRate, mpi])
 

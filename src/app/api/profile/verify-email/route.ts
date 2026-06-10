@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { randomBytes } from 'crypto';
-import { getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email';
+import { sendEmail, getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { logError } from '@/lib/log-error';
 import { BASE_URL, VERIFICATION_TOKEN_EXPIRY_MS } from '@/lib/constants';
@@ -59,8 +59,7 @@ export async function POST(req: Request) {
     const locale = getLocaleFromRequest(req);
     const html = getEmailVerificationEmailHtml(user.name || (locale === 'en' ? 'User' : 'Пользователь'), verificationUrl, locale);
 
-    const { sendEmail: send } = await import('@/lib/email');
-    const emailSent = await send({
+    const emailSent = await sendEmail({
       to: user.email,
       subject: locale === 'en'
         ? 'Verify your email — Economic Trainer'

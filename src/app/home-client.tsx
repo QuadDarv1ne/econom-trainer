@@ -66,10 +66,10 @@ interface HomeClientProps {
 }
 
 // Icon map keyed by module id for server-provided modules
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {};
-for (const m of modulesWithIcons) { iconMap[m.id] = m.icon; }
-const tabIconMap: Record<string, React.ComponentType<{ className?: string }>> = {};
-for (const t of tabItemsWithIcons) { tabIconMap[t.value] = t.icon; }
+const moduleIconMap: Record<string, React.ComponentType<{ className?: string }>> = {};
+for (const m of modulesWithIcons) { moduleIconMap[m.id] = m.icon; }
+const tabIconLookup: Record<string, React.ComponentType<{ className?: string }>> = {};
+for (const t of tabItemsWithIcons) { tabIconLookup[t.value] = t.icon; }
 
 export function HomeClient({
   session: serverSession,
@@ -100,10 +100,10 @@ export function HomeClient({
   const t = clientT
   const visibleModules = useMemo(() => hydrated
     ? (session ? modulesWithIcons : modulesWithIcons.filter((m) => m.public))
-    : serverVisibleModules.map(m => ({ ...m, icon: iconMap[m.id] ?? GraduationCap })), [hydrated, session, modulesWithIcons, serverVisibleModules, iconMap])
+    : serverVisibleModules.map(m => ({ ...m, icon: moduleIconMap[m.id] ?? GraduationCap })), [hydrated, session, serverVisibleModules])
   const visibleTabItems = useMemo(() => hydrated
     ? (session ? tabItemsWithIcons : tabItemsWithIcons.filter((item) => item.value === 'home' || modules.find((m) => m.id === item.value)?.public))
-    : serverVisibleTabItems.map(ti => ({ ...ti, icon: tabIconMap[ti.value] ?? GraduationCap })), [hydrated, session, tabItemsWithIcons, modules, serverVisibleTabItems, tabIconMap])
+    : serverVisibleTabItems.map(ti => ({ ...ti, icon: tabIconLookup[ti.value] ?? GraduationCap })), [hydrated, session, serverVisibleTabItems])
   const visibleCategoryBreaks = useMemo(() => hydrated
     ? (session ? categoryBreaks : new Set([...categoryBreaks].filter((id) => modules.find((m) => m.id === id)?.public)))
     : serverVisibleCategoryBreaks, [hydrated, session, categoryBreaks, modules, serverVisibleCategoryBreaks])
@@ -406,7 +406,7 @@ export function HomeClient({
             </Card>
           </TabsContent>
 
-          {ActiveModule && <TabsContent value={activeTab}><Suspense key={activeTab} fallback={<ModuleSkeleton />}><ModuleErrorBoundary moduleName={activeModuleName}><ActiveModule /></ModuleErrorBoundary></Suspense></TabsContent>}
+          {ActiveModule && <TabsContent value={activeTab}><Suspense key={activeTab} fallback={<ModuleSkeleton />}><ModuleErrorBoundary moduleName={activeModuleName} errorDescription={t('error.module.description')} retryLabel={t('error.module.retry')}><ActiveModule /></ModuleErrorBoundary></Suspense></TabsContent>}
         </Tabs>
       </main>
 

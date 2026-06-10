@@ -1,7 +1,7 @@
 'use client'
 
 import type React from 'react'
-import { useMemo, useEffect, useRef } from 'react'
+import { useMemo, useEffect, useRef, memo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
@@ -56,7 +56,7 @@ interface Achievement {
   xpReward: number
 }
 
-export function Achievements() {
+export const Achievements = memo(function Achievements() {
   const { t, locale } = useI18n()
   const quizResults = useEconomicsStore((s) => s.quizResults)
   const gdpResults = useEconomicsStore((s) => s.gdpResults)
@@ -345,7 +345,7 @@ export function Achievements() {
                 <span className="text-muted-foreground">{t('achievements.progressToLevel')} {xpState.level + 1}</span>
                 <span className="font-medium">{formatNumberLocale(locale, xpState.xpInCurrentLevel)} / {formatNumberLocale(locale, xpState.xpToNextLevel)} XP</span>
               </div>
-              <Progress value={(xpState.xpInCurrentLevel / xpState.xpToNextLevel) * 100} className="h-3" />
+              <Progress value={xpState.xpToNextLevel > 0 ? (xpState.xpInCurrentLevel / xpState.xpToNextLevel) * 100 : 0} className="h-3" />
               <div className="text-xs text-muted-foreground mt-2">
                 {t('achievements.remaining')} {formatNumberLocale(locale, xpState.xpToNextLevel - xpState.xpInCurrentLevel)} {t('achievements.toNextLevel')}
               </div>
@@ -494,4 +494,4 @@ export function Achievements() {
       </Dialog>
     </div>
   )
-}
+})

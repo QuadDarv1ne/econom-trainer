@@ -18,7 +18,7 @@ const DAILY_PER_CORRECT_XP = 10
 
 function getDailySeed(): number {
   const now = new Date()
-  return Math.floor(now.getTime() / 86400000)
+  return parseInt(now.toLocaleDateString('en-CA').replace(/-/g, ''), 10)
 }
 
 function shuffleWithSeed(arr: Question[], seed: number): Question[] {
@@ -36,11 +36,11 @@ export function DailyChallenge() {
   const streakState = useEconomicsStore((s) => s.streakState)
   const completeDailyChallenge = useEconomicsStore((s) => s.completeDailyChallenge)
 
-  const [today, setToday] = useState(() => new Date().toISOString().split('T')[0])
+  const [today, setToday] = useState(() => new Date().toLocaleDateString('en-CA'))
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
-    const updateToday = () => setToday(new Date().toISOString().split('T')[0])
+    const updateToday = () => setToday(new Date().toLocaleDateString('en-CA'))
     const msUntilMidnight = (() => {
       const now = new Date()
       const midnight = new Date(now)

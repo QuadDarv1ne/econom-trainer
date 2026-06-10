@@ -6,7 +6,7 @@ export async function GET(req: Request) {
   const ip = getClientIP(req);
   const limit = checkRateLimit('apiRoot', ip);
   if (!limit.ok) {
-    return rateLimitResponse('apiRoot', limit.resetAt, req);
+    return withSecurityHeaders(rateLimitResponse('apiRoot', limit.resetAt, req));
   }
 
   return withSecurityHeaders(NextResponse.json({

@@ -2092,6 +2092,8 @@ export const en: Record<string, string> = {
     'error.unknown': 'Unknown error',
     'error.details': 'Error details (development only)',
     'error.reportBug': 'Report this bug on GitHub',
+    'error.module.description': 'Something went wrong loading this module. Try again.',
+    'error.module.retry': 'Retry',
     'globalError.title': 'Critical error',
     'globalError.description': 'A serious error occurred while loading the application. Try reloading the page.',
     'globalError.reload': 'Reload',

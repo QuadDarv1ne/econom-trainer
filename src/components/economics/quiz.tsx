@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect, useRef, memo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -1375,7 +1375,7 @@ const QUIZ_TIME = 30 // seconds per question
 
 type QuizState = 'idle' | 'active' | 'answered' | 'finished'
 
-export function EconomicsQuiz() {
+export const EconomicsQuiz = memo(function EconomicsQuiz() {
   const [quizState, setQuizState] = useState<QuizState>('idle')
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
@@ -1787,4 +1787,4 @@ export function EconomicsQuiz() {
       </div>
     </div>
   )
-}
+})

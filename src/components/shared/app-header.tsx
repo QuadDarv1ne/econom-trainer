@@ -37,7 +37,7 @@ export function AppHeader({ title, variant = 'simple' }: AppHeaderProps) {
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/">
+          <Link href="/" aria-label={t('home.title')}>
             <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
               <GraduationCap className="h-5 w-5 text-primary-foreground" />
             </div>

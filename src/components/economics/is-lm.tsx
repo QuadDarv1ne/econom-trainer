@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef, useCallback } from 'react'
+import { useState, useMemo, useRef, useCallback, memo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -150,7 +150,7 @@ export function calcMonetaryMultiplier(
   return 1 / interestSensitivity / denominator
 }
 
-export function ISLMModel() {
+export const ISLMModel = memo(function ISLMModel() {
   const { t, locale } = useI18n()
   // IS curve parameters
   const [autonomousInvestment, setAutonomousInvestment] = useState(200)
@@ -763,4 +763,4 @@ export function ISLMModel() {
       </div>
     </div>
   )
-}
+})

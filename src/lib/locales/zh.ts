@@ -1945,6 +1945,8 @@ export const zh: Record<string, string> = {
     'error.unknown': '未知错误',
     'error.details': '错误详情（仅开发模式）',
     'error.reportBug': '在 GitHub 上报告此错误',
+    'error.module.description': '加载此模块时出错。请重试。',
+    'error.module.retry': '重试',
     'globalError.title': '严重错误',
     'globalError.description': '加载应用程序时发生严重错误。请尝试重新加载页面。',
     'globalError.reload': '重新加载',

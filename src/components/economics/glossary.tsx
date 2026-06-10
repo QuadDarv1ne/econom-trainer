@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, memo } from 'react'
 import { useI18n } from '@/lib/i18n-provider'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -69,7 +69,7 @@ const categoryValueMap: Record<string, GlossaryCategory> = {
   'glossary.cat.international': 'international',
 }
 
-export function Glossary() {
+export const Glossary = memo(function Glossary() {
   const { t, locale } = useI18n()
   const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState<string>('glossary.all')
@@ -210,4 +210,4 @@ export function Glossary() {
       )}
     </div>
   )
-}
+})

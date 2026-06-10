@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, memo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useEconomicsStore, computeQuizAndFinanceStats } from '@/store/economics-store'
@@ -25,7 +25,7 @@ import { Trophy, Target, Flame, BarChart3, Gauge } from 'lucide-react'
 
 const COLORS = ['#22c55e', '#ef4444'];
 
-export function ProgressTracker() {
+export const ProgressTracker = memo(function ProgressTracker() {
   const { t, locale } = useI18n()
   const quizResults = useEconomicsStore((s) => s.quizResults)
   const gdpResults = useEconomicsStore((s) => s.gdpResults)
@@ -270,4 +270,4 @@ export function ProgressTracker() {
       )}
     </div>
   )
-}
+})

@@ -10,6 +10,8 @@ import type { ErrorInfo, ReactNode } from 'react'
 interface Props {
   children: ReactNode
   moduleName: string
+  errorDescription: string
+  retryLabel: string
 }
 
 interface State {
@@ -44,13 +46,13 @@ export class ModuleErrorBoundary extends Component<Props, State> {
             </div>
             <CardTitle className="text-lg">{this.props.moduleName}</CardTitle>
             <CardDescription>
-              Something went wrong loading this module. Try again.
+              {this.props.errorDescription}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center pb-6">
             <Button onClick={this.handleRetry} variant="outline" size="sm">
               <RefreshCw className="mr-2 h-4 w-4" />
-              Retry
+              {this.props.retryLabel}
             </Button>
           </CardContent>
         </Card>

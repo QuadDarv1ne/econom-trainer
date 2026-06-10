@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, memo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -171,7 +171,7 @@ export function runHawkDoveSimulation(
 
 // ─── Main Component ──────────────────────────────────────────────────────────
 
-export function GameTheory() {
+export const GameTheory = memo(function GameTheory() {
   const { t } = useI18n()
   return (
     <div className="space-y-6">
@@ -215,7 +215,7 @@ export function GameTheory() {
       </Tabs>
     </div>
   )
-}
+})
 
 // ═════════════════════════════════════════════════════════════════════════════
 // PRISONER'S DILEMMA

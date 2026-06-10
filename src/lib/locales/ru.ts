@@ -2076,6 +2076,8 @@ export const ru: Record<string, string> = {
     'error.unknown': 'Неизвестная ошибка',
     'error.details': 'Детали ошибки (только для разработки)',
     'error.reportBug': 'Сообщить об ошибке на GitHub',
+    'error.module.description': 'Что-то пошло не так при загрузке этого модуля. Попробуйте снова.',
+    'error.module.retry': 'Повторить',
     'globalError.title': 'Критическая ошибка',
     'globalError.description': 'Произошла серьёзная ошибка при загрузке приложения. Попробуйте перезагрузить страницу.',
     'globalError.reload': 'Перезагрузить',
