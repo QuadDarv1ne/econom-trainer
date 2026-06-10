@@ -1023,6 +1023,7 @@ export const en: Record<string, string> = {
     'priceIndices.basketTitle': 'Basket of Goods',
     'priceIndices.basketDesc': 'Change prices and quantities to calculate CPI',
     'priceIndices.good': 'Good',
+    'priceIndices.chartValue': 'Value',
     'priceIndices.price.base': 'Price (base)',
     'priceIndices.price.current': 'Price (current)',
     'priceIndices.quantity': 'Quantity',

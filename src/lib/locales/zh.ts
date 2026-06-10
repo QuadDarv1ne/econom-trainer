@@ -958,6 +958,7 @@ export const zh: Record<string, string> = {
     'priceIndices.basketTitle': '商品篮子',
     'priceIndices.basketDesc': '改变价格和数量来计算CPI',
     'priceIndices.good': '商品',
+    'priceIndices.chartValue': '数值',
     'priceIndices.price.base': '价格（基期）',
     'priceIndices.price.current': '价格（当前）',
     'priceIndices.quantity': '数量',

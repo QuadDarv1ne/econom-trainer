@@ -1007,6 +1007,7 @@ export const ru: Record<string, string> = {
     'priceIndices.basketTitle': 'Корзина товаров',
     'priceIndices.basketDesc': 'Измените цены и количества для расчёта ИПЦ',
     'priceIndices.good': 'Товар',
+    'priceIndices.chartValue': 'Значение',
     'priceIndices.price.base': 'Цена (базовый)',
     'priceIndices.price.current': 'Цена (текущий)',
     'priceIndices.quantity': 'Количество',

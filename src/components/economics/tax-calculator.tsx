@@ -345,10 +345,10 @@ export function TaxCalculator() {
                         </td>
                         <td className="p-2">{b.label}</td>
                         <td className="p-2 text-right font-mono">
-                          {b.taxableInBracket > 0 ? fmt(b.taxableInBracket) : '—'} ₽
+                          {b.taxableInBracket > 0 ? fmt(b.taxableInBracket) : '—'} {t('common.currency.rub')}
                         </td>
                         <td className="p-2 text-right font-mono text-red-600">
-                          {b.tax > 0 ? `${fmt(b.tax)} ₽` : '—'}
+                          {b.tax > 0 ? `${fmt(b.tax)} {t('common.currency.rub')}` : '—'}
                         </td>
                       </tr>
                     ))}
@@ -356,8 +356,8 @@ export function TaxCalculator() {
                   <tfoot>
                     <tr className="font-bold">
                       <td className="p-2" colSpan={2}>{t('tax.total')}</td>
-                      <td className="p-2 text-right font-mono">{fmt(ndflResult.taxable)} ₽</td>
-                      <td className="p-2 text-right font-mono text-red-600">{fmt(ndflResult.totalTax)} ₽</td>
+                      <td className="p-2 text-right font-mono">{fmt(ndflResult.taxable)} {t('common.currency.rub')}</td>
+                      <td className="p-2 text-right font-mono text-red-600">{fmt(ndflResult.totalTax)} {t('common.currency.rub')}</td>
                     </tr>
                   </tfoot>
                 </table>
@@ -371,7 +371,7 @@ export function TaxCalculator() {
               <CardHeader className="pb-2">
                 <CardDescription>{t('tax.totalTax')}</CardDescription>
                 <CardTitle className="text-xl font-mono text-red-600">
-                  {fmt(ndflResult.totalTax)} ₽
+                  {fmt(ndflResult.totalTax)} {t('common.currency.rub')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -407,7 +407,7 @@ export function TaxCalculator() {
               <CardHeader className="pb-2">
                 <CardDescription>{t('tax.netIncome')}</CardDescription>
                 <CardTitle className="text-xl font-mono text-green-700 dark:text-green-400">
-                  {fmt(ndflResult.netIncome)} ₽
+                  {fmt(ndflResult.netIncome)} {t('common.currency.rub')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -431,7 +431,7 @@ export function TaxCalculator() {
                       <XAxis dataKey="name" fontSize={11} />
                       <YAxis fontSize={11} tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}к`} />
                       <Tooltip
-                        content={<ChartTooltipContent formatter={(v) => `${fmt(v)} ₽`} />}
+                        content={<ChartTooltipContent formatter={(v) => `${fmt(v)} ${t('common.currency.rub')}`} />}
                       />
                       <Bar dataKey="tax" fill="#ef4444" radius={[4, 4, 0, 0]} name={t('tax.incomeTax')} />
                     </BarChart>
@@ -517,7 +517,7 @@ export function TaxCalculator() {
             <Card className="border-2 border-primary/20">
               <CardHeader className="pb-2">
                 <CardDescription>{t('tax.vatWithoutTax')}</CardDescription>
-                <CardTitle className="text-xl font-mono">{fmt(ndsResult.base)} ₽</CardTitle>
+                <CardTitle className="text-xl font-mono">{fmt(ndsResult.base)} {t('common.currency.rub')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-muted-foreground">{t('tax.vatBaseCost')}</p>
@@ -527,7 +527,7 @@ export function TaxCalculator() {
             <Card className="border-2 border-red-500/20">
               <CardHeader className="pb-2">
                 <CardDescription>{t('tax.vatAmount')}</CardDescription>
-                <CardTitle className="text-xl font-mono text-red-600">{fmt(ndsResult.vatAmount)} ₽</CardTitle>
+                <CardTitle className="text-xl font-mono text-red-600">{fmt(ndsResult.vatAmount)} {t('common.currency.rub')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-muted-foreground">{t('tax.vatIncluded')}</p>
@@ -537,7 +537,7 @@ export function TaxCalculator() {
             <Card className="border-2 border-primary/20">
               <CardHeader className="pb-2">
                 <CardDescription>{t('tax.vatWithTax')}</CardDescription>
-                <CardTitle className="text-xl font-mono">{fmt(ndsResult.total)} ₽</CardTitle>
+                <CardTitle className="text-xl font-mono">{fmt(ndsResult.total)} {t('common.currency.rub')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-muted-foreground">{t('tax.vatTotal')}</p>
@@ -554,19 +554,19 @@ export function TaxCalculator() {
               <div className="p-3 bg-muted/50 rounded-lg font-mono space-y-1">
                 <div>{t('tax.formula.priceNoVat')}</div>
                 <div className="text-muted-foreground">
-                  {fmt(ndsResult.total)} / (1 + {ndsRate}) = {fmt(ndsResult.base)} ₽
+                  {fmt(ndsResult.total)} / (1 + {ndsRate}) = {fmt(ndsResult.base)} {t('common.currency.rub')}
                 </div>
               </div>
               <div className="p-3 bg-muted/50 rounded-lg font-mono space-y-1">
                 <div>{t('tax.formula.vatSum')}</div>
                 <div className="text-muted-foreground">
-                  {fmt(ndsResult.total)} − {fmt(ndsResult.base)} = {fmt(ndsResult.vatAmount)} ₽
+                  {fmt(ndsResult.total)} − {fmt(ndsResult.base)} = {fmt(ndsResult.vatAmount)} {t('common.currency.rub')}
                 </div>
               </div>
               <div className="p-3 bg-muted/50 rounded-lg font-mono space-y-1">
                 <div>{t('tax.formula.priceWithVat')}</div>
                 <div className="text-muted-foreground">
-                  {fmt(ndsResult.base)} × {fmtDec(1 + ndsRate)} = {fmt(ndsResult.base * (1 + ndsRate))} ₽
+                  {fmt(ndsResult.base)} × {fmtDec(1 + ndsRate)} = {fmt(ndsResult.base * (1 + ndsRate))} {t('common.currency.rub')}
                 </div>
               </div>
             </CardContent>
@@ -599,9 +599,9 @@ export function TaxCalculator() {
                             {row.rate}
                           </Badge>
                         </td>
-                        <td className="p-2 text-right font-mono">{fmt(row.base)} ₽</td>
-                        <td className="p-2 text-right font-mono text-red-600">{fmt(row.vat)} ₽</td>
-                        <td className="p-2 text-right font-mono font-medium">{fmt(row.total)} ₽</td>
+                        <td className="p-2 text-right font-mono">{fmt(row.base)} {t('common.currency.rub')}</td>
+                        <td className="p-2 text-right font-mono text-red-600">{fmt(row.vat)} {t('common.currency.rub')}</td>
+                        <td className="p-2 text-right font-mono font-medium">{fmt(row.total)} {t('common.currency.rub')}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -702,7 +702,7 @@ export function TaxCalculator() {
               <CardHeader className="pb-2">
                 <CardDescription>{t('tax.profit')}</CardDescription>
                 <CardTitle className={`text-xl font-mono ${profitResult.profit >= 0 ? 'text-green-700 dark:text-green-400' : 'text-red-600'}`}>
-                  {fmt(profitResult.profit)} ₽
+                  {fmt(profitResult.profit)} {t('common.currency.rub')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -714,7 +714,7 @@ export function TaxCalculator() {
               <CardHeader className="pb-2">
                 <CardDescription>{t('tax.incomeTax')}</CardDescription>
                 <CardTitle className="text-xl font-mono text-red-600">
-                  {fmt(profitResult.tax)} ₽
+                  {fmt(profitResult.tax)} {t('common.currency.rub')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -726,7 +726,7 @@ export function TaxCalculator() {
               <CardHeader className="pb-2">
                 <CardDescription>{t('tax.netIncome')}</CardDescription>
                 <CardTitle className="text-xl font-mono text-green-700 dark:text-green-400">
-                  {fmt(profitResult.netProfit)} ₽
+                  {fmt(profitResult.netProfit)} {t('common.currency.rub')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -761,7 +761,7 @@ export function TaxCalculator() {
                       <span className="inline-block h-3 w-3 rounded-full bg-blue-500" />
                       {t('tax.federalBudget').replace('{rate}', profitFederalRate)}
                     </span>
-                    <span className="font-mono font-medium">{fmt(profitResult.federalTax)} ₽</span>
+                    <span className="font-mono font-medium">{fmt(profitResult.federalTax)} {t('common.currency.rub')}</span>
                   </div>
                   <div className="h-3 bg-muted rounded-full overflow-hidden">
                     <div
@@ -778,7 +778,7 @@ export function TaxCalculator() {
                       <span className="inline-block h-3 w-3 rounded-full bg-orange-500" />
                       {t('tax.regionalBudget').replace('{rate}', profitRegionalRate)}
                     </span>
-                    <span className="font-mono font-medium">{fmt(profitResult.regionalTax)} ₽</span>
+                    <span className="font-mono font-medium">{fmt(profitResult.regionalTax)} {t('common.currency.rub')}</span>
                   </div>
                   <div className="h-3 bg-muted rounded-full overflow-hidden">
                     <div
@@ -814,7 +814,7 @@ export function TaxCalculator() {
                     <XAxis dataKey="name" fontSize={11} />
                     <YAxis fontSize={11} tickFormatter={(v: number) => `${(v / 1_000_000).toFixed(1)}м`} />
                     <Tooltip
-                      content={<ChartTooltipContent formatter={(v) => `${fmt(v)} ₽`} />}
+                      content={<ChartTooltipContent formatter={(v) => `${fmt(v)} {t('common.currency.rub')}`} />}
                     />
                     <Bar dataKey="value" radius={[4, 4, 0, 0]} name={t('tax.chartSum')}>
                       {profitChartData.map((entry, index) => (

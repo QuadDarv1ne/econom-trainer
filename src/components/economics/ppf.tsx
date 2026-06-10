@@ -142,8 +142,8 @@ export function PPFCurve() {
   }, [awardSliderXp])
 
   const handleReset = useCallback(() => {
-    setGoodAName('Масло')
-    setGoodBName('Пушки')
+    setGoodAName(t('ppf.defaultGoodA'))
+    setGoodBName(t('ppf.defaultGoodB'))
     setMaxA(100)
     setMaxB(80)
     setEfficiency(1.0)

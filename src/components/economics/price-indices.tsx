@@ -208,7 +208,7 @@ export function PriceIndices() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-emerald-600">
-                  {formatNumberLocale(locale, baseBasketCost)} ₽
+                  {formatNumberLocale(locale, baseBasketCost)} {t('common.currency.rub')}
                 </div>
               </CardContent>
             </Card>
@@ -218,7 +218,7 @@ export function PriceIndices() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-red-600">
-                  {formatNumberLocale(locale, currentBasketCost)} ₽
+                  {formatNumberLocale(locale, currentBasketCost)} {t('common.currency.rub')}
                 </div>
               </CardContent>
             </Card>
@@ -376,11 +376,11 @@ export function PriceIndices() {
                 </Card>
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">{t('priceIndices.realValue')} ₽100</CardTitle>
+                    <CardTitle className="text-sm">{t('priceIndices.realValue')} {t('common.currency.rub')}100</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-amber-600">
-                      {realValue.toFixed(2)} ₽
+                      {realValue.toFixed(2)} {t('common.currency.rub')}
                     </div>
                   </CardContent>
                 </Card>
@@ -399,10 +399,10 @@ export function PriceIndices() {
               <div className="text-center space-y-4">
                 <div className="text-lg">
                   {t('priceIndices.baseYear')}:{' '}
-                  <strong>1000 ₽</strong>
+                  <strong>1000 {t('common.currency.rub')}</strong>
                 </div>
                 <div className="text-3xl font-bold text-red-600">
-                  {((1000 * cpi) / 100).toFixed(2)} ₽ {t('priceIndices.now')}
+                  {((1000 * cpi) / 100).toFixed(2)} {t('common.currency.rub')} {t('priceIndices.now')}
                 </div>
                 <Separator />
                 <p className="text-sm text-muted-foreground">
