@@ -7,7 +7,7 @@ import { authenticator } from "otplib";
 import { checkRateLimit, getClientIP } from "@/lib/rate-limit";
 import { validateJwtSession } from "@/lib/validate-jwt-session";
 
-import { REMEMBER_ME_SESSION_SECONDS } from '@/lib/constants';
+import { REMEMBER_ME_SESSION_SECONDS, DEFAULT_SESSION_SECONDS } from '@/lib/constants';
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -144,6 +144,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   session: {
     strategy: "jwt",
+    maxAge: REMEMBER_ME_SESSION_SECONDS,
   },
   callbacks: {
     async jwt({ token, user, trigger, session }) {
@@ -153,6 +154,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.sessionHash = user.sessionHash;
         if (user.rememberMe) {
           token.rememberMe = true;
+        } else {
+          token.exp = Math.floor(Date.now() / 1000) + DEFAULT_SESSION_SECONDS;
         }
       }
       if (trigger === "update" && session) {

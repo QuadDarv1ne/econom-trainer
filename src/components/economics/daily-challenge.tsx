@@ -36,7 +36,23 @@ export function DailyChallenge() {
   const streakState = useEconomicsStore((s) => s.streakState)
   const completeDailyChallenge = useEconomicsStore((s) => s.completeDailyChallenge)
 
-  const today = useMemo(() => new Date().toISOString().split('T')[0], [])
+  const [today, setToday] = useState(() => new Date().toISOString().split('T')[0])
+
+  useEffect(() => {
+    const updateToday = () => setToday(new Date().toISOString().split('T')[0])
+    const msUntilMidnight = (() => {
+      const now = new Date()
+      const midnight = new Date(now)
+      midnight.setHours(24, 0, 0, 0)
+      return midnight.getTime() - now.getTime()
+    })()
+    const timer = setTimeout(() => {
+      updateToday()
+      const interval = setInterval(updateToday, 86400000)
+      return () => clearInterval(interval)
+    }, msUntilMidnight + 1000)
+    return () => clearTimeout(timer)
+  }, [])
   const todayChallenge = useMemo(
     () => dailyChallenges.find((c) => c.date === today),
     [dailyChallenges, today]

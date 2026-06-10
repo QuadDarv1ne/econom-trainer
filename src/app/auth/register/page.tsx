@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -29,6 +29,13 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
+    };
+  }, []);
 
   const passwordStrength = useMemo(() => checkPasswordStrength(password), [password]);
 
@@ -68,7 +75,7 @@ export default function RegisterPage() {
         setError(safeErrorMessage(data, t('auth.error.registrationError')));
       } else {
         setSuccess(true);
-        setTimeout(() => router.push('/auth/login'), REDIRECT_DELAY_MS);
+        redirectTimerRef.current = setTimeout(() => router.push('/auth/login'), REDIRECT_DELAY_MS);
       }
     } catch {
       setError(t('auth.error.genericError'));

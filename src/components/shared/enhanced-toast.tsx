@@ -36,12 +36,18 @@ const typeConfig = {
 export function EnhancedToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const toastsRef = useRef(toasts);
+  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   useEffect(() => {
     toastsRef.current = toasts;
   }, [toasts]);
 
   const dismiss = useCallback((id: string) => {
+    const timer = timersRef.current.get(id);
+    if (timer) {
+      clearTimeout(timer);
+      timersRef.current.delete(id);
+    }
     setToasts(prev => prev.filter(toast => toast.id !== id));
   }, []);
 
@@ -50,7 +56,8 @@ export function EnhancedToastProvider({ children }: { children: React.ReactNode 
     setToasts(prev => [...prev, { id, message, type, duration }]);
 
     if (duration > 0) {
-      setTimeout(() => dismiss(id), duration);
+      const timer = setTimeout(() => dismiss(id), duration);
+      timersRef.current.set(id, timer);
     }
   }, [dismiss]);
 

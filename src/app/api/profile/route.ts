@@ -9,6 +9,8 @@ import { sanitizePlainText, sanitizeImageUrl } from '@/lib/sanitize-input';
 import { AVATAR_MAX_BYTES } from '@/lib/constants';
 import { withSecurityHeaders } from '@/lib/security-headers';
 
+const AVATAR_MAX_STRING_LENGTH = Math.ceil(AVATAR_MAX_BYTES * 1.4);
+
 // Shared select clause for user profile queries — avoid duplication between GET and PATCH
 const USER_PROFILE_SELECT = {
   id: true,
@@ -94,7 +96,7 @@ export async function PATCH(req: Request) {
 
     // Validate image (data URL)
     if (image !== undefined && image !== null) {
-      if (typeof image !== 'string' || image.length > AVATAR_MAX_BYTES) {
+      if (typeof image !== 'string' || image.length > AVATAR_MAX_STRING_LENGTH) {
         return withSecurityHeaders(NextResponse.json({ error: 'Image must not exceed 5 MB' }, { status: 400 }));
       }
       // Validate data URL MIME type is an image

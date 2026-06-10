@@ -159,7 +159,7 @@ export function GDPCalculator() {
                 value={comp.baseValue !== null && comp.baseValue !== undefined ? comp.baseValue : ''}
                 onChange={(e) => updateComponent(idx, 'baseValue', e.target.value)}
                 className="font-mono"
-                aria-label={t('gdp.basePrices')}
+                aria-label={`${t(comp.name)} - ${t('gdp.basePrices')}`}
               />
             </div>
             )

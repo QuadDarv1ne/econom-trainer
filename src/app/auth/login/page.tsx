@@ -23,12 +23,12 @@ import { PasswordInput } from '@/components/ui/password-input';
  */
 function validateCallbackUrl(url: string): string {
   if (!url.startsWith('/')) return '/dashboard';
-  if (url.startsWith('//')) return '/dashboard';
+  if (url.startsWith('//') || url.startsWith('\\\\')) return '/dashboard';
   try {
     const parsed = new URL(url);
     if (parsed.origin !== window.location.origin) return '/dashboard';
   } catch {
-    // Relative URL, which is fine
+    return '/dashboard';
   }
   return url;
 }

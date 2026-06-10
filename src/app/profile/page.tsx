@@ -142,6 +142,9 @@ export default function ProfilePage() {
 
     // Convert to base64 data URL
     const reader = new FileReader();
+    reader.onerror = () => {
+      setError(t('auth.error.avatarUploadError'));
+    };
     reader.onload = async (ev) => {
       const imageData = ev.target?.result;
       if (!imageData || typeof imageData !== 'string') {
@@ -161,6 +164,7 @@ export default function ProfilePage() {
           if (data && typeof data === 'object' && 'id' in data) {
             setProfile(data);
             await update();
+            if (fileInputRef.current) fileInputRef.current.value = '';
           }
         } else {
           const data = await res.json().catch(() => null);
