@@ -390,6 +390,7 @@ export const en: Record<string, string> = {
     'quiz.a11y.incorrect': 'Incorrect answer',
     'quiz.a11y.current': 'Current question',
     'quiz.a11y.unanswered': 'Unanswered',
+    'quiz.keyboardHint': 'to select answer; Enter to continue',
     'quiz.answerOptions': 'Answer Options',
     
     // Progress

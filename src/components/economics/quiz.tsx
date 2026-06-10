@@ -1501,6 +1501,26 @@ export function EconomicsQuiz() {
     setQuizState('active')
   }, [currentQuestion, shuffledQuestions, addQuizResult, toast, t])
 
+  // Keyboard shortcuts: 1-4 to answer, Enter/Space to continue
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (quizState === 'active' && !hasTransitionedRef.current) {
+        const keyMap: Record<string, number> = { '1': 0, '2': 1, '3': 2, '4': 3 }
+        const idx = keyMap[e.key]
+        if (idx !== undefined && idx < shuffledQuestions[currentQuestion]?.options.length) {
+          e.preventDefault()
+          handleAnswer(idx)
+        }
+      }
+      if (quizState === 'answered' && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault()
+        nextQuestion()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [quizState, currentQuestion, shuffledQuestions, handleAnswer, nextQuestion])
+
   const getDifficultyColor = (d: Question['difficulty']): "secondary" | "default" | "destructive" => {
     if (d === 'easy') return 'secondary'
     if (d === 'medium') return 'default'
@@ -1651,6 +1671,10 @@ export function EconomicsQuiz() {
           <CardTitle className="text-lg leading-relaxed">{question.question}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
+          <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <kbd className="px-1 py-0.5 text-[10px] font-mono bg-muted rounded border">1-4</kbd>
+            {t('quiz.keyboardHint')}
+          </p>
           <RadioGroup
             role="radiogroup"
             aria-label={t('quiz.answerOptions')}
@@ -1697,6 +1721,7 @@ export function EconomicsQuiz() {
                   <div className="flex items-center gap-3">
                     <RadioGroupItem value={idx.toString()} id={`option-${idx}`} />
                     <Label htmlFor={`option-${idx}`} className="cursor-pointer flex-1">
+                      <span className="text-muted-foreground mr-1.5 font-mono text-xs">{idx + 1}.</span>
                       {option}
                     </Label>
                   </div>

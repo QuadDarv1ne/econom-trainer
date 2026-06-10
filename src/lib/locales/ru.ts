@@ -370,6 +370,7 @@ export const ru: Record<string, string> = {
     'quiz.a11y.incorrect': 'Неправильный ответ',
     'quiz.a11y.current': 'Текущий вопрос',
     'quiz.a11y.unanswered': 'Без ответа',
+    'quiz.keyboardHint': '— выберите ответ; Enter — продолжить',
     'quiz.answerOptions': 'Варианты ответа',
     
     // Progress
