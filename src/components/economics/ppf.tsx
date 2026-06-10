@@ -149,7 +149,7 @@ export function PPFCurve() {
     setEfficiency(1.0)
     setPosition(50)
     setIsLinear(false)
-  }, [])
+  }, [t])
 
   // Theory cards data
   const theoryCards = [

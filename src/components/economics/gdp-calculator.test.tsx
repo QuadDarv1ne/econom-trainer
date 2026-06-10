@@ -186,11 +186,13 @@ describe('GDPCalculator (rendering)', () => {
     const user = userEvent.setup()
     render(<GDPCalculator />)
 
+    const cInput = screen.getAllByPlaceholderText('0')[0]
+    await user.type(cInput, '100')
     await user.click(screen.getByText('Рассчитать'))
 
     expect(mockAddGDPResult).toHaveBeenCalledTimes(1)
     const result = mockAddGDPResult.mock.calls[0][0]
-    expect(result.nominalGDP).toBe(0)
+    expect(result.nominalGDP).toBe(100)
     expect(result.realGDP).toBe(0)
     expect(result.deflator).toBe(0)
     expect(result.inflationRate).toBe(0)

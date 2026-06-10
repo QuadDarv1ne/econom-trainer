@@ -228,7 +228,7 @@ export function TaxCalculator() {
       { name: t('tax.chart.tax'), value: Math.round(profitResult.tax), fill: '#ef4444' },
       { name: t('tax.chart.netProfit'), value: Math.round(profitResult.netProfit), fill: '#3b82f6' },
     ],
-    [profitRevenue, profitExpenses, profitResult],
+    [profitRevenue, profitExpenses, profitResult, t],
   )
 
   // ── Deduction preset handler ────────────────────────────────────────

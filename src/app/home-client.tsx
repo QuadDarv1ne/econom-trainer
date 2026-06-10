@@ -88,12 +88,11 @@ export function HomeClient({
   const levelTitle = getLevelTitle(xpState.level)
   const levelColor = getLevelColor(xpState.level)
 
-  // Merge server and client session data
-  const session = clientSession?.user
+  const session = useMemo(() => clientSession?.user
     ? clientSession
     : serverSession
       ? { user: { ...serverSession.user } }
-      : null
+      : null, [clientSession, serverSession])
 
   const hydrated = typeof window !== 'undefined'
 
@@ -106,7 +105,7 @@ export function HomeClient({
     : serverVisibleTabItems.map(ti => ({ ...ti, icon: tabIconLookup[ti.value] ?? GraduationCap })), [hydrated, session, serverVisibleTabItems])
   const visibleCategoryBreaks = useMemo(() => hydrated
     ? (session ? categoryBreaks : new Set([...categoryBreaks].filter((id) => modules.find((m) => m.id === id)?.public)))
-    : serverVisibleCategoryBreaks, [hydrated, session, categoryBreaks, modules, serverVisibleCategoryBreaks])
+    : serverVisibleCategoryBreaks, [hydrated, session, serverVisibleCategoryBreaks])
   const fmt = (v: number) => formatNumber(v, clientLocale)
 
 
@@ -266,7 +265,9 @@ export function HomeClient({
             </motion.div>
 
             <Suspense fallback={<ModuleSkeleton />}>
-              <DailyChallenge />
+              <ModuleErrorBoundary moduleName={t('dailyChallenge.title')} errorDescription={t('error.module.description')} retryLabel={t('error.module.retry')}>
+                <DailyChallenge />
+              </ModuleErrorBoundary>
             </Suspense>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">

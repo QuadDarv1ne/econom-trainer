@@ -169,7 +169,7 @@ export function GDPCalculator() {
           })}
 
           <div className="flex gap-3 pt-2">
-              <Button onClick={calculate} className="flex-1" size="lg">
+              <Button onClick={calculate} disabled={!hasInputs} className="flex-1" size="lg">
               <Calculator className="h-4 w-4 mr-2" />
               {t('gdp.calculate')}
             </Button>

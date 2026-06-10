@@ -49,7 +49,6 @@ async function main() {
   const child = spawn("next", ["dev"], {
     stdio: "inherit",
     env,
-    shell: true,
   });
 
   child.on("exit", (code) => process.exit(code ?? 0));

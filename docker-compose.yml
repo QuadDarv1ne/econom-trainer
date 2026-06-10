@@ -4,9 +4,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://econom:secretpass@db:5432/econom
-      - AUTH_SECRET=change-me-generate-with-openssl-rand-base64-32
-      - TRUST_PROXY=true
+      - DATABASE_URL=${DATABASE_URL:-postgresql://econom:secretpass@db:5432/econom}
+      - AUTH_SECRET=${AUTH_SECRET:?AUTH_SECRET must be set in .env or environment}
+      - TRUST_PROXY=${TRUST_PROXY:-true}
     depends_on:
       - db
     restart: unless-stopped
@@ -14,9 +14,9 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      - POSTGRES_USER=econom
-      - POSTGRES_PASSWORD=secretpass
-      - POSTGRES_DB=econom
+      - POSTGRES_USER=${POSTGRES_USER:-econom}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-secretpass}
+      - POSTGRES_DB=${POSTGRES_DB:-econom}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     restart: unless-stopped

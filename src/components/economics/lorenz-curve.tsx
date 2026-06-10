@@ -89,7 +89,7 @@ export function LorenzCurve() {
   }, [addModuleInteraction])
 
   const setters = [setQ1, setQ2, setQ3, setQ4, setQ5]
-  const rawValues = [q1, q2, q3, q4, q5]
+  const rawValues = useMemo(() => [q1, q2, q3, q4, q5], [q1, q2, q3, q4, q5])
 
   const totalRaw = rawValues.reduce((sum, v) => sum + v, 0)
 
