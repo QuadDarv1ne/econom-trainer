@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { randomBytes } from 'crypto';
-import { getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email';
+import { sendEmail, getEmailVerificationEmailHtml, getLocaleFromRequest } from '@/lib/email';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validatePasswordStrength } from '@/lib/validate-password';
 import { logError } from '@/lib/log-error';
@@ -116,7 +116,6 @@ export async function POST(req: Request) {
     const locale = getLocaleFromRequest(req);
     const verificationHtml = getEmailVerificationEmailHtml(user.name || (locale === 'en' ? 'User' : 'Пользователь'), verificationUrl, locale);
 
-    const { sendEmail } = await import('@/lib/email');
     const emailSent = await sendEmail({
       to: userEmail,
       subject: locale === 'en'

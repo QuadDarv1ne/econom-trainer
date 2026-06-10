@@ -1,7 +1,5 @@
 "use client";
 
-
-
 /**
  * Safely renders user-generated text content.
  * Uses React's automatic text escaping as primary defense,
