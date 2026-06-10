@@ -28,7 +28,7 @@ export default auth(async (req) => {
     response.headers.set('Pragma', 'no-cache');
     response.headers.set('Expires', '0');
     // Content-Security-Policy for API responses (nonce for inline scripts if needed)
-    response.headers.set('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'; base-uri 'none'");
+    response.headers.set('Content-Security-Policy', "default-src 'none'; img-src https:; frame-ancestors 'none'; base-uri 'none'");
     return response;
   }
 
