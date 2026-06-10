@@ -25,6 +25,7 @@ declare module 'next-auth/jwt' {
     id: string;
     twoFactorEnabled?: boolean;
     sessionHash?: string | null;
-    [key: string]: string | boolean | null | undefined;
+    rememberMe?: boolean;
+    exp?: number;
   }
 }

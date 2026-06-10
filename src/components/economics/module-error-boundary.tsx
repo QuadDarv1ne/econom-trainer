@@ -29,7 +29,10 @@ export class ModuleErrorBoundary extends Component<Props, State> {
   }
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    logError(`module-error-${this.props.moduleName}`, error, { componentStack: errorInfo.componentStack ?? undefined })
+    const enrichedError = errorInfo.componentStack
+      ? new Error(`${error.message}\nComponent stack:\n${errorInfo.componentStack}`)
+      : error;
+    logError(`module-error-${this.props.moduleName}`, enrichedError);
   }
 
   handleRetry = () => {

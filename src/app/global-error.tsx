@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { t, translations } from '@/lib/i18n';
+import { t, getCurrentLocale, type Locale } from '@/lib/i18n';
 import { logError } from '@/lib/log-error';
 import { AlertTriangle, RefreshCw, Home, Github } from 'lucide-react';
 
@@ -12,22 +12,8 @@ interface GlobalErrorProps {
   reset: () => void;
 }
 
-function getLocale(): 'ru' | 'en' | 'zh' {
-  if (typeof window === 'undefined') return 'ru';
-  try {
-    const stored = localStorage.getItem('locale');
-    if (stored && stored in translations) return stored as 'ru' | 'en' | 'zh';
-  } catch {
-    // localStorage may be unavailable
-  }
-  const lang = navigator.language.toLowerCase();
-  if (lang.startsWith('zh')) return 'zh';
-  if (lang.startsWith('ru')) return 'ru';
-  return 'en';
-}
-
 export default function GlobalError({ error, reset }: GlobalErrorProps) {
-  const [locale] = useState<'ru' | 'en' | 'zh'>(getLocale());
+  const [locale] = useState<Locale>(getCurrentLocale);
   const isDevelopment = process.env.NODE_ENV === 'development';
 
   useEffect(() => {

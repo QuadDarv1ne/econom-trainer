@@ -88,6 +88,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  if (process.env.NODE_ENV === 'production') {
+    const { validateEnv } = await import('@/lib/env-check');
+    const issues = validateEnv();
+    for (const issue of issues) {
+      // eslint-disable-next-line no-console
+      console.warn(`[env-check] ${issue.key}: ${issue.message}`);
+    }
+  }
+
   const lang = await getServerLocale();
   return (
     <html lang={lang} suppressHydrationWarning>
