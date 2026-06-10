@@ -206,10 +206,10 @@ export function TaxCalculator() {
 
   const profitChartData = useMemo(
     () => [
-      { name: 'Выручка', value: Math.round(parseFloat(profitRevenue) || 0), fill: '#22c55e' },
-      { name: 'Расходы', value: Math.round(parseFloat(profitExpenses) || 0), fill: '#f97316' },
-      { name: 'Налог', value: Math.round(profitResult.tax), fill: '#ef4444' },
-      { name: 'Чистая прибыль', value: Math.round(profitResult.netProfit), fill: '#3b82f6' },
+      { name: t('tax.chart.revenue'), value: Math.round(parseFloat(profitRevenue) || 0), fill: '#22c55e' },
+      { name: t('tax.chart.expenses'), value: Math.round(parseFloat(profitExpenses) || 0), fill: '#f97316' },
+      { name: t('tax.chart.tax'), value: Math.round(profitResult.tax), fill: '#ef4444' },
+      { name: t('tax.chart.netProfit'), value: Math.round(profitResult.netProfit), fill: '#3b82f6' },
     ],
     [profitRevenue, profitExpenses, profitResult],
   )
@@ -250,10 +250,10 @@ export function TaxCalculator() {
             <Receipt className="h-4 w-4" /> {t('tax.incomeTax')}
           </TabsTrigger>
           <TabsTrigger value="nds" className="gap-1.5">
-            <Percent className="h-4 w-4" /> НДС
+            <Percent className="h-4 w-4" /> {t('tax.nds')}
           </TabsTrigger>
           <TabsTrigger value="profit" className="gap-1.5">
-            <Building2 className="h-4 w-4" /> Налог на прибыль
+            <Building2 className="h-4 w-4" /> {t('tax.profit')}
           </TabsTrigger>
         </TabsList>
 
@@ -266,13 +266,13 @@ export function TaxCalculator() {
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">{t('tax.incomeTitle')}</CardTitle>
               <CardDescription>
-                Прогрессивная шкала с 2025 года: чем выше доход, тем выше ставка
+                {t('tax.incomeDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>{t('tax.income')} (руб.)</Label>
+                  <Label>{t('tax.income')} ({t('common.currency.rub')})</Label>
                   <Input
                     type="number"
                     value={ndflIncome}
@@ -281,7 +281,7 @@ export function TaxCalculator() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('tax.deductions')} (руб.)</Label>
+                  <Label>{t('tax.deductions')} ({t('common.currency.rub')})</Label>
                   <Input
                     type="number"
                     value={ndflDeduction}
@@ -321,7 +321,7 @@ export function TaxCalculator() {
           {/* Tax brackets table */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Расчёт по прогрессивным ставкам</CardTitle>
+              <CardTitle className="text-lg">{t('tax.bracketsTitle')}</CardTitle>
               <CardDescription>{t('tax.taxableBaseAfter').replace('{amount}', fmt(ndflResult.taxable))}</CardDescription>
             </CardHeader>
             <CardContent>
@@ -420,8 +420,8 @@ export function TaxCalculator() {
           {ndflChartData.length > 0 && (
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Налог по каждой ставке</CardTitle>
-                <CardDescription>Сравнение суммы налога, начисленного в каждой налоговой bracket</CardDescription>
+                <CardTitle className="text-lg">{t('tax.taxByBracket')}</CardTitle>
+                <CardDescription>{t('tax.bracketComparison')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-[280px]">
@@ -433,7 +433,7 @@ export function TaxCalculator() {
                       <Tooltip
                         content={<ChartTooltipContent formatter={(v) => `${fmt(v)} ₽`} />}
                       />
-                      <Bar dataKey="tax" fill="#ef4444" radius={[4, 4, 0, 0]} name="Налог" />
+                      <Bar dataKey="tax" fill="#ef4444" radius={[4, 4, 0, 0]} name={t('tax.incomeTax')} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -451,21 +451,14 @@ export function TaxCalculator() {
             </CardHeader>
             <CardContent className="text-sm space-y-3">
               <div className="p-3 bg-muted/50 rounded-lg">
-                <strong>Плоская шкала</strong> — единая ставка для всех уровней дохода (в России до 2021 года — 13%
-                для любого дохода). Просто в администрировании, но регрессивна: нагрузка на
-                низкодоходных граждан относительно выше.
+                <strong>{t('tax.theory.flatTitle')}</strong> — {t('tax.theory.flatDesc')}
               </div>
               <div className="p-3 bg-primary/5 rounded-lg">
-                <strong>Прогрессивная шкала</strong> — ставка растёт с доходом. Обеспечивает
-                вертикальное равенство: кто получает больше, платит больше не только в абсолютном,
-                но и в относительном выражении. С 2025 года в России введена 5-ступенчатая
-                прогрессия.
+                <strong>{t('tax.theory.progressiveTitle')}</strong> — {t('tax.theory.progressiveDesc')}
               </div>
               <Separator />
               <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
-                <strong>Кривая Лаффера</strong> — графическая зависимость между ставкой налога и
-                поступлениями в бюджет. При нулевой и 100%-ной ставке доходы бюджета = 0.
-                Оптимальная ставка максимизирует сборы, не уничтожая стимул к работе.
+                <strong>{t('tax.theory.lafferTitle')}</strong> — {t('tax.theory.lafferDesc')}
               </div>
             </CardContent>
           </Card>
@@ -480,7 +473,7 @@ export function TaxCalculator() {
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">{t('tax.vatTitle')}</CardTitle>
               <CardDescription>
-                Косвенный налог, который включается в цену товара и фактически оплачивается покупателем
+                {t('tax.ndsDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

@@ -862,8 +862,8 @@ export function CostAnalysis() {
                 <strong>{t('costs.keyRule')}:</strong> {t('costs.theory.marginal')}
               </p>
               <ul className="space-y-1 text-muted-foreground list-disc list-inside">
-                <li>Если MC &lt; ATC — ATC убывает (предельные тянут средние вниз)</li>
-                <li>Если MC &gt; ATC — ATC возрастает (предельные тянут средние вверх)</li>
+                <li>{t('costs.theory.mcBelowAtc')}</li>
+                <li>{t('costs.theory.mcAboveAtc')}</li>
                 <li>MC = ATC — {t('costs.breakevenPoint')}</li>
                 <li>MC = AVC — {t('costs.shutdownPoint')}</li>
               </ul>
@@ -874,7 +874,7 @@ export function CostAnalysis() {
                 d(ATC)/dQ = (MC·Q - TC) / Q² = (MC - ATC) / Q
               </p>
               <p className="text-muted-foreground text-xs mt-1">
-                При MC = ATC производная ATC равна нулю ⇒ минимум ATC.
+                {t('costs.theory.mcMinAtc')}
               </p>
             </div>
           </CardContent>
@@ -894,8 +894,8 @@ export function CostAnalysis() {
                 {t('costs.theory')}
               </p>
               <ul className="mt-2 space-y-1 text-muted-foreground list-disc list-inside">
-                <li>Если MC &lt; ATC — ATC убывает</li>
-                <li>Если MC &gt; ATC — ATC возрастает</li>
+                <li>{t('costs.theory.mcBelowAtcShort')}</li>
+                <li>{t('costs.theory.mcAboveAtcShort')}</li>
                 <li>MC = ATC — {t('costs.breakevenPoint')}</li>
               </ul>
             </div>
@@ -919,23 +919,20 @@ export function CostAnalysis() {
             <div className="p-3 bg-red-50 dark:bg-red-950/30 rounded-lg">
               <div className="font-semibold text-red-700 dark:text-red-400 mb-1">{t('costs.shutdownPointDetail')}</div>
               <p className="text-muted-foreground">
-                Минимум AVC. Если цена падает ниже min AVC, фирма не покрывает даже переменные издержки.
+                {t('costs.theory.minAvc')}
                 {t('costs.theory.marginal')}
               </p>
             </div>
             <div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
               <div className="font-semibold text-blue-700 dark:text-blue-400 mb-1">{t('costs.breakevenPointDetail')}</div>
               <p className="text-muted-foreground">
-                Минимум ATC. При P = min ATC фирма покрывает все издержки (и постоянные, и переменные),
-                но экономическая прибыль равна нулю.
-                При P &gt; min ATC фирма получает экономическую прибыль.
+                {t('costs.theory.minAtc')}
               </p>
             </div>
             <div className="p-3 bg-yellow-50 dark:bg-yellow-950/30 rounded-lg">
               <div className="font-semibold text-yellow-700 dark:text-yellow-400 mb-1">{t('costs.lossZone')}</div>
               <p className="text-muted-foreground">
-                При min AVC &lt; P &lt; min ATC фирма несёт убытки, но продолжает производство:
-                выручка покрывает все VC и часть FC. Убыток меньше, чем при закрытии (FC).
+                {t('costs.theory.lossZone')}
               </p>
             </div>
           </CardContent>

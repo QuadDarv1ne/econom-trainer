@@ -260,24 +260,24 @@ export function MarketStructures() {
             <span className="hidden sm:inline">
               {t('market.structure.perfect').slice(0, 10)}...
             </span>
-            <span className="sm:hidden">СК</span>
+            <span className="sm:hidden">{t('market.short.perfect')}</span>
           </TabsTrigger>
           <TabsTrigger value="monopoly" className="flex items-center gap-1.5">
             <Building2 className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">{t('market.structure.monopoly')}</span>
-            <span className="sm:hidden">МП</span>
+            <span className="sm:hidden">{t('market.short.monopoly')}</span>
           </TabsTrigger>
           <TabsTrigger value="monopolistic" className="flex items-center gap-1.5">
             <Store className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">
               {t('market.structure.monopolistic').slice(0, 10)}...
             </span>
-            <span className="sm:hidden">МК</span>
+            <span className="sm:hidden">{t('market.short.monopolistic')}</span>
           </TabsTrigger>
           <TabsTrigger value="oligopoly" className="flex items-center gap-1.5">
             <ShieldAlert className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">{t('market.structure.oligopoly')}</span>
-            <span className="sm:hidden">ОЛ</span>
+            <span className="sm:hidden">{t('market.short.oligopoly')}</span>
           </TabsTrigger>
         </TabsList>
 

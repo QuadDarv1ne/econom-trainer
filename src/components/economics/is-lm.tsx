@@ -715,13 +715,10 @@ export function ISLMModel() {
           <CardContent className="text-sm text-muted-foreground space-y-2">
             <p>{t('islm.isText')}</p>
             <p>
-              <strong className="text-foreground">{t('islm.negativeSlope')}:</strong> рост дохода Y
-              увеличивает сбережения, для сохранения равновесия ставка r должна упасть, чтобы
-              стимулировать инвестиции.
+              <strong className="text-foreground">{t('islm.negativeSlope')}:</strong> {t('islm.theory.isSlope')}
             </p>
             <p>
-              <strong className="text-foreground">{t('islm.shiftsLabel')}:</strong> рост G или I₀
-              сдвигает IS вправо (экспансия); рост налогов — влево (сжатие).
+              <strong className="text-foreground">{t('islm.shiftsLabel')}:</strong> {t('islm.theory.isShifts')}
             </p>
           </CardContent>
         </Card>
@@ -736,13 +733,10 @@ export function ISLMModel() {
           <CardContent className="text-sm text-muted-foreground space-y-2">
             <p>{t('islm.lmText')}</p>
             <p>
-              <strong className="text-foreground">{t('islm.positiveSlope')}:</strong> рост дохода Y
-              увеличивает транзакционный спрос на деньги, для сохранения равновесия ставка r должна
-              вырасти.
+              <strong className="text-foreground">{t('islm.positiveSlope')}:</strong> {t('islm.theory.lmSlope')}
             </p>
             <p>
-              <strong className="text-foreground">{t('islm.shiftsLabel')}:</strong> рост M/P
-              сдвигает LM вправо; сокращение денежной массы — влево.
+              <strong className="text-foreground">{t('islm.shiftsLabel')}:</strong> {t('islm.theory.lmShifts')}
             </p>
           </CardContent>
         </Card>
@@ -756,20 +750,13 @@ export function ISLMModel() {
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-2">
             <p>
-              <strong className="text-foreground">{t('islm.fiscalPolicy')}</strong> эффективнее при{' '}
-              <strong className="text-foreground">{t('islm.flatLM')}</strong> (h → ∞,{' '}
-              {t('islm.liquidityTrap')}) или{' '}
-              <strong className="text-foreground">{t('islm.steepIS')}</strong> (d → 0).
+              <strong className="text-foreground">{t('islm.fiscalPolicy')}</strong> {t('islm.theory.fiscalEfficiency')}
             </p>
             <p>
-              <strong className="text-foreground">{t('islm.monetaryPolicy')}</strong> эффективнее
-              при <strong className="text-foreground">{t('islm.steepLM')}</strong> (h → 0) или{' '}
-              <strong className="text-foreground">{t('islm.flatIS')}</strong> (d → ∞).
+              <strong className="text-foreground">{t('islm.monetaryPolicy')}</strong> {t('islm.theory.monetaryEfficiency')}
             </p>
             <p>
-              <strong className="text-foreground">{t('islm.crowdingOut')}:</strong> рост G повышает
-              r, что снижает I. Чем чувствительнее инвестиции к ставке (больший d), тем сильнее
-              вытеснение.
+              <strong className="text-foreground">{t('islm.crowdingOut')}:</strong> {t('islm.theory.crowdingOut')}
             </p>
           </CardContent>
         </Card>
