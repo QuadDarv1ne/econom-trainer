@@ -83,8 +83,8 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              // In development allow unsafe-eval for Next.js HMR; in production use strict-dynamic
-              `script-src 'self'${process.env.NODE_ENV !== 'production' ? " 'unsafe-inline' 'unsafe-eval'" : " 'strict-dynamic'"}`,
+              // In development allow unsafe-eval for Next.js HMR
+              `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV !== 'production' ? " 'unsafe-eval'" : ""}`,
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob:",
               "font-src 'self' data:",
