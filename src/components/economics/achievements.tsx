@@ -387,6 +387,15 @@ export function Achievements() {
       </div>
 
       {/* Achievements Grid */}
+      {unlockedCount === 0 && (
+        <Card className="border-2 border-dashed border-muted-foreground/20 bg-muted/20">
+          <CardContent className="p-8 text-center">
+            <Trophy className="h-16 w-16 mx-auto mb-4 text-muted-foreground/40" />
+            <h3 className="text-lg font-semibold mb-2">{t('achievements.emptyTitle')}</h3>
+            <p className="text-muted-foreground text-sm max-w-md mx-auto">{t('achievements.emptyDescription')}</p>
+          </CardContent>
+        </Card>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {achievements.map((ach) => {
           const Icon = ach.icon

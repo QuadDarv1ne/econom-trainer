@@ -401,6 +401,7 @@ export function MonetaryPolicy() {
           </Card>
 
           {/* Comparison Chart */}
+          {hasSimulated && (
           <Card>
             <CardHeader>
               <CardTitle>{t('monetary.comparison')}</CardTitle>
@@ -420,6 +421,7 @@ export function MonetaryPolicy() {
               </ChartContainer>
             </CardContent>
           </Card>
+          )}
 
           {/* Education */}
           <Card>

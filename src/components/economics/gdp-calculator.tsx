@@ -116,6 +116,8 @@ export function GDPCalculator() {
     return { key: 'gdp.inflation.deflation', variant: 'secondary' as const }
   }
 
+  const hasInputs = components.some((c) => c.currentValue !== 0 || c.baseValue !== 0)
+
   return (
     <div className="space-y-6">
       <Card>
@@ -138,7 +140,8 @@ export function GDPCalculator() {
           {components.map((comp, idx) => {
             const currentId = `gdp-current-${idx}`
             const baseId = `gdp-base-${idx}`
-            return (
+
+  return (
             <div
               key={comp.name}
               className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center p-3 rounded-lg bg-muted/50"
@@ -166,7 +169,7 @@ export function GDPCalculator() {
           })}
 
           <div className="flex gap-3 pt-2">
-            <Button onClick={calculate} className="flex-1" size="lg">
+              <Button onClick={calculate} className="flex-1" size="lg">
               <Calculator className="h-4 w-4 mr-2" />
               {t('gdp.calculate')}
             </Button>
