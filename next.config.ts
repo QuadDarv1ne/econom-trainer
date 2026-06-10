@@ -86,7 +86,7 @@ const nextConfig: NextConfig = {
               // In development allow unsafe-eval for Next.js HMR
               `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV !== 'production' ? " 'unsafe-eval'" : ""}`,
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob:",
+              "img-src 'self' data: blob: https:",
               "font-src 'self' data:",
               "connect-src 'self'",
               "media-src 'self'",
