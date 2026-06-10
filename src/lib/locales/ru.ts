@@ -22,6 +22,7 @@ export const ru: Record<string, string> = {
     'common.error': 'Ошибка',
     'common.success': 'Успешно',
     'common.currency.rub': 'руб.',
+    'common.million': 'млн',
     'common.password.show': 'Показать пароль',
     'common.password.hide': 'Скрыть пароль',
     
@@ -739,6 +740,8 @@ export const ru: Record<string, string> = {
     'costs.theory.minAvc': 'Минимум AVC. Если цена падает ниже min AVC, фирма не покрывает даже переменные издержки.',
     'costs.theory.minAtc': 'Минимум ATC. При P = min ATC фирма покрывает все издержки (и постоянные, и переменные), но экономическая прибыль равна нулю. При P > min ATC фирма получает экономическую прибыль.',
     'costs.theory.lossZone': 'При min AVC < P < min ATC фирма несёт убытки, но продолжает производство: выручка покрывает все VC и часть FC. Убыток меньше, чем при закрытии (FC).',
+    'costs.atQ': 'при Q = {q}',
+    'costs.asQZero': 'при Q → 0',
     'costs.decision.notCoverATC': 'не покрывает ATC, но покрывает AVC.',
     'costs.decision.priceBelowAVC': 'ниже мин AVC.',
     'costs.decision.continueSR': 'Продолжаем производство в краткосрочном периоде.',

@@ -37,6 +37,7 @@ export function DailyChallenge() {
   const completeDailyChallenge = useEconomicsStore((s) => s.completeDailyChallenge)
 
   const [today, setToday] = useState(() => new Date().toISOString().split('T')[0])
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
     const updateToday = () => setToday(new Date().toISOString().split('T')[0])
@@ -48,10 +49,12 @@ export function DailyChallenge() {
     })()
     const timer = setTimeout(() => {
       updateToday()
-      const interval = setInterval(updateToday, 86400000)
-      return () => clearInterval(interval)
+      intervalRef.current = setInterval(updateToday, 86400000)
     }, msUntilMidnight + 1000)
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(timer)
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
   }, [])
   const todayChallenge = useMemo(
     () => dailyChallenges.find((c) => c.date === today),

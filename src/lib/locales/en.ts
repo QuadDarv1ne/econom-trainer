@@ -22,6 +22,7 @@ export const en: Record<string, string> = {
     'common.error': 'Error',
     'common.success': 'Success',
     'common.currency.rub': 'RUB',
+    'common.million': 'M',
     'common.password.show': 'Show password',
     'common.password.hide': 'Hide password',
     
@@ -755,6 +756,8 @@ export const en: Record<string, string> = {
     'costs.theory.minAvc': 'Minimum AVC. If price falls below min AVC, the firm cannot cover even variable costs.',
     'costs.theory.minAtc': 'Minimum ATC. At P = min ATC, the firm covers all costs (both fixed and variable), but economic profit is zero. At P > min ATC, the firm earns economic profit.',
     'costs.theory.lossZone': 'When min AVC < P < min ATC, the firm operates at a loss but continues production: revenue covers all VC and part of FC. The loss is smaller than shutting down (FC).',
+    'costs.atQ': 'at Q = {q}',
+    'costs.asQZero': 'as Q → 0',
     'costs.decision.notCoverATC': 'does not cover ATC, but covers AVC.',
     'costs.decision.priceBelowAVC': 'below min AVC.',
     'costs.decision.continueSR': 'Continue production in the short run.',

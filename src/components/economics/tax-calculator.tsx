@@ -66,12 +66,22 @@ export interface ProfitTaxResult {
 
 // ─── Personal Income Tax (NDFL) progressive brackets ────────────────
 const NDFL_BRACKETS = [
-  { min: 0, max: 2_400_000, rate: 0.13, label: '0 – 2,4 млн' },
-  { min: 2_400_000, max: 5_000_000, rate: 0.15, label: '2,4 – 5 млн' },
-  { min: 5_000_000, max: 20_000_000, rate: 0.18, label: '5 – 20 млн' },
-  { min: 20_000_000, max: 50_000_000, rate: 0.20, label: '20 – 50 млн' },
-  { min: 50_000_000, max: Infinity, rate: 0.22, label: '50 млн +' },
+  { min: 0, max: 2_400_000, rate: 0.13 },
+  { min: 2_400_000, max: 5_000_000, rate: 0.15 },
+  { min: 5_000_000, max: 20_000_000, rate: 0.18 },
+  { min: 20_000_000, max: 50_000_000, rate: 0.20 },
+  { min: 50_000_000, max: Infinity, rate: 0.22 },
 ]
+
+function formatBracketLabel(min: number, max: number, locale: string, t: (k: string) => string): string {
+  const formatNum = (v: number) => {
+    if (v >= 1_000_000) return `${(v / 1_000_000).toLocaleString(locale, { maximumFractionDigits: 1 })} ${t('common.million')}`
+    return Math.round(v).toLocaleString(locale)
+  }
+  if (min === 0) return `0 – ${formatNum(max)}`
+  if (max === Infinity) return `${formatNum(min)}+`
+  return `${formatNum(min)} – ${formatNum(max)}`
+}
 
 export function calcNDFL(income: number, deduction: number): NDFLResult {
   const taxable = Math.max(0, income - deduction)
@@ -81,7 +91,7 @@ export function calcNDFL(income: number, deduction: number): NDFLResult {
     const taxableInBracket = Math.min(Math.max(0, remaining), width)
     const tax = taxableInBracket * b.rate
     remaining = Math.max(0, remaining - taxableInBracket)
-    return { ...b, taxableInBracket, tax, width }
+    return { ...b, taxableInBracket, tax, width, label: '' }
   })
   const totalTax = brackets.reduce((s, b) => s + b.tax, 0)
   const effectiveRate = taxable > 0 ? totalTax / taxable : 0
@@ -164,8 +174,15 @@ export function TaxCalculator() {
   const ndflResult = useMemo(() => {
     const income = parseFloat(ndflIncome) || 0
     const deduction = parseFloat(ndflDeduction) || 0
-    return calcNDFL(income, deduction)
-  }, [ndflIncome, ndflDeduction])
+    const result = calcNDFL(income, deduction)
+    return {
+      ...result,
+      brackets: result.brackets.map((b) => ({
+        ...b,
+        label: formatBracketLabel(b.min, b.max, locale, t),
+      })),
+    }
+  }, [ndflIncome, ndflDeduction, locale, t])
 
   const ndflChartData = useMemo(
     () =>
@@ -348,7 +365,7 @@ export function TaxCalculator() {
                           {b.taxableInBracket > 0 ? fmt(b.taxableInBracket) : '—'} {t('common.currency.rub')}
                         </td>
                         <td className="p-2 text-right font-mono text-red-600">
-                          {b.tax > 0 ? `${fmt(b.tax)} {t('common.currency.rub')}` : '—'}
+                          {b.tax > 0 ? `${fmt(b.tax)} ${t('common.currency.rub')}` : '—'}
                         </td>
                       </tr>
                     ))}
@@ -429,7 +446,7 @@ export function TaxCalculator() {
                     <BarChart data={ndflChartData} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
                       <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                       <XAxis dataKey="name" fontSize={11} />
-                      <YAxis fontSize={11} tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}к`} />
+                      <YAxis fontSize={11} tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k`} />
                       <Tooltip
                         content={<ChartTooltipContent formatter={(v) => `${fmt(v)} ${t('common.currency.rub')}`} />}
                       />
@@ -651,7 +668,7 @@ export function TaxCalculator() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>{t('tax.businessRevenue')} (руб.)</Label>
+                  <Label>{t('tax.businessRevenue')} ({t('common.currency.rub')})</Label>
                   <Input
                     type="number"
                     value={profitRevenue}
@@ -660,7 +677,7 @@ export function TaxCalculator() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('tax.businessExpenses')} (руб.)</Label>
+                  <Label>{t('tax.businessExpenses')} ({t('common.currency.rub')})</Label>
                   <Input
                     type="number"
                     value={profitExpenses}
@@ -812,9 +829,9 @@ export function TaxCalculator() {
                   <BarChart data={profitChartData} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                     <XAxis dataKey="name" fontSize={11} />
-                    <YAxis fontSize={11} tickFormatter={(v: number) => `${(v / 1_000_000).toFixed(1)}м`} />
+                    <YAxis fontSize={11} tickFormatter={(v: number) => `${(v / 1_000_000).toFixed(1)}M`} />
                     <Tooltip
-                      content={<ChartTooltipContent formatter={(v) => `${fmt(v)} {t('common.currency.rub')}`} />}
+                      content={<ChartTooltipContent formatter={(v) => `${fmt(v)} ${t('common.currency.rub')}`} />}
                     />
                     <Bar dataKey="value" radius={[4, 4, 0, 0]} name={t('tax.chartSum')}>
                       {profitChartData.map((entry, index) => (

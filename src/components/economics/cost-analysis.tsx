@@ -952,12 +952,12 @@ export function CostAnalysis() {
             <div className="space-y-1">
               <div className="text-xs text-muted-foreground">{t('costs.breakevenPoint')}</div>
               <div className="font-mono font-bold" style={{ color: COLORS.atc }}>{minATC_value ?? '—'}</div>
-              <div className="text-xs text-muted-foreground">при Q = {minATC_Q ?? '—'}</div>
+              <div className="text-xs text-muted-foreground">{t('costs.atQ').replace('{q}', String(minATC_Q ?? '—'))}</div>
             </div>
             <div className="space-y-1">
               <div className="text-xs text-muted-foreground">{t('costs.shutdownPoint')}</div>
               <div className="font-mono font-bold" style={{ color: COLORS.avc }}>{shutdownPrice}</div>
-              <div className="text-xs text-muted-foreground">при Q → 0</div>
+              <div className="text-xs text-muted-foreground">{t('costs.asQZero')}</div>
             </div>
             <div className="space-y-1">
               <div className="text-xs text-muted-foreground">{t('costs.currentPrice')} P</div>
