@@ -1,12 +1,12 @@
 'use client'
 
 import { useTheme } from 'next-themes'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Moon, Sun, Monitor } from 'lucide-react'
 import { useI18n } from '@/lib/i18n-provider'
 
-export function ThemeToggle() {
+export const ThemeToggle = memo(function ThemeToggle() {
   const { theme, setTheme } = useTheme()
   const { t } = useI18n()
   const [mounted, setMounted] = useState(false)
@@ -51,4 +51,4 @@ export function ThemeToggle() {
       )}
     </Button>
   )
-}
+});

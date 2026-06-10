@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, memo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -101,7 +101,7 @@ const scenarios: CrisisScenario[] = [
   },
 ]
 
-export function EconomicCrises() {
+export const EconomicCrises = memo(function EconomicCrises() {
   const { t } = useI18n()
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
   const [indicators, setIndicators] = useState({
@@ -426,4 +426,4 @@ export function EconomicCrises() {
       )}
     </div>
   )
-}
+});

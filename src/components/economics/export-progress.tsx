@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, memo } from 'react'
 import { useEconomicsStore, getLevelTitle, getModuleDisplayName } from '@/store/economics-store'
 import { downloadProgressCSV, downloadProgressJSON, importProgressFromFile } from '@/lib/export-progress'
 import { useI18n } from '@/lib/i18n-provider'
@@ -180,7 +180,7 @@ export function exportProgressToText(): string {
   return lines.join('\n')
 }
 
-export function ExportProgressButton() {
+export const ExportProgressButton = memo(function ExportProgressButton() {
   const totalXP = useEconomicsStore((s) => s.totalXP)
   const [copied, setCopied] = useState(false)
   const [exporting, setExporting] = useState(false)
@@ -272,4 +272,4 @@ export function ExportProgressButton() {
       </Button>
     </div>
   )
-}
+});

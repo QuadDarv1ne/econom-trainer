@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useMemo, useRef } from 'react'
+import { useState, useCallback, useMemo, useRef, memo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { formatNumberLocale } from '@/lib/i18n'
@@ -142,7 +142,7 @@ function ChartTooltipContent({ active, payload, formatter }: {
 // ═══════════════════════════════════════════════════════════════════════
 // Main component
 // ═══════════════════════════════════════════════════════════════════════
-export function TaxCalculator() {
+export const TaxCalculator = memo(function TaxCalculator() {
   const { t, locale } = useI18n()
   const fmt = useCallback((n: number) => formatNumberLocale(locale, Math.round(n)), [locale])
   // ── NDFL state ──────────────────────────────────────────────────────
@@ -869,4 +869,4 @@ export function TaxCalculator() {
       </Tabs>
     </div>
   )
-}
+});

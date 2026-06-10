@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { useI18n } from '@/lib/i18n-provider';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,7 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Globe } from 'lucide-react';
 
-export function LanguageToggle() {
+export const LanguageToggle = memo(function LanguageToggle() {
   const { locale, setLocale, t } = useI18n();
 
   return (
@@ -34,4 +35,4 @@ export function LanguageToggle() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+});

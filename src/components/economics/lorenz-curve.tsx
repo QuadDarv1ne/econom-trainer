@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef, useMemo } from 'react'
+import { useState, useCallback, useRef, useMemo, memo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -56,7 +56,7 @@ function getGiniBarColor(gini: number): string {
   return 'bg-red-500'
 }
 
-export function LorenzCurve() {
+export const LorenzCurve = memo(function LorenzCurve() {
   const { t } = useI18n()
   const [q1, setQ1] = useState(5)
   const [q2, setQ2] = useState(10)
@@ -487,4 +487,4 @@ export function LorenzCurve() {
       </Card>
     </div>
   )
-}
+});

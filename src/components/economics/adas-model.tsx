@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useRef } from 'react'
+import { useState, useMemo, useCallback, useRef, memo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -25,7 +25,7 @@ import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
 import { CHART_COLORS } from '@/lib/chart-colors'
 
-export function ADASModel() {
+export const ADASModel = memo(function ADASModel() {
   const { t } = useI18n()
   const [consumption, setConsumption] = useState(500)
   const [investment, setInvestment] = useState(300)
@@ -452,4 +452,4 @@ stroke={CHART_COLORS.supply}
       </Tabs>
     </div>
   )
-}
+});

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, memo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -23,7 +23,7 @@ import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
 import { formatNumberLocale } from '@/lib/i18n'
 
-export function KeynesianCross() {
+export const KeynesianCross = memo(function KeynesianCross() {
   const { t, locale } = useI18n()
   const [autonomousSpending, setAutonomousSpending] = useState(200)
   const [mpc, setMpc] = useState(0.75)
@@ -285,4 +285,4 @@ export function KeynesianCross() {
       </div>
     </div>
   )
-}
+});

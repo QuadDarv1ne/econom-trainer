@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, memo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -160,7 +160,7 @@ function generateAnnuityProblem(
   }
 }
 
-export function FinancialMath() {
+export const FinancialMath = memo(function FinancialMath() {
   const { t, locale } = useI18n()
   const [compoundProblem, setCompoundProblem] = useState<CompoundProblem | null>(null)
   const [npvProblem, setNPVProblem] = useState<NPVProblem | null>(null)
@@ -541,4 +541,4 @@ export function FinancialMath() {
       </Card>
     </div>
   )
-}
+});

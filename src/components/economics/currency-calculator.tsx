@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useRef } from 'react'
+import { useState, useMemo, useCallback, useRef, memo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -54,7 +54,7 @@ const CURRENCIES: Currency[] = [
   { code: 'KZT', name: 'currency.name.KZT', symbol: '₸', flag: '🇰🇿', rateToUSD: 0.0022 },
 ]
 
-export function CurrencyCalculator() {
+export const CurrencyCalculator = memo(function CurrencyCalculator() {
   const { t, locale } = useI18n()
   const [amount, setAmount] = useState(100)
   const [fromCurrency, setFromCurrency] = useState('USD')
@@ -460,4 +460,4 @@ export function CurrencyCalculator() {
       </div>
     </div>
   )
-}
+});

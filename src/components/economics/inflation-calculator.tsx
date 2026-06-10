@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useRef } from 'react'
+import { useState, useMemo, useCallback, useRef, memo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { formatNumberLocale } from '@/lib/i18n'
@@ -82,7 +82,7 @@ export function calcRuleOf70Years(rate: number): number | null {
 
 // ─── Component ────────────────────────────────────────────────────────
 
-export function InflationCalculator() {
+export const InflationCalculator = memo(function InflationCalculator() {
   const { t, locale } = useI18n()
   const [initialAmount, setInitialAmount] = useState('100000')
   const [initialYear, setInitialYear] = useState('2020')
@@ -336,4 +336,4 @@ export function InflationCalculator() {
       </Card>
     </div>
   )
-}
+});

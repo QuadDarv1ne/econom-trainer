@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef, memo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -30,7 +30,7 @@ function shuffleWithSeed(arr: Question[], seed: number): Question[] {
   return shuffled
 }
 
-export function DailyChallenge() {
+export const DailyChallenge = memo(function DailyChallenge() {
   const { t } = useI18n()
   const dailyChallenges = useEconomicsStore((s) => s.dailyChallenges)
   const streakState = useEconomicsStore((s) => s.streakState)
@@ -351,4 +351,4 @@ export function DailyChallenge() {
 
   // Fallback (should not happen)
   return null
-}
+});

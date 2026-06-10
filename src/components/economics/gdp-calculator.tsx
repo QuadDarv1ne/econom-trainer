@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, memo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -46,7 +46,7 @@ export function calculateGDP(components: GDPComponent[]) {
   return { nominalGDP: nominal, realGDP: real, deflator, inflationRate }
 }
 
-export function GDPCalculator() {
+export const GDPCalculator = memo(function GDPCalculator() {
   const [components, setComponents] = useState<GDPComponent[]>(createDefaultComponents)
   const [calculated, setCalculated] = useState(false)
   const [nominalGDP, setNominalGDP] = useState(0)
@@ -271,4 +271,4 @@ export function GDPCalculator() {
       </Card>
     </div>
   )
-}
+});

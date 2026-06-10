@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, memo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -30,7 +30,7 @@ const chartConfig = {
   predicted: { label: 'Predicted', color: 'hsl(var(--chart-2))' },
 }
 
-export function MonetaryPolicy() {
+export const MonetaryPolicy = memo(function MonetaryPolicy() {
   const { t } = useI18n()
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
   const [conditions, setConditions] = useState({
@@ -467,4 +467,4 @@ export function MonetaryPolicy() {
       )}
     </div>
   )
-}
+});

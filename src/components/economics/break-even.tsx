@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef, useCallback } from 'react'
+import { useState, useMemo, useRef, useCallback, memo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -90,7 +90,7 @@ export function isViable(pricePerUnit: number, variableCostPerUnit: number): boo
 
 // ─── Component ────────────────────────────────────────────────────────
 
-export function BreakEvenAnalysis() {
+export const BreakEvenAnalysis = memo(function BreakEvenAnalysis() {
   const [fixedCosts, setFixedCosts] = useState(100000)
   const [variableCostPerUnit, setVariableCostPerUnit] = useState(300)
   const [pricePerUnit, setPricePerUnit] = useState(500)
@@ -439,4 +439,4 @@ export function BreakEvenAnalysis() {
       )}
     </div>
   )
-}
+});

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useMemo, useRef } from 'react'
+import { useState, useCallback, useMemo, useRef, memo } from 'react'
 import { useI18n } from '@/lib/i18n-provider'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -29,7 +29,7 @@ interface PPFPoint {
   linearB: number
 }
 
-export function PPFCurve() {
+export const PPFCurve = memo(function PPFCurve() {
   const { t } = useI18n()
   const [goodAName, setGoodAName] = useState(() => t('ppf.defaultGoodA'))
   const [goodBName, setGoodBName] = useState(() => t('ppf.defaultGoodB'))
@@ -575,4 +575,4 @@ export function PPFCurve() {
       </Card>
     </div>
   )
-}
+});

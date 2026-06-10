@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef, useCallback } from 'react'
+import { useState, useMemo, useRef, useCallback, memo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -222,7 +222,7 @@ export function calcDecisionStatus(
 // Main component
 // ═══════════════════════════════════════════════════════════════════════
 
-export function CostAnalysis() {
+export const CostAnalysis = memo(function CostAnalysis() {
   const { t } = useI18n()
   // Firm parameters
   const [fixedCosts, setFixedCosts] = useState(200)
@@ -978,4 +978,4 @@ export function CostAnalysis() {
       </Card>
     </div>
   )
-}
+});

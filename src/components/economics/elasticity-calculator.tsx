@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, memo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -64,7 +64,7 @@ export function calcCrossElasticity(q1: number, q2: number, px1: number, px2: nu
   return { type: 'cross', value, interpretationKey, categoryKey }
 }
 
-export function ElasticityCalculator() {
+export const ElasticityCalculator = memo(function ElasticityCalculator() {
   const [elasticityType, setElasticityType] = useState<ElasticityType>('price')
 
   // Price elasticity inputs
@@ -318,4 +318,4 @@ export function ElasticityCalculator() {
       </Card>
     </div>
   )
-}
+});

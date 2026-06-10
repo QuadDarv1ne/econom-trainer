@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef, useCallback } from 'react'
+import { useState, useMemo, useRef, useCallback, memo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -159,7 +159,7 @@ export function generatePracticeProblem(t: (key: string) => string): PracticePro
 
 // ─── Component ────────────────────────────────────────────────────────
 
-export function SupplyDemand() {
+export const SupplyDemand = memo(function SupplyDemand() {
   const demandIntercept = 100
   const [demandSlope, setDemandSlope] = useState(1)
   const supplyIntercept = 10
@@ -565,4 +565,4 @@ export function SupplyDemand() {
       </Tabs>
     </div>
   )
-}
+});

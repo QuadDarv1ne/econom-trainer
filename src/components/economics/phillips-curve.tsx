@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useRef } from 'react'
+import { useState, useMemo, useCallback, useRef, memo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import {
   Card,
@@ -75,7 +75,7 @@ export function isStagflation(
 
 // ─── Component ────────────────────────────────────────────────────────
 
-export function PhillipsCurve() {
+export const PhillipsCurve = memo(function PhillipsCurve() {
   const { t } = useI18n()
   const [expectedInflation, setExpectedInflation] = useState(5)
   const [naturalRate, setNaturalRate] = useState(5)
@@ -670,5 +670,5 @@ export function PhillipsCurve() {
       </Card>
     </div>
   )
-}
+});
 

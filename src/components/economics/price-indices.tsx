@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, memo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -39,7 +39,7 @@ interface Good {
   quantity: number
 }
 
-export function PriceIndices() {
+export const PriceIndices = memo(function PriceIndices() {
   const { t, locale } = useI18n()
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
   const hasEarnedXPRef = useRef(false)
@@ -445,4 +445,4 @@ export function PriceIndices() {
       </Tabs>
     </div>
   )
-}
+});

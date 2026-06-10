@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, memo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -27,7 +27,7 @@ interface CountryData {
   goodB: number
 }
 
-export function ComparativeAdvantage() {
+export const ComparativeAdvantage = memo(function ComparativeAdvantage() {
   const { t } = useI18n()
   const [country1, setCountry1] = useState<CountryData>({ name: 'Country A', goodA: 2, goodB: 4 })
   const [country2, setCountry2] = useState<CountryData>({ name: 'Country B', goodA: 6, goodB: 6 })
@@ -320,4 +320,4 @@ export function ComparativeAdvantage() {
       )}
     </div>
   )
-}
+});

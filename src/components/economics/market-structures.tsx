@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, memo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -43,7 +43,7 @@ interface MarketData {
   atc: number | null
 }
 
-export function MarketStructures() {
+export const MarketStructures = memo(function MarketStructures() {
   const { t, locale } = useI18n()
   const [marketType, setMarketType] = useState<MarketType>('perfect')
   const [demandIntercept, setDemandIntercept] = useState(100)
@@ -750,4 +750,4 @@ export function MarketStructures() {
       </Card>
     </div>
   )
-}
+});
