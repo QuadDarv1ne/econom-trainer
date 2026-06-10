@@ -11,6 +11,15 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   serverExternalPackages: ["@prisma/client", "prisma"],
+  async redirects() {
+    return [
+      {
+        source: "/dashboard",
+        destination: "/profile",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       // PWA and Service Worker headers

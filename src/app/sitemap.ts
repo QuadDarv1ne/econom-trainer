@@ -9,7 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "supply-demand",
     "elasticity",
     "keynesian",
-    "keynesian-cross",
     "inflation",
     "phillips",
     "lorenz",
