@@ -160,8 +160,11 @@ export default function ProfilePage() {
           const data = await res.json();
           if (data && typeof data === 'object' && 'id' in data) {
             setProfile(data);
-            update();
+            await update();
           }
+        } else {
+          const data = await res.json().catch(() => null);
+          setError(safeErrorMessage(data, t('auth.error.avatarUploadError')));
         }
       } catch {
         setError(t('auth.error.avatarUploadError'));
@@ -179,14 +182,17 @@ export default function ProfilePage() {
       });
 
       if (res.ok) {
-        const data = await res.json();
-        if (data && typeof data === 'object' && 'id' in data) {
-          setProfile(data);
-          update();
+          const data = await res.json();
+          if (data && typeof data === 'object' && 'id' in data) {
+            setProfile(data);
+            await update();
+          }
+        } else {
+          const data = await res.json().catch(() => null);
+          setError(safeErrorMessage(data, t('auth.error.avatarRemoveError')));
         }
-      }
-    } catch {
-      setError(t('auth.error.avatarRemoveError'));
+      } catch {
+        setError(t('auth.error.avatarRemoveError'));
     }
   }
 
@@ -567,9 +573,9 @@ export default function ProfilePage() {
 
             <TwoFAManagement
               twoFactorEnabled={!!profile?.twoFactorEnabled}
-              onTwoFactorChange={(enabled) => {
+              onTwoFactorChange={async (enabled) => {
                 setProfile((p) => (p ? { ...p, twoFactorEnabled: enabled } : null));
-                update();
+                await update();
               }}
               setError={setError}
               setSuccess={setSuccess}
