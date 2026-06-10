@@ -34,16 +34,16 @@ export function useAutoSync() {
     if (!session?.user?.id) return;
 
     const store = useEconomicsStore.getState();
-    const state = store as unknown as {
-      totalXP: number;
-      quizResults: unknown[];
-      moduleInteractions: unknown[];
-      unlockedAchievements: string[];
-      gdpResults: unknown[];
-      financeResults: unknown[];
-      elasticityResults: unknown[];
-      dailyChallenges: unknown[];
-      streakState: unknown;
+    const state = {
+      totalXP: store.totalXP,
+      quizResults: store.quizResults,
+      moduleInteractions: store.moduleInteractions,
+      unlockedAchievements: store.unlockedAchievements,
+      gdpResults: store.gdpResults,
+      financeResults: store.financeResults,
+      elasticityResults: store.elasticityResults,
+      dailyChallenges: store.dailyChallenges,
+      streakState: store.streakState,
     };
 
     // Save snapshot for potential rollback
@@ -117,9 +117,7 @@ export function useAutoSync() {
   // Track pending changes - increment when user makes progress
   useEffect(() => {
     const unsubscribe = useEconomicsStore.subscribe((state, prevState) => {
-      const stateTyped = state as unknown as { totalXP: number };
-      const prevStateTyped = prevState as unknown as { totalXP: number };
-      if (stateTyped.totalXP !== prevStateTyped.totalXP) {
+      if (state.totalXP !== prevState.totalXP) {
         useEconomicsStore.getState().incrementPendingChanges();
       }
     });

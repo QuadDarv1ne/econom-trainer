@@ -31,8 +31,8 @@ interface PPFPoint {
 
 export function PPFCurve() {
   const { t } = useI18n()
-  const [goodAName, setGoodAName] = useState('Масло')
-  const [goodBName, setGoodBName] = useState('Пушки')
+  const [goodAName, setGoodAName] = useState(() => t('ppf.defaultGoodA'))
+  const [goodBName, setGoodBName] = useState(() => t('ppf.defaultGoodB'))
   const [maxA, setMaxA] = useState(100)
   const [maxB, setMaxB] = useState(80)
   const [efficiency, setEfficiency] = useState(1.0)

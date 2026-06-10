@@ -40,18 +40,18 @@ interface Currency {
 }
 
 const CURRENCIES: Currency[] = [
-  { code: 'USD', name: 'Доллар США', symbol: '$', flag: '🇺🇸', rateToUSD: 1 },
-  { code: 'EUR', name: 'Евро', symbol: '€', flag: '🇪🇺', rateToUSD: 1.08 },
-  { code: 'GBP', name: 'Фунт стерлингов', symbol: '£', flag: '🇬🇧', rateToUSD: 1.27 },
-  { code: 'CNY', name: 'Китайский юань', symbol: '¥', flag: '🇨🇳', rateToUSD: 0.138 },
-  { code: 'JPY', name: 'Японская иена', symbol: '¥', flag: '🇯🇵', rateToUSD: 0.0067 },
-  { code: 'RUB', name: 'Российский рубль', symbol: '₽', flag: '🇷🇺', rateToUSD: 0.011 },
-  { code: 'CHF', name: 'Швейцарский франк', symbol: 'Fr', flag: '🇨🇭', rateToUSD: 1.13 },
-  { code: 'CAD', name: 'Канадский доллар', symbol: 'C$', flag: '🇨🇦', rateToUSD: 0.73 },
-  { code: 'AUD', name: 'Австралийский доллар', symbol: 'A$', flag: '🇦🇺', rateToUSD: 0.65 },
-  { code: 'INR', name: 'Индийская рупия', symbol: '₹', flag: '🇮🇳', rateToUSD: 0.012 },
-  { code: 'BRL', name: 'Бразильский реал', symbol: 'R$', flag: '🇧🇷', rateToUSD: 0.18 },
-  { code: 'KZT', name: 'Казахстанский тенге', symbol: '₸', flag: '🇰🇿', rateToUSD: 0.0022 },
+  { code: 'USD', name: 'currency.name.USD', symbol: '$', flag: '🇺🇸', rateToUSD: 1 },
+  { code: 'EUR', name: 'currency.name.EUR', symbol: '€', flag: '🇪🇺', rateToUSD: 1.08 },
+  { code: 'GBP', name: 'currency.name.GBP', symbol: '£', flag: '🇬🇧', rateToUSD: 1.27 },
+  { code: 'CNY', name: 'currency.name.CNY', symbol: '¥', flag: '🇨🇳', rateToUSD: 0.138 },
+  { code: 'JPY', name: 'currency.name.JPY', symbol: '¥', flag: '🇯🇵', rateToUSD: 0.0067 },
+  { code: 'RUB', name: 'currency.name.RUB', symbol: '₽', flag: '🇷🇺', rateToUSD: 0.011 },
+  { code: 'CHF', name: 'currency.name.CHF', symbol: 'Fr', flag: '🇨🇭', rateToUSD: 1.13 },
+  { code: 'CAD', name: 'currency.name.CAD', symbol: 'C$', flag: '🇨🇦', rateToUSD: 0.73 },
+  { code: 'AUD', name: 'currency.name.AUD', symbol: 'A$', flag: '🇦🇺', rateToUSD: 0.65 },
+  { code: 'INR', name: 'currency.name.INR', symbol: '₹', flag: '🇮🇳', rateToUSD: 0.012 },
+  { code: 'BRL', name: 'currency.name.BRL', symbol: 'R$', flag: '🇧🇷', rateToUSD: 0.18 },
+  { code: 'KZT', name: 'currency.name.KZT', symbol: '₸', flag: '🇰🇿', rateToUSD: 0.0022 },
 ]
 
 export function CurrencyCalculator() {
@@ -196,7 +196,7 @@ export function CurrencyCalculator() {
                     {CURRENCIES.map((c) => (
                       <SelectItem key={c.code} value={c.code}>
                         <span className="mr-2">{c.flag}</span>
-                        {c.code} — {c.name}
+                        {c.code} — {t(c.name)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -217,7 +217,7 @@ export function CurrencyCalculator() {
                     {CURRENCIES.map((c) => (
                       <SelectItem key={c.code} value={c.code}>
                         <span className="mr-2">{c.flag}</span>
-                        {c.code} — {c.name}
+                        {c.code} — {t(c.name)}
                       </SelectItem>
                     ))}
                   </SelectContent>

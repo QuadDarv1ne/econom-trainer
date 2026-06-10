@@ -1407,10 +1407,11 @@ export function EconomicsQuiz() {
   const isTimeUp = timeExpired && timeLeft === 0
 
   const startQuiz = useCallback(() => {
+    const seed = Date.now()
     const shuffled = [...questions]
     for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+      const j = (seed * (i + 1) + i) % (i + 1)
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     }
     shuffled.length = Math.min(shuffled.length, 10)
     setShuffledQuestions(shuffled)
@@ -1737,6 +1738,16 @@ export function EconomicsQuiz() {
         {shuffledQuestions.map((_, i) => (
           <div
             key={i}
+            role="progressbar"
+            aria-label={i < currentQuestion
+              ? answers[i] === shuffledQuestions[i]?.correctAnswer ? t('quiz.a11y.correct') : t('quiz.a11y.incorrect')
+              : i === currentQuestion ? t('quiz.a11y.current') : t('quiz.a11y.unanswered')}
+            aria-valuenow={
+              i < currentQuestion ? (answers[i] === shuffledQuestions[i]?.correctAnswer ? 100 : 0)
+              : i === currentQuestion ? 50 : 0
+            }
+            aria-valuemin={0}
+            aria-valuemax={100}
             className={`h-2 flex-1 rounded-full ${
               i < currentQuestion
                 ? answers[i] === shuffledQuestions[i]?.correctAnswer

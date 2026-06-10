@@ -46,10 +46,10 @@ export function PriceIndices() {
   const [baseYear] = useState(2020)
   const [currentYear] = useState(2024)
   const [goods, setGoods] = useState<Good[]>([
-    { id: '1', name: 'Хлеб', basePrice: 30, currentPrice: 35, quantity: 100 },
-    { id: '2', name: 'Молоко', basePrice: 60, currentPrice: 75, quantity: 50 },
-    { id: '3', name: 'Автомобиль', basePrice: 1000000, currentPrice: 1500000, quantity: 2 },
-    { id: '4', name: 'Аренда квартиры', basePrice: 20000, currentPrice: 25000, quantity: 12 },
+    { id: '1', name: 'price.goods.bread', basePrice: 30, currentPrice: 35, quantity: 100 },
+    { id: '2', name: 'price.goods.milk', basePrice: 60, currentPrice: 75, quantity: 50 },
+    { id: '3', name: 'price.goods.car', basePrice: 1000000, currentPrice: 1500000, quantity: 2 },
+    { id: '4', name: 'price.goods.rent', basePrice: 20000, currentPrice: 25000, quantity: 12 },
   ])
 
   const updateGood = (id: string, field: keyof Good, value: number | string) => {
@@ -154,7 +154,7 @@ export function PriceIndices() {
                     <div className="md:col-span-2">
                       <Label>{t('priceIndices.good')}</Label>
                       <Input
-                        value={good.name}
+                        value={t(good.name)}
                         onChange={(e) => updateGood(good.id, 'name', e.target.value)}
                         className="text-sm"
                       />

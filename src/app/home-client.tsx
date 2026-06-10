@@ -97,15 +97,15 @@ export function HomeClient({
   const hydrated = typeof window !== 'undefined'
 
   const t = clientT
-  const visibleModules = hydrated
+  const visibleModules = useMemo(() => hydrated
     ? (session ? modulesWithIcons : modulesWithIcons.filter((m) => m.public))
-    : serverVisibleModules.map(m => ({ ...m, icon: iconMap[m.id] ?? GraduationCap }))
-  const visibleTabItems = hydrated
+    : serverVisibleModules.map(m => ({ ...m, icon: iconMap[m.id] ?? GraduationCap })), [hydrated, session, modulesWithIcons, serverVisibleModules, iconMap])
+  const visibleTabItems = useMemo(() => hydrated
     ? (session ? tabItemsWithIcons : tabItemsWithIcons.filter((item) => item.value === 'home' || modules.find((m) => m.id === item.value)?.public))
-    : serverVisibleTabItems.map(ti => ({ ...ti, icon: tabIconMap[ti.value] ?? GraduationCap }))
-  const visibleCategoryBreaks = hydrated
+    : serverVisibleTabItems.map(ti => ({ ...ti, icon: tabIconMap[ti.value] ?? GraduationCap })), [hydrated, session, tabItemsWithIcons, modules, serverVisibleTabItems, tabIconMap])
+  const visibleCategoryBreaks = useMemo(() => hydrated
     ? (session ? categoryBreaks : new Set([...categoryBreaks].filter((id) => modules.find((m) => m.id === id)?.public)))
-    : serverVisibleCategoryBreaks
+    : serverVisibleCategoryBreaks, [hydrated, session, categoryBreaks, modules, serverVisibleCategoryBreaks])
   const fmt = (v: number) => formatNumber(v, clientLocale)
 
 

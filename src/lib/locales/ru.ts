@@ -365,6 +365,10 @@ export const ru: Record<string, string> = {
     'quiz.topicMacroeconomics': 'Макроэкономика',
     'quiz.topicFinance': 'Финансы',
     'quiz.topicInternationalEconomics': 'Международная экономика',
+    'quiz.a11y.correct': 'Правильный ответ',
+    'quiz.a11y.incorrect': 'Неправильный ответ',
+    'quiz.a11y.current': 'Текущий вопрос',
+    'quiz.a11y.unanswered': 'Без ответа',
     'quiz.answerOptions': 'Варианты ответа',
     
     // Progress
@@ -663,6 +667,8 @@ export const ru: Record<string, string> = {
     'ppf.maxStandard': 'Стандартная выпуклость — умеренная специализация ресурсов',
     'ppf.whatShows': 'Что показывает КПВ',
     'ppf.increasingCost': 'Возрастающая альтернативная стоимость',
+    'ppf.defaultGoodA': 'Масло',
+    'ppf.defaultGoodB': 'Пушки',
     'ppf.economicGrowthTheory': 'Экономический рост',
     'ppf.efficiencyTheory': 'Эффективность и неэффективность',
     'ppf.mrtLabel': 'ПРЕ (MRT)',
@@ -1007,6 +1013,10 @@ export const ru: Record<string, string> = {
     'priceIndices.formula.inflation': 'Инфляция = ИПЦ − 100',
     'priceIndices.formula.realValue': 'Реальная стоимость = (Номинальная стоимость / ИПЦ) × 100',
     'priceIndices.formula.deflator': 'Дефлятор ВВП = (Номинальный ВВП / Реальный ВВП) × 100',
+    'price.goods.bread': 'Хлеб',
+    'price.goods.milk': 'Молоко',
+    'price.goods.car': 'Автомобиль',
+    'price.goods.rent': 'Аренда квартиры',
 
     // Market Structures (additional keys)
     'market.tab.overview': 'Обзор',
@@ -1125,6 +1135,18 @@ export const ru: Record<string, string> = {
     'currency.pppExample': 'Если «биг-мак» стоит $5 в США и ₽450 в России, то по ПТС курс должен быть ≈ 90 ₽/$.',
     'currency.resetToast': 'Сброс',
     'currency.resetToastDesc': 'Параметры возвращены к значениям по умолчанию',
+    'currency.name.USD': 'Доллар США',
+    'currency.name.EUR': 'Евро',
+    'currency.name.GBP': 'Фунт стерлингов',
+    'currency.name.CNY': 'Китайский юань',
+    'currency.name.JPY': 'Японская иена',
+    'currency.name.RUB': 'Российский рубль',
+    'currency.name.CHF': 'Швейцарский франк',
+    'currency.name.CAD': 'Канадский доллар',
+    'currency.name.AUD': 'Австралийский доллар',
+    'currency.name.INR': 'Индийская рупия',
+    'currency.name.BRL': 'Бразильский реал',
+    'currency.name.KZT': 'Казахстанский тенге',
 
     // Cost Analysis
     'costs.calculate': 'Рассчитать издержки',

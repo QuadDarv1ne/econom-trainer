@@ -311,7 +311,7 @@ export function FinancialMath() {
                     </div>
                     {!showResult ? (
                       <Button
-                        onClick={() => checkAnswer(compoundProblem.answer, 'Сложный процент')}
+                        onClick={() => checkAnswer(compoundProblem.answer, 'compound')}
                         className="mt-6"
                       >
                         {t('finance.check')}
@@ -473,7 +473,7 @@ export function FinancialMath() {
                     </div>
                     {!showResult ? (
                       <Button
-                        onClick={() => checkAnswer(annuityProblem.answer, 'Аннуитет')}
+                        onClick={() => checkAnswer(annuityProblem.answer, 'annuity')}
                         className="mt-6"
                       >
                         {t('finance.check')}

@@ -23,12 +23,10 @@ export default function OfflinePage() {
     tRef.current = t;
   }, [toast, t]);
 
-  const storeState = useEconomicsStore((s) => ({
-    totalXP: s.totalXP,
-    quizResults: s.quizResults,
-    moduleInteractions: s.moduleInteractions,
-    unlockedAchievements: s.unlockedAchievements,
-  }));
+  const totalXP = useEconomicsStore((s) => s.totalXP)
+  const quizResults = useEconomicsStore((s) => s.quizResults)
+  const moduleInteractions = useEconomicsStore((s) => s.moduleInteractions)
+  const unlockedAchievements = useEconomicsStore((s) => s.unlockedAchievements);
 
   const handleSync = async () => {
     setSyncing(true);
@@ -37,10 +35,10 @@ export default function OfflinePage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          totalXP: storeState.totalXP,
-          quizResults: storeState.quizResults,
-          moduleHistory: storeState.moduleInteractions,
-          achievements: storeState.unlockedAchievements,
+          totalXP,
+          quizResults,
+          moduleHistory: moduleInteractions,
+          achievements: unlockedAchievements,
         }),
       });
 

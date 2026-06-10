@@ -385,6 +385,10 @@ export const en: Record<string, string> = {
     'quiz.topicMacroeconomics': 'Macroeconomics',
     'quiz.topicFinance': 'Finance',
     'quiz.topicInternationalEconomics': 'International Economics',
+    'quiz.a11y.correct': 'Correct answer',
+    'quiz.a11y.incorrect': 'Incorrect answer',
+    'quiz.a11y.current': 'Current question',
+    'quiz.a11y.unanswered': 'Unanswered',
     'quiz.answerOptions': 'Answer Options',
     
     // Progress
@@ -679,6 +683,8 @@ export const en: Record<string, string> = {
     'ppf.maxStandard': 'Standard convexity — moderate resource specialization',
     'ppf.whatShows': 'What PPF Shows',
     'ppf.increasingCost': 'Increasing Opportunity Cost',
+    'ppf.defaultGoodA': 'Butter',
+    'ppf.defaultGoodB': 'Guns',
     'ppf.economicGrowthTheory': 'Economic Growth',
     'ppf.efficiencyTheory': 'Efficiency & Inefficiency',
     'ppf.mrtLabel': 'MRT',
@@ -1023,6 +1029,10 @@ export const en: Record<string, string> = {
     'priceIndices.formula.inflation': 'Inflation = CPI − 100',
     'priceIndices.formula.realValue': 'Real value = (Nominal value / CPI) × 100',
     'priceIndices.formula.deflator': 'GDP Deflator = (Nominal GDP / Real GDP) × 100',
+    'price.goods.bread': 'Bread',
+    'price.goods.milk': 'Milk',
+    'price.goods.car': 'Car',
+    'price.goods.rent': 'Rent',
 
     // Market Structures (additional keys)
     'market.tab.overview': 'Overview',
@@ -1141,6 +1151,18 @@ export const en: Record<string, string> = {
     'currency.pppExample': 'If a Big Mac costs $5 in the US and ₽450 in Russia, then by PPP the rate should be ≈ 90 ₽/$.',
     'currency.resetToast': 'Reset',
     'currency.resetToastDesc': 'Parameters returned to default values',
+    'currency.name.USD': 'US Dollar',
+    'currency.name.EUR': 'Euro',
+    'currency.name.GBP': 'British Pound',
+    'currency.name.CNY': 'Chinese Yuan',
+    'currency.name.JPY': 'Japanese Yen',
+    'currency.name.RUB': 'Russian Ruble',
+    'currency.name.CHF': 'Swiss Franc',
+    'currency.name.CAD': 'Canadian Dollar',
+    'currency.name.AUD': 'Australian Dollar',
+    'currency.name.INR': 'Indian Rupee',
+    'currency.name.BRL': 'Brazilian Real',
+    'currency.name.KZT': 'Kazakhstani Tenge',
 
     // Cost Analysis
     'costs.calculate': 'Calculate costs',
