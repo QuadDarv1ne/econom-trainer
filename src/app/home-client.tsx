@@ -45,6 +45,7 @@ import {
   Lock,
 } from 'lucide-react'
 import { ModuleSkeleton } from '@/components/economics/module-skeleton'
+import { ModuleErrorBoundary } from '@/components/economics/module-error-boundary'
 import {
   modulesWithIcons,
   tabItemsWithIcons,
@@ -123,6 +124,12 @@ export function HomeClient({
   }, [moduleProgress, visibleModules])
 
   const ActiveModule = activeTab !== 'home' && activeTab in moduleComponents ? moduleComponents[activeTab as keyof typeof moduleComponents] : null
+
+  const activeModuleName = useMemo(() => {
+    if (activeTab === 'home') return ''
+    const meta = modules.find((m) => m.id === activeTab)
+    return meta ? t(meta.titleKey) : activeTab
+  }, [activeTab, t])
 
   return (
     <div className="min-h-screen flex flex-col bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background">
@@ -399,7 +406,7 @@ export function HomeClient({
             </Card>
           </TabsContent>
 
-          {ActiveModule && <TabsContent value={activeTab}><Suspense key={activeTab} fallback={<ModuleSkeleton />}><ActiveModule /></Suspense></TabsContent>}
+          {ActiveModule && <TabsContent value={activeTab}><Suspense key={activeTab} fallback={<ModuleSkeleton />}><ModuleErrorBoundary moduleName={activeModuleName}><ActiveModule /></ModuleErrorBoundary></Suspense></TabsContent>}
         </Tabs>
       </main>
 

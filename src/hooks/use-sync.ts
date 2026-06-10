@@ -21,6 +21,7 @@ export function useAutoSync() {
 
   const performSync = useCallback(async () => {
     if (!navigator.onLine) return;
+    if (useEconomicsStore.getState()._isResetting) return;
 
     let session;
     try {

@@ -26,6 +26,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint \".\"",
+    "typecheck": "tsc --noEmit",
     "check:i18n": "node scripts/check-i18n-keys.mjs",
     "test": "vitest run",
     "test:watch": "vitest",

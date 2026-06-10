@@ -359,6 +359,7 @@ export interface EconomicsState {
   totalXP: number
   dailyChallenges: DailyChallenge[]
   streakState: StreakState
+  _isResetting: boolean
   addQuizResult: (result: QuizResult) => void
   addGDPResult: (result: GDPResult) => void
   addFinanceResult: (result: FinanceResult) => void
@@ -401,6 +402,7 @@ export const useEconomicsStore = create<EconomicsState>()(
       totalXP: 0,
       dailyChallenges: [],
       streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
+      _isResetting: false,
       syncStatus: { status: 'idle' as const, lastSyncAt: null, error: null, pendingChanges: 0 },
 
       addQuizResult: (result) => {
@@ -524,23 +526,21 @@ export const useEconomicsStore = create<EconomicsState>()(
       },
 
       resetProgress: async () => {
-        // First, try to reset server-side progress
+        set({ _isResetting: true })
+
         try {
           const response = await fetch('/api/progress/reset', {
             method: 'DELETE',
             credentials: 'include',
           });
           if (!response.ok && response.status !== 401) {
-            // Log error but continue with client reset
             const errorData = await response.json().catch(() => null);
             logError('reset-progress-api', new Error(`Failed to reset server progress: ${response.status} ${JSON.stringify(errorData)}`));
           }
         } catch (error) {
-          // Network error — continue with client reset anyway
           logError('reset-progress-api', error);
         }
 
-        // Then reset client-side state
         const newState = {
           quizResults: [],
           gdpResults: [],
@@ -552,6 +552,7 @@ export const useEconomicsStore = create<EconomicsState>()(
           dailyChallenges: [],
           streakState: { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
           syncStatus: { status: 'idle' as const, lastSyncAt: null, error: null, pendingChanges: 0 },
+          _isResetting: false,
         }
         debouncedStorage.flushSync()
         set(newState)
