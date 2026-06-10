@@ -155,12 +155,19 @@ export function useAutoSync() {
     };
   }, [performSync]);
 
-  const resolveConflict = useCallback((choice: 'keep-client' | 'keep-server') => {
+  const resolveConflict = useCallback(async (choice: 'keep-client' | 'keep-server') => {
     setConflict(null);
     useEconomicsStore.getState().setSyncConflict(null);
     if (choice === 'keep-server') {
-      // Server data is already authoritative, just clear conflict
-      // User would need to manually fetch server data to fully resolve
+      try {
+        const res = await fetch('/api/progress/sync');
+        if (res.ok) {
+          const serverData = await res.json();
+          useEconomicsStore.setState({ totalXP: serverData.totalXP ?? 0 });
+        }
+      } catch {
+        // Silent — user can manually resolve later
+      }
     }
   }, []);
 
