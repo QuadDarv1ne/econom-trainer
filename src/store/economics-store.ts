@@ -446,7 +446,7 @@ export const useEconomicsStore = create<EconomicsState>()(
         const newInteraction: ModuleInteraction = {
           ...interaction,
           id: generateId(),
-          date: new Date().toISOString(),
+          date: today,
         }
         set((state) => ({
           moduleInteractions: [newInteraction, ...state.moduleInteractions].slice(0, MAX_MODULE_INTERACTIONS),

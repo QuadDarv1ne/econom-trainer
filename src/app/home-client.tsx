@@ -408,7 +408,7 @@ export function HomeClient({
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
             <span>{t('home.footer.text')}</span>
             {totalXP > 0 && (
-              <span className="hidden sm:inline flex items-center gap-2">
+              <span className="hidden sm:inline-flex items-center gap-2">
                 • <Zap className="h-3 w-3 text-yellow-500" />
                 <span className="font-semibold">{fmt(totalXP)} {t('home.header.xpLabel')}</span>
                 • <span className="font-semibold">{exploredCount}/{visibleModules.length} {t('home.hero.modulesExplored')}</span>

@@ -8,13 +8,21 @@ import { useI18n } from '@/lib/i18n-provider';
 import { logError } from '@/lib/log-error';
 import { AlertTriangle, RefreshCw, Home, Github } from 'lucide-react';
 
+function useSafeI18n(): { t: (key: string) => string; locale: string } {
+  try {
+    return useI18n();
+  } catch {
+    return { t: (key: string) => key, locale: 'en' };
+  }
+}
+
 interface ErrorProps {
   error: Error & { digest?: string };
   reset: () => void;
 }
 
 export default function Error({ error, reset }: ErrorProps) {
-  const { t } = useI18n();
+  const { t } = useSafeI18n();
   const router = useRouter();
 
   useEffect(() => {

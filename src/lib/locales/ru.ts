@@ -361,6 +361,10 @@ export const ru: Record<string, string> = {
     'quiz.good': 'Неплохо',
     'quiz.needsImprovement': 'Нужно подтянуть',
     'quiz.topicEconomicTheory': 'Экономическая теория',
+    'quiz.topicMicroeconomics': 'Микроэкономика',
+    'quiz.topicMacroeconomics': 'Макроэкономика',
+    'quiz.topicFinance': 'Финансы',
+    'quiz.topicInternationalEconomics': 'Международная экономика',
     'quiz.answerOptions': 'Варианты ответа',
     
     // Progress

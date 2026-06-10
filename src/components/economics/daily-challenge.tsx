@@ -121,6 +121,8 @@ export function DailyChallenge() {
 
   // Store timeout ref for cleanup on unmount or re-render
   const answerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Store timer expiry timeout ref for cleanup
+  const timerExpiryRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const handleAnswer = useCallback(
     (optionIndex: number) => {
@@ -141,6 +143,7 @@ export function DailyChallenge() {
   useEffect(() => {
     return () => {
       if (answerTimeoutRef.current) clearTimeout(answerTimeoutRef.current)
+      if (timerExpiryRef.current) clearTimeout(timerExpiryRef.current)
     }
   }, [])
 
@@ -161,6 +164,7 @@ export function DailyChallenge() {
       setAnswered(true)
       processAnswer(-1)
     }, 1500)
+    timerExpiryRef.current = timeout
     return () => clearTimeout(timeout)
   }, [quizState, answered, timeLeft, processAnswer])
 

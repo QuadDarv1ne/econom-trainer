@@ -25,7 +25,7 @@ export function AppHeader({ title, variant = 'simple' }: AppHeaderProps) {
   const navLinks: NavLink[] = variant === 'full'
     ? [
         { href: '/', label: t('dashboard.home'), icon: <Home className="h-4 w-4 mr-2" />, showLabel: true },
-        { href: '/profile', label: t('dashboard.title'), icon: <User className="h-4 w-4 mr-2" />, showLabel: true },
+        { href: '/profile', label: t('profile.title'), icon: <User className="h-4 w-4 mr-2" />, showLabel: true },
       ]
     : [
         { href: '/', label: t('dashboard.home'), icon: <Home className="h-4 w-4" /> },

@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
+import { withSecurityHeaders } from "@/lib/security-headers";
+import { checkRateLimit, getClientIP, rateLimitResponse } from "@/lib/rate-limit";
 
-export async function GET() {
-  return NextResponse.json({
+export async function GET(req: Request) {
+  const ip = getClientIP(req);
+  const limit = checkRateLimit('apiRoot', ip);
+  if (!limit.ok) {
+    return rateLimitResponse('apiRoot', limit.resetAt, req);
+  }
+
+  return withSecurityHeaders(NextResponse.json({
     name: "Экономический тренажёр API",
-    version: "7.2.0",
     status: "ok",
-    modules: 25,
-    quizQuestions: 45,
-    glossaryTerms: 40,
-    achievements: 19,
     timestamp: new Date().toISOString(),
-  });
+  }));
 }

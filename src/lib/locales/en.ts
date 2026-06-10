@@ -381,6 +381,10 @@ export const en: Record<string, string> = {
     'quiz.good': 'Good',
     'quiz.needsImprovement': 'Needs Improvement',
     'quiz.topicEconomicTheory': 'Economic Theory',
+    'quiz.topicMicroeconomics': 'Microeconomics',
+    'quiz.topicMacroeconomics': 'Macroeconomics',
+    'quiz.topicFinance': 'Finance',
+    'quiz.topicInternationalEconomics': 'International Economics',
     'quiz.answerOptions': 'Answer Options',
     
     // Progress

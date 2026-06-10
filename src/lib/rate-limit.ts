@@ -75,6 +75,7 @@ export const RATE_LIMITS = {
   progressRead:   { windowMs: 60 * 1000, max: 30 },     // 30 progress reads per min
   adminStats:     { windowMs: 60 * 1000, max: 10 },     // 10 admin stats requests per min
   teacherStudentProgress: { windowMs: 60 * 1000, max: 30 }, // 30 teacher lookups per min
+  apiRoot:       { windowMs: 60 * 1000, max: 60 },     // 60 API root requests per min
 } as const;
 
 export function configureRateLimit(key: string, config: RateLimitConfig) {
