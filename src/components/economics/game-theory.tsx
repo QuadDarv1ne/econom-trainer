@@ -277,8 +277,8 @@ function PrisonersDilemma() {
         aiPayoff,
       }
 
-      setRounds((prev) => [...prev, newRound])
-      setPlayerHistory((prev) => [...prev, choice])
+      setRounds((prev) => [...prev, newRound].slice(-200))
+      setPlayerHistory((prev) => [...prev, choice].slice(-200))
       setLastResult({ player: choice, ai: aiChoice, playerPayoff, aiPayoff })
 
       if (!xpEarned) {
@@ -611,7 +611,7 @@ function BattleOfTheSexes() {
       player2Payoff: p2Payoff,
     }
 
-    setRounds((prev) => [...prev, round])
+    setRounds((prev) => [...prev, round].slice(-200))
     setResult({ p1: p1Payoff, p2: p2Payoff })
 
     if (!xpEarned) {

@@ -104,7 +104,7 @@ export function MonetaryPolicy() {
     setHasSimulated(false)
   }, [])
 
-  const chartData = hasSimulated ? [
+  const chartData = useMemo(() => hasSimulated ? [
     {
       metric: t('monetary.predicted.inflation'),
       current: conditions.inflation,
@@ -120,27 +120,27 @@ export function MonetaryPolicy() {
       current: conditions.unemployment,
       predicted: predictions.predictedUnemployment,
     },
-  ] : []
+  ] : [], [hasSimulated, conditions, predictions, t])
 
-  const getInflationColor = (value: number) => {
+  const getInflationColor = useCallback((value: number) => {
     if (value > 10) return 'text-red-600'
     if (value > 5) return 'text-orange-600'
     if (value > 2) return 'text-amber-600'
     return 'text-green-600'
-  }
+  }, [])
 
-  const getGDPColor = (value: number) => {
+  const getGDPColor = useCallback((value: number) => {
     if (value > 3) return 'text-green-600'
     if (value > 1) return 'text-emerald-600'
     if (value > 0) return 'text-amber-600'
     return 'text-red-600'
-  }
+  }, [])
 
-  const getUnemploymentColor = (value: number) => {
+  const getUnemploymentColor = useCallback((value: number) => {
     if (value < 4) return 'text-green-600'
     if (value < 7) return 'text-amber-600'
     return 'text-red-600'
-  }
+  }, [])
 
   return (
     <div className="space-y-6">

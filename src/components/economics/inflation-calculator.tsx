@@ -86,7 +86,7 @@ export function InflationCalculator() {
   const { t, locale } = useI18n()
   const [initialAmount, setInitialAmount] = useState('100000')
   const [initialYear, setInitialYear] = useState('2020')
-  const [finalYear, setFinalYear] = useState('2025')
+  const [finalYear, setFinalYear] = useState('2026')
   const [inflationRate, setInflationRate] = useState('7')
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
   const xpAwardedRef = useRef(false)
@@ -177,7 +177,7 @@ export function InflationCalculator() {
               <Input
                 id="inflation-end-year"
                 type="number"
-                placeholder="2025"
+                placeholder="2026"
                 value={finalYear}
                 onChange={(e) => { setFinalYear(e.target.value); awardXp() }}
                 className="font-mono"

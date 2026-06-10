@@ -61,16 +61,6 @@ export async function POST(req: Request) {
       where: { email },
     });
 
-    // Clean up expired tokens globally (background maintenance)
-    await prisma.passwordResetToken.deleteMany({
-      where: {
-        OR: [
-          { expires: { lt: new Date() } },
-          { used: true },
-        ],
-      },
-    });
-
     // Create new token
     await prisma.passwordResetToken.create({
       data: {

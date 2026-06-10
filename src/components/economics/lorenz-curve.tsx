@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useMemo } from 'react'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -67,19 +67,19 @@ export function LorenzCurve() {
 
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
 
-  const quintileDescriptions = [
+  const quintileDescriptions = useMemo(() => [
     t('lorenz.quintile.poorest'),
     t('lorenz.quintile.second'),
     t('lorenz.quintile.middle'),
     t('lorenz.quintile.fourth'),
     t('lorenz.quintile.richest'),
-  ]
+  ], [t])
 
-  const countryComparison = COUNTRY_GINI.map(c => ({
+  const countryComparison = useMemo(() => COUNTRY_GINI.map(c => ({
     country: t(`lorenz.country.${c.key}`),
     flag: c.flag,
     gini: c.gini,
-  }))
+  })), [t])
 
   const awardXp = useCallback(() => {
     if (!xpAwardedRef.current) {
@@ -93,9 +93,9 @@ export function LorenzCurve() {
 
   const totalRaw = rawValues.reduce((sum, v) => sum + v, 0)
 
-  const normalizedQuintiles = totalRaw === 0
+  const normalizedQuintiles = useMemo(() => totalRaw === 0
     ? [20, 20, 20, 20, 20]
-    : rawValues.map(v => (v / totalRaw) * 100)
+    : rawValues.map(v => (v / totalRaw) * 100), [rawValues, totalRaw])
 
   const [nq1, nq2, nq3, nq4] = normalizedQuintiles
   const cum1 = nq1
@@ -103,45 +103,46 @@ export function LorenzCurve() {
   const cum3 = cum2 + nq3
   const cum4 = cum3 + nq4
 
-  const cumulativeData = [
+  const cumulativeData = useMemo(() => [
     { population: 0, equality: 0, lorenz: 0, inequalityGap: 0 },
     { population: 20, equality: 20, lorenz: cum1, inequalityGap: Math.max(0, 20 - cum1) },
     { population: 40, equality: 40, lorenz: cum2, inequalityGap: Math.max(0, 40 - cum2) },
     { population: 60, equality: 60, lorenz: cum3, inequalityGap: Math.max(0, 60 - cum3) },
     { population: 80, equality: 80, lorenz: cum4, inequalityGap: Math.max(0, 80 - cum4) },
     { population: 100, equality: 100, lorenz: 100, inequalityGap: 0 },
-  ]
+  ], [cum1, cum2, cum3, cum4])
 
-  const cumValues = [0, nq1, nq1 + nq2, nq1 + nq2 + nq3, nq1 + nq2 + nq3 + nq4, 100]
-  const popValues = [0, 20, 40, 60, 80, 100]
-  const x = popValues.map(v => v / 100)
-  const y = cumValues.map(v => v / 100)
-
-  let areaB = 0
-  for (let i = 0; i < x.length - 1; i++) {
-    areaB += (x[i + 1] - x[i]) * (y[i] + y[i + 1]) / 2
-  }
-  const gini = Math.max(0, Math.min(1, 1 - 2 * areaB))
+  const gini = useMemo(() => {
+    const cumValues = [0, nq1, nq1 + nq2, nq1 + nq2 + nq3, nq1 + nq2 + nq3 + nq4, 100]
+    const popValues = [0, 20, 40, 60, 80, 100]
+    const x = popValues.map(v => v / 100)
+    const y = cumValues.map(v => v / 100)
+    let areaB = 0
+    for (let i = 0; i < x.length - 1; i++) {
+      areaB += (x[i + 1] - x[i]) * (y[i] + y[i + 1]) / 2
+    }
+    return Math.max(0, Math.min(1, 1 - 2 * areaB))
+  }, [nq1, nq2, nq3, nq4])
 
   const giniLevel = getGiniLevel(gini, t)
 
-  const formatTooltip = (value: number, name: string) => {
+  const formatTooltip = useCallback((value: number, name: string) => {
     const labels: Record<string, string> = {
       lorenz: t('lorenz.graph'),
       equality: t('lorenz.lineOfEquality'),
       inequalityGap: t('lorenz.inequalityGap'),
     }
     return [`${value.toFixed(1)}%`, labels[name] || name]
-  }
+  }, [t])
 
-  const formatLegend = (value: string) => {
+  const formatLegend = useCallback((value: string) => {
     const labels: Record<string, string> = {
       lorenz: t('lorenz.graph'),
       equality: t('lorenz.lineOfEquality'),
       inequalityGap: `${t('lorenz.inequalityGap')} (A)`,
     }
     return labels[value] || value
-  }
+  }, [t])
 
   return (
     <div className="space-y-6">

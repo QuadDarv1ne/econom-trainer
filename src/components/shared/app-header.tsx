@@ -1,6 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
+import { useMemo } from 'react'
 import Link from 'next/link'
 import { GraduationCap, Home, User, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -22,7 +23,7 @@ interface AppHeaderProps {
 export function AppHeader({ title, variant = 'simple' }: AppHeaderProps) {
   const { t } = useI18n()
 
-  const navLinks: NavLink[] = variant === 'full'
+  const navLinks: NavLink[] = useMemo(() => variant === 'full'
     ? [
         { href: '/', label: t('dashboard.home'), icon: <Home className="h-4 w-4 mr-2" />, showLabel: true },
         { href: '/profile', label: t('profile.title'), icon: <User className="h-4 w-4 mr-2" />, showLabel: true },
@@ -30,7 +31,7 @@ export function AppHeader({ title, variant = 'simple' }: AppHeaderProps) {
     : [
         { href: '/', label: t('dashboard.home'), icon: <Home className="h-4 w-4" /> },
         { href: '/profile', label: t('profile.title'), icon: <User className="h-4 w-4" /> },
-      ]
+      ], [variant, t])
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">

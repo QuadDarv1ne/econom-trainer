@@ -278,6 +278,6 @@ This project is the intellectual property of Dupley Maxim Igorevich. Terms of us
 
 <div align="center">
 
-**EconTrainer v7.2.0** — © 2025 Dupley Maxim Igorevich
+**EconTrainer v7.2.0** — © 2026 Dupley Maxim Igorevich
 
 </div>
