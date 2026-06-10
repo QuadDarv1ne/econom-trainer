@@ -196,7 +196,7 @@ export function TwoFAManagement({ twoFactorEnabled, onTwoFactorChange, setError,
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        navigator.clipboard.writeText(secret)
+                        navigator.clipboard.writeText(secret).catch(() => {})
                         setCopiedCode(true)
                       }}
                     >
@@ -253,7 +253,7 @@ export function TwoFAManagement({ twoFactorEnabled, onTwoFactorChange, setError,
                         size="sm"
                         variant="ghost"
                         onClick={() => {
-                          navigator.clipboard.writeText(code)
+                          navigator.clipboard.writeText(code).catch(() => {})
                         }}
                       >
                         <Copy className="h-3 w-3" />
