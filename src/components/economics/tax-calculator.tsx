@@ -64,7 +64,7 @@ export interface ProfitTaxResult {
   totalRate: number
 }
 
-// ─── НДФЛ progressive brackets (Russia 2025) ─────────────────────────
+// ─── Personal Income Tax (NDFL) progressive brackets ────────────────
 const NDFL_BRACKETS = [
   { min: 0, max: 2_400_000, rate: 0.13, label: '0 – 2,4 млн' },
   { min: 2_400_000, max: 5_000_000, rate: 0.15, label: '2,4 – 5 млн' },
@@ -91,14 +91,14 @@ export function calcNDFL(income: number, deduction: number): NDFLResult {
   return { brackets, totalTax, effectiveRate, marginalRate, netIncome, taxable }
 }
 
-// ─── НДС calculations ────────────────────────────────────────────────
+// ─── VAT (NDS) calculations ──────────────────────────────────────────
 export function calcNDS(priceWithVAT: number, vatRate: number): NDSResult {
   const base = priceWithVAT / (1 + vatRate)
   const vatAmount = priceWithVAT - base
   return { base, vatAmount, total: priceWithVAT }
 }
 
-// ─── Налог на прибыль ────────────────────────────────────────────────
+// ─── Corporate Profit Tax ────────────────────────────────────────────
 export function calcProfitTax(revenue: number, expenses: number, federalRate: number, regionalRate: number): ProfitTaxResult {
   const profit = revenue - expenses
   const totalRate = federalRate + regionalRate
@@ -135,16 +135,16 @@ function ChartTooltipContent({ active, payload, formatter }: {
 export function TaxCalculator() {
   const { t, locale } = useI18n()
   const fmt = useCallback((n: number) => formatNumberLocale(locale, Math.round(n)), [locale])
-  // ── НДФЛ state ──────────────────────────────────────────────────────
+  // ── NDFL state ──────────────────────────────────────────────────────
   const [ndflIncome, setNdflIncome] = useState('600000')
   const [ndflDeduction, setNdflDeduction] = useState('0')
   const [ndflDeductionType, setNdflDeductionType] = useState<'standard' | 'social' | 'property'>('standard')
 
-  // ── НДС state ───────────────────────────────────────────────────────
+  // ── NDS state ───────────────────────────────────────────────────────
   const [ndsPriceWithVat, setNdsPriceWithVat] = useState('1200')
   const [ndsRate, setNdsRate] = useState<0.1 | 0.2>(0.2)
 
-  // ── Налог на прибыль state ──────────────────────────────────────────
+  // ── Profit Tax state ────────────────────────────────────────────────
   const [profitRevenue, setProfitRevenue] = useState('10000000')
   const [profitExpenses, setProfitExpenses] = useState('7000000')
   const [profitFederalRate, setProfitFederalRate] = useState('3')
@@ -160,7 +160,7 @@ export function TaxCalculator() {
     }
   }, [addModuleInteraction])
 
-  // ── НДФЛ computations ───────────────────────────────────────────────
+  // ── NDFL computations ───────────────────────────────────────────────
   const ndflResult = useMemo(() => {
     const income = parseFloat(ndflIncome) || 0
     const deduction = parseFloat(ndflDeduction) || 0
@@ -179,7 +179,7 @@ export function TaxCalculator() {
     [ndflResult],
   )
 
-  // ── НДС computations ────────────────────────────────────────────────
+  // ── NDS computations ────────────────────────────────────────────────
   const ndsResult = useMemo(() => {
     const price = parseFloat(ndsPriceWithVat) || 0
     return calcNDS(price, ndsRate)
@@ -195,7 +195,7 @@ export function TaxCalculator() {
     }))
   }, [ndsResult])
 
-  // ── Налог на прибыль computations ───────────────────────────────────
+  // ── Profit Tax computations ─────────────────────────────────────────
   const profitResult = useMemo(() => {
     const rev = parseFloat(profitRevenue) || 0
     const exp = parseFloat(profitExpenses) || 0

@@ -96,11 +96,6 @@ model UserProgress {
   userId           String   @unique
   totalXP          Int      @default(0)
   level            Int      @default(1)
-  // Legacy JSON fields (kept for migration compatibility, will be deprecated)
-  quizResults      String?  // JSON: QuizResult[] - DEPRECATED, use QuizAttempt
-  moduleHistory    String?  // JSON: ModuleInteraction[] - DEPRECATED, use ModuleSession
-  achievements     String?  // JSON: string[] - DEPRECATED, use UserAchievement
-  settings         String?  // JSON: { theme, language, notifications } - DEPRECATED, use UserSetting
   lastSyncAt       DateTime @updatedAt
   createdAt        DateTime @default(now())
 

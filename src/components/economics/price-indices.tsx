@@ -58,28 +58,28 @@ export function PriceIndices() {
     )
   }
 
-  // Расчёт стоимости корзины в базовом году
+  // Calculate basket cost in base year
   const baseBasketCost = useMemo(() => {
     return goods.reduce((sum, g) => sum + g.basePrice * g.quantity, 0)
   }, [goods])
 
-  // Расчёт стоимости корзины в текущем году
+  // Calculate basket cost in current year
   const currentBasketCost = useMemo(() => {
     return goods.reduce((sum, g) => sum + g.currentPrice * g.quantity, 0)
   }, [goods])
 
-  // ИПЦ (Индекс потребительских цен) - метод Ласпейреса
+  // CPI (Consumer Price Index) — Laspeyres method
   const cpi = useMemo(() => {
     if (baseBasketCost === 0) return 0
     return (currentBasketCost / baseBasketCost) * 100
   }, [baseBasketCost, currentBasketCost])
 
-  // Инфляция (процентное изменение ИПЦ)
+  // Inflation rate (percentage change in CPI)
   const inflationRate = useMemo(() => {
     return cpi - 100
   }, [cpi])
 
-  // Дефлятор ВВП (требует расчёт по номинальному и реальному ВВП)
+  // GDP Deflator (requires nominal and real GDP)
   const [nominalGDP, setNominalGDP] = useState(150000)
   const [realGDP, setRealGDP] = useState(120000)
 
@@ -88,13 +88,13 @@ export function PriceIndices() {
     return (nominalGDP / realGDP) * 100
   }, [nominalGDP, realGDP])
 
-  // Расчёт реальной стоимости денег
+  // Calculate real value of money
   const realValue = useMemo(() => {
     if (cpi === 0) return 0
-    return (100 / cpi) * 100 // На основе 100 единиц
+    return (100 / cpi) * 100 // Based on 100 units
   }, [cpi])
 
-  // Данные для графика динамики ИПЦ
+  // CPI dynamics chart data
   const cpiHistory = useMemo(() => {
     type CPIYear = { year: number; cpi: number }
     const years: CPIYear[] = []
