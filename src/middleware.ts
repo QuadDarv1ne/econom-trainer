@@ -37,7 +37,7 @@ export default auth(async (req) => {
     const loginUrl = new URL('/auth/login', req.url);
     const callbackUrl = url.pathname.startsWith('/') && !url.pathname.startsWith('//')
       ? url.pathname
-      : '/dashboard';
+      : '/profile';
     loginUrl.searchParams.set('callbackUrl', callbackUrl);
     return NextResponse.redirect(loginUrl);
   }
@@ -47,7 +47,6 @@ export default auth(async (req) => {
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
     '/profile/:path*',
     '/api/profile/:path*',
     '/api/progress/:path*',

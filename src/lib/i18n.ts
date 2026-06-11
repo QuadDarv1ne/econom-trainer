@@ -27,7 +27,30 @@ export const translations = {
   zh,
 } as const;
 
-/** Get a translation by key for the current or specified locale */
+// Pre-compute union of all known keys for dev-mode validation
+const allKnownKeys: Set<string> = new Set();
+for (const locale of locales) {
+  const dict = translations[locale] as Record<string, string>;
+  for (const key of Object.keys(dict)) {
+    allKnownKeys.add(key);
+  }
+}
+
+// Cache for translation lookups to avoid repeated object property access
+const translationCache = new Map<string, string>();
+
+function warnMissingKey(key: string): void {
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    // Throttle: warn at most once per key per session
+    if (!translationCache.has(`__warned__${key}`)) {
+      translationCache.set(`__warned__${key}`, '1');
+      if (!allKnownKeys.has(key)) {
+        // eslint-disable-next-line no-console
+        console.warn(`[i18n] Missing translation key in all locales: "${key}"`);
+      }
+    }
+  }
+}
 
 /**
  * Detect initial locale based on browser language preference.
@@ -43,7 +66,33 @@ function detectInitialLocale(): Locale {
 export function t(key: string, locale?: Locale): string {
   if (locale && !locales.includes(locale)) return key;
   const l = locale ?? getCurrentLocale();
-  return translations[l]?.[key] ?? translations[defaultLocale]?.[key] ?? key;
+
+  // Try cache first
+  const cacheKey = `${l}:${key}`;
+  const cached = translationCache.get(cacheKey);
+  if (cached !== undefined) return cached;
+
+  const value = translations[l]?.[key] ?? translations[defaultLocale]?.[key] ?? key;
+
+  // In dev mode, warn if key is missing from the requested locale (but exists in default)
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    if (!(translations[l] as Record<string, string>)?.[key] && (translations[defaultLocale] as Record<string, string>)?.[key]) {
+      if (!translationCache.has(`__warned_locale__${l}:${key}`)) {
+        translationCache.set(`__warned_locale__${l}:${key}`, '1');
+        // eslint-disable-next-line no-console
+        console.warn(`[i18n] Key "${key}" missing in locale "${l}", falling back to "${defaultLocale}"`);
+      }
+    } else if (value === key && key !== '') {
+      warnMissingKey(key);
+    }
+  }
+
+  // Only cache non-empty results
+  if (value !== key || key === '') {
+    translationCache.set(cacheKey, value);
+  }
+
+  return value;
 }
 
 /** Get current locale from localStorage or default to 'ru' */

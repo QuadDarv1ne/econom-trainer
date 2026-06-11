@@ -27,8 +27,6 @@ export const en: Record<string, string> = {
     'common.password.hide': 'Hide password',
     
     // Elasticity
-    'elasticity.title': 'Elasticity Calculator',
-    'elasticity.description': 'Calculate price, income, and cross elasticity of demand.',
     'elasticity.price': 'Price',
     'elasticity.income': 'Income',
     'elasticity.cross': 'Cross',

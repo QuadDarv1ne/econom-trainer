@@ -46,8 +46,6 @@ export const ru: Record<string, string> = {
     'module.supply-demand.description': 'Интерактивный график с анализом равновесия',
     'module.elasticity.title': 'Калькулятор эластичности',
     'module.elasticity.description': 'Эластичность по цене, доходу, перекрёстная',
-    'elasticity.title': 'Калькулятор эластичности',
-    'elasticity.description': 'Рассчитайте эластичность спроса по цене, доходу и перекрёстную эластичность.',
     'elasticity.price': 'По цене',
     'elasticity.income': 'По доходу',
     'elasticity.cross': 'Перекрёстная',

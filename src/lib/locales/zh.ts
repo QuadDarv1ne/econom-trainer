@@ -24,8 +24,6 @@ export const zh: Record<string, string> = {
     'common.million': '百万',
     'common.password.show': '显示密码',
     'common.password.hide': '隐藏密码',
-    'elasticity.title': '弹性计算器',
-    'elasticity.description': '计算价格弹性、收入弹性和交叉弹性。',
     'elasticity.price': '价格',
     'elasticity.income': '收入',
     'elasticity.cross': '交叉',
