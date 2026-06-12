@@ -36,8 +36,6 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([email])
 }
 
 model Account {
@@ -105,7 +103,6 @@ model UserProgress {
   achievementsList UserAchievement[]
   settingsList UserSetting[]
 
-  @@index([userId])
   @@index([totalXP])
 }
 
@@ -116,8 +113,6 @@ model TwoFactorConfirmation {
   backupCodes String // JSON: hashed backup codes
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
 }
 
 

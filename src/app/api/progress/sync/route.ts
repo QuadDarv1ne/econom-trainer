@@ -25,6 +25,11 @@ export async function GET(req: Request) {
 
     const progress = await prisma.userProgress.findUnique({
       where: { userId: session.user.id },
+      include: {
+        quizAttempts: { orderBy: { date: 'desc' }, take: 100 },
+        moduleSessions: { orderBy: { date: 'desc' }, take: 100 },
+        achievementsList: { orderBy: { unlockedAt: 'desc' }, take: 100 },
+      },
     });
 
     if (!progress) {
@@ -118,76 +123,91 @@ export async function POST(req: Request) {
 
     const mergedLevel = getLevelFromXP(mergedXP).level;
 
-    const progress = await prisma.userProgress.upsert({
-      where: { userId: session.user.id },
-      create: {
-        userId: session.user.id,
-        totalXP: mergedXP,
-        level: mergedLevel,
-      },
-      update: {
-        totalXP: mergedXP,
-        level: mergedLevel,
-      },
-    });
-
-    // Write incoming data to normalized tables instead of deprecated JSON fields
-    const progressId = progress.id;
-
-    if (quizResults !== undefined && quizResults !== null && Array.isArray(quizResults)) {
-      const typedResults = quizResults as Array<{ topic?: string; score?: number; total?: number; date?: string }>;
-      await prisma.quizAttempt.createMany({
-        data: typedResults.slice(0, 50).map((q) => ({
+    const progress = await prisma.$transaction(async (tx) => {
+      const prog = await tx.userProgress.upsert({
+        where: { userId: session.user.id },
+        create: {
           userId: session.user.id,
-          userProgressId: progressId,
-          topic: q.topic ?? 'general',
-          score: q.score ?? 0,
-          total: q.total ?? 0,
-          accuracy: (q.total ?? 0) > 0 ? (q.score ?? 0) / (q.total ?? 0) : 0,
-          date: q.date ? new Date(q.date) : new Date(),
-        })),
+          totalXP: mergedXP,
+          level: mergedLevel,
+        },
+        update: {
+          totalXP: mergedXP,
+          level: mergedLevel,
+        },
       });
-    }
 
-    if (moduleHistory !== undefined && moduleHistory !== null && Array.isArray(moduleHistory)) {
-      const typedHistory = moduleHistory as Array<{ moduleId?: string; action?: string; xpEarned?: number; date?: string; score?: number; duration?: number; details?: Record<string, unknown> }>;
-      await prisma.moduleSession.createMany({
-        data: typedHistory.slice(0, 500).map((m) => ({
-          userId: session.user.id,
-          userProgressId: progressId,
-          moduleId: m.moduleId ?? 'unknown',
-          action: m.action ?? 'explore',
-          xpEarned: m.xpEarned ?? 0,
-          date: m.date ? new Date(m.date) : new Date(),
-          score: m.score ?? null,
-          duration: m.duration ?? null,
-          details: m.details ? JSON.stringify(m.details) : null,
-        })),
-      });
-    }
+      const progressId = prog.id;
 
-    if (achievements !== undefined && achievements !== null && Array.isArray(achievements)) {
-      const typedAchievements = achievements as Array<{ id?: string; name?: string; unlockedAt?: string; xpReward?: number } | string>;
-      const achievementData = typedAchievements.slice(0, 50).map((a) => {
-        if (typeof a === 'string') {
-          return { name: a, unlockedAt: new Date(), xpReward: 0 };
+      if (quizResults !== undefined && quizResults !== null && Array.isArray(quizResults)) {
+        const typedResults = quizResults as Array<{ topic?: string; score?: number; total?: number; date?: string }>;
+        const validResults = typedResults
+          .slice(0, 50)
+          .filter((q): q is { topic?: string; score: number; total: number; date?: string } =>
+            typeof q.score === 'number' && isFinite(q.score) && q.score >= 0
+            && typeof q.total === 'number' && isFinite(q.total) && q.total > 0);
+        if (validResults.length > 0) {
+          await tx.quizAttempt.createMany({
+            data: validResults.map((q) => ({
+              userId: session.user.id,
+              userProgressId: progressId,
+              topic: q.topic ?? 'general',
+              score: q.score,
+              total: q.total,
+              accuracy: q.total > 0 ? q.score / q.total : 0,
+              date: q.date ? new Date(q.date) : new Date(),
+            })),
+          });
         }
-        return {
-          name: (a as Record<string, unknown>).name as string ?? String(a),
-          unlockedAt: (a as Record<string, unknown>).unlockedAt ? new Date(String((a as Record<string, unknown>).unlockedAt)) : new Date(),
-          xpReward: Number((a as Record<string, unknown>).xpReward ?? 0),
-        };
-      });
-      await prisma.userAchievement.createMany({
-        data: achievementData.map((a) => ({
-          userId: session.user.id,
-          userProgressId: progressId,
-          name: a.name,
-          unlockedAt: a.unlockedAt,
-          xpReward: a.xpReward,
-        })),
-      });
-    }
+      }
+
+      if (moduleHistory !== undefined && moduleHistory !== null && Array.isArray(moduleHistory)) {
+        const typedHistory = moduleHistory as Array<{ moduleId?: string; action?: string; xpEarned?: number; date?: string; score?: number; duration?: number; details?: Record<string, unknown> }>;
+        const validHistory = typedHistory.slice(0, 500).filter((m) => m.moduleId && m.moduleId !== 'unknown');
+        if (validHistory.length > 0) {
+          await tx.moduleSession.createMany({
+            data: validHistory.map((m) => ({
+              userId: session.user.id,
+              userProgressId: progressId,
+              moduleId: m.moduleId ?? 'unknown',
+              action: m.action ?? 'explore',
+              xpEarned: m.xpEarned ?? 0,
+              date: m.date ? new Date(m.date) : new Date(),
+              score: m.score ?? null,
+              duration: m.duration ?? null,
+              details: m.details ? JSON.stringify(m.details) : null,
+            })),
+          });
+        }
+      }
+
+      if (achievements !== undefined && achievements !== null && Array.isArray(achievements)) {
+        const typedAchievements = achievements as Array<{ id?: string; name?: string; unlockedAt?: string; xpReward?: number } | string>;
+        const achievementData = typedAchievements.slice(0, 50).map((a) => {
+          if (typeof a === 'string') {
+            return { name: a, unlockedAt: new Date(), xpReward: 0 };
+          }
+          return {
+            name: (a as Record<string, unknown>).name as string ?? String(a),
+            unlockedAt: (a as Record<string, unknown>).unlockedAt ? new Date(String((a as Record<string, unknown>).unlockedAt)) : new Date(),
+            xpReward: Number((a as Record<string, unknown>).xpReward ?? 0),
+          };
+        }).filter((a) => a.name && a.name.length <= 100);
+        if (achievementData.length > 0) {
+          await tx.userAchievement.createMany({
+            data: achievementData.map((a) => ({
+              userId: session.user.id,
+              userProgressId: progressId,
+              name: a.name,
+              unlockedAt: a.unlockedAt,
+              xpReward: a.xpReward,
+            })),
+          });
+        }
+      }
+
+      return prog;
+    });
 
     return withSecurityHeaders(NextResponse.json(progress));
   } catch (error) {
@@ -252,65 +272,81 @@ export async function PATCH(req: Request) {
 
     const mergedLevel = getLevelFromXP(mergedXP).level;
 
-    const progress = await prisma.userProgress.upsert({
-      where: { userId: session.user.id },
-      create: {
-        userId: session.user.id,
-        totalXP: mergedXP,
-        level: mergedLevel,
-      },
-      update: {
-        totalXP: mergedXP,
-        level: mergedLevel,
-      },
+    const progress = await prisma.$transaction(async (tx) => {
+      const prog = await tx.userProgress.upsert({
+        where: { userId: session.user.id },
+        create: {
+          userId: session.user.id,
+          totalXP: mergedXP,
+          level: mergedLevel,
+        },
+        update: {
+          totalXP: mergedXP,
+          level: mergedLevel,
+        },
+      });
+
+      const progressId = prog.id;
+
+      if (newQuizResults !== undefined && newQuizResults !== null && Array.isArray(newQuizResults)) {
+        const typedResults = newQuizResults as Array<{ topic?: string; score?: number; total?: number; date?: string }>;
+        const validResults = typedResults
+          .slice(0, 50)
+          .filter((q): q is { topic?: string; score: number; total: number; date?: string } =>
+            typeof q.score === 'number' && isFinite(q.score) && q.score >= 0
+            && typeof q.total === 'number' && isFinite(q.total) && q.total > 0);
+        if (validResults.length > 0) {
+          await tx.quizAttempt.createMany({
+            data: validResults.map((q) => ({
+              userId: session.user.id,
+              userProgressId: progressId,
+              topic: q.topic ?? 'general',
+              score: q.score,
+              total: q.total,
+              accuracy: q.total > 0 ? q.score / q.total : 0,
+              date: q.date ? new Date(q.date) : new Date(),
+            })),
+          });
+        }
+      }
+
+      if (newModuleInteractions !== undefined && newModuleInteractions !== null && Array.isArray(newModuleInteractions)) {
+        const typedHistory = newModuleInteractions as Array<{ moduleId?: string; action?: string; xpEarned?: number; date?: string; score?: number; duration?: number; details?: Record<string, unknown> }>;
+        const validHistory = typedHistory.slice(0, 500).filter((m) => m.moduleId && m.moduleId !== 'unknown');
+        if (validHistory.length > 0) {
+          await tx.moduleSession.createMany({
+            data: validHistory.map((m) => ({
+              userId: session.user.id,
+              userProgressId: progressId,
+              moduleId: m.moduleId ?? 'unknown',
+              action: m.action ?? 'explore',
+              xpEarned: m.xpEarned ?? 0,
+              date: m.date ? new Date(m.date) : new Date(),
+              score: m.score ?? null,
+              duration: m.duration ?? null,
+              details: m.details ? JSON.stringify(m.details) : null,
+            })),
+          });
+        }
+      }
+
+      if (newAchievements !== undefined && newAchievements !== null && Array.isArray(newAchievements)) {
+        const validAchievements = newAchievements.slice(0, 50).filter((a) => typeof a === 'string' && a.length <= 100);
+        if (validAchievements.length > 0) {
+          await tx.userAchievement.createMany({
+            data: validAchievements.map((a) => ({
+              userId: session.user.id,
+              userProgressId: progressId,
+              name: a,
+              unlockedAt: new Date(),
+              xpReward: 0,
+            })),
+          });
+        }
+      }
+
+      return prog;
     });
-
-    // Write delta data to normalized tables
-    const progressId = progress.id;
-
-    if (newQuizResults !== undefined && newQuizResults !== null && Array.isArray(newQuizResults)) {
-      const typedResults = newQuizResults as Array<{ topic?: string; score?: number; total?: number; date?: string }>;
-      await prisma.quizAttempt.createMany({
-        data: typedResults.slice(0, 50).map((q) => ({
-          userId: session.user.id,
-          userProgressId: progressId,
-          topic: q.topic ?? 'general',
-          score: q.score ?? 0,
-          total: q.total ?? 0,
-          accuracy: (q.total ?? 0) > 0 ? (q.score ?? 0) / (q.total ?? 0) : 0,
-          date: q.date ? new Date(q.date) : new Date(),
-        })),
-      });
-    }
-
-    if (newModuleInteractions !== undefined && newModuleInteractions !== null && Array.isArray(newModuleInteractions)) {
-      const typedHistory = newModuleInteractions as Array<{ moduleId?: string; action?: string; xpEarned?: number; date?: string; score?: number; duration?: number; details?: Record<string, unknown> }>;
-      await prisma.moduleSession.createMany({
-        data: typedHistory.slice(0, 500).map((m) => ({
-          userId: session.user.id,
-          userProgressId: progressId,
-          moduleId: m.moduleId ?? 'unknown',
-          action: m.action ?? 'explore',
-          xpEarned: m.xpEarned ?? 0,
-          date: m.date ? new Date(m.date) : new Date(),
-          score: m.score ?? null,
-          duration: m.duration ?? null,
-          details: m.details ? JSON.stringify(m.details) : null,
-        })),
-      });
-    }
-
-    if (newAchievements !== undefined && newAchievements !== null && Array.isArray(newAchievements)) {
-      await prisma.userAchievement.createMany({
-        data: newAchievements.slice(0, 50).map((a) => ({
-          userId: session.user.id,
-          userProgressId: progressId,
-          name: a,
-          unlockedAt: new Date(),
-          xpReward: 0,
-        })),
-      });
-    }
 
     return withSecurityHeaders(NextResponse.json({
       ...progress,

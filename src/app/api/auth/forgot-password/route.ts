@@ -52,23 +52,22 @@ export async function POST(req: Request) {
 
     const startTime = Date.now();
 
-    // Generate reset token
+    // Generate and store reset token atomically
     const token = randomBytes(32).toString('hex');
     const expires = new Date(Date.now() + RESET_TOKEN_EXPIRY_MS); // 1 hour
 
-    // Delete existing tokens for this user
-    await prisma.passwordResetToken.deleteMany({
-      where: { email },
-    });
-
-    // Create new token
-    await prisma.passwordResetToken.create({
-      data: {
-        email,
-        token,
-        expires,
-      },
-    });
+    await prisma.$transaction([
+      prisma.passwordResetToken.deleteMany({
+        where: { email },
+      }),
+      prisma.passwordResetToken.create({
+        data: {
+          email,
+          token,
+          expires,
+        },
+      }),
+    ]);
 
     // Send email
     const resetUrl = `${BASE_URL}/auth/reset-password?token=${token}`;

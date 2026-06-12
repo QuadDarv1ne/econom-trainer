@@ -38,10 +38,13 @@ export const RESET_TOKEN_EXPIRY_MS = 60 * 60 * 1000;
 
 /**
  * Base URL for the application.
- * Falls back to localhost in development.
+ * Falls back to localhost in development, Vercel auto-detection in production.
  */
 
-export const BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL
+export const BASE_URL = process.env.NEXT_PUBLIC_URL
+  || (vercelUrl ? `https://${vercelUrl}` : undefined)
+  || "http://localhost:3000";
 
 /**
  * Maximum avatar image size in bytes (5 MB).
