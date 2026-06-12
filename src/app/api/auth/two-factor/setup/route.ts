@@ -40,7 +40,11 @@ export async function POST(req: Request) {
 
     // Generate secret
     const secret = authenticator.generateSecret();
-    const issuer = 'Econom Trainer';
+    const acceptLanguage = req.headers.get('accept-language') || ''
+    const primaryLang = acceptLanguage.split(',')[0]?.trim().toLowerCase() || ''
+    const issuer = primaryLang.startsWith('ru') ? 'Экономический тренажёр'
+      : primaryLang.startsWith('zh') ? '经济训练师'
+      : 'Econom Trainer'
     // Sanitize email for TOTP URI: strip special characters, limit length
     const safeEmail = (user.email || session.user.email || 'user')
       .replace(/[^\w@.-]/g, '')

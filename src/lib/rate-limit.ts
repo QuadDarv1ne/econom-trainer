@@ -74,6 +74,7 @@ export const RATE_LIMITS = {
   progressSync:   { windowMs: 60 * 1000, max: 30 },     // 30 syncs per min
   progressRead:   { windowMs: 60 * 1000, max: 30 },     // 30 progress reads per min
   adminStats:     { windowMs: 60 * 1000, max: 10 },     // 10 admin stats requests per min
+  adminUsersList: { windowMs: 60 * 1000, max: 20 },     // 20 admin user list requests per min
   teacherStudentProgress: { windowMs: 60 * 1000, max: 30 }, // 30 teacher lookups per min
   apiRoot:       { windowMs: 60 * 1000, max: 60 },     // 60 API root requests per min
 } as const;

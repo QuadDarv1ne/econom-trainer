@@ -5,6 +5,7 @@ import { createContext, useContext, useState, useCallback, useEffect, useRef } f
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, CheckCircle2, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { generateId } from '@/lib/utils';
 
 type ToastType = 'success' | 'error' | 'info' | 'warning';
 
@@ -52,7 +53,7 @@ export function EnhancedToastProvider({ children }: { children: React.ReactNode 
   }, []);
 
   const showToast = useCallback((message: string, type: ToastType = 'info', duration = 4000) => {
-    const id = Math.random().toString(36).substring(2, 9);
+    const id = generateId();
     setToasts(prev => [...prev, { id, message, type, duration }]);
 
     if (duration > 0) {

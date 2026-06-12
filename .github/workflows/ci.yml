@@ -26,11 +26,19 @@ jobs:
       - name: Run linter
         run: npm run lint
 
+      - name: Type check
+        run: npm run typecheck
+
       - name: Check i18n key parity
         run: npm run check:i18n
 
       - name: Run tests
         run: npm test
 
+      - name: Security audit
+        run: npm audit --audit-level=high
+
       - name: Build project
         run: npm run build
+        env:
+          NODE_ENV: production

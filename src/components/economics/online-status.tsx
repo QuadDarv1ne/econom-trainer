@@ -46,7 +46,7 @@ export const OnlineStatusIndicator = memo(function OnlineStatusIndicator() {
   );
 });
 
-export function NetworkStatus() {
+export const NetworkStatus = memo(function NetworkStatus() {
   const { t } = useI18n();
   const isOnline = useOnlineStatus()
 
@@ -62,4 +62,4 @@ export function NetworkStatus() {
       </span>
     </div>
   );
-}
+});
