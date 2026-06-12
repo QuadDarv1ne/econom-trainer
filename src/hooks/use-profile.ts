@@ -190,6 +190,8 @@ export function useProgressSync(): UseProgressSyncReturn {
   useEffect(() => { syncingRef.current = syncing }, [syncing])
 
   const doSync = useCallback(async () => {
+    if (syncingRef.current) return
+    syncingRef.current = true
     setSyncing(true)
     setSyncError('')
     setSyncSuccess('')
@@ -210,7 +212,6 @@ export function useProgressSync(): UseProgressSyncReturn {
 
       if (res.ok) {
         const serverData = await res.json()
-        // Update local store with server's merged values
         if (serverData.totalXP !== undefined) {
           useEconomicsStore.setState({ totalXP: serverData.totalXP })
         }
@@ -222,6 +223,7 @@ export function useProgressSync(): UseProgressSyncReturn {
     } catch {
       setSyncError(t('dashboard.progress.syncError'))
     } finally {
+      syncingRef.current = false
       setSyncing(false)
     }
   }, [t])

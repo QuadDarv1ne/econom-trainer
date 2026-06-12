@@ -9,6 +9,7 @@ async function readBodyWithLimit(req: Request, maxSize: number): Promise<string>
   const reader = req.body.getReader()
   const chunks: Uint8Array[] = []
   let totalSize = 0
+  let cancelled = false
 
   try {
     while (true) {
@@ -18,13 +19,14 @@ async function readBodyWithLimit(req: Request, maxSize: number): Promise<string>
         totalSize += value.length
         if (totalSize > maxSize) {
           reader.cancel()
+          cancelled = true
           throw new BodyTooLargeError()
         }
         chunks.push(value)
       }
     }
   } catch (error) {
-    reader.cancel()
+    if (!cancelled) reader.cancel()
     if (error instanceof BodyTooLargeError) throw error
     throw error
   }
@@ -62,7 +64,8 @@ export async function safeJson<T = unknown>(
 ): Promise<T | NextResponse<{ error: string }>> {
   try {
     const contentType = req.headers.get('content-type');
-    if (!contentType?.includes('application/json')) {
+    const mimeType = contentType?.split(';')[0]?.trim()
+    if (mimeType !== 'application/json') {
       return NextResponse.json(
         { error: 'Content-Type must be application/json' },
         { status: 400 }

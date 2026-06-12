@@ -15,14 +15,19 @@ const XP_CONFLICT_THRESHOLD = 100;
  */
 export function useAutoSync() {
   const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const syncingRef = useRef(false);
   const [hasSynced, setHasSynced] = useState(false);
   const [conflict, setConflict] = useState<SyncConflict | null>(null);
   const lastSnapshotRef = useRef<unknown>(null);
 
   const performSync = useCallback(async () => {
+    if (syncingRef.current) return;
     if (!navigator.onLine) return;
     if (useEconomicsStore.getState()._isResetting) return;
 
+    syncingRef.current = true;
+
+    try {
     let session;
     try {
       const response = await fetch("/api/auth/session");
@@ -112,6 +117,9 @@ export function useAutoSync() {
       }
       const errorMessage = error instanceof Error ? error.message : 'Unknown sync error';
       useEconomicsStore.getState().markSyncError(errorMessage);
+    }
+    } finally {
+      syncingRef.current = false;
     }
   }, []);
 

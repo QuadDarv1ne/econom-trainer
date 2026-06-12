@@ -10,7 +10,9 @@ const globalForAuth = globalThis as unknown as {
   __pendingValidations?: Map<string, Promise<unknown>>;
 };
 
-export const SESSION_CACHE_TTL = 30 * 1000; // 30 seconds
+export const SESSION_CACHE_TTL = 30 * 1000;
+
+const VALIDATION_TIMEOUT_MS = 5000;
 
 export function getSessionCache(): Map<string, { hash: string; expiresAt: number }> {
   if (!globalForAuth.__sessionCache) {
@@ -52,8 +54,9 @@ export function scheduleCacheCleanup(): void {
 /**
  * Get or create a deduplicated validation promise for a userId.
  * Prevents multiple concurrent DB queries for the same user.
+ * Includes a timeout to prevent memory leaks from stalled promises.
  */
-export function getPendingValidation<T = string | null>(
+export function getPendingValidation<T>(
   userId: string,
   fetchFn: () => Promise<T>
 ): Promise<T> {
@@ -63,7 +66,11 @@ export function getPendingValidation<T = string | null>(
   const pending = globalForAuth.__pendingValidations.get(userId) as Promise<T> | undefined;
   if (pending) return pending;
 
-  const promise = fetchFn().finally(() => {
+  const timeoutPromise = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error('Session validation timed out')), VALIDATION_TIMEOUT_MS)
+  );
+
+  const promise = Promise.race([fetchFn(), timeoutPromise]).finally(() => {
     globalForAuth.__pendingValidations?.delete(userId);
   });
   globalForAuth.__pendingValidations.set(userId, promise);

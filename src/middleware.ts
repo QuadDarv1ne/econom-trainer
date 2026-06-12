@@ -9,6 +9,18 @@ export default auth(async (req) => {
   const url = req.nextUrl.clone();
   const session = req.auth;
 
+  // Handle CORS preflight (browser sends OPTIONS before cross-origin requests)
+  if (req.method === 'OPTIONS') {
+    return new NextResponse(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Max-Age': '86400',
+      },
+    });
+  }
+
   // API routes
   if (url.pathname.startsWith('/api/')) {
     if (!session?.user?.id) {

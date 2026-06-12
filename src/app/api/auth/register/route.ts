@@ -125,8 +125,16 @@ export async function POST(req: Request) {
     });
 
     if (!emailSent) {
-      // Log but don't fail registration — user can request verification email later
       logError('register-email-send', new Error('Failed to send verification email'));
+      return withSecurityHeaders(NextResponse.json(
+        {
+          message: 'Registration successful, but verification email could not be sent',
+          userId: user.id,
+          emailVerificationSent: false,
+          emailSendError: true,
+        },
+        { status: 201 }
+      ));
     }
 
     return withSecurityHeaders(NextResponse.json(

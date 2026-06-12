@@ -12,6 +12,12 @@ import { invalidateSessionCache } from '@/lib/session-cache';
 
 export async function POST(req: Request) {
   try {
+    const ip = getClientIP(req);
+    const limit = checkRateLimit('twoFactorDisable', ip);
+    if (!limit.ok) {
+      return withSecurityHeaders(rateLimitResponse('twoFactorDisable', limit.resetAt, req));
+    }
+
     const session = await auth();
     if (!session?.user?.id) {
       return withSecurityHeaders(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
@@ -19,12 +25,6 @@ export async function POST(req: Request) {
 
     if (!validateOriginStrict(req)) {
       return csrfErrorResponse();
-    }
-
-    const ip = getClientIP(req);
-    const limit = checkRateLimit('twoFactorDisable', ip);
-    if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('twoFactorDisable', limit.resetAt, req));
     }
 
     const parsed = await safeJson<{ password: string }>(req);

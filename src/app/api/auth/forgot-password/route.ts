@@ -89,9 +89,13 @@ export async function POST(req: Request) {
 
     // Rollback token if email fails — prevents orphaned tokens
     if (!emailSent) {
-      await prisma.passwordResetToken.deleteMany({
-        where: { token },
-      });
+      try {
+        await prisma.passwordResetToken.deleteMany({
+          where: { token },
+        });
+      } catch (deleteError) {
+        logError('forgot-password-token-delete', deleteError);
+      }
     }
 
     // Apply a uniform delay to prevent timing-based email enumeration.
