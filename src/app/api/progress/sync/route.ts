@@ -171,7 +171,7 @@ export async function POST(req: Request) {
           return {
             name: (a as Record<string, unknown>).name as string ?? String(a),
             unlockedAt: (a as Record<string, unknown>).unlockedAt ? new Date(String((a as Record<string, unknown>).unlockedAt)) : new Date(),
-            xpReward: Number((a as Record<string, unknown>).xpReward ?? 0),
+            xpReward: Number((a as Record<string, unknown>).xpReward ?? 0) || 0,
           };
         }).filter((a) => a.name && a.name.length <= 100);
         if (achievementData.length > 0) {

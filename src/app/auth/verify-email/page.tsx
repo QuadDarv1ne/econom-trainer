@@ -1,66 +1,28 @@
 'use client'
 
 import { Suspense, useEffect, useRef, useState } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { GraduationCap, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
 import { useI18n } from '@/lib/i18n-provider'
-import { logError } from '@/lib/log-error'
 
 function VerifyEmailContent() {
   const { t } = useI18n()
   const searchParams = useSearchParams()
-  const router = useRouter()
   const [status, setStatus] = useState<string | null>(searchParams.get('status'))
   const submittedRef = useRef(false)
+  const formRef = useRef<HTMLFormElement>(null)
 
   const token = searchParams.get('token')
   const email = searchParams.get('email')
 
-  // Auto-submit verification when token and email are present in URL
   useEffect(() => {
     if (!token || !email || status || submittedRef.current) return
     submittedRef.current = true
-
-    let cancelled = false
-
-    ;(async () => {
-      try {
-        const res = await fetch('/api/auth/verify-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token, email }),
-        })
-
-        if (cancelled) return
-
-        // The endpoint redirects, but if it fails without redirect, handle it
-        if (res.ok) {
-          // Redirect happened via Response.redirect, but in case it didn't:
-          const data = await res.json().catch((e) => {
-            logError('verify-email-json', e)
-            return null
-          })
-          if (cancelled) return
-          if (data?.error) {
-            setStatus('error')
-          }
-        } else {
-          setStatus('error')
-        }
-      } catch {
-        if (!cancelled) {
-          setStatus('error')
-        }
-      }
-    })()
-
-    return () => {
-      cancelled = true
-    }
-  }, [token, email, status, router])
+    formRef.current?.submit()
+  }, [token, email, status])
 
   if (status === 'success') {
     return (
@@ -119,6 +81,7 @@ function VerifyEmailContent() {
   }
 
   return (
+    <>
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-2 text-center">
         <div className="flex justify-center">
@@ -151,6 +114,11 @@ function VerifyEmailContent() {
         </div>
       </CardContent>
     </Card>
+    <form ref={formRef} method="POST" action="/api/auth/verify-email" className="hidden">
+      <input type="hidden" name="token" value={token || ''} />
+      <input type="hidden" name="email" value={email || ''} />
+    </form>
+    </>
   )
 }
 

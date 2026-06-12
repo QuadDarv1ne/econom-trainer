@@ -166,7 +166,7 @@ export async function POST(req: Request) {
               create: achievements.slice(0, 50).map((a) => ({
                 userId: session.user.id,
                 name: a.name,
-                xpReward: a.xpReward ?? 0,
+                xpReward: (a.xpReward ?? 0) || 0,
                 unlockedAt: a.unlockedAt ? new Date(a.unlockedAt) : new Date(),
                 metadata: a.metadata ? JSON.stringify(a.metadata) : null,
               })),
