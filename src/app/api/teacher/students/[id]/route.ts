@@ -32,7 +32,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
             level: true,
             quizAttempts: { orderBy: { date: 'desc' }, take: 50 },
             moduleSessions: { orderBy: { date: 'desc' }, take: 100 },
-            achievementsList: { orderBy: { unlockedAt: 'desc' } },
+            achievementsList: { orderBy: { unlockedAt: 'desc' }, take: 100 },
           },
         },
       },

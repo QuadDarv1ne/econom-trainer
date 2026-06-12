@@ -615,6 +615,8 @@ export default function ProfilePage() {
                       const res = await fetch('/api/profile/revoke-sessions', { method: 'POST' });
                       if (res.ok) {
                         signOutAndClearStore({ callbackUrl: '/auth/login' });
+                      } else {
+                        setError(t('auth.error.sessionError'));
                       }
                     } catch {
                       setError(t('auth.error.sessionError'));

@@ -24,13 +24,6 @@ import {
   CartesianGrid,
 } from 'recharts'
 
-const chartConfig = {
-  value: {
-    label: 'Значение',
-    color: 'hsl(var(--chart-1))',
-  },
-}
-
 interface Good {
   id: string
   name: string
@@ -43,8 +36,15 @@ export const PriceIndices = memo(function PriceIndices() {
   const { t, locale } = useI18n()
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
   const hasEarnedXPRef = useRef(false)
-  const [baseYear] = useState(2020)
-  const [currentYear] = useState(2024)
+
+  const chartConfig = useMemo(() => ({
+    value: {
+      label: t('priceIndices.chartValue'),
+      color: 'hsl(var(--chart-1))',
+    },
+  }), [t])
+  const baseYear = 2020
+  const currentYear = 2024
   const [goods, setGoods] = useState<Good[]>([
     { id: '1', name: 'price.goods.bread', basePrice: 30, currentPrice: 35, quantity: 100 },
     { id: '2', name: 'price.goods.milk', basePrice: 60, currentPrice: 75, quantity: 50 },
@@ -76,8 +76,9 @@ export const PriceIndices = memo(function PriceIndices() {
 
   // Inflation rate (percentage change in CPI)
   const inflationRate = useMemo(() => {
+    if (baseBasketCost === 0) return 0
     return cpi - 100
-  }, [cpi])
+  }, [cpi, baseBasketCost])
 
   // GDP Deflator (requires nominal and real GDP)
   const [nominalGDP, setNominalGDP] = useState(150000)
