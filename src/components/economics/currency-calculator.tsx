@@ -318,7 +318,7 @@ export const CurrencyCalculator = memo(function CurrencyCalculator() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm" aria-label="Currency conversion results">
               <thead>
                 <tr className="border-b">
                   <th className="p-2 text-left">{t('currency.currency')}</th>

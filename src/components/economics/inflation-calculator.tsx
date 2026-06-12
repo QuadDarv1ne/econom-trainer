@@ -290,7 +290,7 @@ export const InflationCalculator = memo(function InflationCalculator() {
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm" aria-label="Inflation results">
                   <thead>
                     <tr className="border-b">
                       <th className="text-left p-2">{t('inflation.table.year')}</th>

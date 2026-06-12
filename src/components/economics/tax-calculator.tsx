@@ -343,7 +343,7 @@ export const TaxCalculator = memo(function TaxCalculator() {
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm" aria-label="Tax calculation results">
                   <thead>
                     <tr className="border-b">
                       <th className="text-left p-2">{t('tax.taxRate')}</th>
@@ -599,7 +599,7 @@ export const TaxCalculator = memo(function TaxCalculator() {
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm" aria-label="Tax calculation results">
                   <thead>
                     <tr className="border-b">
                       <th className="text-left p-2">{t('tax.vatRateHeader')}</th>

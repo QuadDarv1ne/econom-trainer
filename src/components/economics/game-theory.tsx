@@ -316,7 +316,7 @@ function PrisonersDilemma() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-sm sm:text-base">
+            <table className="w-full border-collapse text-sm sm:text-base" aria-label="Game theory payoff matrix">
               <thead>
                 <tr>
                   <th className="border border-border p-2 sm:p-3 bg-muted/50" />
@@ -490,7 +490,7 @@ function PrisonersDilemma() {
 
               {/* Rounds history */}
               <div className="max-h-48 overflow-y-auto rounded-lg border border-border">
-                <table className="w-full text-xs">
+                <table className="w-full text-xs" aria-label="Game theory round results">
                   <thead className="bg-muted/50 sticky top-0">
                     <tr>
                       <th className="p-2 text-left">{t('gameTheory.history.number')}</th>
@@ -650,7 +650,7 @@ function BattleOfTheSexes() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-sm sm:text-base">
+            <table className="w-full border-collapse text-sm sm:text-base" aria-label="Game theory payoff matrix">
               <thead>
                 <tr>
                   <th className="border border-border p-2 sm:p-3 bg-muted/50" />
@@ -811,7 +811,7 @@ function BattleOfTheSexes() {
 
               {/* Rounds history */}
               <div className="max-h-40 overflow-y-auto rounded-lg border border-border">
-                <table className="w-full text-xs">
+                <table className="w-full text-xs" aria-label="Game theory round results">
                   <thead className="bg-muted/50 sticky top-0">
                     <tr>
                       <th className="p-2 text-left">{t('gameTheory.history.number')}</th>
@@ -1034,7 +1034,7 @@ function HawksAndDoves() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-sm sm:text-base">
+            <table className="w-full border-collapse text-sm sm:text-base" aria-label="Game theory payoff matrix">
               <thead>
                 <tr>
                   <th className="border border-border p-2 sm:p-3 bg-muted/50" />

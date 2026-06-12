@@ -359,7 +359,7 @@ export const EconomicCrises = memo(function EconomicCrises() {
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm" aria-label="Economic crises comparison">
                   <thead>
                     <tr className="border-b">
                       <th className="text-left py-2 px-3 font-medium">{t('crises.year')}</th>

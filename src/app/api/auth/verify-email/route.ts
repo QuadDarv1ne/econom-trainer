@@ -10,6 +10,7 @@ import { withSecurityHeaders } from '@/lib/security-headers';
 // CSRF protection is provided by the cryptographically random, single-use token
 // sent via email. Origin-based CSRF checks would break legitimate email clicks.
 export async function POST(req: Request) {
+  try {
   const ip = getClientIP(req);
   const limit = checkRateLimit('verifyEmail', ip);
   if (!limit.ok) {
@@ -24,7 +25,6 @@ export async function POST(req: Request) {
   if (isErrorResponse(parsed)) {
     const contentType = req.headers.get('content-type')?.toLowerCase() || '';
     if (contentType.includes('application/json')) {
-      // JSON body was already consumed by safeJson; cannot fallback to formData
       return withSecurityHeaders(NextResponse.redirect(BASE_URL + '/auth/verify-email?status=invalid'));
     }
     try {
@@ -45,7 +45,6 @@ export async function POST(req: Request) {
     return withSecurityHeaders(NextResponse.redirect(BASE_URL + '/auth/verify-email?status=invalid'));
   }
 
-  try {
     const verificationToken = await prisma.verificationToken.findUnique({
       where: { identifier_token: { identifier: email, token } },
     });
@@ -61,7 +60,6 @@ export async function POST(req: Request) {
       return withSecurityHeaders(NextResponse.redirect(BASE_URL + '/auth/verify-email?status=expired'));
     }
 
-    // Verify email and delete token in a transaction
     await prisma.$transaction([
       prisma.user.updateMany({
         where: { email },

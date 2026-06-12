@@ -28,11 +28,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
             {children}
             <OnlineStatusIndicator />
             <InstallPWAButton />
+            <ServiceWorkerUpdatePrompt />
           </EnhancedToastProvider>
         </AuthProvider>
       </I18nProvider>
       <Toaster />
-      <ServiceWorkerUpdatePrompt />
     </ThemeProvider>
   );
 }

@@ -789,7 +789,7 @@ export const CostAnalysis = memo(function CostAnalysis() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto max-h-96 overflow-y-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm" aria-label="Cost analysis data">
               <thead className="sticky top-0 bg-card">
                 <tr className="border-b">
                   <th className="text-left p-2 font-semibold">Q</th>

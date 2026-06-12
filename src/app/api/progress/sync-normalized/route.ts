@@ -5,6 +5,7 @@ import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { getLevelFromXP } from '@/lib/xp-utils';
+import { mergeXP } from '@/lib/xp-merge';
 import { logError } from '@/lib/log-error';
 import { withSecurityHeaders } from '@/lib/security-headers';
 
@@ -122,21 +123,8 @@ export async function POST(req: Request) {
       },
     });
 
-    // XP merge strategy
-    const MAX_XP_DELTA = 1000;
-    let mergedXP = existingProgress?.totalXP ?? 0;
-
-    if (totalXP !== undefined && existingProgress) {
-      const serverXP = existingProgress.totalXP;
-      if (totalXP >= serverXP && totalXP <= serverXP + MAX_XP_DELTA) {
-        mergedXP = totalXP;
-      } else if (totalXP > serverXP + MAX_XP_DELTA) {
-        mergedXP = serverXP + MAX_XP_DELTA;
-      }
-    } else if (totalXP !== undefined && !existingProgress) {
-      mergedXP = totalXP <= 5000 ? totalXP : 5000;
-    }
-
+    // XP merge: prevent client-side XP inflation
+    const mergedXP = mergeXP(totalXP, existingProgress?.totalXP);
     const mergedLevel = getLevelFromXP(mergedXP).level;
 
     // Use upsert with nested creates for normalized tables

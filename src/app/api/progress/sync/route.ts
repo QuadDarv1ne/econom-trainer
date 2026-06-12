@@ -5,6 +5,7 @@ import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { getLevelFromXP } from '@/lib/xp-utils';
+import { mergeXP } from '@/lib/xp-merge';
 import { logError } from '@/lib/log-error';
 import { withSecurityHeaders } from '@/lib/security-headers';
 
@@ -99,28 +100,8 @@ export async function POST(req: Request) {
       where: { userId: session.user.id },
     });
 
-    // XP merge strategy: prevent client-side XP inflation attacks.
-    // Server XP is authoritative. Only accept client XP if it's within
-    // a reasonable delta (max 1000 XP above server = plausible single session gain).
-    // Otherwise, use server XP as the base to prevent manipulation.
-    const MAX_XP_DELTA = 1000;
-    let mergedXP = existingProgress?.totalXP ?? 0;
-
-    if (totalXP !== undefined && existingProgress) {
-      const serverXP = existingProgress.totalXP;
-      // Accept client XP only if it's >= server and within reasonable delta
-      if (totalXP >= serverXP && totalXP <= serverXP + MAX_XP_DELTA) {
-        mergedXP = totalXP;
-      } else if (totalXP > serverXP + MAX_XP_DELTA) {
-        // Client XP is suspiciously high — use server XP + max allowed delta
-        mergedXP = serverXP + MAX_XP_DELTA;
-      }
-      // If client XP < server XP, keep server XP (already more authoritative)
-    } else if (totalXP !== undefined && !existingProgress) {
-      // First sync — accept client XP if reasonable (< 5000 for new user)
-      mergedXP = totalXP <= 5000 ? totalXP : 5000;
-    }
-
+    // XP merge strategy: prevent client-side XP inflation attacks
+    const mergedXP = mergeXP(totalXP, existingProgress?.totalXP);
     const mergedLevel = getLevelFromXP(mergedXP).level;
 
     const progress = await prisma.$transaction(async (tx) => {
@@ -255,21 +236,8 @@ export async function PATCH(req: Request) {
       where: { userId: session.user.id },
     });
 
-    // XP merge: only accept client XP if it's within reasonable delta
-    const MAX_XP_DELTA = 1000;
-    let mergedXP = existingProgress?.totalXP ?? 0;
-
-    if (totalXP !== undefined && existingProgress) {
-      const serverXP = existingProgress.totalXP;
-      if (totalXP >= serverXP && totalXP <= serverXP + MAX_XP_DELTA) {
-        mergedXP = totalXP;
-      } else if (totalXP > serverXP + MAX_XP_DELTA) {
-        mergedXP = serverXP + MAX_XP_DELTA;
-      }
-    } else if (totalXP !== undefined && !existingProgress) {
-      mergedXP = totalXP <= 5000 ? totalXP : 5000;
-    }
-
+    // XP merge: prevent client-side XP inflation
+    const mergedXP = mergeXP(totalXP, existingProgress?.totalXP);
     const mergedLevel = getLevelFromXP(mergedXP).level;
 
     const progress = await prisma.$transaction(async (tx) => {
