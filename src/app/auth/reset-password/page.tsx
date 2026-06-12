@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { useState, Suspense } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -25,6 +25,13 @@ function ResetPasswordForm() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current)
+    }
+  }, [])
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -55,7 +62,7 @@ function ResetPasswordForm() {
         setError(safeErrorMessage(data, t('auth.error.resetError')));
       } else {
         setSuccess(true);
-        setTimeout(() => router.push('/auth/login'), REDIRECT_DELAY_MS);
+        redirectTimerRef.current = setTimeout(() => router.push('/auth/login'), REDIRECT_DELAY_MS);
       }
     } catch {
       setError(t('auth.error.genericError'));

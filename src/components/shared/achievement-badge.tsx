@@ -79,7 +79,9 @@ export function AchievementBadge({
         {/* Icon */}
         <Icon
           className={cn(
-            'relative z-10 text-white',
+            unlocked
+              ? 'relative z-10 text-white'
+              : 'relative z-10 text-gray-400 dark:text-gray-500',
             iconSizeClasses[size],
             unlocked ? 'opacity-100' : 'opacity-50'
           )}

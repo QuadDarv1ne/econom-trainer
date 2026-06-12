@@ -1407,10 +1407,9 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
   const isTimeUp = timeExpired && timeLeft === 0
 
   const startQuiz = useCallback(() => {
-    const seed = Date.now()
     const shuffled = [...questions]
     for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = (seed * (i + 1) + i) % (i + 1)
+      const j = Math.floor(Math.random() * (i + 1))
       ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     }
     shuffled.length = Math.min(shuffled.length, 10)

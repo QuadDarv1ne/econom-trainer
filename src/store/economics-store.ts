@@ -565,8 +565,11 @@ export const useEconomicsStore = create<EconomicsState>()(
         const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeQuizAndFinanceStats(state.quizResults, state.financeResults)
 
         const moduleCounts: Record<string, number> = {}
+        for (const interaction of state.moduleInteractions) {
+          moduleCounts[interaction.moduleId] = (moduleCounts[interaction.moduleId] || 0) + 1
+        }
         MODULE_IDS.forEach((id) => {
-          moduleCounts[id] = getModuleInteractionCount(state.moduleInteractions, id)
+          if (!moduleCounts[id]) moduleCounts[id] = 0
         })
 
         const totalSessions = state.quizResults.length + state.gdpResults.length + state.financeResults.length + state.elasticityResults.length

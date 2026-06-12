@@ -150,6 +150,11 @@ export const DailyChallenge = memo(function DailyChallenge() {
     }
   }, [])
 
+  // Clear answer timeout when question changes to prevent stale closure
+  useEffect(() => {
+    if (answerTimeoutRef.current) clearTimeout(answerTimeoutRef.current)
+  }, [currentQ])
+
   // Countdown timer
   useEffect(() => {
     if (quizState !== 'active' || answered || timeLeft <= 0) return
