@@ -206,7 +206,7 @@ export async function importProgressFromJSON(jsonString: string): Promise<void> 
   const data = parsed as Record<string, unknown>
 
   // Validate required fields
-  if (typeof data.totalXP !== 'number' || data.totalXP < 0) {
+  if (!Number.isFinite(data.totalXP) || (data.totalXP as number) < 0) {
     throw new Error('Invalid progress data: totalXP must be a non-negative number')
   }
 
@@ -222,8 +222,10 @@ export async function importProgressFromJSON(jsonString: string): Promise<void> 
   if ('streakState' in data) {
     const streak = data.streakState
     if (!streak || typeof streak !== 'object' ||
-        typeof (streak as Record<string, unknown>).currentStreak !== 'number' ||
-        typeof (streak as Record<string, unknown>).longestStreak !== 'number') {
+        !Number.isFinite((streak as Record<string, unknown>).currentStreak) ||
+        (streak as Record<string, unknown>).currentStreak as number < 0 ||
+        !Number.isFinite((streak as Record<string, unknown>).longestStreak) ||
+        (streak as Record<string, unknown>).longestStreak as number < 0) {
       throw new Error('Invalid progress data: streakState must contain currentStreak and longestStreak')
     }
   }
@@ -252,7 +254,7 @@ export async function importProgressFromJSON(jsonString: string): Promise<void> 
     streakState: (data.streakState as typeof state.streakState | undefined) ?? { currentStreak: 0, longestStreak: 0, lastActiveDate: null },
   }
 
-  // Now reset and import atomically
+  // Validate all data before clearing state to prevent data loss
   await state.resetProgress()
   useEconomicsStore.setState(importedData)
 }

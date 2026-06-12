@@ -91,7 +91,7 @@ export function AchievementBadge({
         {!unlocked && (
           <div className="absolute inset-0 flex items-center justify-center z-20">
             <div className="bg-black/50 rounded-full p-1">
-              <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
               </svg>
             </div>
