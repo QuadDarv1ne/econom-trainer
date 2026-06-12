@@ -3,6 +3,7 @@
  * Used by both auth.ts and auth-edge.ts to avoid N+1 DB queries.
  * Stored on globalThis so both modules share a single cache instance.
  */
+import 'server-only'
 
 const globalForAuth = globalThis as unknown as {
   __sessionCache?: Map<string, { hash: string; expiresAt: number }>;

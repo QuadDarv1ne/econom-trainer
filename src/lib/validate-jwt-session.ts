@@ -2,6 +2,7 @@
  * Shared JWT session validation logic.
  * Used by both auth.ts and auth-edge.ts to avoid duplication.
  */
+import 'server-only'
 import type { JWT } from "next-auth/jwt";
 import {
   getCachedSessionHash,

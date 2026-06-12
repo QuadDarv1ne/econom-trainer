@@ -25,7 +25,7 @@ export async function GET(req: Request) {
 
     const limit = checkRateLimit('adminUsersList', auth.userId);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('profileRead', limit.resetAt, req));
+      return withSecurityHeaders(rateLimitResponse('adminUsersList', limit.resetAt, req));
     }
 
     const url = new URL(req.url);

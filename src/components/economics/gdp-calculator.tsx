@@ -31,6 +31,8 @@ function createDefaultComponents(): GDPComponent[] {
 }
 
 export function calculateGDP(components: GDPComponent[]) {
+  if (components.length < 5) return { nominalGDP: 0, realGDP: 0, deflator: 0, inflationRate: 0 }
+
   const c = components[0],
     i = components[1],
     g = components[2],

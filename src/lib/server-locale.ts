@@ -1,3 +1,4 @@
+import 'server-only'
 import { cookies } from 'next/headers';
 import { translations, defaultLocale } from '@/lib/i18n';
 

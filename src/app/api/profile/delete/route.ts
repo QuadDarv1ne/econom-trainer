@@ -49,7 +49,7 @@ export async function DELETE(req: Request) {
       if (!isValid) {
         return withSecurityHeaders(NextResponse.json(
           { error: 'Incorrect password' },
-          { status: 400 }
+          { status: 401 }
         ));
       }
     }

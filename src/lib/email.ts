@@ -2,6 +2,7 @@
  * Email sending utility using Resend API
  * For password reset, email verification, and notifications
  */
+import 'server-only'
 
 import type { Locale } from '@/lib/i18n';
 import { logError } from '@/lib/log-error';

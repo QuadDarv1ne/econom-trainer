@@ -1,3 +1,5 @@
+import 'server-only'
+
 const DEV_AUTH_SECRET = 'dev-secret-do-not-use-in-production-change-me';
 const DEV_AUTH_SECRET_SHORT = 'dev-secret';
 

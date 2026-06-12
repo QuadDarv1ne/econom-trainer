@@ -5,6 +5,7 @@ import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
 import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
 import { logError } from '@/lib/log-error';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
+import { sanitizePlainText } from '@/lib/sanitize-input';
 import { withSecurityHeaders } from '@/lib/security-headers';
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -43,7 +44,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       data.role = role;
     }
     if (name !== undefined && typeof name === 'string' && name.length <= 100) {
-      data.name = name;
+      data.name = sanitizePlainText(name);
     }
 
     if (Object.keys(data).length === 0) {
