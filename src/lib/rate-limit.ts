@@ -80,7 +80,6 @@ export const RATE_LIMITS = {
 
 export function configureRateLimit(key: string, config: RateLimitConfig) {
   configs.set(key, config);
-  scheduleCleanup();
 }
 
 export function checkRateLimit(key: string, ip: string | null): { ok: boolean; remaining: number; resetAt: number } {
@@ -128,27 +127,12 @@ export function checkRateLimit(key: string, ip: string | null): { ok: boolean; r
 
 /**
  * Extract client IP from request headers.
- * Checks proxy headers in priority order: Cloudflare -> Vercel -> generic forwarded-for -> X-Real-IP.
- * Auto-detects when running behind a known hosting provider if TRUST_PROXY is unset.
- * Falls back to null only when no proxy headers are present (direct connection).
+ * Checks proxy headers in priority order: Cloudflare -> X-Real-IP -> X-Forwarded-For.
+ * Defaults to trusting proxy headers (safe for production behind nginx/caddy/Vercel/etc).
+ * Set TRUST_PROXY=false to disable (e.g. for local dev without a reverse proxy).
  */
 export function getClientIP(req: Request): string | null {
-  // Determine if we should trust proxy headers
-  const trustProxyEnv = process.env.TRUST_PROXY;
-  let trustProxy = trustProxyEnv === 'true';
-
-  // Auto-detect known hosting providers when TRUST_PROXY is not explicitly set
-  if (trustProxyEnv !== 'false' && !trustProxy) {
-    const vercel = process.env.VERCEL || process.env.NOW_REGION;
-    const fly = process.env.FLY_APP_NAME;
-    const railway = process.env.RAILWAY_ENVIRONMENT;
-    const render = process.env.RENDER;
-    if (vercel || fly || railway || render) {
-      trustProxy = true;
-    }
-  }
-
-  if (!trustProxy) {
+  if (process.env.TRUST_PROXY === 'false') {
     return null;
   }
 
@@ -232,3 +216,4 @@ export function rateLimitResponse(key: string, resetAt: number, locale?: 'en' | 
 for (const [key, config] of Object.entries(RATE_LIMITS)) {
   configureRateLimit(key, config);
 }
+scheduleCleanup();

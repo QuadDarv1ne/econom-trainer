@@ -3,8 +3,58 @@ import { NextResponse } from 'next/server';
 /** Maximum allowed request body size (1 MB) to prevent memory exhaustion attacks. */
 const MAX_BODY_SIZE = 1024 * 1024;
 
+async function readBodyWithLimit(req: Request, maxSize: number): Promise<string> {
+  if (!req.body) return ''
+
+  const reader = req.body.getReader()
+  const chunks: Uint8Array[] = []
+  let totalSize = 0
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      if (value) {
+        totalSize += value.length
+        if (totalSize > maxSize) {
+          reader.cancel()
+          throw new BodyTooLargeError()
+        }
+        chunks.push(value)
+      }
+    }
+  } catch (error) {
+    reader.cancel()
+    if (error instanceof BodyTooLargeError) throw error
+    throw error
+  }
+
+  const decoder = new TextDecoder()
+  return decoder.decode(concatenate(chunks))
+}
+
+function concatenate(chunks: Uint8Array[]): Uint8Array {
+  const totalLength = chunks.reduce((sum, c) => sum + c.length, 0)
+  const result = new Uint8Array(totalLength)
+  let offset = 0
+  for (const chunk of chunks) {
+    result.set(chunk, offset)
+    offset += chunk.length
+  }
+  return result
+}
+
+class BodyTooLargeError extends Error {
+  constructor() {
+    super('Request body too large')
+    this.name = 'BodyTooLargeError'
+  }
+}
+
 /**
- * Safely parses JSON from a Request body.
+ * Safely parses JSON from a Request body with size enforcement.
+ * Uses streaming reads to cap memory usage even when Content-Length
+ * header is absent or forged (e.g. chunked transfer encoding).
  * Returns a typed NextResponse with error message on failure.
  */
 export async function safeJson<T = unknown>(
@@ -19,16 +69,22 @@ export async function safeJson<T = unknown>(
       );
     }
 
-    const contentLength = req.headers.get('content-length');
-    if (contentLength && parseInt(contentLength, 10) > MAX_BODY_SIZE) {
+    const text = await readBodyWithLimit(req, MAX_BODY_SIZE)
+    if (!text) {
+      return NextResponse.json(
+        { error: 'Empty request body' },
+        { status: 400 }
+      )
+    }
+
+    return JSON.parse(text) as T
+  } catch (error) {
+    if (error instanceof BodyTooLargeError) {
       return NextResponse.json(
         { error: 'Request body too large' },
         { status: 413 }
-      );
+      )
     }
-
-    return await req.json() as T;
-  } catch {
     return NextResponse.json(
       { error: 'Invalid JSON in request body' },
       { status: 400 }

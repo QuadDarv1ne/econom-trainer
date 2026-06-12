@@ -46,9 +46,7 @@ function createDebouncedStorage<T>(delayMs: number = 500): {
     }, delayMs)
   }
 
-  // Flush pending writes before page unload to prevent data loss
   const cleanup = () => {
-    // Flush pending writes before cleanup to prevent data loss
     flush()
     if (flushTimer) {
       clearTimeout(flushTimer)
@@ -554,8 +552,8 @@ export const useEconomicsStore = create<EconomicsState>()(
           syncStatus: { status: 'idle' as const, lastSyncAt: null, error: null, pendingChanges: 0 },
           _isResetting: false,
         }
-        debouncedStorage.flushSync()
         set(newState)
+        debouncedStorage.flushSync()
       },
 
       getFullProgress: () => {
@@ -607,7 +605,7 @@ export const useEconomicsStore = create<EconomicsState>()(
         totalXP: state.totalXP,
         dailyChallenges: state.dailyChallenges,
         streakState: state.streakState,
-      }) as EconomicsState,
+      }) as unknown as EconomicsState,
     },
   ),
 )
