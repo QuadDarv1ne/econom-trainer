@@ -17,7 +17,8 @@ describe('checkRateLimit', () => {
 
   it('blocks requests after limit (forgotPass = 3/hour)', () => {
     // forgotPass has max: 3 per hour — easiest to exhaust
-    for (let i = 0; i < 4; i++) {
+    // 3 calls fill the bucket, 4th is blocked
+    for (let i = 0; i < 3; i++) {
       checkRateLimit('forgotPass', '10.0.0.1');
     }
     const result = checkRateLimit('forgotPass', '10.0.0.1');
@@ -26,7 +27,7 @@ describe('checkRateLimit', () => {
 
   it('uses separate buckets for different IPs', () => {
     // Exhaust IP 1's forgotPass bucket (3 per hour)
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 3; i++) {
       checkRateLimit('forgotPass', '1.1.1.1');
     }
     const blocked = checkRateLimit('forgotPass', '1.1.1.1');

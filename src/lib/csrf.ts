@@ -56,7 +56,6 @@ export function validateOrigin(req: Request, options?: { strict?: boolean }): bo
 
 /**
  * Strict origin validation — rejects requests with no Origin/Referer header.
- * @deprecated Use validateOrigin(req, { strict: true }) instead.
  */
 export function validateOriginStrict(req: Request): boolean {
   return validateOrigin(req, { strict: true });

@@ -11,7 +11,7 @@ import { useI18n } from '@/lib/i18n-provider'
 function VerifyEmailContent() {
   const { t } = useI18n()
   const searchParams = useSearchParams()
-  const [status, setStatus] = useState<string | null>(searchParams.get('status'))
+  const [status] = useState<string | null>(searchParams.get('status'))
   const submittedRef = useRef(false)
   const formRef = useRef<HTMLFormElement>(null)
 

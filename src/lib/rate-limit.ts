@@ -29,19 +29,23 @@ let cleanupTimeout: ReturnType<typeof setTimeout> | null = null;
 function scheduleCleanup() {
   if (cleanupTimeout) return;
   cleanupTimeout = setTimeout(() => {
-    const now = Date.now();
-    const configValues = Array.from(configs.values());
-    const maxWindow = configValues.length > 0
-      ? Math.max(...configValues.map((c) => c.windowMs))
-      : CLEANUP_INTERVAL * 2;
-    for (const [key, entry] of store.entries()) {
-      const oldestRelevant = now - maxWindow;
-      entry.timestamps = entry.timestamps.filter((t) => t > oldestRelevant);
-      if (entry.timestamps.length === 0) {
-        store.delete(key);
+    try {
+      const now = Date.now();
+      const configValues = Array.from(configs.values());
+      const maxWindow = configValues.length > 0
+        ? Math.max(...configValues.map((c) => c.windowMs))
+        : CLEANUP_INTERVAL * 2;
+      for (const [key, entry] of store.entries()) {
+        const oldestRelevant = now - maxWindow;
+        entry.timestamps = entry.timestamps.filter((t) => t > oldestRelevant);
+        if (entry.timestamps.length === 0) {
+          store.delete(key);
+        }
       }
+    } catch {
+      // If cleanup throws, the stale entries accumulate until the next cycle
     }
-    // Reschedule for next cleanup
+    // Reschedule for next cleanup regardless of errors
     cleanupTimeout = null;
     scheduleCleanup();
   }, CLEANUP_INTERVAL);
