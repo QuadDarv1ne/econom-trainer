@@ -73,6 +73,8 @@ export default function ProfilePage() {
 
   // Profile edit
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const mountedRef = useRef(true);
+  useEffect(() => () => { mountedRef.current = false }, []);
 
   // Password change
   const [currentPassword, setCurrentPassword] = useState('');
@@ -143,9 +145,11 @@ export default function ProfilePage() {
     // Convert to base64 data URL
     const reader = new FileReader();
     reader.onerror = () => {
+      if (!mountedRef.current) return;
       setError(t('auth.error.avatarUploadError'));
     };
     reader.onload = async (ev) => {
+      if (!mountedRef.current) return;
       const imageData = ev.target?.result;
       if (!imageData || typeof imageData !== 'string') {
         setError(t('auth.error.avatarUploadError'));
@@ -162,15 +166,18 @@ export default function ProfilePage() {
         if (res.ok) {
           const data = await res.json();
           if (data && typeof data === 'object' && 'id' in data) {
+            if (!mountedRef.current) return;
             setProfile(data);
             await update();
             if (fileInputRef.current) fileInputRef.current.value = '';
           }
         } else {
           const data = await res.json().catch(() => null);
+          if (!mountedRef.current) return;
           setError(safeErrorMessage(data, t('auth.error.avatarUploadError')));
         }
       } catch {
+        if (!mountedRef.current) return;
         setError(t('auth.error.avatarUploadError'));
       }
     };

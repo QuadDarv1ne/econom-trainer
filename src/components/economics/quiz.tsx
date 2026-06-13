@@ -1706,16 +1706,6 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
                 <div
                   key={`quiz-option-${idx}`}
                   className={optionClass}
-                  tabIndex={quizState === 'answered' ? -1 : 0}
-                  role="radio"
-                  aria-checked={selectedAnswer === idx}
-                  aria-label={option}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      if (quizState === 'active') handleAnswer(idx)
-                    }
-                  }}
                 >
                   <div className="flex items-center gap-3">
                     <RadioGroupItem value={idx.toString()} id={`option-${idx}`} />

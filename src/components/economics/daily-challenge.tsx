@@ -37,6 +37,8 @@ export const DailyChallenge = memo(function DailyChallenge() {
   const completeDailyChallenge = useEconomicsStore((s) => s.completeDailyChallenge)
 
   const [today, setToday] = useState(() => new Date().toLocaleDateString('en-CA'))
+  const todayRef = useRef(today)
+  useEffect(() => { todayRef.current = today }, [today])
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
@@ -105,7 +107,7 @@ export const DailyChallenge = memo(function DailyChallenge() {
 
       if (currentQ + 1 >= DAILY_QUESTIONS_COUNT) {
         completeDailyChallenge({
-          date: today,
+          date: todayRef.current,
           score: scoreRef.current,
           total: DAILY_QUESTIONS_COUNT,
         })
@@ -119,7 +121,7 @@ export const DailyChallenge = memo(function DailyChallenge() {
         setTimeLeft(DAILY_TIME_PER_QUESTION)
       }
     },
-    [currentQ, dailyQuestions, today, completeDailyChallenge]
+    [currentQ, dailyQuestions, completeDailyChallenge]
   )
 
   // Store timeout ref for cleanup on unmount or re-render

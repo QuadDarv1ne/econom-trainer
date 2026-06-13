@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, memo } from 'react'
+import { useState, useCallback, useRef, useEffect, memo } from 'react'
 import { useEconomicsStore, getLevelTitle, getModuleDisplayName } from '@/store/economics-store'
 import { downloadProgressCSV, downloadProgressJSON, importProgressFromFile } from '@/lib/export-progress'
 import { useI18n } from '@/lib/i18n-provider'
@@ -185,13 +185,21 @@ export const ExportProgressButton = memo(function ExportProgressButton() {
   const [copied, setCopied] = useState(false)
   const [exporting, setExporting] = useState(false)
   const { t } = useI18n()
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+    }
+  }, [])
 
   const handleCopy = useCallback(async () => {
     try {
       const text = exportProgressToText()
       await navigator.clipboard.writeText(text)
       setCopied(true)
-      setTimeout(() => setCopied(false), COPY_FEEDBACK_MS)
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+      copyTimerRef.current = setTimeout(() => setCopied(false), COPY_FEEDBACK_MS)
       toast.success(t('export.copied'))
     } catch {
       toast.error(t('export.copyFailed'))

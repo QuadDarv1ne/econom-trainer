@@ -121,7 +121,7 @@ describe('Quiz gameplay', () => {
 
     await user.click(screen.getByText('Начать тест'))
 
-    const radioItems = document.querySelectorAll('div[role="radio"]')
+    const radioItems = document.querySelectorAll('button[role="radio"]')
     expect(radioItems.length).toBe(4)
   })
 
@@ -131,19 +131,18 @@ describe('Quiz gameplay', () => {
 
     await user.click(screen.getByText('Начать тест'))
 
-    // Select option wrapper divs (role="radio" on a div, not a button)
-    const radioItems = document.querySelectorAll('div[role="radio"]')
+    // Select the radio buttons (shadcn/ui RadioGroupItem renders as <button role="radio">)
+    const radioItems = document.querySelectorAll('button[role="radio"]')
     expect(radioItems.length).toBe(4)
 
-    // Click the actual radio button inside the first option wrapper
-    const radioBtn = radioItems[0].querySelector('button[role="radio"]')
-    await user.click(radioBtn as HTMLElement)
+    // Click the first radio button
+    await user.click(radioItems[0] as HTMLElement)
 
     expect(screen.getByText('Следующий вопрос')).toBeDefined()
 
     await user.click(screen.getByText('Следующий вопрос'))
 
-    const radioItems2 = document.querySelectorAll('div[role="radio"]')
+    const radioItems2 = document.querySelectorAll('button[role="radio"]')
     expect(radioItems2.length).toBe(4)
   })
 
@@ -154,11 +153,10 @@ describe('Quiz gameplay', () => {
     await user.click(screen.getByText('Начать тест'))
 
     for (let q = 0; q < 10; q++) {
-      const items = document.querySelectorAll('div[role="radio"]')
+      const items = document.querySelectorAll('button[role="radio"]')
       expect(items.length).toBe(4)
-      // Click the actual radio button inside the option wrapper
-      const radioBtn = items[0].querySelector('button[role="radio"]')
-      await user.click(radioBtn as HTMLElement)
+      // Click the first radio button
+      await user.click(items[0] as HTMLElement)
 
       if (q < 9) {
         const nextBtn = screen.getByText('Следующий вопрос')

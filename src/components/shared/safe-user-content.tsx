@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 /**
  * Safely renders user-generated text content.
  * Uses React's automatic text escaping as primary defense,
@@ -17,10 +19,11 @@ export function SafeUserContent({ children }: { children: string | null | undefi
 /**
  * Safely renders user initials (first letters of name parts).
  * Sanitizes input by taking only ASCII letters from each word.
+ * Always returns a JSX fragment for consistent rendering.
  */
 export function SafeUserInitials({ name }: { name: string | null | undefined }) {
-  if (!name) return '?';
-  
+  if (!name) return <>{'?'}</>;
+
   const initials = name
     .split(' ')
     .slice(0, 2)
@@ -28,36 +31,47 @@ export function SafeUserInitials({ name }: { name: string | null | undefined }) 
     .join('')
     // Only allow ASCII letters in initials
     .replace(/[^A-Z]/g, '');
-  
+
   return <>{initials || '?'}</>;
 }
 
 /**
  * Validates and sanitizes user-provided URLs (avatar images, etc.).
- * Blocks javascript:, data:, and vbscript: URIs.
+ * Blocks javascript:, data:, and vbscript: URIs, including URL-encoded variants
+ * (e.g. %6Aavascript:alert(1) → blocked as javascript:).
  */
 export function sanitizeUserUrl(url: string | null | undefined): string | null {
   if (!url) return null;
-  
+
   try {
     // Allow relative URLs
     if (url.startsWith('/')) return url;
-    
+
     // Allow http(s) URLs
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    
-    // Block dangerous protocols
+
+    // Decode URL-encoded characters to catch obfuscated dangerous protocols
+    // e.g. %6Aavascript: → javascript:, %64ata: → data:
+    let decoded: string;
+    try {
+      decoded = decodeURIComponent(url);
+    } catch {
+      // Invalid URL encoding — reject
+      return null;
+    }
+
+    // Block dangerous protocols (check both original and decoded)
     const dangerousProtocols = ['javascript:', 'data:', 'vbscript:'];
-    const lowerUrl = url.toLowerCase();
+    const lowerOriginal = url.toLowerCase();
+    const lowerDecoded = decoded.toLowerCase();
     for (const protocol of dangerousProtocols) {
-      if (lowerUrl.startsWith(protocol)) {
-        // Blocked dangerous protocol - silently reject without logging sensitive URL
+      if (lowerOriginal.startsWith(protocol) || lowerDecoded.startsWith(protocol)) {
         return null;
       }
     }
-    
+
     return url;
   } catch {
     return null;
@@ -67,11 +81,21 @@ export function sanitizeUserUrl(url: string | null | undefined): string | null {
 /**
  * Avatar image component that validates the src URL.
  * Prevents javascript: and data: URIs from being used as avatar sources.
+ * Handles image load errors by hiding the broken image.
  */
 export function SafeAvatarImage({ src, alt }: { src: string | null | undefined; alt?: string }) {
+  const [hasError, setHasError] = useState(false);
   const safeUrl = sanitizeUserUrl(src);
-  
-  if (!safeUrl) return null;
-  
-  return <img src={safeUrl} alt={alt || 'User avatar'} loading="lazy" className="h-full w-full object-cover" />;
+
+  if (!safeUrl || hasError) return null;
+
+  return (
+    <img
+      src={safeUrl}
+      alt={alt || 'User avatar'}
+      loading="lazy"
+      className="h-full w-full object-cover"
+      onError={() => setHasError(true)}
+    />
+  );
 }
