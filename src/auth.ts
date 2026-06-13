@@ -90,10 +90,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             // Always compare ALL codes to prevent timing oracle attacks
             let matchedIndex = -1;
             for (let i = 0; i < backupCodes.length; i++) {
-              const matches = await bcrypt.compare(twoFactorCode, backupCodes[i]);
-              if (matches && matchedIndex === -1) {
-                matchedIndex = i;
-                // No break — continue comparing all codes for constant-time behavior
+              try {
+                const matches = await bcrypt.compare(twoFactorCode, backupCodes[i]);
+                if (matches && matchedIndex === -1) {
+                  matchedIndex = i;
+                  // No break — continue comparing all codes for constant-time behavior
+                }
+              } catch {
+                // Corrupted backup code hash — skip this entry
               }
             }
 

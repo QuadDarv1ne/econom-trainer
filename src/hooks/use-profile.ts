@@ -197,12 +197,13 @@ export function useProgressSync(): UseProgressSyncReturn {
     setSyncSuccess('')
     try {
       const store = useEconomicsStore.getState()
+      const localXP = store.totalXP
       const { level } = store.getXPState()
       const res = await fetch('/api/progress/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          totalXP: store.totalXP,
+          totalXP: localXP,
           level,
           quizResults: store.quizResults,
           moduleHistory: store.moduleInteractions,
@@ -213,7 +214,9 @@ export function useProgressSync(): UseProgressSyncReturn {
       if (res.ok) {
         const serverData = await res.json()
         if (serverData.totalXP !== undefined) {
-          useEconomicsStore.setState({ totalXP: serverData.totalXP })
+          // Use Math.max to prevent overwriting XP earned during fetch
+          const currentXP = useEconomicsStore.getState().totalXP
+          useEconomicsStore.setState({ totalXP: Math.max(currentXP, serverData.totalXP) })
         }
         lastSyncedAtRef.current = Date.now()
         setSyncSuccess(t('dashboard.progress.synced'))

@@ -160,10 +160,10 @@ export function getClientIP(req: Request): string | null {
  * Strip whitespace and validate basic IP format.
  * Returns the IP or empty string if clearly invalid.
  */
-function sanitizeIP(ip: string): string {
+function sanitizeIP(ip: string): string | null {
   const trimmed = ip.trim();
-  // Reject obviously invalid values
-  if (!trimmed || trimmed === 'unknown' || trimmed === 'null') return '';
+  // Reject obviously invalid values — return null so the ?? fallback kicks in
+  if (!trimmed || trimmed === 'unknown' || trimmed === 'null') return null;
   return trimmed;
 }
 
