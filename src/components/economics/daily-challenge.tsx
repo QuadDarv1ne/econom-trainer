@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { useEconomicsStore } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
-import { questions, type Question } from '@/components/economics/quiz'
+import { questions, type Question } from '@/lib/quiz-questions'
 import { Flame, Target, Zap, CheckCircle2, XCircle, Sparkles, Clock } from 'lucide-react'
 import { motion, useReducedMotion } from 'framer-motion'
 

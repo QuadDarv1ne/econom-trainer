@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { useI18n } from '@/lib/i18n-provider'
 import { safeErrorMessage } from '@/lib/safe-error'
+import { logError } from '@/lib/log-error'
 import { COPY_FEEDBACK_MS } from '@/lib/constants'
 
 interface TwoFAManagementProps {
@@ -196,7 +197,7 @@ export function TwoFAManagement({ twoFactorEnabled, onTwoFactorChange, setError,
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        navigator.clipboard.writeText(secret).catch(() => {})
+                        navigator.clipboard.writeText(secret).catch((err) => logError('clipboard-copy', err))
                         setCopiedCode(true)
                       }}
                     >
@@ -253,7 +254,7 @@ export function TwoFAManagement({ twoFactorEnabled, onTwoFactorChange, setError,
                         size="sm"
                         variant="ghost"
                         onClick={() => {
-                          navigator.clipboard.writeText(code).catch(() => {})
+                          navigator.clipboard.writeText(code).catch((err) => logError('clipboard-copy', err))
                         }}
                       >
                         <Copy className="h-3 w-3" />
