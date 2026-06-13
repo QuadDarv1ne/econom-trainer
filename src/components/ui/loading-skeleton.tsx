@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface SkeletonProps {
@@ -12,6 +12,7 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ className, variant = 'text', width, height }: SkeletonProps) {
+  const shouldReduceMotion = useReducedMotion()
   const baseClass = 'bg-muted rounded';
   
   const variantClasses = {
@@ -31,14 +32,14 @@ export function Skeleton({ className, variant = 'text', width, height }: Skeleto
         height && height,
         className
       )}
-      animate={{ opacity: [0.4, 0.8, 0.4] }}
-      transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+      animate={shouldReduceMotion ? {} : { opacity: [0.4, 0.8, 0.4] }}
+      transition={shouldReduceMotion ? { duration: 0 } : { duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
     >
       {/* Shimmer effect */}
       <motion.div
         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-        animate={{ x: ['-100%', '200%'] }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+        animate={shouldReduceMotion ? {} : { x: ['-100%', '200%'] }}
+        transition={shouldReduceMotion ? { duration: 0 } : { duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
       />
     </motion.div>
   );

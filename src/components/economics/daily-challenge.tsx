@@ -9,7 +9,7 @@ import { useEconomicsStore } from '@/store/economics-store'
 import { useI18n } from '@/lib/i18n-provider'
 import { questions, type Question } from '@/components/economics/quiz'
 import { Flame, Target, Zap, CheckCircle2, XCircle, Sparkles, Clock } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 
 const DAILY_QUESTIONS_COUNT = 3
 const DAILY_TIME_PER_QUESTION = 15
@@ -78,6 +78,8 @@ export const DailyChallenge = memo(function DailyChallenge() {
 
   // Helper to trigger re-renders when score changes (for UI updates)
   const [displayScore, setDisplayScore] = useState(0)
+
+  const shouldReduceMotion = useReducedMotion()
 
   const startChallenge = useCallback(() => {
     const seed = getDailySeed()
@@ -314,8 +316,8 @@ export const DailyChallenge = memo(function DailyChallenge() {
           </div>
           {answered && (
             <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+              animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
               className="text-xs text-muted-foreground p-3 rounded-lg bg-muted/50"
             >
               {question.explanation}

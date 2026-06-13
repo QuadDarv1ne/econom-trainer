@@ -20,6 +20,17 @@ export function useAutoSync() {
   const [conflict, setConflict] = useState<SyncConflict | null>(null);
   const lastSnapshotRef = useRef<unknown>(null);
 
+  const checkSession = async () => {
+    try {
+      const response = await fetch("/api/auth/session");
+      if (!response.ok) return null;
+      const session = await response.json();
+      return session?.user?.id ? (session as { user: { id: string } }) : null;
+    } catch {
+      return null;
+    }
+  };
+
   const performSync = useCallback(async () => {
     if (syncingRef.current) return;
     if (!navigator.onLine) return;
@@ -28,16 +39,8 @@ export function useAutoSync() {
     syncingRef.current = true;
 
     try {
-    let session;
-    try {
-      const response = await fetch("/api/auth/session");
-      if (!response.ok) return;
-      session = await response.json();
-    } catch {
-      return;
-    }
-
-    if (!session?.user?.id) return;
+    const session = await checkSession();
+    if (!session) return;
 
     const store = useEconomicsStore.getState();
     const state = {
@@ -221,7 +224,7 @@ export function useAutoSync() {
           const serverModuleInteractions: ServerModuleInteraction[] = (serverData.moduleSessions || []).map((ms: { moduleId: string; action: string; xpEarned: number; date: string; score?: number; duration?: number; details?: string }) => {
             let parsedDetails: Record<string, unknown> | undefined;
             if (ms.details) {
-              try { parsedDetails = JSON.parse(ms.details); } catch { /* ignore */ }
+              try { parsedDetails = JSON.parse(ms.details); } catch { logError('sync-resolveConflict', new Error(`Failed to parse module session details for ${ms.moduleId}`)); }
             }
             return {
               id: crypto.randomUUID?.() ?? `${ms.moduleId}-${ms.date}-${Math.random().toString(36).slice(2)}`,

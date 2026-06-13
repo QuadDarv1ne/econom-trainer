@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { LucideIcon } from 'lucide-react';
 
@@ -45,9 +45,10 @@ export function AchievementBadge({
   size = 'md',
   className,
 }: AchievementBadgeProps) {
+  const shouldReduceMotion = useReducedMotion()
   return (
     <motion.div
-      whileHover={{ scale: 1.05, rotate: unlocked ? 5 : 0 }}
+      whileHover={shouldReduceMotion ? {} : { scale: 1.05, rotate: unlocked ? 5 : 0 }}
       className={cn('relative', className)}
     >
       {/* Badge container */}
@@ -65,13 +66,13 @@ export function AchievementBadge({
           <>
             <motion.div
               className={cn('absolute inset-0 rounded-full bg-gradient-to-br', gradientClasses[gradient])}
-              animate={{ opacity: [0.3, 0.6, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              animate={shouldReduceMotion ? {} : { opacity: [0.3, 0.6, 0.3] }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 2, repeat: Infinity }}
             />
             <motion.div
               className={cn('absolute -inset-1 rounded-full bg-gradient-to-br', gradientClasses[gradient])}
-              animate={{ opacity: [0, 0.3, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
+              animate={shouldReduceMotion ? {} : { opacity: [0, 0.3, 0] }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 1.5, repeat: Infinity }}
             />
           </>
         )}
@@ -122,14 +123,15 @@ interface AchievementsGridProps {
 }
 
 export function AchievementsGrid({ achievements }: AchievementsGridProps) {
+  const shouldReduceMotion = useReducedMotion()
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
       {achievements.map((achievement, index) => (
         <motion.div
           key={achievement.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.05 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
+          animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { delay: index * 0.05 }}
         >
           <AchievementBadge
             icon={achievement.icon}

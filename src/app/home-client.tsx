@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react'
 import { SafeUserInitials, SafeUserContent } from '@/components/shared/safe-user-content'
 import { signOutAndClearStore } from '@/lib/sign-out'
 import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import dynamic from 'next/dynamic'
 
 const DailyChallenge = dynamic(() => import('@/components/economics/daily-challenge').then(m => ({ default: m.DailyChallenge })), { ssr: false })
@@ -87,6 +87,7 @@ export function HomeClient({
   const xpState = getLevelFromXP(totalXP)
   const levelTitle = getLevelTitle(xpState.level)
   const levelColor = getLevelColor(xpState.level)
+  const shouldReduceMotion = useReducedMotion()
 
   const session = useMemo(() => clientSession?.user
     ? clientSession
@@ -228,9 +229,9 @@ export function HomeClient({
 
           <TabsContent value="home" className="space-y-8 mt-4">
             <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: -20 }}
+              animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: "easeOut" }}
               className="text-center space-y-4 py-6"
             >
               <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-primary/10 to-purple-600/10 text-primary text-sm font-semibold border border-primary/20 shadow-sm">
@@ -246,7 +247,7 @@ export function HomeClient({
               {totalXP > 0 && (
                 <div className="inline-flex items-center gap-4 flex-wrap justify-center">
                   <motion.div
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
                     className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30 border-2 border-yellow-200 dark:border-yellow-800 shadow-lg"
                   >
                     <Zap className="h-6 w-6 text-yellow-500" />
@@ -254,7 +255,7 @@ export function HomeClient({
                     <span className="text-muted-foreground text-sm font-medium">({fmt(totalXP)} {t('home.header.xpLabel')})</span>
                   </motion.div>
                   <motion.div
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-primary/5 to-purple-600/5 border-2 border-primary/20 shadow-lg"
                   >
                     <LayoutGrid className="h-5 w-5 text-primary" />
@@ -280,11 +281,11 @@ export function HomeClient({
                     <motion.div
                       key={mod.id}
                       custom={i}
-                      variants={cardVariants}
-                      initial="hidden"
-                      animate="visible"
-                      whileHover={{ y: -8, transition: { duration: 0.2 } }}
-                      layout
+                      variants={shouldReduceMotion ? {} : cardVariants}
+                      initial={shouldReduceMotion ? false : "hidden"}
+                      animate={shouldReduceMotion ? {} : "visible"}
+                      whileHover={shouldReduceMotion ? {} : { y: -8, transition: { duration: 0.2 } }}
+                      layout={!shouldReduceMotion}
                     >
                       <button
                         className="w-full text-left cursor-pointer hover:shadow-2xl transition-all duration-300 h-full rounded-2xl border bg-card p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 group card-hover"
@@ -295,13 +296,13 @@ export function HomeClient({
                           <div className="flex items-start justify-between">
                             <motion.div 
                               className={`h-14 w-14 rounded-2xl ${mod.bg} flex items-center justify-center relative group-hover:scale-110 transition-transform duration-300`}
-                              whileHover={{ scale: 1.1 }}
+                              whileHover={shouldReduceMotion ? {} : { scale: 1.1 }}
                             >
                               <Icon className={`h-6 w-6 ${mod.color}`} />
                               {isExplored && (
                                 <motion.div
-                                  initial={{ scale: 0 }}
-                                  animate={{ scale: 1 }}
+                                  initial={shouldReduceMotion ? false : { scale: 0 }}
+                                  animate={shouldReduceMotion ? {} : { scale: 1 }}
                                   className="h-4 w-4 text-green-500 absolute -top-1 -right-1 bg-background rounded-full flex items-center justify-center shadow-sm"
                                 >
                                   <CheckCircle2 className="h-3 w-3" />
@@ -348,9 +349,9 @@ export function HomeClient({
 
             {!session && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
+                animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
+                transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.3 }}
               >
                 <Card className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-primary/10 border-primary/30 shadow-xl overflow-hidden relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-purple-600/5 animate-pulse" />
@@ -388,9 +389,9 @@ export function HomeClient({
                   {[1, 2, 3, 4, 5].map((step) => (
                     <motion.div
                       key={step}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: step * 0.1 }}
+                      initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+                      animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
+                      transition={shouldReduceMotion ? { duration: 0 } : { delay: step * 0.1 }}
                       className="space-y-2 p-3 rounded-xl hover:bg-primary/5 transition-colors duration-300"
                     >
                       <div className="font-semibold flex items-center gap-2">

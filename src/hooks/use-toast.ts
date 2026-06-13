@@ -18,11 +18,8 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement
 }
 
-let count = 0
-
 function genId() {
-  count = (count + 1) % Number.MAX_SAFE_INTEGER
-  return count.toString()
+  return crypto.randomUUID?.() ?? Math.random().toString(36).slice(2)
 }
 
 type ActionType = {

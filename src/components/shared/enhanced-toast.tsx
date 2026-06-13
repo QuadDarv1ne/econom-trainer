@@ -2,7 +2,7 @@
 
 import type React from 'react';
 import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { X, CheckCircle2, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { generateId } from '@/lib/utils';
@@ -38,6 +38,7 @@ export function EnhancedToastProvider({ children }: { children: React.ReactNode 
   const [toasts, setToasts] = useState<Toast[]>([]);
   const toastsRef = useRef(toasts);
   const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const shouldReduceMotion = useReducedMotion()
 
   useEffect(() => {
     toastsRef.current = toasts;
@@ -89,10 +90,10 @@ export function EnhancedToastProvider({ children }: { children: React.ReactNode 
             return (
               <motion.div
                 key={toast.id}
-                initial={{ opacity: 0, x: 50, scale: 0.9 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 50, scale: 0.9 }}
-                transition={{ duration: 0.3, type: 'spring' }}
+                initial={shouldReduceMotion ? false : { opacity: 0, x: 50, scale: 0.9 }}
+                animate={shouldReduceMotion ? {} : { opacity: 1, x: 0, scale: 1 }}
+                exit={shouldReduceMotion ? {} : { opacity: 0, x: 50, scale: 0.9 }}
+                transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, type: 'spring' }}
                 className="pointer-events-auto"
               >
                 <div className="relative overflow-hidden rounded-xl shadow-2xl border border-white/20 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl">
@@ -110,9 +111,9 @@ export function EnhancedToastProvider({ children }: { children: React.ReactNode 
                   </div>
                   {/* Progress bar */}
                   <motion.div
-                    initial={{ scaleX: 1 }}
+                    initial={shouldReduceMotion ? false : { scaleX: 1 }}
                     animate={{ scaleX: 0 }}
-                    transition={{ duration: (toast.duration ?? 4000) / 1000, ease: 'linear' }}
+                    transition={shouldReduceMotion ? { duration: 0 } : { duration: (toast.duration ?? 4000) / 1000, ease: 'linear' }}
                     className={cn('h-0.5 w-full bg-gradient-to-r', config.bg)}
                   />
                 </div>
