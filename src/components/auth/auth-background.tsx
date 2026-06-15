@@ -29,16 +29,16 @@ export function AuthBackground() {
     resize();
     window.addEventListener('resize', resize);
 
-    // Create particles
-    const particleCount = 50;
+    // Create particles (optimized count for performance)
+    const particleCount = Math.min(30, Math.floor((canvas.width * canvas.height) / 40000));
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        size: Math.random() * 3 + 1,
-        opacity: Math.random() * 0.3 + 0.1,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        size: Math.random() * 2.5 + 0.5,
+        opacity: Math.random() * 0.25 + 0.05,
       });
     }
 
@@ -62,21 +62,23 @@ export function AuthBackground() {
         ctx.fillStyle = `rgba(37, 99, 235, ${p.opacity})`;
         ctx.fill();
 
-        // Draw connections
-        particles.slice(i + 1).forEach((p2) => {
+        // Draw connections (skip if too far)
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
           const dx = p.x - p2.x;
           const dy = p.y - p2.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+          const distanceSq = dx * dx + dy * dy;
 
-          if (distance < 150) {
+          if (distanceSq < 22500) {
+            const distance = Math.sqrt(distanceSq);
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(37, 99, 235, ${0.1 * (1 - distance / 150)})`;
+            ctx.strokeStyle = `rgba(37, 99, 235, ${(0.1 * (1 - distance / 150)).toFixed(3)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
-        });
+        }
       });
 
       animationFrameId = requestAnimationFrame(animate);

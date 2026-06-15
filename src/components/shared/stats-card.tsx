@@ -44,12 +44,7 @@ export function StatsCard({ icon: Icon, title, value, subtitle, gradient, delay 
             <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${gradientClasses[gradient]} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
               <Icon className="h-6 w-6 text-white" />
             </div>
-            <motion.div
-              animate={shouldReduceMotion ? {} : { rotate: [0, 5, -5, 0] }}
-              transition={shouldReduceMotion ? { duration: 0 } : { duration: 2, repeat: Infinity, repeatDelay: 5 }}
-            >
-              <div className={`h-2 w-2 rounded-full bg-gradient-to-r ${gradientClasses[gradient]} animate-pulse`} />
-            </motion.div>
+            <div className={`h-2 w-2 rounded-full bg-gradient-to-r ${gradientClasses[gradient]} animate-pulse`} />
           </div>
           
           <div className="space-y-1">

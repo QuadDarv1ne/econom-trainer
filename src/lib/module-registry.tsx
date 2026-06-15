@@ -2,7 +2,7 @@
 
 import type React from 'react'
 import dynamic from 'next/dynamic'
-import { Loader2 } from 'lucide-react'
+import { ModuleSkeleton } from '@/components/economics/module-skeleton'
 import {
   Calculator,
   ArrowRightLeft,
@@ -32,11 +32,7 @@ export type { ModuleMeta as ModuleDefinition, TabMeta as TabItem } from '@/lib/m
 export { modules, tabItems, categoryBreaks } from '@/lib/module-data'
 
 // Shared loading skeleton for lazy-loaded modules
-const ModuleLoading = () => (
-  <div className="flex items-center justify-center py-16">
-    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-  </div>
-)
+const ModuleLoading = () => <ModuleSkeleton />
 
 // Lazy-load all module components with loading states
 const GDPCalculator = dynamic(() => import('@/components/economics/gdp-calculator').then(m => ({ default: m.GDPCalculator })), { ssr: false, loading: () => <ModuleLoading /> })

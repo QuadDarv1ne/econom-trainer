@@ -10,6 +10,8 @@ import { useServiceWorker } from "@/hooks/use-service-worker";
 import { ServiceWorkerUpdatePrompt } from "@/components/pwa/sw-update-prompt";
 import { InstallPWAButton } from "@/components/pwa/install-pwa-button";
 import { EnhancedToastProvider } from "@/components/shared/enhanced-toast";
+import { ScrollToTop } from "@/components/shared/scroll-to-top";
+import { KeyboardShortcutsDialog } from "@/components/shared/keyboard-shortcuts";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   useServiceWorker();
@@ -19,7 +21,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       attribute="class"
       defaultTheme="system"
       enableSystem
-      disableTransitionOnChange
+      enableColorScheme
       storageKey="econom-trainer-theme"
     >
       <I18nProvider>
@@ -29,6 +31,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
             <OnlineStatusIndicator />
             <InstallPWAButton />
             <ServiceWorkerUpdatePrompt />
+            <ScrollToTop />
+            <KeyboardShortcutsDialog />
           </EnhancedToastProvider>
         </AuthProvider>
       </I18nProvider>

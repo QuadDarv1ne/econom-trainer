@@ -1445,6 +1445,9 @@ export const en: Record<string, string> = {
     'theme.lightTooltip': 'Light theme (click for dark)',
     'theme.darkTooltip': 'Dark theme (click for system)',
     'theme.systemTooltip': 'System theme (click for light)',
+    'theme.lightDesc': 'Bright and clean',
+    'theme.darkDesc': 'Easy on the eyes',
+    'theme.systemDesc': 'Match your system',
     
     // Offline
     'offline.title': 'You are offline',
@@ -1664,6 +1667,12 @@ export const en: Record<string, string> = {
     'home.cat.finance': 'Finance',
     'home.cat.tools': 'Tools',
 
+    // Search & navigation
+    'home.searchModules': 'Search modules...',
+    'home.searchNoResults': 'No modules found',
+    'home.searchNoResultsDesc': 'Try a different search query',
+    'home.noModules': 'No modules',
+
     // Module categories
     'home.modcat.macro': 'Macro',
     'home.modcat.micro': 'Micro',
@@ -1815,6 +1824,11 @@ export const en: Record<string, string> = {
     'dailyChallenge.comingBack': 'Come back tomorrow!',
     'dailyChallenge.baseXP': 'Base XP',
     'dailyChallenge.perCorrect': 'Per correct answer',
+    'dailyChallenge.nextIn': 'Next challenge in',
+
+    // Time abbreviations
+    'time.hoursShort': 'h',
+    'time.minutesShort': 'm',
 
     // Streaks
     'streak.current': 'Current Streak',
@@ -1855,6 +1869,7 @@ export const en: Record<string, string> = {
     'auth.login.backToHome': 'Back to Home',
     'auth.login.or': 'Or continue with',
     'auth.email': 'Email',
+    'auth.emailPlaceholder': 'you@example.com',
     'language.toggle': 'Toggle language',
     'language.ru': 'Russian',
     'language.en': 'English',
@@ -1905,6 +1920,9 @@ export const en: Record<string, string> = {
     'auth.register.signIn': 'Sign In',
     'auth.register.successTitle': 'Registration Successful!',
     'auth.register.successDesc': 'Redirecting to sign in...',
+    'auth.register.namePlaceholder': 'John Doe',
+    'auth.register.phonePlaceholder': '+1 (555) 123-4567',
+    'auth.register.emailPlaceholder': 'you@example.com',
 
     'auth.forgotPassword.title': 'Reset Password',
     'auth.forgotPassword.subtitle': 'Enter your email and we will send a password reset link',
@@ -2083,6 +2101,10 @@ export const en: Record<string, string> = {
     'notFound.title': 'Page not found',
     'notFound.description': 'The page you are looking for does not exist or has been moved',
     'notFound.backHome': 'Back to home',
+    'notFound.goBack': 'Go back',
+    'home.onboarding.title': 'Start your economics journey',
+    'home.onboarding.desc': 'Explore interactive modules, solve real-world problems, and earn XP as you learn.',
+    'home.onboarding.firstStep': 'Pick a module below to begin',
     'error.title': 'An error occurred',
     'error.description': 'Unfortunately, an unexpected error occurred. Try refreshing the page or come back later.',
     'error.retry': 'Try again',

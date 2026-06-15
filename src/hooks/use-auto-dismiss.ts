@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ALERT_AUTO_DISMISS_MS } from "@/lib/constants";
 
 /**
@@ -22,4 +22,19 @@ export function useAutoDismiss(
     const timer = setTimeout(() => onDismissRef.current(), durationMs);
     return () => clearTimeout(timer);
   }, [message, durationMs]);
+}
+
+/**
+ * Debounces a value by the specified delay.
+ * Returns the debounced value that updates only after the delay has elapsed.
+ */
+export function useDebounce<T>(value: T, delayMs: number = 300): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delayMs);
+    return () => clearTimeout(timer);
+  }, [value, delayMs]);
+
+  return debouncedValue;
 }

@@ -43,6 +43,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 
 interface Achievement {
   id: string
@@ -65,6 +66,7 @@ export const Achievements = memo(function Achievements() {
   const totalXP = useEconomicsStore((s) => s.totalXP)
   const unlockAchievement = useEconomicsStore((s) => s.unlockAchievement)
   const resetProgress = useEconomicsStore((s) => s.resetProgress)
+  const shouldReduceMotion = useReducedMotion()
 
   const xpState = getLevelFromXP(totalXP)
   const levelTitle = getLevelTitle(xpState.level)
@@ -326,6 +328,11 @@ export const Achievements = memo(function Achievements() {
   return (
     <div className="space-y-6">
       {/* Level & XP Card */}
+      <motion.div
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+        animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
       <Card className="border-2 border-primary/30 bg-gradient-to-r from-primary/5 to-primary/10">
         <CardContent className="p-6">
           <div className="flex flex-col sm:flex-row items-center gap-6">
@@ -353,106 +360,151 @@ export const Achievements = memo(function Achievements() {
           </div>
         </CardContent>
       </Card>
+      </motion.div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Card className="border-2 border-yellow-500/30">
-          <CardContent className="p-4 text-center">
-            <Trophy className="h-6 w-6 mx-auto mb-1 text-yellow-500" />
-            <div className="text-2xl font-bold">{unlockedCount}/{achievements.length}</div>
-            <div className="text-xs text-muted-foreground">{t('achievements.achievementsCount')}</div>
-          </CardContent>
-        </Card>
-        <Card className="border-2 border-primary/20">
-          <CardContent className="p-4 text-center">
-            <Star className="h-6 w-6 mx-auto mb-1 text-primary" />
-            <div className="text-2xl font-bold">{formatNumberLocale(locale, totalBadgeXP)}</div>
-            <div className="text-xs text-muted-foreground">{t('achievements.badgeXP')}</div>
-          </CardContent>
-        </Card>
-        <Card className="border-2 border-primary/20">
-          <CardContent className="p-4 text-center">
-            <TrendingUp className="h-6 w-6 mx-auto mb-1 text-green-500" />
-            <div className="text-2xl font-bold">{Math.round((unlockedCount / achievements.length) * 100)}%</div>
-            <div className="text-xs text-muted-foreground">{t('achievements.progress')}</div>
-          </CardContent>
-        </Card>
-        <Card className="border-2 border-primary/20">
-          <CardContent className="p-4 text-center">
-            <GraduationCap className="h-6 w-6 mx-auto mb-1 text-blue-500" />
-            <div className="text-2xl font-bold">{xpState.level}</div>
-            <div className="text-xs text-muted-foreground">{t('achievements.levelLabel')}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Achievements Grid */}
-      {unlockedCount === 0 && (
-        <Card className="border-2 border-dashed border-muted-foreground/20 bg-muted/20">
-          <CardContent className="p-8 text-center">
-            <Trophy className="h-16 w-16 mx-auto mb-4 text-muted-foreground/40" />
-            <h3 className="text-lg font-semibold mb-2">{t('achievements.emptyTitle')}</h3>
-            <p className="text-muted-foreground text-sm max-w-md mx-auto">{t('achievements.emptyDescription')}</p>
-          </CardContent>
-        </Card>
-      )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {achievements.map((ach) => {
-          const Icon = ach.icon
+      <motion.div
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+        animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="grid grid-cols-2 sm:grid-cols-4 gap-3"
+      >
+        {[
+          { icon: Trophy, value: `${unlockedCount}/${achievements.length}`, label: t('achievements.achievementsCount'), color: 'text-yellow-500', border: 'border-yellow-500/30' },
+          { icon: Star, value: formatNumberLocale(locale, totalBadgeXP), label: t('achievements.badgeXP'), color: 'text-primary', border: 'border-primary/20' },
+          { icon: TrendingUp, value: `${Math.round((unlockedCount / achievements.length) * 100)}%`, label: t('achievements.progress'), color: 'text-green-500', border: 'border-primary/20' },
+          { icon: GraduationCap, value: xpState.level.toString(), label: t('achievements.levelLabel'), color: 'text-blue-500', border: 'border-primary/20' },
+        ].map((stat, idx) => {
+          const StatIcon = stat.icon
           return (
-            <Card
-              key={ach.id}
-              className={`transition-all duration-200 ${
-                ach.unlocked
-                  ? 'border-2 border-yellow-500/30 shadow-sm'
-                  : 'opacity-70'
-              }`}
+            <motion.div
+              key={stat.label}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+              animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
+              transition={{ delay: shouldReduceMotion ? 0 : 0.15 + idx * 0.05 }}
             >
-              <CardHeader className="pb-2">
-                <div className="flex items-start justify-between">
-                  <div className={`h-10 w-10 rounded-xl ${ach.bg} flex items-center justify-center ${ach.unlocked ? '' : 'grayscale'}`}>
-                    <Icon className={`h-5 w-5 ${ach.color}`} />
-                  </div>
-                  {ach.unlocked && (
-                    <Badge className="bg-yellow-500 text-yellow-950 text-xs">
-                      +{ach.xpReward} XP
-                    </Badge>
-                  )}
-                  {!ach.unlocked && (
-                    <Badge variant="outline" className="text-xs">
-                      {ach.xpReward} XP
-                    </Badge>
-                  )}
-                </div>
-                <CardTitle className="text-sm">{ach.title}</CardTitle>
-                <CardDescription className="text-xs">{ach.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <Progress value={ach.progress} className="h-1.5" />
-                <div className="text-xs text-muted-foreground mt-1 text-right">
-                  {ach.progress}%
-                </div>
-              </CardContent>
-            </Card>
+              <Card className={`border-2 ${stat.border} card-hover`}>
+                <CardContent className="p-4 text-center">
+                  <StatIcon className={`h-6 w-6 mx-auto mb-1 ${stat.color}`} />
+                  <div className="text-2xl font-bold">{stat.value}</div>
+                  <div className="text-xs text-muted-foreground">{stat.label}</div>
+                </CardContent>
+              </Card>
+            </motion.div>
           )
         })}
-      </div>
+      </motion.div>
+
+      {/* Achievements Grid */}
+      <AnimatePresence mode="wait">
+        {unlockedCount === 0 ? (
+          <motion.div
+            key="empty"
+            initial={shouldReduceMotion ? undefined : { opacity: 0, y: 20 }}
+            animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+            exit={shouldReduceMotion ? undefined : { opacity: 0, y: -20 }}
+            transition={{ duration: 0.4 }}
+          >
+            <Card className="border-2 border-dashed border-muted-foreground/20 bg-muted/20">
+              <CardContent className="p-8 text-center">
+                <motion.div
+                  animate={shouldReduceMotion ? {} : { y: [0, -8, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                  <Trophy className="h-16 w-16 mx-auto mb-4 text-muted-foreground/40" />
+                </motion.div>
+                <h3 className="text-lg font-semibold mb-2">{t('achievements.emptyTitle')}</h3>
+                <p className="text-muted-foreground text-sm max-w-md mx-auto">{t('achievements.emptyDescription')}</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="grid"
+            initial={shouldReduceMotion ? undefined : { opacity: 0 }}
+            animate={shouldReduceMotion ? undefined : { opacity: 1 }}
+            exit={shouldReduceMotion ? undefined : { opacity: 0 }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+          >
+            {achievements.map((ach, index) => {
+              const Icon = ach.icon
+              return (
+                <motion.div
+                  key={ach.id}
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
+                  animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
+                  exit={shouldReduceMotion ? undefined : { opacity: 0, scale: 0.95 }}
+                  transition={shouldReduceMotion ? { duration: 0 } : { delay: index * 0.03, duration: 0.3 }}
+                  layout
+                >
+                  <Card
+                    className={`card-hover interactive-scale transition-all duration-200 ${
+                      ach.unlocked
+                        ? 'border-2 border-yellow-500/30 shadow-sm'
+                        : 'opacity-70'
+                    }`}
+                  >
+                    <CardHeader className="pb-2">
+                      <div className="flex items-start justify-between">
+                        <div className={`h-10 w-10 rounded-xl ${ach.bg} flex items-center justify-center ${ach.unlocked ? '' : 'grayscale'}`}>
+                          <Icon className={`h-5 w-5 ${ach.color}`} />
+                        </div>
+                        {ach.unlocked ? (
+                          <Badge className="bg-yellow-500 text-yellow-950 text-xs">
+                            +{ach.xpReward} XP
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-xs">
+                            {ach.xpReward} XP
+                          </Badge>
+                        )}
+                      </div>
+                      <CardTitle className="text-sm">{ach.title}</CardTitle>
+                      <CardDescription className="text-xs">{ach.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="relative h-1.5 rounded-full bg-muted overflow-hidden">
+                        <motion.div
+                          className={`absolute inset-y-0 left-0 rounded-full ${
+                            ach.unlocked ? 'bg-gradient-to-r from-yellow-400 to-amber-500' : 'bg-muted-foreground/30'
+                          }`}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${ach.progress}%` }}
+                          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94], delay: index * 0.03 }}
+                        />
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1 text-right font-mono tabular-nums">
+                        {ach.progress}%
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Reset */}
       <Dialog>
         <DialogTrigger asChild>
-          <Card className="border-dashed cursor-pointer hover:bg-accent/50 transition-colors">
-            <CardContent className="p-4 flex items-center justify-between">
-              <div>
-                <div className="text-sm font-medium">{t('achievements.resetTitle')}</div>
-                <div className="text-xs text-muted-foreground">{t('achievements.resetDescription')}</div>
-              </div>
-              <Button variant="outline" size="sm">
-                <RotateCcw className="h-4 w-4 mr-1" />
-                {t('achievements.resetButton')}
-              </Button>
-            </CardContent>
-          </Card>
+          <motion.div
+            whileHover={shouldReduceMotion ? {} : { scale: 1.01 }}
+            whileTap={shouldReduceMotion ? {} : { scale: 0.99 }}
+          >
+            <Card className="border-dashed cursor-pointer card-hover">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-medium">{t('achievements.resetTitle')}</div>
+                  <div className="text-xs text-muted-foreground">{t('achievements.resetDescription')}</div>
+                </div>
+                <Button variant="outline" size="sm" className="interactive-scale">
+                  <RotateCcw className="h-4 w-4 mr-1" />
+                  {t('achievements.resetButton')}
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>

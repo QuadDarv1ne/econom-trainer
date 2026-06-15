@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, memo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { WifiOff, Wifi } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/lib/i18n-provider";
@@ -31,18 +32,33 @@ export const OnlineStatusIndicator = memo(function OnlineStatusIndicator() {
   const isOnline = useOnlineStatus()
   useAutoSync();
 
-  if (isOnline) return null;
-
   return (
-    <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2 duration-300" aria-live="polite" role="status">
-      <Badge
-        variant="destructive"
-        className="gap-2 px-3 py-2 text-sm font-medium shadow-lg"
-      >
-        <WifiOff className="w-4 h-4" />
-        {t('network.offline')}
-      </Badge>
-    </div>
+    <AnimatePresence>
+      {!isOnline && (
+        <motion.div
+          initial={{ opacity: 0, y: -20, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -20, scale: 0.9 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          className="fixed bottom-24 left-4 sm:bottom-20 z-50"
+          aria-live="polite"
+          role="status"
+        >
+          <Badge
+            variant="destructive"
+            className="gap-2 px-3 py-2 text-sm font-medium shadow-lg shadow-destructive/25"
+          >
+            <motion.span
+              animate={{ opacity: [1, 0.5, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <WifiOff className="w-4 h-4" />
+            </motion.span>
+            {t('network.offline')}
+          </Badge>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 });
 

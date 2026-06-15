@@ -2,6 +2,7 @@
 
 import { useTheme } from 'next-themes'
 import { useState, useEffect, memo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Moon, Sun, Monitor } from 'lucide-react'
 import { useI18n } from '@/lib/i18n-provider'
@@ -11,7 +12,6 @@ export const ThemeToggle = memo(function ThemeToggle() {
   const { t } = useI18n()
   const [mounted, setMounted] = useState(false)
 
-  // Using a callback ref pattern to avoid setState in effect
   useEffect(() => {
     const id = requestAnimationFrame(() => {
       setMounted(true)
@@ -40,15 +40,33 @@ export const ThemeToggle = memo(function ThemeToggle() {
         ? t('theme.darkTooltip')
         : t('theme.systemTooltip')
 
+  const icon = theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor
+
   return (
-    <Button variant="ghost" size="icon" className="h-9 w-9" onClick={cycleTheme} title={tooltip}>
-      {theme === 'dark' ? (
-        <Moon className="h-4 w-4" />
-      ) : theme === 'light' ? (
-        <Sun className="h-4 w-4" />
-      ) : (
-        <Monitor className="h-4 w-4" />
-      )}
+    <Button
+      variant="ghost"
+      size="icon"
+      className="h-9 w-9 transition-all duration-200 hover:bg-primary/5"
+      onClick={cycleTheme}
+      title={tooltip}
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={theme || 'system'}
+          initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
+          animate={{ rotate: 0, opacity: 1, scale: 1 }}
+          exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
+          {icon === Moon ? (
+            <Moon className="h-4 w-4" />
+          ) : icon === Sun ? (
+            <Sun className="h-4 w-4" />
+          ) : (
+            <Monitor className="h-4 w-4" />
+          )}
+        </motion.div>
+      </AnimatePresence>
     </Button>
   )
 });

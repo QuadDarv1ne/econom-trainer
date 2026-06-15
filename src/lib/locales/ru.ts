@@ -1429,6 +1429,9 @@ export const ru: Record<string, string> = {
     'theme.lightTooltip': 'Светлая тема (нажмите для тёмной)',
     'theme.darkTooltip': 'Тёмная тема (нажмите для системной)',
     'theme.systemTooltip': 'Системная тема (нажмите для светлой)',
+    'theme.lightDesc': 'Яркий и чистый',
+    'theme.darkDesc': 'Для комфорта глаз',
+    'theme.systemDesc': 'Как в системе',
     
     // Offline
     'offline.title': 'Вы офлайн',
@@ -1648,6 +1651,12 @@ export const ru: Record<string, string> = {
     'home.cat.finance': 'Финансы',
     'home.cat.tools': 'Инструменты',
 
+    // Search & navigation
+    'home.searchModules': 'Поиск модулей...',
+    'home.searchNoResults': 'Модули не найдены',
+    'home.searchNoResultsDesc': 'Попробуйте другой запрос',
+    'home.noModules': 'Нет модулей',
+
     // Module categories
     'home.modcat.macro': 'Макро',
     'home.modcat.micro': 'Микро',
@@ -1721,6 +1730,7 @@ export const ru: Record<string, string> = {
     'auth.login.backToHome': 'На главную',
     'auth.login.or': 'Или войти через',
     'auth.email': 'Электронная почта',
+    'auth.emailPlaceholder': 'you@example.com',
     'language.toggle': 'Переключить язык',
     'language.ru': 'Русский',
     'language.en': 'English',
@@ -1771,6 +1781,9 @@ export const ru: Record<string, string> = {
     'auth.register.signIn': 'Войти',
     'auth.register.successTitle': 'Регистрация успешна!',
     'auth.register.successDesc': 'Перенаправляем на страницу входа...',
+    'auth.register.namePlaceholder': 'Иван Иванов',
+    'auth.register.phonePlaceholder': '+7 (999) 123-45-67',
+    'auth.register.emailPlaceholder': 'you@example.com',
 
     'auth.forgotPassword.title': 'Восстановление пароля',
     'auth.forgotPassword.subtitle': 'Введите email, и мы отправим ссылку для сброса пароля',
@@ -2003,6 +2016,11 @@ export const ru: Record<string, string> = {
     'dailyChallenge.comingBack': 'Возвращайтесь завтра!',
     'dailyChallenge.baseXP': 'Базовый XP',
     'dailyChallenge.perCorrect': 'За каждый верный ответ',
+    'dailyChallenge.nextIn': 'Следующий вызов через',
+
+    // Time abbreviations
+    'time.hoursShort': 'ч',
+    'time.minutesShort': 'м',
 
     // Streaks
     'streak.current': 'Текущая серия',
@@ -2067,6 +2085,10 @@ export const ru: Record<string, string> = {
     'notFound.title': 'Страница не найдена',
     'notFound.description': 'Запрашиваемая страница не существует или была перемещена',
     'notFound.backHome': 'Вернуться на главную',
+    'notFound.goBack': 'Назад',
+    'home.onboarding.title': 'Начните изучение экономики',
+    'home.onboarding.desc': 'Интерактивные модули, реальные задачи и XP за обучение.',
+    'home.onboarding.firstStep': 'Выберите модуль ниже, чтобы начать',
     'error.title': 'Произошла ошибка',
     'error.description': 'К сожалению, возникла непредвиденная ошибка. Попробуйте обновить страницу или вернитесь позже.',
     'error.retry': 'Попробовать снова',

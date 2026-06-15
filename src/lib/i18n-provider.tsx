@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from 'react';
 import { Locale, getCurrentLocale, setLocale, t as translate } from '@/lib/i18n';
 
 interface I18nContextType {
@@ -20,8 +20,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     }
   });
 
-  // Update document lang when locale changes
+  const localeRef = useRef(locale);
+
   useEffect(() => {
+    localeRef.current = locale;
     document.documentElement.lang = locale;
   }, [locale]);
 
@@ -30,7 +32,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     setLocaleState(newLocale);
   }, []);
 
-  const t = useCallback((key: string) => translate(key, locale), [locale]);
+  const t = useCallback((key: string) => translate(key, localeRef.current), []);
 
   return (
     <I18nContext.Provider value={{ locale, setLocale: changeLocale, t }}>
@@ -42,7 +44,6 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 export function useI18n() {
   const context = useContext(I18nContext);
   if (context === undefined) {
-    // Fallback for SSR/not-found pages rendered outside I18nProvider
     return {
       locale: 'ru' as Locale,
       setLocale: () => {},
