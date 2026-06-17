@@ -590,6 +590,7 @@ export const MarketStructures = memo(function MarketStructures() {
                   awardXP()
                   setDemandIntercept(v[0])
                 }}
+                aria-label={t('market.maxPrice')}
               />
             </div>
 
@@ -607,6 +608,7 @@ export const MarketStructures = memo(function MarketStructures() {
                   awardXP()
                   setDemandSlope(v[0])
                 }}
+                aria-label={t('market.demandSlope')}
               />
             </div>
 
@@ -624,6 +626,7 @@ export const MarketStructures = memo(function MarketStructures() {
                   awardXP()
                   setMcConstant(v[0])
                 }}
+                aria-label={t('market.mcConstant')}
               />
             </div>
 
@@ -641,6 +644,7 @@ export const MarketStructures = memo(function MarketStructures() {
                   awardXP()
                   setFixedCost(v[0])
                 }}
+                aria-label={t('market.fixedCost')}
               />
             </div>
 
@@ -659,6 +663,7 @@ export const MarketStructures = memo(function MarketStructures() {
                     awardXP()
                     setOligopolyKink(v[0])
                   }}
+                  aria-label={t('market.kinkPoint')}
                 />
               </div>
             )}

@@ -451,6 +451,7 @@ export const ISLMModel = memo(function ISLMModel() {
                     awardXP()
                     setAutonomousInvestment(v[0])
                   }}
+                  aria-label={t('islm.autonomousInvestment')}
                 />
               </div>
 
@@ -468,6 +469,7 @@ export const ISLMModel = memo(function ISLMModel() {
                     awardXP()
                     setGovSpending(v[0])
                   }}
+                  aria-label={t('islm.govSpending')}
                 />
               </div>
 
@@ -485,6 +487,7 @@ export const ISLMModel = memo(function ISLMModel() {
                     awardXP()
                     setMpc(v[0])
                   }}
+                  aria-label={t('islm.mpc')}
                 />
               </div>
 
@@ -502,6 +505,7 @@ export const ISLMModel = memo(function ISLMModel() {
                     awardXP()
                     setTaxRate(v[0])
                   }}
+                  aria-label={t('islm.taxRate')}
                 />
               </div>
 
@@ -519,6 +523,7 @@ export const ISLMModel = memo(function ISLMModel() {
                     awardXP()
                     setInvestmentSensitivity(v[0])
                   }}
+                  aria-label={t('islm.investmentSensitivity')}
                 />
                 <p className="text-xs text-muted-foreground">
                   {t('islm.investmentSensitivityDesc')}
@@ -550,6 +555,7 @@ export const ISLMModel = memo(function ISLMModel() {
                     awardXP()
                     setMoneySupply(v[0])
                   }}
+                  aria-label={t('islm.moneySupply')}
                 />
               </div>
 
@@ -567,6 +573,7 @@ export const ISLMModel = memo(function ISLMModel() {
                     awardXP()
                     setMoneyDemandSensitivity(v[0])
                   }}
+                  aria-label={t('islm.moneyDemandIncome')}
                 />
               </div>
 
@@ -584,6 +591,7 @@ export const ISLMModel = memo(function ISLMModel() {
                     awardXP()
                     setInterestSensitivity(v[0])
                   }}
+                  aria-label={t('islm.moneyDemandRate')}
                 />
                 <p className="text-xs text-muted-foreground">{t('islm.moneyDemandRateDesc')}</p>
               </div>

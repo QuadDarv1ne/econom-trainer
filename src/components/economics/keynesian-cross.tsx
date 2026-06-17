@@ -176,6 +176,7 @@ export const KeynesianCross = memo(function KeynesianCross() {
                 min={50}
                 max={500}
                 step={10}
+                aria-label={t('keynesian.autonomous')}
               />
             </div>
 
@@ -190,6 +191,7 @@ export const KeynesianCross = memo(function KeynesianCross() {
                 min={0}
                 max={400}
                 step={10}
+                aria-label={t('keynesian.govSpending')}
               />
             </div>
 
@@ -204,6 +206,7 @@ export const KeynesianCross = memo(function KeynesianCross() {
                 min={0.1}
                 max={0.95}
                 step={0.05}
+                aria-label={t('keynesian.mpc')}
               />
             </div>
 
@@ -218,6 +221,7 @@ export const KeynesianCross = memo(function KeynesianCross() {
                 min={0}
                 max={0.5}
                 step={0.05}
+                aria-label={t('keynesian.taxRate')}
               />
             </div>
 
@@ -232,6 +236,7 @@ export const KeynesianCross = memo(function KeynesianCross() {
                 min={0}
                 max={0.4}
                 step={0.05}
+                aria-label={t('keynesian.mpi')}
               />
             </div>
 

@@ -344,6 +344,7 @@ export const CostAnalysis = memo(function CostAnalysis() {
                 min={0}
                 max={500}
                 step={10}
+                aria-label={t('costs.fixedCosts')}
               />
             </div>
 
@@ -359,6 +360,7 @@ export const CostAnalysis = memo(function CostAnalysis() {
                 min={1}
                 max={20}
                 step={1}
+                aria-label={t('costs.variableCosts')}
               />
             </div>
 
@@ -374,6 +376,7 @@ export const CostAnalysis = memo(function CostAnalysis() {
                 min={1}
                 max={50}
                 step={1}
+                aria-label={t('costs.quadCoef')}
               />
             </div>
 
@@ -389,6 +392,7 @@ export const CostAnalysis = memo(function CostAnalysis() {
                 min={20}
                 max={100}
                 step={5}
+                aria-label={t('costs.maxQ')}
               />
             </div>
           </div>
@@ -571,6 +575,7 @@ export const CostAnalysis = memo(function CostAnalysis() {
                 min={1}
                 max={maxQ}
                 step={1}
+                aria-label={t('costs.quantity')}
               />
             </div>
 

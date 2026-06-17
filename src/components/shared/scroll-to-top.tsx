@@ -40,7 +40,7 @@ export function ScrollToTop() {
           className="fixed bottom-20 right-6 sm:bottom-6 z-50 h-12 w-12 rounded-full bg-gradient-to-br from-primary to-purple-600 text-white shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center group"
           aria-label="Scroll to top"
         >
-          <svg className="absolute inset-0 h-12 w-12 -rotate-90" viewBox="0 0 48 48">
+          <svg className="absolute inset-0 h-12 w-12 -rotate-90" viewBox="0 0 48 48" aria-hidden="true">
             <circle
               cx="24"
               cy="24"

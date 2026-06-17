@@ -141,7 +141,8 @@ export function useProfile(): UseProfileReturn {
           const data = await res.json()
           setError(safeErrorMessage(data, t('dashboard.profile.saveError')))
         }
-      } catch {
+      } catch (e) {
+        logError('update-profile', e)
         setError(t('dashboard.profile.saveError'))
       } finally {
         setSaving(false)

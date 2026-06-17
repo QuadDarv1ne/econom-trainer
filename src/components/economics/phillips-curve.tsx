@@ -333,6 +333,7 @@ export const PhillipsCurve = memo(function PhillipsCurve() {
                   max={15}
                   step={0.5}
                   onValueChange={(v) => { setExpectedInflation(v[0]); awardSliderXp() }}
+                  aria-label={t('phillips.expectedInflation')}
                 />
                 <p className="text-xs text-muted-foreground">
                   {t('phillips.expectedInflation')}
@@ -355,6 +356,7 @@ export const PhillipsCurve = memo(function PhillipsCurve() {
                   max={10}
                   step={0.5}
                   onValueChange={(v) => { setNaturalRate(v[0]); awardSliderXp() }}
+                  aria-label={t('phillips.naturalRate')}
                 />
                 <p className="text-xs text-muted-foreground">
                   {t('phillips.naturalRate')} (NAIRU)
@@ -377,6 +379,7 @@ export const PhillipsCurve = memo(function PhillipsCurve() {
                   max={1.5}
                   step={0.05}
                   onValueChange={(v) => { setAlpha(v[0]); awardSliderXp() }}
+                  aria-label={t('phillips.sensitivity')}
                 />
                 <p className="text-xs text-muted-foreground">
                   {t('phillips.sensitivity')}
@@ -401,6 +404,7 @@ export const PhillipsCurve = memo(function PhillipsCurve() {
                   max={3}
                   step={0.5}
                   onValueChange={(v) => { setSupplyShock(v[0]); awardSliderXp() }}
+                  aria-label={t('phillips.shock')}
                 />
                 <p className="text-xs text-muted-foreground">
                   {t('phillips.shock')}
@@ -431,6 +435,7 @@ export const PhillipsCurve = memo(function PhillipsCurve() {
                   max={12}
                   step={0.5}
                   onValueChange={(v) => { setActualUnemployment(v[0]); awardSliderXp() }}
+                  aria-label={t('phillips.unemployment')}
                 />
               </div>
 
