@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion'
 import { signOutAndClearStore } from '@/lib/sign-out'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -14,7 +14,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { PasswordInput } from '@/components/ui/password-input'
 import { PasswordStrengthMeter } from '@/components/shared/password-strength-meter'
-import { BackgroundParticles } from '@/components/shared/animated-helpers'
+import dynamic from 'next/dynamic'
+const BackgroundParticles = dynamic(() => import('@/components/shared/animated-helpers').then(m => ({ default: m.BackgroundParticles })), { ssr: false })
 import { Skeleton, StatsCardSkeleton } from '@/components/shared/loading-skeleton'
 import {
   User,
@@ -47,7 +48,7 @@ import { RESEND_COOLDOWN_SECONDS } from '@/lib/constants';
 import { AlertBanner } from '@/components/ui/alert-banner';
 import { safeErrorMessage } from '@/lib/safe-error';
 import { AppHeader } from '@/components/shared/app-header';
-import { TwoFAManagement } from '@/components/shared/two-fa-management'
+const TwoFAManagement = dynamic(() => import('@/components/shared/two-fa-management').then(m => ({ default: m.TwoFAManagement })), { ssr: false })
 import { SafeUserInitials, SafeUserContent, SafeAvatarImage } from '@/components/shared/safe-user-content';
 import { ProgressStats } from '@/components/shared/progress-stats';
 import { StatsCard } from '@/components/shared/stats-card';
