@@ -14,8 +14,8 @@ interface FloatingParticle {
 }
 
 function seededRandom(seed: number): number {
-  const x = Math.sin(seed) * 10000
-  return x - Math.floor(x)
+  // Deterministic PRNG using integer arithmetic (avoids Math.sin precision differences)
+  return ((seed * 9301 + 49297) % 233280) / 233280
 }
 
 interface BackgroundParticlesProps {
@@ -49,8 +49,8 @@ export function BackgroundParticles({
           style={{
             left: `${particle.x}%`,
             top: `${particle.y}%`,
-            width: particle.size,
-            height: particle.size,
+            width: `${particle.size}px`,
+            height: `${particle.size}px`,
             backgroundColor: color,
           }}
           animate={{

@@ -46,7 +46,7 @@ async function main() {
     NEXT_PUBLIC_APP_URL: url,
   };
 
-  const child = spawn("next", ["dev"], {
+  const child = spawn("npx", ["next", "dev"], {
     stdio: "inherit",
     env,
   });
