@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useRef, memo, useEffect, type ElementType } from 'react'
+import { useDebounce } from '@/hooks/use-auto-dismiss'
 import { useI18n } from '@/lib/i18n-provider'
 import { useEconomicsStore, MODULE_XP } from '@/store/economics-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -74,15 +75,6 @@ const categoryConfig: Record<string, { icon: ElementType; gradient: string; badg
   macro: { icon: Landmark, gradient: 'from-blue-500 to-cyan-500', badgeBg: 'bg-blue-50 dark:bg-blue-950/30', badgeColor: 'text-blue-600 dark:text-blue-400' },
   finance: { icon: DollarSign, gradient: 'from-green-500 to-emerald-500', badgeBg: 'bg-green-50 dark:bg-green-950/30', badgeColor: 'text-green-600 dark:text-green-400' },
   international: { icon: Globe, gradient: 'from-purple-500 to-pink-500', badgeBg: 'bg-purple-50 dark:bg-purple-950/30', badgeColor: 'text-purple-600 dark:text-purple-400' },
-}
-
-function useDebounce<T>(value: T, delayMs: number = 200): T {
-  const [debounced, setDebounced] = useState(value)
-  useEffect(() => {
-    const timer = setTimeout(() => setDebounced(value), delayMs)
-    return () => clearTimeout(timer)
-  }, [value, delayMs])
-  return debounced
 }
 
 export const Glossary = memo(function Glossary() {

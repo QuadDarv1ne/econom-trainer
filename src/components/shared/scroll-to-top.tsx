@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { ArrowUp } from 'lucide-react'
 
 export function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false)
   const [progress, setProgress] = useState(0)
+  const shouldReduceMotion = useReducedMotion()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,7 +22,7 @@ export function ScrollToTop() {
   }, [])
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({ top: 0, behavior: shouldReduceMotion ? 'auto' : 'smooth' })
   }
 
   const circumference = 2 * Math.PI * 22
@@ -31,10 +32,10 @@ export function ScrollToTop() {
     <AnimatePresence>
       {isVisible && (
         <motion.button
-          initial={{ opacity: 0, scale: 0.5, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.5, y: 20 }}
-          transition={{ duration: 0.2, ease: 'easeOut' }}
+          initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.5, y: 20 }}
+          animate={shouldReduceMotion ? {} : { opacity: 1, scale: 1, y: 0 }}
+          exit={shouldReduceMotion ? {} : { opacity: 0, scale: 0.5, y: 20 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.2, ease: 'easeOut' }}
           onClick={scrollToTop}
           className="fixed bottom-20 right-6 sm:bottom-6 z-50 h-12 w-12 rounded-full bg-gradient-to-br from-primary to-purple-600 text-white shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center group"
           aria-label="Scroll to top"

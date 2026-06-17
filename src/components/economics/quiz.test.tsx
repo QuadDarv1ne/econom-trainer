@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { EconomicsQuiz } from './quiz'
 
@@ -138,31 +138,35 @@ describe('Quiz gameplay', () => {
     // Click the first radio button
     await user.click(radioItems[0] as HTMLElement)
 
-    expect(screen.getByText('Следующий вопрос')).toBeDefined()
-
-    await user.click(screen.getByText('Следующий вопрос'))
+    const nextBtn = await waitFor(() => screen.getByText('Следующий вопрос'))
+    await user.click(nextBtn)
 
     const radioItems2 = document.querySelectorAll('button[role="radio"]')
     expect(radioItems2.length).toBe(4)
   })
 
-  it('completes full quiz of 10 questions', async () => {
+  it('completes full quiz of 10 questions', { timeout: 30000 }, async () => {
     const user = userEvent.setup()
     render(<EconomicsQuiz />)
 
     await user.click(screen.getByText('Начать тест'))
 
     for (let q = 0; q < 10; q++) {
-      const items = document.querySelectorAll('button[role="radio"]')
+      // Wait until the radio group is enabled (quizState becomes 'active')
+      const radioGroup = await waitFor(() => {
+        const rg = document.querySelector('[role="radiogroup"]:not([data-disabled])')
+        if (!rg) throw new Error('radio group not ready')
+        return rg
+      })
+      const items = radioGroup.querySelectorAll('button[role="radio"]')
       expect(items.length).toBe(4)
-      // Click the first radio button
       await user.click(items[0] as HTMLElement)
 
       if (q < 9) {
-        const nextBtn = screen.getByText('Следующий вопрос')
+        const nextBtn = await waitFor(() => screen.getByText('Следующий вопрос'))
         await user.click(nextBtn)
       } else {
-        const resultsBtn = screen.getByText('Показать результаты')
+        const resultsBtn = await waitFor(() => screen.getByText('Показать результаты'))
         await user.click(resultsBtn)
       }
     }

@@ -62,6 +62,7 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
       ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     }
     shuffled.length = Math.min(shuffled.length, 10)
+    hasTransitionedRef.current = false
     setShuffledQuestions(shuffled)
     setCurrentQuestion(0)
     setScore(0)
@@ -140,6 +141,7 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
       })
       return
     }
+    hasTransitionedRef.current = false
     setCurrentQuestion((q) => q + 1)
     setSelectedAnswer(null)
     setTimeLeft(QUIZ_TIME)
