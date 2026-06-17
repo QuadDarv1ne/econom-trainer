@@ -32,7 +32,6 @@ import { formatNumber } from '@/lib/i18n'
 import { LanguageToggle } from '@/components/economics/language-toggle'
 import { ThemeToggleEnhanced } from '@/components/ui/theme-toggle-enhanced'
 import { BackgroundParticles } from '@/components/shared/animated-helpers'
-import { KeyboardShortcutsDialog } from '@/components/shared/keyboard-shortcuts'
 import { useToastNotification, ToastContainer } from '@/components/shared/notification-toast'
 import {
   GraduationCap,
@@ -86,13 +85,18 @@ export function HomeClient({
   const debouncedSearch = useDebounce(searchQuery, 200)
   const { toasts, removeToast } = useToastNotification()
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const searchQueryRef = useRef(searchQuery)
+
+  useEffect(() => {
+    searchQueryRef.current = searchQuery
+  }, [searchQuery])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement
       const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT'
 
-      if (e.key === 'Escape' && searchQuery) {
+      if (e.key === 'Escape' && searchQueryRef.current) {
         setSearchQuery('')
         searchInputRef.current?.blur()
         return
@@ -105,7 +109,7 @@ export function HomeClient({
     }
     window.addEventListener('keydown', handleKeyDown, { passive: true })
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [searchQuery])
+  }, [])
   const { data: clientSession } = useSession()
   const router = useRouter()
   const { t: clientT, locale: clientLocale } = useI18n()
@@ -333,7 +337,7 @@ export function HomeClient({
                     exit={{ scale: 0 }}
                     onClick={() => setSearchQuery('')}
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground hover:bg-accent rounded p-0.5 transition-colors"
-                    aria-label="Clear search"
+                    aria-label={t('common.clearSearch') || 'Clear search'}
                   >
                     <X className="h-3 w-3" />
                   </motion.button>
@@ -502,7 +506,7 @@ export function HomeClient({
                     <button
                       onClick={() => setMobileCategoryFilter(null)}
                       className="ml-2 hover:text-primary transition-colors"
-                      aria-label="Clear filter"
+                      aria-label={t('common.clearFilter') || 'Clear filter'}
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -725,7 +729,6 @@ export function HomeClient({
         onCategoryPress={handleMobileNavPress}
         categoryModuleIds={categoryModuleIds}
       />
-      <KeyboardShortcutsDialog />
     </div>
   )
 }

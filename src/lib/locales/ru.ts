@@ -25,7 +25,11 @@ export const ru: Record<string, string> = {
     'common.million': 'млн',
     'common.password.show': 'Показать пароль',
     'common.password.hide': 'Скрыть пароль',
-    
+    'common.clearSearch': 'Очистить поиск',
+    'common.clearFilter': 'Очистить фильтр',
+    'streak.calendar.ariaLabel': 'Календарь серии за 7 дней',
+    'streak.calendar.notCompleted': 'Не выполнено',
+
     // Homepage
     'home.title': 'Экономический тренажёр',
     'home.subtitle': 'Интерактивная платформа для тренировки экономического мышления',

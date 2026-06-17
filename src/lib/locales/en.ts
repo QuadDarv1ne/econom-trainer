@@ -25,7 +25,11 @@ export const en: Record<string, string> = {
     'common.million': 'M',
     'common.password.show': 'Show password',
     'common.password.hide': 'Hide password',
-    
+    'common.clearSearch': 'Clear search',
+    'common.clearFilter': 'Clear filter',
+    'streak.calendar.ariaLabel': '7-day streak calendar',
+    'streak.calendar.notCompleted': 'Not completed',
+
     // Elasticity
     'elasticity.price': 'Price',
     'elasticity.income': 'Income',

@@ -77,6 +77,8 @@ export default function Error({ error, reset }: ErrorProps) {
                 <div className="rounded-xl bg-muted/50 border border-border/50 overflow-hidden">
                   <button
                     onClick={() => setShowDetails(!showDetails)}
+                    aria-expanded={showDetails}
+                    aria-controls="error-details"
                     className="w-full flex items-center justify-between p-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <span className="flex items-center gap-2">
@@ -94,7 +96,7 @@ export default function Error({ error, reset }: ErrorProps) {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <pre className="p-3 pt-0 overflow-x-auto whitespace-pre-wrap break-all text-xs font-mono text-destructive">
+                        <pre id="error-details" className="p-3 pt-0 overflow-x-auto whitespace-pre-wrap break-all text-xs font-mono text-destructive">
                           {error.message}
                           {error.stack && `\n\n${error.stack}`}
                         </pre>

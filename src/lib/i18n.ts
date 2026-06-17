@@ -38,12 +38,13 @@ for (const locale of locales) {
 
 // Cache for translation lookups to avoid repeated object property access
 const translationCache = new Map<string, string>();
+const warnedKeys = new Set<string>();
+const warnedLocaleKeys = new Set<string>();
 
 function warnMissingKey(key: string): void {
   if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-    // Throttle: warn at most once per key per session
-    if (!translationCache.has(`__warned__${key}`)) {
-      translationCache.set(`__warned__${key}`, '1');
+    if (!warnedKeys.has(key)) {
+      warnedKeys.add(key);
       if (!allKnownKeys.has(key)) {
         // eslint-disable-next-line no-console
         console.warn(`[i18n] Missing translation key in all locales: "${key}"`);
@@ -77,8 +78,8 @@ export function t(key: string, locale?: Locale): string {
   // In dev mode, warn if key is missing from the requested locale (but exists in default)
   if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
     if (!(translations[l] as Record<string, string>)?.[key] && (translations[defaultLocale] as Record<string, string>)?.[key]) {
-      if (!translationCache.has(`__warned_locale__${l}:${key}`)) {
-        translationCache.set(`__warned_locale__${l}:${key}`, '1');
+      if (!warnedLocaleKeys.has(`${l}:${key}`)) {
+        warnedLocaleKeys.add(`${l}:${key}`);
         // eslint-disable-next-line no-console
         console.warn(`[i18n] Key "${key}" missing in locale "${l}", falling back to "${defaultLocale}"`);
       }

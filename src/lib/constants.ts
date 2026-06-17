@@ -2,26 +2,10 @@
  * Security-related constants.
  */
 
-
-/**
- * Bcrypt salt rounds for password hashing.
- * 12 rounds provides a good balance between security and performance (~250ms per hash).
- */
-
-/**
- * Remember me session duration in seconds (30 days).
- */
-
 export const REMEMBER_ME_SESSION_SECONDS = 30 * 24 * 60 * 60;
 export const DEFAULT_SESSION_SECONDS = 8 * 60 * 60;
 
 export const BCRYPT_SALT_ROUNDS = 12;
-
-/**
- * Bcrypt salt rounds for less sensitive data (e.g., backup codes).
- * Using same rounds as passwords for consistency.
- */
-
 export const BCRYPT_SALT_ROUNDS_BACKUP = 12;
 
 /**

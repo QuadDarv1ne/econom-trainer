@@ -92,7 +92,6 @@ export function useAutoSync() {
       achievements: state.unlockedAchievements,
     };
 
-    try {
       const response = await fetch("/api/progress/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -131,11 +130,7 @@ export function useAutoSync() {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown sync error';
       useEconomicsStore.getState().markSyncError(errorMessage);
-    }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown sync error';
-      useEconomicsStore.getState().markSyncError(errorMessage);
-      logError('auto-sync-outer', error);
+      logError('auto-sync', error);
     } finally {
       syncingRef.current = false;
     }

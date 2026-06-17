@@ -3,6 +3,7 @@
 import { memo, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useEconomicsStore } from '@/store/economics-store'
+import { useI18n } from '@/lib/i18n-provider'
 
 interface StreakCalendarProps {
   shouldReduceMotion: boolean | null
@@ -10,6 +11,7 @@ interface StreakCalendarProps {
 
 export const StreakCalendar = memo(function StreakCalendar({ shouldReduceMotion }: StreakCalendarProps) {
   const dailyChallenges = useEconomicsStore((s) => s.dailyChallenges)
+  const { t } = useI18n()
 
   const last7Days = useMemo(() => {
     const days: { date: string; label: string; completed: boolean; score: number | null; isToday: boolean }[] = []
@@ -33,7 +35,7 @@ export const StreakCalendar = memo(function StreakCalendar({ shouldReduceMotion 
   }, [dailyChallenges])
 
   return (
-    <div className="flex items-end justify-center gap-1.5" role="img" aria-label="7-day streak calendar">
+    <div className="flex items-end justify-center gap-1.5" role="img" aria-label={t('streak.calendar.ariaLabel') || '7-day streak calendar'}>
       {last7Days.map((day, i) => (
         <div key={day.date} className="flex flex-col items-center gap-1">
           <motion.div
@@ -51,7 +53,7 @@ export const StreakCalendar = memo(function StreakCalendar({ shouldReduceMotion 
                   ? 'border-2 border-dashed border-primary/40 text-primary/60'
                   : 'bg-muted/50 text-muted-foreground/40'
             }`}
-            title={`${day.date}: ${day.completed ? `${day.score}/3` : 'Not completed'}`}
+            title={`${day.date}: ${day.completed ? `${day.score}/3` : t('streak.calendar.notCompleted')}`}
           >
             {day.completed ? (day.score === 3 ? '★' : day.score) : day.isToday ? '·' : ''}
           </motion.div>

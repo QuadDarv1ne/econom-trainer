@@ -45,7 +45,7 @@ function CardSkeleton({ index }: { index: number }) {
 
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background">
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background" role="status" aria-busy="true" aria-label="Loading">
       <div className="flex min-h-screen flex-col items-center justify-center p-4">
         <div className="w-full max-w-5xl space-y-8">
           <div className="text-center space-y-4">
