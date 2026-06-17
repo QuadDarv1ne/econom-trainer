@@ -84,7 +84,7 @@ export function HomeClient({
   const [searchQuery, setSearchQuery] = useState('')
   const [mobileCategoryFilter, setMobileCategoryFilter] = useState<string | null>(null)
   const debouncedSearch = useDebounce(searchQuery, 200)
-  const { toasts, success, error, info, warning, removeToast } = useToastNotification()
+  const { toasts, removeToast } = useToastNotification()
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {

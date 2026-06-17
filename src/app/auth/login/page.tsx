@@ -1,12 +1,11 @@
 'use client';
 
 import type React from 'react';
-import { useState, Suspense, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -307,26 +306,7 @@ function LoginForm() {
   );
 }
 
-function LoginFallback() {
-  return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="rounded-2xl border bg-card shadow-2xl p-8 space-y-6">
-        <div className="flex justify-center">
-          <div className="h-14 w-14 rounded-2xl bg-muted animate-pulse" />
-        </div>
-        <div className="space-y-3">
-          <div className="h-6 w-48 bg-muted animate-pulse rounded mx-auto" />
-          <div className="h-4 w-64 bg-muted animate-pulse rounded mx-auto" />
-        </div>
-        <div className="space-y-4">
-          <div className="h-11 bg-muted animate-pulse rounded-lg" />
-          <div className="h-11 bg-muted animate-pulse rounded-lg" />
-          <div className="h-11 bg-muted animate-pulse rounded-lg" />
-        </div>
-      </div>
-    </div>
-  );
-}
+
 
 export default function LoginPage() {
   return (

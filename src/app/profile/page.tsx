@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { useState, useEffect, useRef, useMemo, Suspense } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion'
 import { signOutAndClearStore } from '@/lib/sign-out'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -51,7 +51,6 @@ import { AppHeader } from '@/components/shared/app-header';
 const TwoFAManagement = dynamic(() => import('@/components/shared/two-fa-management').then(m => ({ default: m.TwoFAManagement })), { ssr: false })
 import { SafeUserInitials, SafeUserContent, SafeAvatarImage } from '@/components/shared/safe-user-content';
 import { ProgressStats } from '@/components/shared/progress-stats';
-import { StatsCard } from '@/components/shared/stats-card';
 import { useEnhancedToast } from '@/components/shared/enhanced-toast';
 
 export default function ProfilePage() {
