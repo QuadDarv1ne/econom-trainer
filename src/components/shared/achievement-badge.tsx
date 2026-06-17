@@ -1,6 +1,7 @@
 'use client';
 
 import type React from 'react';
+import { memo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { LucideIcon } from 'lucide-react';
@@ -36,7 +37,7 @@ const iconSizeClasses = {
   lg: 'h-14 w-14',
 };
 
-export function AchievementBadge({
+export const AchievementBadge = memo(function AchievementBadge({
   icon: Icon,
   title,
   description,
@@ -109,7 +110,7 @@ export function AchievementBadge({
       </div>
     </motion.div>
   );
-}
+})
 
 interface AchievementsGridProps {
   achievements: Array<{
@@ -122,7 +123,7 @@ interface AchievementsGridProps {
   }>;
 }
 
-export function AchievementsGrid({ achievements }: AchievementsGridProps) {
+export const AchievementsGrid = memo(function AchievementsGrid({ achievements }: AchievementsGridProps) {
   const shouldReduceMotion = useReducedMotion()
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
@@ -145,4 +146,4 @@ export function AchievementsGrid({ achievements }: AchievementsGridProps) {
       ))}
     </div>
   );
-}
+})

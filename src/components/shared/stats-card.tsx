@@ -1,6 +1,7 @@
 'use client';
 
 import type React from 'react';
+import { memo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 
@@ -22,7 +23,7 @@ const gradientClasses = {
   cyan: 'from-cyan-500 to-blue-500',
 };
 
-export function StatsCard({ icon: Icon, title, value, subtitle, gradient, delay = 0 }: StatsCardProps) {
+export const StatsCard = memo(function StatsCard({ icon: Icon, title, value, subtitle, gradient, delay = 0 }: StatsCardProps) {
   const shouldReduceMotion = useReducedMotion()
   return (
     <motion.div
@@ -61,4 +62,4 @@ export function StatsCard({ icon: Icon, title, value, subtitle, gradient, delay 
       </div>
     </motion.div>
   );
-}
+})

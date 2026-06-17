@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, type ElementType } from 'react'
+import { useState, memo, type ElementType } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, CheckCircle2, AlertCircle, Info, AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -64,7 +64,7 @@ export function useToastNotification() {
   return { toasts, success, error, info, warning, removeToast }
 }
 
-export function ToastContainer({ toasts, removeToast }: { toasts: Toast[]; removeToast: (id: string) => void }) {
+export const ToastContainer = memo(function ToastContainer({ toasts, removeToast }: { toasts: Toast[]; removeToast: (id: string) => void }) {
   return (
     <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-3 max-w-[400px] pb-14 sm:pb-0">
       <AnimatePresence mode="popLayout">
@@ -107,4 +107,4 @@ export function ToastContainer({ toasts, removeToast }: { toasts: Toast[]; remov
       </AnimatePresence>
     </div>
   )
-}
+})

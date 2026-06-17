@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -22,7 +23,7 @@ const statCards = [
   { icon: BarChart3, labelKey: 'dashboard.progress.sessions', color: 'from-purple-500 to-pink-500', textColor: 'text-purple-500' },
 ]
 
-export function ProgressStats({
+export const ProgressStats = memo(function ProgressStats({
   totalXP,
   userName,
   quizResultsCount,
@@ -95,4 +96,4 @@ export function ProgressStats({
       </CardContent>
     </Card>
   )
-}
+})
