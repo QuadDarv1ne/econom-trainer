@@ -19,11 +19,10 @@ export function useAutoSync() {
   const syncingRef = useRef(false);
   const [hasSynced, setHasSynced] = useState(false);
   const [conflict, setConflict] = useState<SyncConflict | null>(null);
-  const lastSnapshotRef = useRef<unknown>(null);
 
   const checkSession = async () => {
     try {
-      const response = await fetch("/api/auth/session");
+      const response = await fetch("/api/auth/session", { credentials: 'include' });
       if (!response.ok) return null;
       const session = await response.json();
       return session?.user?.id ? (session as { user: { id: string } }) : null;
@@ -54,19 +53,6 @@ export function useAutoSync() {
       elasticityResults: store.elasticityResults,
       dailyChallenges: store.dailyChallenges,
       streakState: store.streakState,
-    };
-
-    // Save complete snapshot for potential rollback (all persisted fields)
-    lastSnapshotRef.current = {
-      totalXP: state.totalXP,
-      quizResults: state.quizResults,
-      moduleInteractions: state.moduleInteractions,
-      unlockedAchievements: state.unlockedAchievements,
-      gdpResults: state.gdpResults,
-      financeResults: state.financeResults,
-      elasticityResults: state.elasticityResults,
-      dailyChallenges: state.dailyChallenges,
-      streakState: state.streakState,
     };
 
     // Mark sync as in-progress
@@ -114,10 +100,6 @@ export function useAutoSync() {
       });
 
       if (!response.ok) {
-        // Rollback on failure
-        if (lastSnapshotRef.current) {
-          useEconomicsStore.setState(lastSnapshotRef.current as Parameters<typeof useEconomicsStore.setState>[0]);
-        }
         useEconomicsStore.getState().markSyncError(`Sync failed with status ${response.status}`);
         return;
       }
@@ -147,18 +129,10 @@ export function useAutoSync() {
       useEconomicsStore.getState().markSynced();
       setHasSynced(true);
     } catch (error) {
-      // Rollback on failure
-      if (lastSnapshotRef.current) {
-        useEconomicsStore.setState(lastSnapshotRef.current as Parameters<typeof useEconomicsStore.setState>[0]);
-      }
       const errorMessage = error instanceof Error ? error.message : 'Unknown sync error';
       useEconomicsStore.getState().markSyncError(errorMessage);
     }
     } catch (error) {
-      // Unexpected error in outer scope — rollback and release lock
-      if (lastSnapshotRef.current) {
-        useEconomicsStore.setState(lastSnapshotRef.current as Parameters<typeof useEconomicsStore.setState>[0]);
-      }
       const errorMessage = error instanceof Error ? error.message : 'Unknown sync error';
       useEconomicsStore.getState().markSyncError(errorMessage);
       logError('auto-sync-outer', error);

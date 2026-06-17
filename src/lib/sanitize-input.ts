@@ -41,7 +41,7 @@ export function sanitizeImageUrl(url: string): string {
   }
   
   // Allow http: and https: URLs (case-insensitive)
-  const lowerTrimmed = trimmed.toLowerCase()
+  const lowerTrimmed = trimmed.toLowerCase();
   if (lowerTrimmed.startsWith('http://') || lowerTrimmed.startsWith('https://')) {
     try {
       new URL(trimmed);
