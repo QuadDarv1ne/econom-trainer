@@ -7,6 +7,7 @@ import type {
   ToastActionElement,
   ToastProps,
 } from "@/components/ui/toast"
+import { generateId } from "@/lib/utils"
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 5000
@@ -19,7 +20,7 @@ type ToasterToast = ToastProps & {
 }
 
 function genId() {
-  return crypto.randomUUID?.() ?? Math.random().toString(36).slice(2)
+  return generateId()
 }
 
 type ActionType = {

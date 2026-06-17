@@ -8,9 +8,9 @@ import { useEconomicsStore } from "@/store/economics-store";
  * Prevents stale data from being visible to the next user on shared devices.
  */
 export async function signOutAndClearStore(options?: SignOutParams<true>) {
-  // Clear the persisted Zustand store before signing out
-  useEconomicsStore.persist.clearStorage();
-
-  // Sign out with NextAuth
-  await signOut(options);
+  try {
+    await signOut(options);
+  } finally {
+    useEconomicsStore.persist.clearStorage();
+  }
 }

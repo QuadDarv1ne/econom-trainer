@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { logError } from "@/lib/log-error";
+import { generateId } from "@/lib/utils";
 import { useEconomicsStore, type SyncConflict, type ModuleInteraction, type QuizResult, type GDPResult, type FinanceResult, type ElasticityResult } from "@/store/economics-store";
 
 const SYNC_DEBOUNCE_MS = 3000;
@@ -153,6 +154,14 @@ export function useAutoSync() {
       const errorMessage = error instanceof Error ? error.message : 'Unknown sync error';
       useEconomicsStore.getState().markSyncError(errorMessage);
     }
+    } catch (error) {
+      // Unexpected error in outer scope — rollback and release lock
+      if (lastSnapshotRef.current) {
+        useEconomicsStore.setState(lastSnapshotRef.current as Parameters<typeof useEconomicsStore.setState>[0]);
+      }
+      const errorMessage = error instanceof Error ? error.message : 'Unknown sync error';
+      useEconomicsStore.getState().markSyncError(errorMessage);
+      logError('auto-sync-outer', error);
     } finally {
       syncingRef.current = false;
     }
@@ -208,7 +217,7 @@ export function useAutoSync() {
 
           // Convert server QuizAttempt[] → client QuizResult[]
           const serverQuizResults: QuizResult[] = (serverData.quizAttempts || []).map((qa: { topic: string; score: number; total: number; date: string }) => ({
-            id: crypto.randomUUID?.() ?? `${qa.topic}-${qa.date}-${Math.random().toString(36).slice(2)}`,
+            id: generateId(),
             topic: qa.topic,
             score: qa.score,
             total: qa.total,
@@ -227,7 +236,7 @@ export function useAutoSync() {
               try { parsedDetails = JSON.parse(ms.details); } catch { logError('sync-resolveConflict', new Error(`Failed to parse module session details for ${ms.moduleId}`)); }
             }
             return {
-              id: crypto.randomUUID?.() ?? `${ms.moduleId}-${ms.date}-${Math.random().toString(36).slice(2)}`,
+              id: generateId(),
               moduleId: ms.moduleId,
               action: ms.action,
               xpEarned: ms.xpEarned,
@@ -285,8 +294,8 @@ export function useAutoSync() {
             elasticityResults,
           });
         }
-      } catch {
-        // Silent — user can manually resolve later
+      } catch (error) {
+        logError('sync-resolveConflict', error);
       }
     }
   }, []);

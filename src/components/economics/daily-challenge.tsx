@@ -53,7 +53,7 @@ export const DailyChallenge = memo(function DailyChallenge() {
     const timer = setTimeout(() => {
       updateToday()
       intervalRef.current = setInterval(updateToday, 86400000)
-    }, msUntilMidnight + 1000)
+    }, msUntilMidnight)
     return () => {
       clearTimeout(timer)
       if (intervalRef.current) clearInterval(intervalRef.current)

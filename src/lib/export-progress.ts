@@ -270,6 +270,7 @@ export function importProgressFromFile(): Promise<void> {
   }
 
   return new Promise((resolve, reject) => {
+    let settled = false
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = '.json,application/json'
@@ -283,6 +284,8 @@ export function importProgressFromFile(): Promise<void> {
     }
 
     input.onchange = async () => {
+      if (settled) return
+      settled = true
       const file = input.files?.[0]
       if (!file) {
         cleanup()
@@ -303,8 +306,9 @@ export function importProgressFromFile(): Promise<void> {
 
     document.body.appendChild(input)
 
-    // Clean up if the file picker is dismissed without selection
     const timeoutId = setTimeout(() => {
+      if (settled) return
+      settled = true
       if (!input.files?.length && document.body.contains(input)) {
         cleanup()
         reject(new Error('File selection cancelled'))
