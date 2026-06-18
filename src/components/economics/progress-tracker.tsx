@@ -33,10 +33,10 @@ export const ProgressTracker = memo(function ProgressTracker() {
   const elasticityResults = useEconomicsStore((s) => s.elasticityResults)
   const getTotalScore = useEconomicsStore((s) => s.getTotalScore)
 
-  const scores = getTotalScore()
-  const totalSessions = quizResults.length + gdpResults.length + financeResults.length + elasticityResults.length
+  const scores = useMemo(() => getTotalScore(), [getTotalScore])
+  const totalSessions = useMemo(() => quizResults.length + gdpResults.length + financeResults.length + elasticityResults.length, [quizResults, gdpResults, financeResults, elasticityResults])
 
-  const { quizCorrect, quizTotal, financeCorrect, financeTotal } = computeQuizAndFinanceStats(quizResults, financeResults)
+  const { quizCorrect, quizTotal, financeCorrect, financeTotal } = useMemo(() => computeQuizAndFinanceStats(quizResults, financeResults), [quizResults, financeResults])
 
   const quizPieData = useMemo(() => [
     { name: t('progress.chart.correct'), value: quizCorrect },
