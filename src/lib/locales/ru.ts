@@ -372,6 +372,8 @@ export const ru: Record<string, string> = {
     'quiz.a11y.incorrect': 'Неправильный ответ',
     'quiz.a11y.current': 'Текущий вопрос',
     'quiz.a11y.unanswered': 'Без ответа',
+    'quiz.a11y.timerProgress': 'Оставшееся время: {seconds} секунд',
+    'quiz.timerProgress': 'Оставшееся время',
     'quiz.keyboardHint': '— выберите ответ; Enter — продолжить',
     'quiz.answerOptions': 'Варианты ответа',
     

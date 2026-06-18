@@ -349,7 +349,14 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
         <Progress value={((currentQuestion + 1) / shuffledQuestions.length) * 100} className="h-2" />
       </div>
 
-      <div className="relative h-1.5 rounded-full bg-muted overflow-hidden">
+      <div
+        className="relative h-1.5 rounded-full bg-muted overflow-hidden"
+        role="progressbar"
+        aria-label={t('quiz.timerProgress')}
+        aria-valuenow={timeLeft}
+        aria-valuemin={0}
+        aria-valuemax={QUIZ_TIME}
+      >
         <motion.div
           className={`absolute inset-y-0 left-0 rounded-full ${
             timeLeft <= 5 ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' : timeLeft <= 10 ? 'bg-amber-500' : 'bg-primary'

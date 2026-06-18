@@ -359,6 +359,8 @@ export const zh: Record<string, string> = {
     'quiz.a11y.incorrect': '错误答案',
     'quiz.a11y.current': '当前问题',
     'quiz.a11y.unanswered': '未回答',
+    'quiz.a11y.timerProgress': '剩余时间: {seconds} 秒',
+    'quiz.timerProgress': '剩余时间',
     'quiz.keyboardHint': '选择答案；Enter 继续',
     'quiz.answerOptions': '答案选项',
     'progress.title': '进度',

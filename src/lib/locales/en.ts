@@ -392,6 +392,8 @@ export const en: Record<string, string> = {
     'quiz.a11y.incorrect': 'Incorrect answer',
     'quiz.a11y.current': 'Current question',
     'quiz.a11y.unanswered': 'Unanswered',
+    'quiz.a11y.timerProgress': 'Time remaining: {seconds} seconds',
+    'quiz.timerProgress': 'Time remaining',
     'quiz.keyboardHint': 'to select answer; Enter to continue',
     'quiz.answerOptions': 'Answer Options',
     
