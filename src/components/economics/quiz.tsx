@@ -12,24 +12,12 @@ import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
 import { generateId } from '@/lib/utils'
 import { Brain, CheckCircle2, XCircle, Clock, ArrowRight, RotateCcw, Sparkles, Target } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, useReducedMotion, AnimatePresence } from 'framer-motion'
 import { questions, type Question } from '@/lib/quiz-questions'
 import { Celebration } from '@/components/shared/celebration'
 const QUIZ_TIME = 30
 
 type QuizState = 'idle' | 'active' | 'answered' | 'finished'
-
-const stagger = {
-  animate: {
-    transition: { staggerChildren: 0.05 },
-  },
-}
-
-const fadeSlideUp = {
-  initial: { opacity: 0, y: 12 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] as const } },
-  exit: { opacity: 0, y: -12, transition: { duration: 0.2 } },
-}
 
 export const EconomicsQuiz = memo(function EconomicsQuiz() {
   const [quizState, setQuizState] = useState<QuizState>('idle')
@@ -44,6 +32,7 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
   const addQuizResult = useEconomicsStore((s) => s.addQuizResult)
   const { toast } = useToast()
   const { t } = useI18n()
+  const shouldReduceMotion = useReducedMotion()
 
   const scoreRef = useRef(score)
   useEffect(() => { scoreRef.current = score }, [score])
@@ -177,7 +166,7 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
 
   if (quizState === 'idle') {
     return (
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+      <motion.div initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }} animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }} transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.4 }}>
         <Card className="border-primary/10 shadow-2xl shadow-primary/5 overflow-hidden">
           <div className="absolute top-0 right-0 h-32 w-32 bg-gradient-to-bl from-primary/10 to-transparent rounded-bl-[4rem]" />
           <CardHeader>
@@ -192,7 +181,7 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <motion.div variants={stagger} initial="initial" animate="animate" className="grid grid-cols-3 gap-3 text-center">
+            <motion.div initial={shouldReduceMotion ? false : { opacity: 0 }} animate={shouldReduceMotion ? {} : { opacity: 1 }} className="grid grid-cols-3 gap-3 text-center">
               {[
                 { value: questions.length, label: t('quiz.questionsInBank'), icon: Brain, gradient: 'from-primary/10 to-purple-600/10' },
                 { value: '10', label: t('quiz.questionsInQuiz'), icon: Target, gradient: 'from-green-500/10 to-emerald-600/10' },
@@ -200,7 +189,9 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
               ].map((item, _i) => (
                 <motion.div
                   key={item.label}
-                  variants={fadeSlideUp}
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+                  animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
+                  transition={shouldReduceMotion ? { duration: 0 } : { delay: _i * 0.05, duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] as const }}
                   className={`p-4 rounded-xl bg-gradient-to-br ${item.gradient} border border-primary/5`}
                 >
                   <item.icon className="h-4 w-4 mx-auto mb-1.5 text-primary" />
@@ -227,7 +218,7 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
   if (quizState === 'finished') {
     const percentage = Math.round((score / shuffledQuestions.length) * 100)
     return (
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+      <motion.div initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }} animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }} transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.4 }}>
         <Card className="border-primary/10 shadow-2xl shadow-primary/5 overflow-hidden relative">
           <Celebration active={percentage >= 75} />
           <div className="absolute top-0 left-0 h-40 w-40 bg-gradient-to-br from-green-500/10 to-transparent rounded-br-[4rem]" />
@@ -241,9 +232,9 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
           </CardHeader>
           <CardContent className="space-y-6">
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+              initial={shouldReduceMotion ? false : { scale: 0.8, opacity: 0 }}
+              animate={shouldReduceMotion ? {} : { scale: 1, opacity: 1 }}
+              transition={shouldReduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 200, damping: 15 }}
               aria-live="polite"
               className="text-center space-y-2"
             >
@@ -255,9 +246,9 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
                 <Progress value={percentage} className="h-3" />
               </div>
               <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 15 }}
+                initial={shouldReduceMotion ? false : { scale: 0 }}
+                animate={shouldReduceMotion ? {} : { scale: 1 }}
+                transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.2, type: 'spring', stiffness: 300, damping: 15 }}
               >
                 <Badge
                   variant={percentage >= 75 ? 'default' : percentage >= 50 ? 'secondary' : 'destructive'}
@@ -269,16 +260,17 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
             </motion.div>
 
             <motion.div
-              variants={stagger}
-              initial="initial"
-              animate="animate"
+              initial={shouldReduceMotion ? false : { opacity: 0 }}
+              animate={shouldReduceMotion ? {} : { opacity: 1 }}
               className="space-y-2"
             >
               {shuffledQuestions.map((q, i) => (
                 <motion.div
                   key={q.id}
-                  variants={fadeSlideUp}
-                  whileHover={{ scale: 1.01, x: 2 }}
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+                  animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
+                  transition={shouldReduceMotion ? { duration: 0 } : { delay: i * 0.05, duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] as const }}
+                  whileHover={shouldReduceMotion ? {} : { scale: 1.01, x: 2 }}
                   className={`p-3 rounded-xl text-sm flex items-start gap-3 border transition-shadow duration-300 ${
                     answers[i] === q.correctAnswer
                       ? 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-900 hover:shadow-md hover:shadow-green-500/10'
@@ -343,8 +335,8 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
           role="timer"
           aria-live="polite"
           aria-atomic="true"
-          animate={timeLeft <= 10 ? { scale: [1, 1.05, 1] } : {}}
-          transition={{ duration: 0.5, repeat: Infinity }}
+          animate={shouldReduceMotion ? {} : timeLeft <= 10 ? { scale: [1, 1.05, 1] } : {}}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, repeat: Infinity }}
         >
           <Clock className={`h-4 w-4 ${timeLeft <= 5 ? 'text-red-500' : timeLeft <= 10 ? 'text-amber-500' : ''}`} />
           <span className={`font-mono font-bold text-sm ${timeLeft <= 5 ? 'text-red-500' : timeLeft <= 10 ? 'text-amber-500' : ''}`}>
@@ -364,13 +356,13 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
           }`}
           initial={{ width: '100%' }}
           animate={{ width: `${timerPercentage}%` }}
-          transition={{ duration: 1, ease: 'linear' }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 1, ease: 'linear' }}
         />
         {timeLeft <= 5 && (
           <motion.div
             className="absolute inset-0 rounded-full bg-red-500/20"
-            animate={{ opacity: [0.3, 0.6, 0.3] }}
-            transition={{ duration: 0.8, repeat: Infinity }}
+            animate={shouldReduceMotion ? {} : { opacity: [0.3, 0.6, 0.3] }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8, repeat: Infinity }}
           />
         )}
       </div>
@@ -379,16 +371,16 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
         {isTimeUp && (
           <motion.div
             key="timeup"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.95 }}
+            animate={shouldReduceMotion ? {} : { opacity: 1, scale: 1 }}
+            exit={shouldReduceMotion ? undefined : { opacity: 0, scale: 0.95 }}
           >
             <Card className="border-red-500/50 bg-red-50 dark:bg-red-950/30 shadow-lg shadow-red-500/10">
               <CardContent className="p-5 text-center space-y-3">
                 <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                  initial={shouldReduceMotion ? false : { scale: 0 }}
+                  animate={shouldReduceMotion ? {} : { scale: 1 }}
+                  transition={shouldReduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 15 }}
                   className="text-lg font-bold text-red-600 flex items-center justify-center gap-2"
                 >
                   <Clock className="h-5 w-5" />
@@ -410,10 +402,10 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
         {!isTimeUp && (
           <motion.div
             key={`question-${questionKey}`}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+            initial={shouldReduceMotion ? false : { opacity: 0, x: 20 }}
+            animate={shouldReduceMotion ? {} : { opacity: 1, x: 0 }}
+            exit={shouldReduceMotion ? undefined : { opacity: 0, x: -20 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <Card className="border-primary/10 shadow-xl shadow-primary/5 overflow-hidden">
               <CardHeader className="pb-3">
@@ -455,11 +447,11 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
                     return (
                       <motion.div
                         key={`quiz-option-${idx}`}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.05, duration: 0.2 }}
-                        whileHover={quizState === 'active' ? { scale: 1.02 } : {}}
-                        whileTap={quizState === 'active' ? { scale: 0.98 } : {}}
+                        initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                        animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
+                        transition={shouldReduceMotion ? { duration: 0 } : { delay: idx * 0.05, duration: 0.2 }}
+                        whileHover={shouldReduceMotion || quizState !== 'active' ? {} : { scale: 1.02 }}
+                        whileTap={shouldReduceMotion || quizState !== 'active' ? {} : { scale: 0.98 }}
                         className={optionClass}
                       >
                         <div className="flex items-center gap-3">
@@ -477,10 +469,10 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
                 <AnimatePresence>
                   {quizState === 'answered' && (
                     <motion.div
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -12 }}
-                      transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                      initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+                      animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
+                      exit={shouldReduceMotion ? undefined : { opacity: 0, y: -12 }}
+                      transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
                       className={`p-4 rounded-xl text-sm space-y-2 border ${
                         selectedAnswer === question.correctAnswer
                           ? 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-900'
@@ -490,18 +482,18 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
                       <div className="font-semibold">
                         {selectedAnswer === question.correctAnswer ? (
                           <motion.span
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                            initial={shouldReduceMotion ? false : { scale: 0 }}
+                            animate={shouldReduceMotion ? {} : { scale: 1 }}
+                            transition={shouldReduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 15 }}
                             className="text-green-600 flex items-center gap-1.5"
                           >
                             <CheckCircle2 className="h-4 w-4" /> {t('quiz.correctExclamation')}
                           </motion.span>
                         ) : (
                           <motion.span
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                            initial={shouldReduceMotion ? false : { scale: 0 }}
+                            animate={shouldReduceMotion ? {} : { scale: 1 }}
+                            transition={shouldReduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 15 }}
                             className="text-red-600 flex items-center gap-1.5"
                           >
                             <XCircle className="h-4 w-4" /> {t('quiz.incorrectExclamation')}
@@ -516,9 +508,9 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
                 <AnimatePresence>
                   {quizState === 'answered' && (
                     <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
+                      initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                      animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
+                      exit={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
                     >
                       <Button
                         onClick={nextQuestion}
@@ -553,9 +545,9 @@ export const EconomicsQuiz = memo(function EconomicsQuiz() {
             }
             aria-valuemin={0}
             aria-valuemax={100}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: i * 0.03, type: 'spring', stiffness: 200, damping: 15 }}
+            initial={shouldReduceMotion ? false : { scale: 0 }}
+            animate={shouldReduceMotion ? {} : { scale: 1 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { delay: i * 0.03, type: 'spring', stiffness: 200, damping: 15 }}
             className={`h-2 flex-1 rounded-full transition-colors duration-300 ${
               i < currentQuestion
                 ? answers[i] === shuffledQuestions[i]?.correctAnswer
