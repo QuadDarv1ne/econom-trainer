@@ -11,9 +11,10 @@ import { useEconomicsStore } from "@/store/economics-store";
 import { useI18n } from "@/lib/i18n-provider";
 import { safeErrorMessage } from "@/lib/safe-error";
 import { motion } from "framer-motion";
+import { useOnlineStatus } from "@/hooks/use-online-status";
 
 export default function OfflinePage() {
-  const [isOnline, setIsOnline] = useState(true);
+  const isOnline = useOnlineStatus();
   const [syncing, setSyncing] = useState(false);
   const { toast } = useToast();
   const { t } = useI18n();
@@ -51,23 +52,9 @@ export default function OfflinePage() {
   }, [totalXP, quizResults, moduleInteractions, unlockedAchievements, toast, t]);
 
   useEffect(() => {
-    const updateStatus = () => setIsOnline(navigator.onLine);
-
-    updateStatus();
-
-    const handleOnline = () => {
-      setIsOnline(true);
-      toast({ title: t('offline.connectionRestored') });
-    };
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
+    const showToast = () => toast({ title: t('offline.connectionRestored') });
+    window.addEventListener("online", showToast);
+    return () => window.removeEventListener("online", showToast);
   }, [toast, t]);
 
   const handleReload = () => {

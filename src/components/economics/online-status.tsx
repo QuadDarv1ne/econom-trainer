@@ -1,31 +1,12 @@
 "use client";
 
-import { useEffect, useState, memo } from "react";
+import { memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { WifiOff, Wifi } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/lib/i18n-provider";
 import { useAutoSync } from "@/hooks/use-sync";
-
-function useOnlineStatus() {
-  const [isOnline, setIsOnline] = useState(true);
-
-  useEffect(() => {
-    const updateStatus = () => setIsOnline(navigator.onLine);
-
-    updateStatus();
-
-    window.addEventListener("online", updateStatus);
-    window.addEventListener("offline", updateStatus);
-
-    return () => {
-      window.removeEventListener("online", updateStatus);
-      window.removeEventListener("offline", updateStatus);
-    };
-  }, []);
-
-  return isOnline
-}
+import { useOnlineStatus } from "@/hooks/use-online-status";
 
 export const OnlineStatusIndicator = memo(function OnlineStatusIndicator() {
   const { t } = useI18n();
