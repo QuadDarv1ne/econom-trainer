@@ -11,7 +11,7 @@ import { useEconomicsStore } from '@/store/economics-store'
 import { useToast } from '@/hooks/use-toast'
 import { useI18n } from '@/lib/i18n-provider'
 import { generateId } from '@/lib/utils'
-import { formatNumber } from '@/lib/i18n'
+import { formatNumber, type Locale } from '@/lib/i18n'
 import {
   DollarSign,
   Percent,
@@ -38,8 +38,6 @@ interface NPVProblem {
   answer: number
   question: string
 }
-
-type Locale = 'ru' | 'en' | 'zh'
 
 const COMPOUND_FREQUENCIES = [1, 2, 4, 12] as const
 
