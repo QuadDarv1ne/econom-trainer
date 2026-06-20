@@ -22,7 +22,7 @@ export function ThemeToggleEnhanced() {
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon" className="h-9 w-9">
+      <Button variant="ghost" size="icon" className="h-9 w-9" aria-label={t('theme.toggleAria')}>
         <Sun className="h-4 w-4" />
       </Button>
     )
@@ -79,7 +79,7 @@ export function ThemeToggleEnhanced() {
               {getIcon()}
             </motion.div>
           </AnimatePresence>
-          <span className="sr-only">Toggle theme</span>
+          <span className="sr-only">{t('theme.toggleAria')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">

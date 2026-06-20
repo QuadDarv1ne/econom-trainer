@@ -1454,6 +1454,7 @@ export const en: Record<string, string> = {
     'theme.lightDesc': 'Bright and clean',
     'theme.darkDesc': 'Easy on the eyes',
     'theme.systemDesc': 'Match your system',
+    'theme.toggleAria': 'Toggle theme',
     
     // Offline
     'offline.title': 'You are offline',

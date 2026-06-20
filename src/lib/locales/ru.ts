@@ -1438,6 +1438,7 @@ export const ru: Record<string, string> = {
     'theme.lightDesc': 'Яркий и чистый',
     'theme.darkDesc': 'Для комфорта глаз',
     'theme.systemDesc': 'Как в системе',
+    'theme.toggleAria': 'Переключить тему',
     
     // Offline
     'offline.title': 'Вы офлайн',

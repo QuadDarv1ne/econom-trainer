@@ -21,7 +21,7 @@ export const ThemeToggle = memo(function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon" className="h-9 w-9" disabled>
+      <Button variant="ghost" size="icon" className="h-9 w-9" disabled aria-label={t('theme.lightTooltip')}>
         <Sun className="h-4 w-4" />
       </Button>
     )
@@ -49,6 +49,7 @@ export const ThemeToggle = memo(function ThemeToggle() {
       className="h-9 w-9 transition-all duration-200 hover:bg-primary/5"
       onClick={cycleTheme}
       title={tooltip}
+      aria-label={tooltip}
     >
       <AnimatePresence mode="wait">
         <motion.div

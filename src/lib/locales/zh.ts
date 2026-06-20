@@ -1369,6 +1369,7 @@ export const zh: Record<string, string> = {
     'theme.lightDesc': '明亮清爽',
     'theme.darkDesc': '护眼舒适',
     'theme.systemDesc': '跟随系统',
+    'theme.toggleAria': '切换主题',
     'offline.title': '你处于离线状态',
     'offline.description': '请检查你的网络连接。',
     'offline.retry': '重试',
