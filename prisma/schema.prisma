@@ -137,6 +137,8 @@ model QuizAttempt {
   @@index([accuracy])
   @@index([userId, topic, date])
 }
+
+model ModuleSession {
   id           String   @id @default(cuid())
   userId       String
   moduleId     String   // gdp, supply-demand, quiz, finance, etc.
@@ -156,6 +158,8 @@ model QuizAttempt {
   @@index([xpEarned])
   @@index([userId, moduleId, date])
 }
+
+model UserAchievement {
   id        String   @id @default(cuid())
   userId    String
   name      String   // achievement identifier
