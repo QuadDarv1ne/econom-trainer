@@ -395,7 +395,20 @@ export interface EconomicsState {
   incrementPendingChanges: () => void
 }
 
-const debouncedStorage = createDebouncedStorage<EconomicsState>(300)
+export type PersistedEconomicsData = Pick<
+  EconomicsState,
+  | 'quizResults'
+  | 'gdpResults'
+  | 'financeResults'
+  | 'elasticityResults'
+  | 'moduleInteractions'
+  | 'unlockedAchievements'
+  | 'totalXP'
+  | 'dailyChallenges'
+  | 'streakState'
+>
+
+const debouncedStorage = createDebouncedStorage<PersistedEconomicsData>(300)
 
 export const useEconomicsStore = create<EconomicsState>()(
   persist(
@@ -617,7 +630,7 @@ export const useEconomicsStore = create<EconomicsState>()(
         totalXP: state.totalXP,
         dailyChallenges: state.dailyChallenges,
         streakState: state.streakState,
-      }) as unknown as EconomicsState,
+      }),
     },
   ),
 )
