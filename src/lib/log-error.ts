@@ -40,7 +40,11 @@ function sanitizeError(error: unknown, depth = 0): string {
     if (containsSensitiveData(message)) {
       return "Sensitive error occurred";
     }
-    return message;
+    const stack = error.stack;
+    if (stack && containsSensitiveData(stack)) {
+      return "Sensitive error occurred";
+    }
+    return stack ? `${message}\n${stack}` : message;
   }
   if (typeof error === "string") {
     if (containsSensitiveData(error)) {
@@ -65,7 +69,7 @@ function sanitizeError(error: unknown, depth = 0): string {
       }
     }
     try {
-      return JSON.stringify(error).slice(0, 200);
+      return JSON.stringify(error).slice(0, 2000);
     } catch {
       return '[Object - serialization failed]';
     }

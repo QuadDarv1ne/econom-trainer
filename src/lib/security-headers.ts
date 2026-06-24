@@ -10,7 +10,8 @@ const SECURITY_HEADERS = {
   'X-Frame-Options': 'DENY',
   'X-XSS-Protection': '0', // Modern browsers ignore this; disable to prevent false positives
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+  'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
 } as const;
 
 /**
@@ -19,7 +20,7 @@ const SECURITY_HEADERS = {
  * which may contain sensitive user data even on seemingly static endpoints.
  * Usage: return withSecurityHeaders(NextResponse.json({ data }));
  */
-export function withSecurityHeaders(response: NextResponse): NextResponse {
+export function withSecurityHeaders<T>(response: NextResponse<T>): NextResponse<T> {
   Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
     response.headers.set(key, value);
   });

@@ -69,11 +69,11 @@ export function getPendingValidation<T>(
 
   const timeoutPromise = new Promise<never>((_, reject) =>
     setTimeout(() => reject(new Error('Session validation timed out')), VALIDATION_TIMEOUT_MS)
-  );
+  ).catch(() => {});
 
   const promise = Promise.race([fetchFn(), timeoutPromise]).finally(() => {
     globalForAuth.__pendingValidations?.delete(userId);
-  });
+  }) as Promise<T>;
   globalForAuth.__pendingValidations.set(userId, promise);
   return promise;
 }

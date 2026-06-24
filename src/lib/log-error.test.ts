@@ -7,7 +7,7 @@ describe('logError', () => {
 
     logError('test', new Error('Something went wrong'));
 
-    expect(spy).toHaveBeenCalledWith('[test] Something went wrong');
+    expect(spy).toHaveBeenCalledWith(expect.stringContaining('[test] Something went wrong\nError: Something went wrong'));
     spy.mockRestore();
   });
 
@@ -72,9 +72,9 @@ describe('logError', () => {
     logError('ui', new Error('Keyboard event error'));
     logError('db', new Error('Primary key constraint violation'));
 
-    expect(spy).toHaveBeenNthCalledWith(1, '[db] key not found in database');
-    expect(spy).toHaveBeenNthCalledWith(2, '[ui] Keyboard event error');
-    expect(spy).toHaveBeenNthCalledWith(3, '[db] Primary key constraint violation');
+    expect(spy).toHaveBeenNthCalledWith(1, expect.stringContaining('[db] key not found in database'));
+    expect(spy).toHaveBeenNthCalledWith(2, expect.stringContaining('[ui] Keyboard event error'));
+    expect(spy).toHaveBeenNthCalledWith(3, expect.stringContaining('[db] Primary key constraint violation'));
     spy.mockRestore();
   });
 

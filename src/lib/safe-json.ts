@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { withSecurityHeaders } from '@/lib/security-headers';
 
 /** Maximum allowed request body size (1 MB) to prevent memory exhaustion attacks. */
 const MAX_BODY_SIZE = 1024 * 1024;
@@ -66,32 +67,32 @@ export async function safeJson<T = unknown>(
     const contentType = req.headers.get('content-type');
     const mimeType = contentType?.split(';')[0]?.trim()
     if (mimeType !== 'application/json') {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Content-Type must be application/json' },
         { status: 400 }
-      );
+      ));
     }
 
     const text = await readBodyWithLimit(req, MAX_BODY_SIZE)
     if (!text) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Empty request body' },
         { status: 400 }
-      )
+      ))
     }
 
     return JSON.parse(text) as T
   } catch (error) {
     if (error instanceof BodyTooLargeError) {
-      return NextResponse.json(
+      return withSecurityHeaders(NextResponse.json(
         { error: 'Request body too large' },
         { status: 413 }
-      )
+      ))
     }
-    return NextResponse.json(
+    return withSecurityHeaders(NextResponse.json(
       { error: 'Invalid JSON in request body' },
       { status: 400 }
-    );
+    ));
   }
 }
 

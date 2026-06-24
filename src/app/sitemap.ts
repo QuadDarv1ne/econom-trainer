@@ -35,13 +35,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: new Date("2025-01-01"),
       changeFrequency: "weekly",
       priority: 1,
     },
     ...modules.map((module) => ({
       url: `${baseUrl}/?tab=${module}`,
-      lastModified: new Date(),
+      lastModified: new Date("2025-01-01"),
       changeFrequency: "monthly" as const,
       priority: 0.7,
     })),

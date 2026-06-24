@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireRole } from '@/lib/rbac';
 import { validateOriginStrict, csrfErrorResponse } from '@/lib/csrf';
-import { checkRateLimit, getClientIP, rateLimitResponse } from '@/lib/rate-limit';
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
 import { logError } from '@/lib/log-error';
 import { safeJson, isErrorResponse } from '@/lib/safe-json';
 import { sanitizePlainText } from '@/lib/sanitize-input';
@@ -19,9 +19,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       return csrfErrorResponse();
     }
 
-    const limit = checkRateLimit('profileUpdate', getClientIP(req));
+    const limit = checkRateLimit('adminUserUpdate', auth.userId);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('profileUpdate', limit.resetAt, req));
+      return withSecurityHeaders(rateLimitResponse('adminUserUpdate', limit.resetAt, req));
     }
 
     const { id } = await params;
@@ -75,9 +75,9 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
       return csrfErrorResponse();
     }
 
-    const limit = checkRateLimit('deleteAcc', getClientIP(req));
+    const limit = checkRateLimit('adminUserDelete', auth.userId);
     if (!limit.ok) {
-      return withSecurityHeaders(rateLimitResponse('deleteAcc', limit.resetAt, req));
+      return withSecurityHeaders(rateLimitResponse('adminUserDelete', limit.resetAt, req));
     }
 
     const { id } = await params;
