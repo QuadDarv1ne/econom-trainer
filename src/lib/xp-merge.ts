@@ -1,7 +1,6 @@
 import 'server-only'
 
-const MAX_XP_DELTA = 1000
-const MAX_FIRST_SYNC_XP = 5000
+import { MAX_XP_DELTA, MAX_FIRST_SYNC_XP } from './constants'
 
 /**
  * Merges client-reported XP with the server-authoritative value.

@@ -34,6 +34,20 @@ export function validateEnv(): EnvIssue[] {
         message: 'NEXTAUTH_URL or NEXT_PUBLIC_URL must be set in production.',
       });
     }
+
+    if (!process.env.RESEND_API_KEY) {
+      issues.push({
+        key: 'RESEND_API_KEY',
+        message: 'RESEND_API_KEY must be set in production for email delivery (verification, password reset).',
+      });
+    }
+
+    if (!process.env.EMAIL_FROM) {
+      issues.push({
+        key: 'EMAIL_FROM',
+        message: 'EMAIL_FROM must be set in production for email delivery (e.g. "noreply@example.com").',
+      });
+    }
   }
 
   return issues;

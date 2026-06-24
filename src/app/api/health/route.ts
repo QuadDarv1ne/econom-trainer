@@ -16,6 +16,11 @@ export async function GET() {
     };
   }
 
+  // Check email service configuration
+  checks.email = process.env.RESEND_API_KEY
+    ? { status: "ok" }
+    : { status: "warn", details: "RESEND_API_KEY not configured" };
+
   const isHealthy = Object.values(checks).every((c) => c.status === "ok");
 
   return withSecurityHeaders(NextResponse.json(

@@ -131,3 +131,15 @@ export const TOAST_REMOVE_DELAY_MS = 5000;
  * Interval for cleaning up stale rate-limit entries in ms (5 minutes).
  */
 export const RATE_LIMIT_CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
+
+/**
+ * Maximum XP delta allowed per sync to prevent XP inflation attacks.
+ * If client reports more XP than server + MAX_XP_DELTA, it gets capped.
+ */
+export const MAX_XP_DELTA = 1000;
+
+/**
+ * Maximum XP allowed on the first sync for a new user.
+ * Prevents an attacker from setting an arbitrarily high initial XP value.
+ */
+export const MAX_FIRST_SYNC_XP = 5000;

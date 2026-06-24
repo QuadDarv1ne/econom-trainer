@@ -57,6 +57,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       select: { id: true, name: true, email: true, role: true, twoFactorEnabled: true, emailVerified: true, createdAt: true },
     });
 
+    console.log(JSON.stringify({
+      type: 'audit:adminUserUpdate',
+      adminId: auth.userId,
+      targetId: id,
+      changes: Object.keys(data),
+      timestamp: new Date().toISOString(),
+    }));
+
     return withSecurityHeaders(NextResponse.json(updated));
   } catch (error) {
     logError('admin-users-update', error);
@@ -92,6 +100,13 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     }
 
     await prisma.user.delete({ where: { id } });
+
+    console.log(JSON.stringify({
+      type: 'audit:adminUserDelete',
+      adminId: auth.userId,
+      targetId: id,
+      timestamp: new Date().toISOString(),
+    }));
 
     return withSecurityHeaders(NextResponse.json({ success: true }));
   } catch (error) {
