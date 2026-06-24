@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { useMemo } from 'react'
+import { useMemo, memo } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { GraduationCap, Home, User, LogOut } from 'lucide-react'
@@ -21,7 +21,7 @@ interface AppHeaderProps {
   variant?: 'simple' | 'full'
 }
 
-export function AppHeader({ title, variant = 'simple' }: AppHeaderProps) {
+export const AppHeader = memo(function AppHeader({ title, variant = 'simple' }: AppHeaderProps) {
   const { t } = useI18n()
 
   const navLinks: NavLink[] = useMemo(() => variant === 'full'
@@ -68,4 +68,4 @@ export function AppHeader({ title, variant = 'simple' }: AppHeaderProps) {
       </div>
     </header>
   )
-}
+})

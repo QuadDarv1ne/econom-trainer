@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, memo, type ElementType } from 'react'
+import { useState, memo, useRef, useEffect, type ElementType } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, CheckCircle2, AlertCircle, Info, AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -32,6 +32,24 @@ const toastColors: Record<ToastType, string> = {
 
 export function useToastNotification() {
   const [toasts, setToasts] = useState<Toast[]>([])
+  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
+
+  useEffect(() => {
+    const timers = timersRef.current;
+    return () => {
+      for (const timer of timers.values()) clearTimeout(timer);
+      timers.clear();
+    };
+  }, []);
+
+  const removeToast = (id: string) => {
+    const timer = timersRef.current.get(id);
+    if (timer) {
+      clearTimeout(timer);
+      timersRef.current.delete(id);
+    }
+    setToasts((prev) => prev.filter((t) => t.id !== id))
+  }
 
   const addToast = (toast: Omit<Toast, 'id'>) => {
     const id = generateId()
@@ -39,14 +57,11 @@ export function useToastNotification() {
     setToasts((prev) => [...prev, newToast])
 
     if (newToast.duration && newToast.duration > 0) {
-      setTimeout(() => removeToast(id), newToast.duration)
+      const timer = setTimeout(() => removeToast(id), newToast.duration)
+      timersRef.current.set(id, timer)
     }
 
     return id
-  }
-
-  const removeToast = (id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id))
   }
 
   const success = (title: string, message?: string, duration?: number) =>

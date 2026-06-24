@@ -57,13 +57,18 @@ export async function POST(req: Request) {
     // Send verification email
     const verificationUrl = `${BASE_URL}/auth/verify-email?token=${token}&email=${encodeURIComponent(user.email)}`;
     const locale = getLocaleFromRequest(req);
-    const html = getEmailVerificationEmailHtml(user.name || (locale === 'en' ? 'User' : 'Пользователь'), verificationUrl, locale);
+    const userName = locale === 'en' ? 'User' : locale === 'zh' ? '用户' : 'Пользователь';
+    const html = getEmailVerificationEmailHtml(user.name || userName, verificationUrl, locale);
+
+    const subject = locale === 'en'
+      ? 'Verify your email — Economic Trainer'
+      : locale === 'zh'
+        ? '验证您的电子邮件 — EconTrainer'
+        : 'Подтвердите email — Экономический тренажёр';
 
     const emailSent = await sendEmail({
       to: user.email,
-      subject: locale === 'en'
-        ? 'Verify your email — Economic Trainer'
-        : 'Подтвердите email — Экономический тренажёр',
+      subject,
       html,
     });
 

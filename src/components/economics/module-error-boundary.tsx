@@ -7,6 +7,8 @@ import { AlertTriangle, RefreshCw } from 'lucide-react'
 import { logError } from '@/lib/log-error'
 import type { ErrorInfo, ReactNode } from 'react'
 
+const MAX_RETRIES = 3;
+
 interface Props {
   children: ReactNode
   moduleName: string
@@ -16,27 +18,30 @@ interface Props {
 
 interface State {
   hasError: boolean
+  retryCount: number
 }
 
 export class ModuleErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
-    this.state = { hasError: false }
+    this.state = { hasError: false, retryCount: 0 }
   }
 
   static getDerivedStateFromError(): State {
-    return { hasError: true }
+    return { hasError: true, retryCount: 0 }
   }
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     const enrichedError = errorInfo.componentStack
-      ? new Error(`${error.message}\nComponent stack:\n${errorInfo.componentStack}`)
+      ? (Object.assign(new Error(error.message), { stack: error.stack, componentStack: errorInfo.componentStack }))
       : error;
     logError(`module-error-${this.props.moduleName}`, enrichedError);
   }
 
   handleRetry = () => {
-    this.setState({ hasError: false })
+    const nextCount = this.state.retryCount + 1;
+    if (nextCount > MAX_RETRIES) return;
+    this.setState({ hasError: false, retryCount: nextCount })
   }
 
   override render() {
