@@ -10,7 +10,12 @@ const nextConfig: NextConfig = {
   },
   reactStrictMode: true,
   poweredByHeader: false,
-  serverExternalPackages: ["@prisma/client", "prisma"],
+  serverExternalPackages: [
+    "@prisma/client",
+    "prisma",
+    "@prisma/adapter-better-sqlite3",
+    "better-sqlite3",
+  ],
   async redirects() {
     return [
       {

@@ -27,24 +27,26 @@ function createDebouncedStorage<T>(delayMs: number = 500): {
   cleanup: () => void
   flushSync: () => void
 } {
-  let pendingWrite: { key: string; value: string } | null = null
+  let pendingWrites: Array<{ key: string; value: string }> = []
   let flushTimer: ReturnType<typeof setTimeout> | null = null
 
   const flush = () => {
-    if (pendingWrite) {
-      if (flushTimer) clearTimeout(flushTimer)
+    if (flushTimer) {
+      clearTimeout(flushTimer)
       flushTimer = null
+    }
+    const writes = pendingWrites
+    pendingWrites = []
+    for (const write of writes) {
       try {
-        localStorage.setItem(pendingWrite.key, pendingWrite.value)
+        localStorage.setItem(write.key, write.value)
       } catch (error) {
         logError('store-flush', error)
       }
-      pendingWrite = null
     }
   }
 
   const scheduleFlush = () => {
-    if (!pendingWrite) return
     if (flushTimer) clearTimeout(flushTimer)
     flushTimer = setTimeout(() => {
       flush()
@@ -74,11 +76,8 @@ function createDebouncedStorage<T>(delayMs: number = 500): {
         try {
           return JSON.parse(item)
         } catch {
-          // Corrupted data — return null to reinitialize with defaults
-          // Backup corrupted data before removal, but clean up old backups to prevent storage quota issues
           const backupKey = `${name}.backup`;
           try {
-            // Remove any old timestamped backup keys to prevent storage quota issues
             for (let i = localStorage.length - 1; i >= 0; i--) {
               const key = localStorage.key(i);
               if (key && key.startsWith(`${name}.backup.`)) {
@@ -95,13 +94,12 @@ function createDebouncedStorage<T>(delayMs: number = 500): {
         }
       },
       setItem: (name: string, value: { state: T }): void => {
-        pendingWrite = { key: name, value: JSON.stringify(value) }
+        pendingWrites.push({ key: name, value: JSON.stringify(value) })
         scheduleFlush()
       },
       removeItem: (name: string): void => {
-        pendingWrite = null
-        if (flushTimer) clearTimeout(flushTimer)
-        flushTimer = null
+        pendingWrites.push({ key: name, value: '' })
+        scheduleFlush()
         try {
           localStorage.removeItem(name)
         } catch (error) {
@@ -317,6 +315,14 @@ export function getModuleDisplayName(moduleId: string, locale: Locale): string {
  * - Increments streak if last activity was yesterday
  * - Resets to 1 if gap > 1 day or first activity
  */
+function toUTCDay(dateStr: string): number {
+  return Date.UTC(
+    Number(dateStr.slice(0, 4)),
+    Number(dateStr.slice(5, 7)) - 1,
+    Number(dateStr.slice(8, 10))
+  );
+}
+
 function updateStreakState(streakState: StreakState, today: string): StreakState {
   if (streakState.lastActiveDate === today) return streakState;
 
@@ -325,7 +331,7 @@ function updateStreakState(streakState: StreakState, today: string): StreakState
 
   if (lastActiveDate) {
     const diffDays = Math.round(
-      (new Date(today).getTime() - new Date(lastActiveDate).getTime()) / (1000 * 60 * 60 * 24)
+      (toUTCDay(today) - toUTCDay(lastActiveDate)) / 86400000
     );
     newStreak = diffDays === 1 ? currentStreak + 1 : 1;
   } else {

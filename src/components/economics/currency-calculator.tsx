@@ -62,11 +62,12 @@ export const CurrencyCalculator = memo(function CurrencyCalculator() {
   const [customRates, setCustomRates] = useState<Record<string, number>>({})
   const [volatility, setVolatility] = useState(5)
 
-  const hasEarnedXPRef = useRef(false)
   const addModuleInteraction = useEconomicsStore((s) => s.addModuleInteraction)
-  const awardXP = useCallback(() => {
-    if (!hasEarnedXPRef.current) {
-      hasEarnedXPRef.current = true
+  const hasAwardedRef = useRef(false)
+
+  const awardXPOnce = useCallback(() => {
+    if (!hasAwardedRef.current) {
+      hasAwardedRef.current = true
       addModuleInteraction({ moduleId: 'currency', action: 'convert', xpEarned: MODULE_XP['currency'] ?? 15 })
     }
   }, [addModuleInteraction])
@@ -136,13 +137,14 @@ export const CurrencyCalculator = memo(function CurrencyCalculator() {
     setToCurrency('RUB')
     setCustomRates({})
     setVolatility(5)
+    hasAwardedRef.current = false
     toast({ title: t('currency.resetToast'), description: t('currency.resetToastDesc') })
   }
 
   const swapCurrencies = () => {
     setFromCurrency(toCurrency)
     setToCurrency(fromCurrency)
-    awardXP()
+    awardXPOnce()
   }
 
   const fromCurr = CURRENCIES.find((c) => c.code === fromCurrency) ?? CURRENCIES[0]
@@ -179,7 +181,7 @@ export const CurrencyCalculator = memo(function CurrencyCalculator() {
               <Input
                 type="number"
                 value={amount}
-                onChange={(e) => { awardXP(); setAmount(Number(e.target.value)) }}
+                onChange={(e) => { awardXPOnce(); setAmount(Number(e.target.value)) }}
                 className="text-lg"
               />
             </div>
@@ -188,7 +190,7 @@ export const CurrencyCalculator = memo(function CurrencyCalculator() {
             <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-end">
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">{t('currency.from')}</Label>
-                <Select value={fromCurrency} onValueChange={(v) => { awardXP(); setFromCurrency(v) }}>
+                <Select value={fromCurrency} onValueChange={(v) => { awardXPOnce(); setFromCurrency(v) }}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -209,7 +211,7 @@ export const CurrencyCalculator = memo(function CurrencyCalculator() {
 
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">{t('currency.to')}</Label>
-                <Select value={toCurrency} onValueChange={(v) => { awardXP(); setToCurrency(v) }}>
+                <Select value={toCurrency} onValueChange={(v) => { awardXPOnce(); setToCurrency(v) }}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -301,7 +303,7 @@ export const CurrencyCalculator = memo(function CurrencyCalculator() {
                 <Label>{t('currency.volatility')}</Label>
                 <Badge variant="secondary">{volatility}%</Badge>
               </div>
-              <Slider value={[volatility]} min={1} max={20} step={1} onValueChange={(v) => { awardXP(); setVolatility(v[0]) }} />
+              <Slider value={[volatility]} min={1} max={20} step={1} onValueChange={(v) => { awardXPOnce(); setVolatility(v[0]) }} />
             </div>
           </CardContent>
         </Card>
@@ -387,7 +389,7 @@ export const CurrencyCalculator = memo(function CurrencyCalculator() {
                       min={0.001}
                       value={current}
                       onChange={(e) => {
-                        awardXP()
+                        awardXPOnce()
                         setCustomRates((prev) => ({ ...prev, [c.code]: Math.max(0.001, Number(e.target.value) || 0.001) }))
                       }}
                       className="text-sm h-8"
