@@ -792,7 +792,7 @@ export default function ProfilePage() {
                         {t('profile.deleteAccount')}
                       </Button>
                       <Button variant="outline" onClick={() => { setShowDeleteConfirm(false); setDeletePassword(''); }} className="interactive-scale">
-                        {t('auth.error.tryAgain')}
+                        {t('common.cancel')}
                       </Button>
                     </div>
                   </div>

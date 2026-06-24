@@ -95,6 +95,8 @@ export function EnhancedToastProvider({ children }: { children: React.ReactNode 
                 exit={shouldReduceMotion ? {} : { opacity: 0, x: 50, scale: 0.9 }}
                 transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, type: 'spring' }}
                 className="pointer-events-auto"
+                role="alert"
+                aria-live="polite"
               >
                 <div className="relative overflow-hidden rounded-xl shadow-2xl border border-white/20 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl">
                   <div className="flex items-start gap-3 p-4">

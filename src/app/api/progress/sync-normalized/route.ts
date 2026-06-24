@@ -127,65 +127,86 @@ export async function POST(req: Request) {
     const mergedXP = mergeXP(totalXP, existingProgress?.totalXP);
     const mergedLevel = getLevelFromXP(mergedXP).level;
 
-    // Use upsert with nested creates for normalized tables
+    // Step 1: Upsert UserProgress (totalXP + level) only
     const progress = await prisma.userProgress.upsert({
       where: { userId: session.user.id },
       create: {
         userId: session.user.id,
         totalXP: mergedXP,
         level: mergedLevel,
-        quizAttempts: quizAttempts?.length
-          ? {
-              create: quizAttempts.slice(0, 50).map((q) => ({
-                userId: session.user.id,
-                topic: q.topic,
-                score: q.score,
-                total: q.total,
-                accuracy: q.total > 0 ? q.score / q.total : 0,
-                date: q.date ? new Date(q.date) : new Date(),
-                details: q.details ? JSON.stringify(q.details) : null,
-              })),
-            }
-          : undefined,
-        moduleSessions: moduleSessions?.length
-          ? {
-              create: moduleSessions.slice(0, 500).map((m) => ({
-                userId: session.user.id,
-                moduleId: m.moduleId,
-                action: m.action,
-                xpEarned: m.xpEarned,
-                date: m.date ? new Date(m.date) : new Date(),
-                score: m.score ?? null,
-                duration: m.duration ?? null,
-                details: m.details ? JSON.stringify(m.details) : null,
-              })),
-            }
-          : undefined,
-        achievementsList: achievements?.length
-          ? {
-              create: achievements.slice(0, 50).map((a) => ({
-                userId: session.user.id,
-                name: a.name,
-                xpReward: (a.xpReward ?? 0) || 0,
-                unlockedAt: a.unlockedAt ? new Date(a.unlockedAt) : new Date(),
-                metadata: a.metadata ? JSON.stringify(a.metadata) : null,
-              })),
-            }
-          : undefined,
-        settingsList: settings
-          ? {
-              create: Object.entries(settings).map(([key, value]) => ({
-                userId: session.user.id,
-                key,
-                value,
-              })),
-            }
-          : undefined,
       },
       update: {
         totalXP: mergedXP,
         level: mergedLevel,
       },
+    });
+
+    // Step 2: Replace related records in a transaction
+    // (upsert with nested create only fires on first creation — existing users lose data)
+    await prisma.$transaction(async (tx) => {
+      if (quizAttempts?.length) {
+        await tx.quizAttempt.deleteMany({ where: { userProgressId: progress.id } });
+        await tx.quizAttempt.createMany({
+          data: quizAttempts.slice(0, 50).map((q) => ({
+            userProgressId: progress.id,
+            userId: session.user.id,
+            topic: q.topic,
+            score: q.score,
+            total: q.total,
+            accuracy: q.total > 0 ? q.score / q.total : 0,
+            date: q.date ? new Date(q.date) : new Date(),
+            details: q.details ? JSON.stringify(q.details) : null,
+          })),
+        });
+      }
+
+      if (moduleSessions?.length) {
+        await tx.moduleSession.deleteMany({ where: { userProgressId: progress.id } });
+        await tx.moduleSession.createMany({
+          data: moduleSessions.slice(0, 500).map((m) => ({
+            userProgressId: progress.id,
+            userId: session.user.id,
+            moduleId: m.moduleId,
+            action: m.action,
+            xpEarned: m.xpEarned,
+            date: m.date ? new Date(m.date) : new Date(),
+            score: m.score ?? null,
+            duration: m.duration ?? null,
+            details: m.details ? JSON.stringify(m.details) : null,
+          })),
+        });
+      }
+
+      if (achievements?.length) {
+        await tx.userAchievement.deleteMany({ where: { userProgressId: progress.id } });
+        await tx.userAchievement.createMany({
+          data: achievements.slice(0, 50).map((a) => ({
+            userProgressId: progress.id,
+            userId: session.user.id,
+            name: a.name,
+            xpReward: (a.xpReward ?? 0) || 0,
+            unlockedAt: a.unlockedAt ? new Date(a.unlockedAt) : new Date(),
+            metadata: a.metadata ? JSON.stringify(a.metadata) : null,
+          })),
+        });
+      }
+
+      if (settings) {
+        await tx.userSetting.deleteMany({ where: { userProgressId: progress.id } });
+        await tx.userSetting.createMany({
+          data: Object.entries(settings).map(([key, value]) => ({
+            userProgressId: progress.id,
+            userId: session.user.id,
+            key,
+            value,
+          })),
+        });
+      }
+    });
+
+    // Fetch the complete progress with relations for the response
+    const fullProgress = await prisma.userProgress.findUnique({
+      where: { id: progress.id },
       include: {
         quizAttempts: { orderBy: { date: 'desc' }, take: 50 },
         moduleSessions: { orderBy: { date: 'desc' }, take: 100 },
@@ -194,7 +215,7 @@ export async function POST(req: Request) {
       },
     });
 
-    return withSecurityHeaders(NextResponse.json(progress));
+    return withSecurityHeaders(NextResponse.json(fullProgress));
   } catch (error) {
     logError('progress-sync-normalized', error);
     return withSecurityHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }));

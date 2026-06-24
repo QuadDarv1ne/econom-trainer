@@ -4,11 +4,11 @@ import { prisma } from '@/lib/prisma';
 
 export type Role = 'student' | 'teacher' | 'admin';
 
-const ROLE_HIERARCHY: Record<Role, number> = {
+const ROLE_HIERARCHY = {
   student: 0,
   teacher: 1,
   admin: 2,
-};
+} as const satisfies Record<Role, number>;
 
 export function hasRole(userRole: string | undefined, requiredRole: Role): boolean {
   if (!userRole) return false;

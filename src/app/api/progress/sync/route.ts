@@ -144,13 +144,13 @@ export async function POST(req: Request) {
 
       if (moduleHistory !== undefined && moduleHistory !== null && Array.isArray(moduleHistory)) {
         const typedHistory = moduleHistory as Array<{ moduleId?: string; action?: string; xpEarned?: number; date?: string; score?: number; duration?: number; details?: Record<string, unknown> }>;
-        const validHistory = typedHistory.slice(0, 500).filter((m) => m.moduleId && m.moduleId !== 'unknown');
+        const validHistory = typedHistory.slice(0, 500).filter((m): m is { moduleId: string; action?: string; xpEarned?: number; date?: string; score?: number; duration?: number; details?: Record<string, unknown> } => !!m.moduleId && m.moduleId !== 'unknown');
         if (validHistory.length > 0) {
           await tx.moduleSession.createMany({
             data: validHistory.map((m) => ({
               userId: session.user.id,
               userProgressId: progressId,
-              moduleId: m.moduleId ?? 'unknown',
+              moduleId: m.moduleId,
               action: m.action ?? 'explore',
               xpEarned: m.xpEarned ?? 0,
               date: m.date ? new Date(m.date) : new Date(),
@@ -280,13 +280,13 @@ export async function PATCH(req: Request) {
 
       if (newModuleInteractions !== undefined && newModuleInteractions !== null && Array.isArray(newModuleInteractions)) {
         const typedHistory = newModuleInteractions as Array<{ moduleId?: string; action?: string; xpEarned?: number; date?: string; score?: number; duration?: number; details?: Record<string, unknown> }>;
-        const validHistory = typedHistory.slice(0, 500).filter((m) => m.moduleId && m.moduleId !== 'unknown');
+        const validHistory = typedHistory.slice(0, 500).filter((m): m is { moduleId: string; action?: string; xpEarned?: number; date?: string; score?: number; duration?: number; details?: Record<string, unknown> } => !!m.moduleId && m.moduleId !== 'unknown');
         if (validHistory.length > 0) {
           await tx.moduleSession.createMany({
             data: validHistory.map((m) => ({
               userId: session.user.id,
               userProgressId: progressId,
-              moduleId: m.moduleId ?? 'unknown',
+              moduleId: m.moduleId,
               action: m.action ?? 'explore',
               xpEarned: m.xpEarned ?? 0,
               date: m.date ? new Date(m.date) : new Date(),

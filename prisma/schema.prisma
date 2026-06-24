@@ -19,16 +19,13 @@ model User {
   emailVerified DateTime?
   image         String?
   phone         String?
-  passwordHash  String?   // For credentials auth
-  role          String    @default("student") // student | teacher | admin
+  passwordHash  String?
+  role          String    @default("student")
 
-  // 2FA
   twoFactorEnabled Boolean  @default(false)
 
-  // Session management
-  sessionHash      String?  // Current valid session hash (invalidates old JWTs)
+  sessionHash      String?
 
-  // Relations
   accounts      Account[]
   sessions      Session[]
   progress      UserProgress?
@@ -36,6 +33,9 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([role])
+  @@index([emailVerified])
 }
 
 model Account {
@@ -74,6 +74,7 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+  @@index([identifier])
 }
 
 model PasswordResetToken {
@@ -136,6 +137,7 @@ model QuizAttempt {
   @@index([date])
   @@index([accuracy])
   @@index([userId, topic, date])
+  @@index([userId, date])
 }
 
 model ModuleSession {
@@ -157,6 +159,7 @@ model ModuleSession {
   @@index([date])
   @@index([xpEarned])
   @@index([userId, moduleId, date])
+  @@index([userId, date])
 }
 
 model UserAchievement {
@@ -204,4 +207,5 @@ model QuizQuestion {
 
   @@index([category])
   @@index([difficulty])
+  @@index([topic])
 }

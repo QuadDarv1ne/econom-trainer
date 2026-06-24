@@ -21,6 +21,10 @@ export function PasswordStrengthMeter({ password, t }: PasswordStrengthMeterProp
       <Progress
         value={(strength.score / 4) * 100}
         className={`h-1 ${strength.color}`}
+        aria-valuenow={(strength.score / 4) * 100}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        role="progressbar"
       />
 
       <div className="grid grid-cols-2 gap-1 pt-1">
