@@ -3,10 +3,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { logError } from "@/lib/log-error";
 import { generateId } from "@/lib/utils";
+import { SYNC_DEBOUNCE_MS, XP_CONFLICT_THRESHOLD } from "@/lib/constants";
 import { useEconomicsStore, type SyncConflict, type ModuleInteraction, type QuizResult, type GDPResult, type FinanceResult, type ElasticityResult } from "@/store/economics-store";
-
-const SYNC_DEBOUNCE_MS = 3000;
-const XP_CONFLICT_THRESHOLD = 100;
 
 /**
  * Hook that automatically syncs progress when the user comes back online.

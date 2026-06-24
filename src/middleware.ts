@@ -2,23 +2,34 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth-edge';
 import { validateOrigin, csrfErrorResponse } from '@/lib/csrf';
 
-// HTTP methods that mutate state and require CSRF validation
 const STATE_CHANGING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+
+function getAllowedOrigin(request: Request): string {
+  const origin = request.headers.get('origin');
+  if (!origin) return '';
+
+  const allowed = process.env.NEXT_PUBLIC_URL
+    || process.env.NEXTAUTH_URL
+    || 'http://localhost:3000';
+  if (origin === allowed || origin.endsWith('.vercel.app')) return origin;
+  return allowed;
+}
 
 export default auth(async (req) => {
   const url = req.nextUrl.clone();
   const session = req.auth;
 
-  // Handle CORS preflight (browser sends OPTIONS before cross-origin requests)
   if (req.method === 'OPTIONS') {
+    const allowedOrigin = getAllowedOrigin(req);
     return new NextResponse(null, {
       status: 204,
       headers: {
-        'Access-Control-Allow-Origin': req.headers.get('origin') || '*',
+        'Access-Control-Allow-Origin': allowedOrigin,
         'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         'Access-Control-Allow-Credentials': 'true',
         'Access-Control-Max-Age': '86400',
+        'Vary': 'Origin',
       },
     });
   }
@@ -37,12 +48,10 @@ export default auth(async (req) => {
     }
 
     const response = NextResponse.next();
-    // Prevent caching of authenticated API responses
     response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     response.headers.set('Pragma', 'no-cache');
     response.headers.set('Expires', '0');
-    // Content-Security-Policy for API responses (nonce for inline scripts if needed)
-    response.headers.set('Content-Security-Policy', "default-src 'none'; img-src https:; frame-ancestors 'none'; base-uri 'none'");
+    response.headers.set('Vary', 'Origin');
     return response;
   }
 

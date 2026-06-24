@@ -101,3 +101,33 @@ export const MAX_MODULE_INTERACTIONS = 500;
  */
 
 export const MAX_DAILY_CHALLENGES = 30;
+
+/**
+ * Auto-sync debounce delay in ms (3 seconds after coming online).
+ */
+export const SYNC_DEBOUNCE_MS = 3000;
+
+/**
+ * XP discrepancy threshold for detecting sync conflicts (100 XP).
+ */
+export const XP_CONFLICT_THRESHOLD = 100;
+
+/**
+ * Mobile breakpoint in px.
+ */
+export const MOBILE_BREAKPOINT = 768;
+
+/**
+ * Maximum number of concurrent toasts displayed.
+ */
+export const TOAST_LIMIT = 1;
+
+/**
+ * Toast auto-dismiss delay in ms (5 seconds).
+ */
+export const TOAST_REMOVE_DELAY_MS = 5000;
+
+/**
+ * Interval for cleaning up stale rate-limit entries in ms (5 minutes).
+ */
+export const RATE_LIMIT_CLEANUP_INTERVAL_MS = 5 * 60 * 1000;

@@ -28,61 +28,65 @@ export const viewport: Viewport = {
   colorScheme: "dark light",
 };
 
-export const metadata: Metadata = {
-  title: {
-    default: "Экономический тренажёр — Интерактивный тренажёр для экономистов",
-    template: "%s | Экономический тренажёр",
-  },
-  description:
-    "Интерактивная платформа для тренировки экономического мышления: 25 модулей, расчёт ВВП, спрос и предложение, квизы, финансовая математика, система XP и достижений.",
-  keywords: [
-    "экономика",
-    "тренажёр",
-    "ВВП",
-    "макроэкономика",
-    "микроэкономика",
-    "финансовая математика",
-    "NPV",
-    "образование",
-    "квиз",
-    "эластичность",
-  ],
-  authors: [{ name: "Дуплей Максим Игоревич", url: "https://github.com/QuadDarv1ne" }],
-  creator: "Дуплей Максим Игоревич",
-  icons: {
-    icon: "/logo.svg",
-    apple: "/logo.svg",
-  },
-  appleWebApp: {
-    capable: true,
-    title: "Экономический тренажёр",
-    statusBarStyle: "black-translucent",
-  },
-  openGraph: {
-    title: "Экономический тренажёр",
-    description: "Интерактивный тренажёр для экономистов — 25 модулей, квизы, XP-система",
-    type: "website",
-    locale: "ru_RU",
-    siteName: "Экономический тренажёр",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Экономический тренажёр",
-    description: "Интерактивный тренажёр для экономистов",
-    creator: "@QuadDarv1ne",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+const siteTitle = "Экономический тренажёр";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getServerLocale();
+  const title = lang === 'en' ? 'EconTrainer — Interactive Economics Trainer'
+    : lang === 'zh' ? 'EconTrainer — 互动经济学训练器'
+    : `${siteTitle} — Интерактивный тренажёр для экономистов`;
+  const description = lang === 'en'
+    ? 'Interactive platform for training economic thinking: 25 modules, GDP calculation, supply and demand, quizzes, financial math, XP and achievements system.'
+    : lang === 'zh'
+      ? '训练经济思维的互动平台：25个模块、GDP计算、供需、测验、金融数学、XP和成就系统。'
+      : 'Интерактивная платформа для тренировки экономического мышления: 25 модулей, расчёт ВВП, спрос и предложение, квизы, финансовая математика, система XP и достижений.';
+  return {
+    title: {
+      default: title,
+      template: `%s | ${siteTitle}`,
+    },
+    description,
+    keywords: [
+      "экономика", "тренажёр", "ВВП", "макроэкономика", "микроэкономика",
+      "финансовая математика", "NPV", "образование", "квиз", "эластичность",
+    ],
+    authors: [{ name: "Дуплей Максим Игоревич", url: "https://github.com/QuadDarv1ne" }],
+    creator: "Дуплей Максим Игоревич",
+    icons: {
+      icon: "/logo.svg",
+      apple: "/logo.svg",
+    },
+    appleWebApp: {
+      capable: true,
+      title: siteTitle,
+      statusBarStyle: "black-translucent",
+    },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      locale: lang === 'en' ? 'en_US' : lang === 'zh' ? 'zh_CN' : 'ru_RU',
+      siteName: siteTitle,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      creator: "@QuadDarv1ne",
+    },
+    robots: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
-  },
-};
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -110,9 +114,9 @@ export default async function RootLayout({
         >
           {serverT('common.skipToContent', lang)}
         </a>
-        <Providers>
-        <div id="main-content">{children}</div>
-      </Providers>
+          <Providers>
+            <div id="main-content">{children}</div>
+          </Providers>
       </body>
     </html>
   );

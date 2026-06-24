@@ -20,5 +20,11 @@ else
   npx prisma db push --skip-generate 2>&1 || true
 fi
 
+# Verify the Next.js build exists before starting
+if [ ! -f "server.js" ] && [ ! -f ".next/standalone/server.js" ]; then
+  echo "[entrypoint] ERROR: server.js not found. Run 'npm run build' first."
+  exit 1
+fi
+
 echo "[entrypoint] Database ready. Starting Next.js server..."
 exec node server.js

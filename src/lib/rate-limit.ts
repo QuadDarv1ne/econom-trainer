@@ -1,5 +1,6 @@
 import 'server-only'
 import { NextResponse } from 'next/server';
+import { RATE_LIMIT_CLEANUP_INTERVAL_MS } from '@/lib/constants';
 
 /**
  * Simple IP-based rate limiter using in-memory storage.
@@ -23,7 +24,7 @@ export function resetRateLimitStore(): void {
 }
 
 // Cleanup interval: prune expired entries every 5 minutes
-const CLEANUP_INTERVAL = 5 * 60 * 1000;
+const CLEANUP_INTERVAL = RATE_LIMIT_CLEANUP_INTERVAL_MS;
 let cleanupTimeout: ReturnType<typeof setTimeout> | null = null;
 
 function scheduleCleanup() {

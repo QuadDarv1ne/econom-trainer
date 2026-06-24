@@ -8,9 +8,7 @@ import type {
   ToastProps,
 } from "@/components/ui/toast"
 import { generateId } from "@/lib/utils"
-
-const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 5000
+import { TOAST_LIMIT, TOAST_REMOVE_DELAY_MS as TOAST_REMOVE_DELAY } from "@/lib/constants"
 
 type ToasterToast = ToastProps & {
   id: string
@@ -19,9 +17,7 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement
 }
 
-function genId() {
-  return generateId()
-}
+const genId = generateId;
 
 type ActionType = {
   ADD_TOAST: "ADD_TOAST"
